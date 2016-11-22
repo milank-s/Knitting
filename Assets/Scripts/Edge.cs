@@ -20,7 +20,7 @@ public class Edge : MonoBehaviour {
 		l.SetPosition (0, curve.GetPoint(0));
 
 		for (int i = 1; i < fidelity; i++) {
-			l.SetPosition (i, curve.GetPoint((float)i/fidelity));
+			l.SetPosition (i, curve.GetPoint((float)i/(fidelity-1)));
 		}
 	}
 

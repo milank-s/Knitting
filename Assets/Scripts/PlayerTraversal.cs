@@ -82,9 +82,12 @@ public class PlayerTraversal : MonoBehaviour {
 			flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
 		}
 			
-		if (flow > maxSpeed | flow < -maxSpeed) {
-			flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime * 10);
-		}
+		if (Mathf.Abs(flow) > maxSpeed) {
+			flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
+		}	
+
+		if (flow > 0 && accuracy < 0) flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
+		if (flow < 0 && accuracy > 0) flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
 
 		//adding this value to flow
 		flow += accuracy * Time.deltaTime;
@@ -95,7 +98,7 @@ public class PlayerTraversal : MonoBehaviour {
 		Vector3 position = curEdge.curve.GetPoint(progress);
 		transform.localPosition = position;
 
-		transform.Rotate (0, 0, flow*5);
+//		transform.Rotate (0, 0, flow*5);
 	}
 
 	void UpdateNode(){
@@ -186,12 +189,12 @@ public class PlayerTraversal : MonoBehaviour {
 
 			//set cursor to mouse position in world coordinates
 			cursorPos = Camera.main.ScreenToWorldPoint (mousePos);
-
+			if (cursorPos.magnitude > 1) cursorPos.Normalize ();
 			//angle to mouse position
 			//zAngle = Mathf.Atan2 (worldPos.x - transform.position.y, worldPos.y - transform.position.y) * Mathf.Rad2Deg;
 		}
 
-		cursor.transform.position = transform.position + (cursorPos.normalized * Mathf.Clamp(Mathf.Abs(flow), 1, 3));
+		cursor.transform.position = transform.position + (cursorPos * Mathf.Clamp(Mathf.Abs(flow), 1, 3));
 
 		cursorDir = (cursor.transform.position - transform.position).normalized;
 		cursorPos = cursor.transform.position;

@@ -14,17 +14,6 @@ public class WaveEffect : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		Spawn ();
-
 		m.SetFloat ("_InnerRadius", m.GetFloat ("_InnerRadius") + Time.deltaTime/speed);
-
-	}
-
-	void Spawn(){
-
-		if (m.GetFloat ("_InnerRadius") >= 0.5f) {
-			Instantiate (Wave, GameObject.FindGameObjectWithTag ("Player").transform.position, Quaternion.identity);
-			Destroy (gameObject);
-		}
 	}
 }

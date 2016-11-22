@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class PlayerPickups : MonoBehaviour {
 
 	public GameObject nodePrefab;
+	public GameObject RipplePrefab;
 
 	private List<Node> nodeInv;
 	private float numPickups;
@@ -24,6 +25,13 @@ public class PlayerPickups : MonoBehaviour {
 		}
 	}
 
+	public void OnTriggerEnter(Collider col){
+		if (col.tag == "Node") {
+			GetComponent<TextHolder> ().CreateWord (transform.position + transform.right/3 + -transform.up/3);
+			Instantiate (RipplePrefab, col.transform.position, Quaternion.identity);
+		}
+	}
+
 	public void Pickup(Node n){
 		
 		numPickups++;
@@ -39,8 +47,10 @@ public class PlayerPickups : MonoBehaviour {
 		if (!p.GetTraversing()) {
 			Node.nodeCount++;
 
-			Ray ray = Camera.main.ScreenPointToRay(p.cursor.transform.position);
+			Ray ray = Camera.main.ScreenPointToRay(Camera.main.WorldToScreenPoint(p.cursor.transform.position));
 			RaycastHit hit;
+			Debug.Log("Origin: " + ray.origin);
+			Debug.Log ("Direction " + ray.direction);
 
 			if (Physics.Raycast (ray, out hit)) {
 				if (hit.collider.tag == "Node") {
