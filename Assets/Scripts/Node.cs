@@ -25,8 +25,8 @@ public class Node : MonoBehaviour {
 		Edge e = newEdge.GetComponent<Edge> ();
 		e.SetVerts (this, n);
 
-		Color c = new Color(Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f));
-		e.GetComponent<LineRenderer>().SetColors(c, c);
+//		Color c = new Color(Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f));
+//		e.GetComponent<LineRenderer>().SetColors(c, c);
 		e.name = this.name + "—" + n.name;
 		
 		_edges.Add(e);

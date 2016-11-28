@@ -31,10 +31,10 @@ public class EdgeDecorator : MonoBehaviour {
 		float t = 1/fidelity;
 
 		while (t <= 1){
+			t += Time.deltaTime * speed;
 			int index = (int)(t * fidelity);
 			l.SetVertexCount (index + 1);
 			l.SetPosition (index, curve.GetPoint(t) + curve.GetDirection(t));
-			t += Time.deltaTime;
 			yield return null;
 		}
 	}

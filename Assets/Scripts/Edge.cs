@@ -80,16 +80,16 @@ public class Edge : MonoBehaviour {
 
 		if(from.HasEdges()){
 			e = from.GetClosestEdgeDirection((cursorPos - from.transform.position).normalized, true);
-			v1 = e.GetReversedInitVelocity (from).normalized * distance/2; //could times by distance
-			v1 = Vector3.Lerp (v1, (cursorPos - from.transform.position).normalized, 0.1f);
+			v1 = e.GetReversedInitVelocity (from).normalized * distance/2f; //could times by distance
+			v1 = Vector3.Lerp (v1, (cursorPos - from.transform.position).normalized, 0.05f);
 		}
 		if(to.HasEdges()){
 			e = to.GetClosestEdgeDirection((cursorPos - to.transform.position).normalized, true);
-			v2 = e.GetReversedInitVelocity (to).normalized * distance/2;
+			v2 = e.GetReversedInitVelocity (to).normalized * distance/2f;
 		}
 
 		Debug.Log (distance);
-		curve.CreateCurve (_edgeVertices[0].transform, _edgeVertices[1].transform, 1, v1, v2);
+		curve.CreateCurve (_edgeVertices[0].transform, _edgeVertices[1].transform, distance, v1, v2);
 
 		decorator.Decorate ();
 	}

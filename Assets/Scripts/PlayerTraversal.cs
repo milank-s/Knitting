@@ -59,8 +59,8 @@ public class PlayerTraversal : MonoBehaviour {
 			if (!traversing) {
 				AtNodeIntersection ();
 			} else {
-				PlayerMovement ();
 				UpdateNode ();
+				PlayerMovement ();
 			}
 		}
 			
@@ -106,11 +106,10 @@ public class PlayerTraversal : MonoBehaviour {
 	void UpdateNode(){
 		if (progress >= 1) {
 			curNode = curEdge.GetVert2 ();
-			traversing = false;
-
+			AtNodeIntersection ();
 		}else if (progress <= 0) {
 			curNode = curEdge.GetVert1 ();
-			traversing = false;
+			AtNodeIntersection ();
 		}
 	}
 
@@ -123,6 +122,7 @@ public class PlayerTraversal : MonoBehaviour {
 
 		if (e.GetAngleAtNode (cursorDir, curNode) > maxAngleBetweenEdges && flow < 1){
 			flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
+			traversing = false;
 			return;
 		}
 
@@ -144,7 +144,6 @@ public class PlayerTraversal : MonoBehaviour {
 
 		curEdge = e;
 		traversing = true;
-		GetComponent<ParticleSystem> ().Emit (1);
 	}
 //		if (goingForward) {
 //			//when going backwards over the start, sets them to be at the end
