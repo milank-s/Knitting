@@ -12,6 +12,9 @@ public class PlayerTraversal : MonoBehaviour {
 	[Header("Cursor")]
 	public GameObject cursor;
 
+	[Header("Speed")]
+	public float speed;
+
 	[Header("Decay")]
 	public float decay;
 
@@ -28,7 +31,6 @@ public class PlayerTraversal : MonoBehaviour {
 
 	//components I want to access
 	private TrailRenderer t;
-	private LineRenderer l;
 	private AudioSource sound;
 
 	private float flow;
@@ -44,7 +46,6 @@ public class PlayerTraversal : MonoBehaviour {
 	void Start(){
 
 		t = GetComponent<TrailRenderer> ();
-		l = GetComponent<LineRenderer> ();
 		sound = GetComponent<AudioSource> ();
 
 	}
@@ -91,9 +92,9 @@ public class PlayerTraversal : MonoBehaviour {
 		if (flow < 0 && accuracy > 0) flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
 
 		//adding this value to flow
-		flow += accuracy * Time.deltaTime;
+		flow += (accuracy * acceleration)* Time.deltaTime;
 
-		progress += (accuracy * Time.deltaTime) + flow * acceleration;
+		progress += (accuracy * speed *  Time.deltaTime) + flow;
 
 		//set player position to a point along the curve
 		Vector3 position = curEdge.curve.GetPoint(progress);
@@ -120,7 +121,7 @@ public class PlayerTraversal : MonoBehaviour {
 
 //		Debug.Log ("Edge: " + e.name + " Angle: " + e.GetAngleAtNode (cursorDir, curNode, false));
 
-		if (e.GetAngleAtNode (cursorDir, curNode) > maxAngleBetweenEdges){
+		if (e.GetAngleAtNode (cursorDir, curNode) > maxAngleBetweenEdges && flow < 1){
 			flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
 			return;
 		}
@@ -196,7 +197,7 @@ public class PlayerTraversal : MonoBehaviour {
 			//zAngle = Mathf.Atan2 (worldPos.x - transform.position.y, worldPos.y - transform.position.y) * Mathf.Rad2Deg;
 		}
 
-		cursor.transform.position = transform.position + (cursorPos * Mathf.Clamp(Mathf.Abs(flow), 1, 3));
+		cursor.transform.position = transform.position + (cursorPos * Mathf.Clamp(Mathf.Abs(flow), 0.5f, 1.5f));
 
 		cursorDir = (cursor.transform.position - transform.position).normalized;
 		cursorPos = cursor.transform.position;
@@ -228,8 +229,8 @@ public class PlayerTraversal : MonoBehaviour {
 		sound.volume = Absflow/10;
 
 		//emit more particles with more flow
-		ParticleSystem.EmissionModule m = GetComponent<ParticleSystem> ().emission;
-		m.rate= (int)(Absflow * 5);
+//		ParticleSystem.EmissionModule m = GetComponent<ParticleSystem> ().emission;
+//		m.rate= (int)(Absflow * 5);
 
 //		//set pointer for player object
 //		l.SetPosition(0, transform.position);

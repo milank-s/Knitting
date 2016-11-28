@@ -192,23 +192,24 @@ public class BezierSpline : MonoBehaviour {
 	public void CreateCurve (Transform p1, Transform p2, float strength, Vector3 v1 = default(Vector3), Vector3 v2 = default(Vector3)) {
 		Vector3 target = p2.position - p1.position;
 
+
 		points = new Vector3[4];
 		points [0] = Vector3.zero;
 
 		if (v1 == Vector3.zero) {
 			points [1] = Vector3.Lerp (Vector3.zero, target, 0.33f);
 		} else {
-			points [1] = v1/2; //multiplicant should range between 0 and 1. Should also scale with line length
+			points [1] = v1 * strength; //multiplicant should range between 0 and 1. Should also scale with line length
 		}
 
 		if (v2 != Vector3.zero) {
-			points [2] = target + v2/2;
+			points [2] = target + (v2 * strength);
 	
 		} else if (v1 != Vector3.zero) {
 //			v2 = Quaternion.Euler(0, 0, 0) * v1; //rotate v1 180 degrees
-			points [2] = target - (v1 - target).normalized/2;
+			points [2] = target + ((v1 - target) * strength);
 		} else {
-			points [2] = Vector3.Lerp (points[1], target, 0.33f);
+			points [2] = Vector3.Lerp (points[1], target, 0.66f);
 		}
 
 		points[3] = target;

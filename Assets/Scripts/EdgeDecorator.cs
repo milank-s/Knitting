@@ -3,7 +3,7 @@ using System.Collections;
 
 public class EdgeDecorator : MonoBehaviour {
 
-	public float fidelity = 1;
+	public float fidelity = 10;
 	public float speed = 2;
 
 	private LineRenderer l;
@@ -45,10 +45,10 @@ public class EdgeDecorator : MonoBehaviour {
 		float t = 1/fidelity;
 
 		while (t <= 1) {
+			t += Time.deltaTime * speed;
 			int index = (int)(t * fidelity);
 			l.SetVertexCount (index + 1);
 			l.SetPosition (index, curve.GetPoint (t));
-			t += Time.deltaTime * speed;
 			yield return null;
 		}
 	}
