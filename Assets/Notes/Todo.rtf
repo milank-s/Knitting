@@ -1,80 +1,124 @@
 {\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf600
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 ArialMT;}
-{\colortbl;\red255\green255\blue255;\red252\green76\blue8;\red14\green121\blue255;}
-{\*\expandedcolortbl;\csgray\c100000;\cssrgb\c100000\c39164\c0;\cssrgb\c0\c56578\c100000;}
-\margl1440\margr1440\vieww7460\viewh18000\viewkind0
+{\colortbl;\red255\green255\blue255;\red252\green76\blue8;\red251\green0\blue7;\red251\green0\blue7;
+\red14\green121\blue255;\red251\green0\blue141;\red251\green0\blue255;}
+{\*\expandedcolortbl;\csgray\c100000;\cssrgb\c100000\c39164\c0;\cssrgb\c100000\c12345\c0;\cssrgb\c100000\c0\c0;
+\cssrgb\c0\c56578\c100000;\cssrgb\c100000\c0\c62209;\cssrgb\c99811\c0\c100000;}
+\margl1440\margr1440\vieww4960\viewh17700\viewkind0
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 
-\f0\fs24 \cf0 	
-\f1\b Unravelling: The Continuous/Discontinuous\
+\f0\b\fs24 \cf0 	
+\f1 Unravelling: The Continuous/Discontinuous\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
-
-\b0 \cf0 (it just works)
-\f0\b \
+\cf0 (it just works)
+\f0 \
 	\
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 \cf2 \strike \strikec0 Button Presses on Nodes\
 Picking up Nodes\
-	
-\b0 Player presses button on node to gather it\
+	Player presses button on node to gather it\
 \
 \
-
-\b Collected nodes gathering/circling around player\
-	
-\b0 Like flOw
-\b \cf0 \strike0\striked0 \
+Collected nodes gathering/circling around player\
+	Like flOw\cf0 \strike0\striked0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
-\cf3 Making Graph Data Struct\
+\cf3 \strike \strikec3 Making Graph Data Struct\
 \
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 \cf3 Creating New Nodes\
-	
-\b0 Player presses button to fork node off path?\
-	Distance from Cursor based on flowq\
+	Player presses button to fork node off path?\
+	Distance from Cursor based on flow\
 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf4 \strikec4 LineDrawing is coroutine\cf5 \strike0\striked0 \
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 
-\i\b Can the player pick up a node or delete it?
-\i0\b0 \
+\i \cf6 Player loses momentum at nodes\
+Player moves constantly despite line length\
+\
+Player stops at nodes with angle > threshold\
+\
+Player doesn\'92t properly move off intersections\cf5 \
+\
+Hohokum player movement\
+Flow increases based on difference in angles\
+while maintaining accuracy\
+\
+Player node length & flow: once player starts holding x they start skating freeform and losing flow. \
+	speed, reinforcement, journey, journey scarf, strength\
+	creativity\
+	
+\i0 \cf7 using splines to draw multiple curve edges.\
+	start drawing new curve in spline based on magnitude\cf5 \
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 
-\b \
+\i \cf5 Smooth spline curves\
+	
+\i0 sometimes sharp edges point the wrong way\
+
+\i \
+Nodes like molecular bonds/covalency\
+\
+Get Cello string lines \
+\
+Clamp speed on line\
+\
+Create splines except when branching\
+\
+Colour splines differently so you know which tracks are connected and which split\
+\
+Make player movement on laptop with arrow keys\
+Like Super Hexagon\
+\
+Holding down toggle button makes (all?) lines rectilinear\
+\
+SPLINE FIDELITY BASED ON REINFORCEMENT\
+(grooves get worn in)\
+\
+Play Hohokum\
+\
+Player can\'92t go backwards (unidirectional edges)\
+\
+Picking up nodes\
+\
+Player moves based on timed button presses not directional input. \
+\
+Player gather\'92s tons of momentum before placing new node, and weightlessly skating into new space. \
+\
+Deleting nodes\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\i0 \cf5 Overwriting nodes increases edge strength\
+Or player can go backwards on these edges\
+\
 Sounds in the Distance\
-	
-\b0 Things to go towards, landmarks\
-
-\b \
+\
 Nautilus Shell, solar system, Rilke text\
-	
-\b0 Home base, diagrammatic poems with venn circles\
-	At the seashells centre lies cornucopias smallest door
-\b \
+	Home base, diagrammatic poems with venn circles\
+	At the seashells centre lies cornucopias smallest door\
 \
 Physics system for lines\
-
-\b0 	points defined by game objects with rigid bodies\
-
-\b 	
-\b0 rope physics scripts \
+	points defined by game objects with rigid bodies\
+	rope physics scripts \
 		straight line = 0 line segments\
 		rigid bodies can be disabled for discrete lines\
 		uses meshes instead of linerenders\
 \
-
-\b Wave behaviour, fourier translations on lines\
-	
-\b0 Lines are alive, vibrating, humming, elastic\
+Wave behaviour, fourier translations on lines\
+	Lines are alive, vibrating, humming, elastic\
 \
-
-\b ART
-\i\b0 . 
-\i0\b Bon iver music video. Conway. Hannah
-\i\b0 \
+ART
+\i . 
+\i0 Bon iver music video. Conway. Hannah
+\i \
 	Unity 3d too much fidelity\
 	Very simple symbolic language, complexity from system\
 	Arcade vernacular\cf0 \
-
-\b \
+\
 PAPER PROTOTYPING\
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 
@@ -84,21 +128,18 @@ PAPER PROTOTYPING\
 \
 Data Struct Woes\
 	
-\i0\b0 Splitting lines (deleting a points and subdividing the line)\
+\i0 Splitting lines (deleting a points and subdividing the line)\
 	Deleting points and routing connective points to each other\
+	Edges point the wrong way\
+	EDGES POINTING THE WRONG WAY
+\i \
 	\
-	Creating a graph struct with Bezier splines
-\i\b \
-	\
 \
-\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 
-\i0\b0 \cf0 \
+\i0 \
 \
 \
-\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
-
-\b \cf0 \
+\
 \
 \
 }

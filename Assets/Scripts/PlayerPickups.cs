@@ -22,12 +22,12 @@ public class PlayerPickups : MonoBehaviour {
 
 		if(Input.GetButtonDown("x")){
 			InsertVertex();
-		}
+		} 
 	}
 
 	public void OnTriggerEnter(Collider col){
 		if (col.tag == "Node") {
-			GetComponent<TextHolder> ().CreateWord (transform.position + transform.right/3 + -transform.up/3);
+//			GetComponent<TextHolder> ().CreateWord (transform.position + transform.right/3 + -transform.up/3);
 			Instantiate (RipplePrefab, col.transform.position, Quaternion.identity);
 		}
 	}
@@ -43,23 +43,27 @@ public class PlayerPickups : MonoBehaviour {
 
 	void InsertVertex(){
 
-
 		if (!p.GetTraversing()) {
-			Node.nodeCount++;
 
 			Ray ray = Camera.main.ScreenPointToRay(Camera.main.WorldToScreenPoint(p.cursor.transform.position));
 			RaycastHit hit;
-			Debug.Log("Origin: " + ray.origin);
-			Debug.Log ("Direction " + ray.direction);
 
 			if (Physics.Raycast (ray, out hit)) {
 				if (hit.collider.tag == "Node") {
-					Debug.Log ("hit existing Node");
-					hit.collider.GetComponent<Node> ().InsertEdge (p.curNode);
+					Node hitNode = hit.collider.GetComponent<Node> ();
+
+					if (hitNode == p.curNode) {
+						hitNode.Improve ();
+					} else if (p.curNode.IsAdjacent (hitNode)) {
+						hitNode.GetConnectingEdge (p.curNode).Reinforce ();
+					} else {
+						p.curNode.InsertEdge (hitNode);
+					}
 				}
 			} else {
+				Node.nodeCount++;
 				GameObject newNode = (GameObject)Instantiate (nodePrefab, p.cursor.transform.position, Quaternion.identity);
-				p.curEdge = newNode.GetComponent<Node> ().InsertEdge (p.curNode);
+				p.curEdge = p.curNode.InsertEdge (newNode.GetComponent<Node> ());
 			}
 		}
 	}

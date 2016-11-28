@@ -20,13 +20,15 @@ public class Node : MonoBehaviour {
 
 	public Edge InsertEdge(Node n){
 
-		GameObject newEdge = (GameObject)Instantiate (edgePrefab, n.transform.position, Quaternion.identity);
+		GameObject newEdge = (GameObject)Instantiate (edgePrefab, transform.position, Quaternion.identity);
 
 		Edge e = newEdge.GetComponent<Edge> ();
-		e.SetVerts (n, this);
+		e.SetVerts (this, n);
 
-		e.name = n.name + "—" + this.name;
-
+		Color c = new Color(Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f));
+		e.GetComponent<LineRenderer>().SetColors(c, c);
+		e.name = this.name + "—" + n.name;
+		
 		_edges.Add(e);
 		_adjacents.Add (n);
 		n.AddEdge (e);
@@ -52,7 +54,7 @@ public class Node : MonoBehaviour {
 		return null;
 	}
 
-	public Edge GetClosestEdge(Vector3 cursorAngle){
+	public Edge GetClosestEdgeDirection(Vector3 direction, bool reversed = false){
 
 		float minAngle = Mathf.Infinity;
 		Edge closestEdge = null;
@@ -60,11 +62,8 @@ public class Node : MonoBehaviour {
 		foreach (Edge e in _edges) {
 
 			float curAngle;
-			if (e.GetVert1() == this) {
-				curAngle = Vector3.Angle (cursorAngle, e.curve.GetDirection (0));
-			} else {
-				curAngle = Vector3.Angle(cursorAngle, -e.curve.GetDirection(1));
-			}
+
+			curAngle = e.GetAngleAtNode (direction, this, reversed);
 
 			if (curAngle < minAngle){
 				minAngle = curAngle;
@@ -72,14 +71,27 @@ public class Node : MonoBehaviour {
 			}
 		}
 
-		if (minAngle <= 25) {
-			return closestEdge;
-		}
-		return null;
+		return closestEdge;
+	}
+
+	public void Improve(){
+		GetComponent<SpriteRenderer> ().color *= 1.5f;
 	}
 
 	public bool HasEdges(){
 		return _edges.Count > 0 ? true : false;
+	}
+		
+	public Edge GetConnectingEdge(Node n){
+		foreach (Edge e in _edges) {
+			if (e.ConnectedTo (this) && e.ConnectedTo (n))
+				return e;
+		}
+		return null;
+	}
+
+	public bool IsAdjacent(Node n){
+		return _adjacents.Contains (n);
 	}
 
 	public List<Edge> GetEdges(){

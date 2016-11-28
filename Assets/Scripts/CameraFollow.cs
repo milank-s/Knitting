@@ -15,6 +15,6 @@ public class CameraFollow : MonoBehaviour {
 		transform.position = Vector3.SmoothDamp (transform.position, target.position, ref velocity, 0.1f);
 		transform.position = new Vector3 (transform.position.x, transform.position.y, -15);
 
-		GetComponent<Camera>().orthographicSize = Mathf.Lerp(GetComponent<Camera>().orthographicSize, 10 + Mathf.Abs(target.GetComponent<PlayerTraversal> ().GetFlow()), Time.deltaTime);
+		GetComponent<Camera>().orthographicSize = Mathf.Lerp(GetComponent<Camera>().orthographicSize, 5 + Mathf.Abs(target.GetComponent<PlayerTraversal> ().GetFlow()), Time.deltaTime);
 	}
 }

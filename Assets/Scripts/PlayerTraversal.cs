@@ -20,7 +20,10 @@ public class PlayerTraversal : MonoBehaviour {
 
 	[Header("Max Speed")]
 	public float maxSpeed;
-
+	
+	[Header("Max space between Edges")]
+	public float maxAngleBetweenEdges;
+	
 	public SplineWalkerMode mode;
 
 	//components I want to access
@@ -50,15 +53,13 @@ public class PlayerTraversal : MonoBehaviour {
 
 		CursorInput();
 
-//		Debug.Log ("Flow: " + flow);
-//		Debug.Log (traversing);
 
 		if (curNode.HasEdges()) {
-			if (traversing) {
+			if (!traversing) {
+				AtNodeIntersection ();
+			} else {
 				PlayerMovement ();
 				UpdateNode ();
-			} else {
-				FindNearestEdge ();
 			}
 		}
 			
@@ -112,27 +113,30 @@ public class PlayerTraversal : MonoBehaviour {
 		}
 	}
 
-	public void FindNearestEdge(){
+	public void AtNodeIntersection(){
 
-		flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
 
-		Edge e = curNode.GetClosestEdge(cursorDir);
+		Edge e = curNode.GetClosestEdgeDirection(cursorDir);
 
-		if (e == null) {
+//		Debug.Log ("Edge: " + e.name + " Angle: " + e.GetAngleAtNode (cursorDir, curNode, false));
+
+		if (e.GetAngleAtNode (cursorDir, curNode) > maxAngleBetweenEdges){
+			flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
 			return;
 		}
 
-		if (e.GetVert1() == curNode) {
+
+		if (e.GetEdgeDirection(curNode)) {
 			progress = 0;
 			if (goingForward != true) {
-				flow = 0;
+				flow = -flow;
 				goingForward = true;
 			}
 
 		} else {
 			progress = 1;
 			if (goingForward != false) {
-				flow = 0;
+				flow = -flow;
 				goingForward = false;
 			}
 		}
@@ -169,9 +173,7 @@ public class PlayerTraversal : MonoBehaviour {
 //		if (col.tag == "Node") {
 //			curNode = col.GetComponent<Node> ();
 //		}
-//		if (curNode.HasEdges ()) {
-//			SetSpline ();
-//		}
+//		traversing = false
 //	}
 
 	void CursorInput (){
@@ -236,5 +238,13 @@ public class PlayerTraversal : MonoBehaviour {
 
 	public bool GetTraversing(){
 		return traversing;
+	}
+
+	public Vector3 GetCursorDir(){
+		return cursorDir;
+	}
+
+	public Vector3 GetCursorVelocity(){
+		return cursorPos - transform.position;
 	}
 }
