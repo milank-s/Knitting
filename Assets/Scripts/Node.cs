@@ -18,12 +18,12 @@ public class Node : MonoBehaviour {
 		_edges = new List<Edge> ();
 	}
 
-	public Edge InsertEdge(Node n){
+	public Edge CreateEdge(Node n){
 
 		GameObject newEdge = (GameObject)Instantiate (edgePrefab, transform.position, Quaternion.identity);
 
 		Edge e = newEdge.GetComponent<Edge> ();
-		e.SetVerts (this, n);
+		e.CreateSpline (this, n);
 
 //		Color c = new Color(Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f));
 //		e.GetComponent<LineRenderer>().SetColors(c, c);
@@ -100,6 +100,17 @@ public class Node : MonoBehaviour {
 
 	public List<Node> GetAdjacents(){
 		return _adjacents;
+	}
+
+	public void DestroyEdges(){
+		foreach (Node n in _adjacents) {
+			n.GetConnectingEdge (this).GetComponent<EdgeDecorator> ().DestroySpline (this, n);
+			n._edges.Remove (n.GetConnectingEdge (this));
+			n._adjacents.Remove (this);
+		}
+//		foreach (Edge e in _edges) {
+//			e.GetComponent<EdgeDecorator>().DestroySpline (this);
+//		}
 	}
 
 	void Start () {

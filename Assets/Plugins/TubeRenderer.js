@@ -16,7 +16,7 @@
  
 class TubeVertex {
 	var point : Vector3 = Vector3.zero;
-	var radius : float = 1.0;
+	var radius : float = 0.0;
 	var color : Color = Color.white;
  
 	function TubeVertex(pt : Vector3, r : float, c : Color) {
@@ -52,10 +52,11 @@ function Start() {
 	mesh = new Mesh();
 	gameObject.AddComponent(MeshFilter);
 	var mr : MeshRenderer = gameObject.AddComponent(MeshRenderer);
+	mr.enabled = false;
 	mr.material = material;
-	if(material) {
-			if(material.GetTexture("_BumpMap")) usingBumpmap = true;
-	}
+//	if(material) {
+//			if(material.GetTexture("_BumpMap")) usingBumpmap = true;
+//	}
 }
  
 function LateUpdate () {

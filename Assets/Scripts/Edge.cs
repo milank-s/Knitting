@@ -67,7 +67,7 @@ public class Edge : MonoBehaviour {
 		}
 	}
 
-	public void SetVerts(Node from, Node to){
+	public void CreateSpline(Node from, Node to){
 
 		_edgeVertices = new Node[]{from, to};
 		Edge e;
@@ -87,14 +87,13 @@ public class Edge : MonoBehaviour {
 			e = to.GetClosestEdgeDirection((cursorPos - to.transform.position).normalized, true);
 			v2 = e.GetReversedInitVelocity (to).normalized * distance/2f;
 		}
-
-		Debug.Log (distance);
+			
 		curve.CreateCurve (_edgeVertices[0].transform, _edgeVertices[1].transform, distance, v1, v2);
 
 		decorator.Decorate ();
 	}
 
-	public BezierSpline Getcurve(){
+	public BezierSpline GetCurve(){
 		return curve;
 	}
 

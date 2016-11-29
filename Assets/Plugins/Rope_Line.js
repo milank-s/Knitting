@@ -17,9 +17,10 @@
 // In order to do this, you must loosen it up using the swingAxis and twist limits.
 // For example, On my joints in my drawing app, I set the swingAxis to (0,0,1) sense
 // the only axis I want to swing is the Z axis (facing the camera) and the other settings to around -100 or 100.
+
 var target : Transform;
 var material : Material;
-var ropeWidth = 0.5;
+var ropeWidth = 0.005;
 var resolution = 0.5;
 var ropeDrag = 0.1;
 var ropeMass = 0.5;
@@ -41,7 +42,7 @@ var highTwistLimit = 0.0;
 var swing1Limit	= 20.0;
 // Require a Rigidbody
 @script RequireComponent(Rigidbody)
- 
+
 function OnDrawGizmos() {
 	if(target) {
 		Gizmos.color = Color.yellow;
@@ -57,7 +58,7 @@ function OnDrawGizmos() {
 	}
 }
  
-function Awake()
+function Start()
 {
 	if(target) {
 		 BuildRope();
@@ -90,11 +91,12 @@ function BuildRope()
 	// Find the amount of segments based on the distance and resolution
 	// Example: [resolution of 1.0 = 1 joint per unit of distance]
 	segments = Vector3.Distance(transform.position,target.position)*resolution;
-	if(material) {
-		 material.SetTextureScale("_MainTex",Vector2(1,segments+2));
-		 if(material.GetTexture("_BumpMap"))
-			material.SetTextureScale("_BumpMap",Vector2(1,segments+2));
-	}
+	Debug.Log(segments);
+//	if(material) {
+//		 material.SetTextureScale("_MainTex",Vector2(1,segments+2));
+//		 if(material.GetTexture("_BumpMap"))
+//			material.SetTextureScale("_BumpMap",Vector2(1,segments+2));
+//	}
 	line.vertices = new TubeVertex[segments];
 	line.crossSegments = radialSegments;
 	line.material = material;

@@ -88,8 +88,8 @@ public class PlayerTraversal : MonoBehaviour {
 			flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
 		}	
 
-		if (flow > 0 && accuracy < 0) flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
-		if (flow < 0 && accuracy > 0) flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
+		if (flow > 0 && accuracy < 0) flow = -flow;
+		if (flow < 0 && accuracy > 0) flow = -flow;
 
 		//adding this value to flow
 		flow += (accuracy * acceleration)* Time.deltaTime;
@@ -180,25 +180,26 @@ public class PlayerTraversal : MonoBehaviour {
 
 		if (controllerConnected) {
 
-			cursorPos = new Vector3(-Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
+			cursorDir = new Vector3(-Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
 
 			//free movement: transform.position = transform.position + new Vector3 (-Input.GetAxis ("Joy X") / 10, Input.GetAxis ("Joy Y") / 10, 0);
 			//angle to joystick position
 			//zAngle = Mathf.Atan2 (Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y")) * Mathf.Rad2Deg;
 		}else {
-
-			Vector3 mousePos = new Vector3 (Input.mousePosition.x, Input.mousePosition.y, transform.position.z - Camera.main.transform.position.z);
-
-			//set cursor to mouse position in world coordinates
-			cursorPos = Camera.main.ScreenToWorldPoint (mousePos);
-			if (cursorPos.magnitude > 1) cursorPos.Normalize ();
-			//angle to mouse position
-			//zAngle = Mathf.Atan2 (worldPos.x - transform.position.y, worldPos.y - transform.position.y) * Mathf.Rad2Deg;
+//			Debug.Log (Input.GetAxis ("Horizontal"));
+			cursorDir = new Vector3(
+				cursor.transform.position.x + Input.GetAxis ("Horizontal"), 
+				cursor.transform.position.y + Input.GetAxis ("Vertical"), 0).normalized;
+			//Unused code for Mouse control
+			#region
+//			Vector3 mousePos = new Vector3 (Input.mousePosition.x, Input.mousePosition.y, transform.position.z - Camera.main.transform.position.z);
+//			mousePos = Camera.main.ScreenToWorldPoint (mousePos);
+//			cursorDir = (mousePos - transform.position);
+//			if (cursorDir.magnitude > 1) cursorPos.Normalize ();
+			#endregion
 		}
 
-		cursor.transform.position = transform.position + (cursorPos * Mathf.Clamp(Mathf.Abs(flow), 0.5f, 1.5f));
-
-		cursorDir = (cursor.transform.position - transform.position).normalized;
+		cursor.transform.position = transform.position + (cursorDir * Mathf.Clamp(Mathf.Abs(flow), 0.5f, 1.5f));
 		cursorPos = cursor.transform.position;
 	}
 		

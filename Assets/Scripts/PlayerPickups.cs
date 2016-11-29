@@ -21,7 +21,7 @@ public class PlayerPickups : MonoBehaviour {
 		CirclePlayer ();
 
 		if(Input.GetButtonDown("x")){
-			InsertVertex();
+			CreateNode();
 		} 
 	}
 
@@ -32,16 +32,23 @@ public class PlayerPickups : MonoBehaviour {
 		}
 	}
 
-	public void Pickup(Node n){
-		
+	IEnumerator CollectNode(Node n){
+		float t = 0;
+		Vector3 originalPos = n.transform.position;
+
+		while (t <= 1) {
+			n.transform.position = Vector3.Slerp (originalPos, transform.position, t);
+			t += Time.deltaTime;
+			yield return null;
+		}
+
 		numPickups++;
 		nodeInv.Add (n);
 		n.transform.parent = transform;
-		n.transform.position = transform.position + (transform.up * numPickups)/10;
 		n.GetComponent<Collider> ().enabled = false;
 	}
 
-	void InsertVertex(){
+	void CreateNode(){
 
 		if (!p.GetTraversing()) {
 
@@ -55,15 +62,20 @@ public class PlayerPickups : MonoBehaviour {
 					if (hitNode == p.curNode) {
 						hitNode.Improve ();
 					} else if (p.curNode.IsAdjacent (hitNode)) {
-						hitNode.GetConnectingEdge (p.curNode).Reinforce ();
+						
+						//whatever reinforcing does
+//						hitNode.GetConnectingEdge (p.curNode).Reinforce ();
+						hitNode.DestroyEdges ();
+						StartCoroutine(CollectNode(hitNode));
+
 					} else {
-						p.curNode.InsertEdge (hitNode);
+						p.curNode.CreateEdge (hitNode);
 					}
 				}
 			} else {
 				Node.nodeCount++;
 				GameObject newNode = (GameObject)Instantiate (nodePrefab, p.cursor.transform.position, Quaternion.identity);
-				p.curEdge = p.curNode.InsertEdge (newNode.GetComponent<Node> ());
+				p.curEdge = p.curNode.CreateEdge (newNode.GetComponent<Node> ());
 			}
 		}
 	}
