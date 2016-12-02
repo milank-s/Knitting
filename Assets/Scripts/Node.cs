@@ -14,8 +14,8 @@ public class Node : MonoBehaviour {
 	public float proximity = 0;
 
 	 void Awake(){
-		c = new Color (1, 1, 1, 0);
-//		c = new Color(Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f), 0);
+//		c = new Color (1, 1, 1, 0);
+		c = new Color(Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f), 0);
 		gameObject.name = "v" + Node.nodeCount;
 		_adjacents = new List<Node> ();
 		_edges = new List<Edge> ();
@@ -109,7 +109,7 @@ public class Node : MonoBehaviour {
 	}
 
 	public void SetColour(){
-		c.a = proximity + Mathf.Abs(Mathf.Sin (Time.time * 3 + timeOffset)/4) + 0.1f;
+		c.a = proximity + Mathf.Abs(Mathf.Sin (Time.time * 3 + timeOffset)/5) + 0.1f;
 		GetComponent<SpriteRenderer>().color = c;
 
 		foreach (Edge e in _edges) {

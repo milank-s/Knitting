@@ -207,8 +207,8 @@ public class BezierSpline : MonoBehaviour {
 	
 		} else if (v1 != Vector3.zero) {
 //			v2 = Quaternion.Euler(0, 0, 0) * v1; //rotate v1 180 degrees
-//			points [2] = target + ((v1 - target) * strength);
-			points[2] = Vector3.Reflect(v1, (target-v1) * distance);
+			points [2] = target + ((v1 - target));
+//			points[2] = Vector3.Reflect(v1, (target-v1));
 
 		} else {
 			points [2] = Vector3.Lerp (points[1], target, 0.5f);

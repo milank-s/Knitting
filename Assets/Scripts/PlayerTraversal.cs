@@ -44,9 +44,10 @@ public class PlayerTraversal : MonoBehaviour {
 	private bool controllerConnected = false;
 
 	private Vector3 cursorPos, cursorDir;
+	private LineRenderer l;
 
 	void Start(){
-
+		l = GetComponent<LineRenderer> ();
 		t = GetComponent<TrailRenderer> ();
 		sound = GetComponent<AudioSource> ();
 
@@ -56,18 +57,19 @@ public class PlayerTraversal : MonoBehaviour {
 
 		CursorInput();
 
-
 		if (curNode.HasEdges()) {
+			
 			if (!traversing) {
 				AtNodeIntersection ();
 			} else {
+				PlayerMovement ();
 				curEdge.SetNodeProximity (progress);
 				UpdateNode ();
-				PlayerMovement ();
 			}
+
+			Effects ();
 		}
 			
-		Effects ();
 		#region
 		if (Input.GetAxis ("Joy Y") != 0) {
 			controllerConnected = true;
@@ -95,9 +97,9 @@ public class PlayerTraversal : MonoBehaviour {
 		if (flow < 0 && accuracy > 0) flow = -flow;
 
 		//adding this value to flow
-		flow += (accuracy * acceleration)* Time.deltaTime;
+		flow += (accuracy * acceleration);
 
-		progress += (accuracy * speed *  Time.deltaTime) + flow;
+		progress += (accuracy * speed *  Time.deltaTime) + flow * Time.deltaTime;
 
 		//set player position to a point along the curve
 		Vector3 position = curEdge.curve.GetPoint(progress);
@@ -108,13 +110,16 @@ public class PlayerTraversal : MonoBehaviour {
 
 	void UpdateNode(){
 		if (progress >= 1) {
+			progress = 1;
 			curNode = curEdge.GetVert2 ();
 			AtNodeIntersection ();
+			sound.PlayOneShot (sounds [0]);
 		}else if (progress <= 0) {
+			progress = 0;
 			curNode = curEdge.GetVert1 ();
 			AtNodeIntersection ();
+			sound.PlayOneShot (sounds [0]);
 		}
-		sound.PlayOneShot (sounds [0]);
 	}
 
 	public void AtNodeIntersection(){
@@ -124,7 +129,7 @@ public class PlayerTraversal : MonoBehaviour {
 
 //		Debug.Log ("Edge: " + e.name + " Angle: " + e.GetAngleAtNode (cursorDir, curNode, false));
 
-		if (e.GetAngleAtNode (cursorDir, curNode) > maxAngleBetweenEdges && flow < 1){
+		if (e.GetAngleAtNode (cursorDir, curNode) > maxAngleBetweenEdges && flow < maxSpeed){
 			flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
 			traversing = false;
 			return;
@@ -204,7 +209,7 @@ public class PlayerTraversal : MonoBehaviour {
 			#endregion
 		}
 
-		cursor.transform.position = transform.position + (cursorDir * Mathf.Clamp(Mathf.Abs(flow), 0.5f, 1.5f));
+		cursor.transform.position = transform.position + (cursorDir * 5);
 		cursorPos = cursor.transform.position;
 	}
 		
@@ -228,18 +233,18 @@ public class PlayerTraversal : MonoBehaviour {
 	public void Effects(){
 		float Absflow = Mathf.Abs (flow);
 		//extend trail with more flow
-		t.time = Absflow;
+//		t.time = Absflow;
 
 		//increase volume with more flow
 //		sound.volume = Absflow/10;
 
 		//emit more particles with more flow
-//		ParticleSystem.EmissionModule m = GetComponent<ParticleSystem> ().emission;
-//		m.rate= (int)(Absflow * 5);
+		ParticleSystem.EmissionModule m = GetComponent<ParticleSystem> ().emission;
+		m.rate= (int)(Absflow * 10);
 
 //		//set pointer for player object
-//		l.SetPosition(0, transform.position);
-//		l.SetPosition(1, transform.position + spline.GetDirection(progress));
+		l.SetPosition(0, transform.position);
+		l.SetPosition(1, transform.position + curEdge.curve.GetDirection(progress) * Mathf.Sign(accuracy));
 	}
 		
 
