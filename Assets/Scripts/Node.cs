@@ -8,14 +8,21 @@ public class Node : MonoBehaviour {
 
 	private List<Node> _adjacents;
 	private List<Edge> _edges;
-
+	public Color c;
+	public float timeOffset;
 	public static int nodeCount = 0;
-
+	public float proximity = 0;
 
 	 void Awake(){
+		c = new Color (1, 1, 1, 0);
+//		c = new Color(Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f), 0);
 		gameObject.name = "v" + Node.nodeCount;
 		_adjacents = new List<Node> ();
 		_edges = new List<Edge> ();
+	}
+
+	void FixedUpdate(){
+		SetColour ();
 	}
 
 	public Edge CreateEdge(Node n){
@@ -24,9 +31,6 @@ public class Node : MonoBehaviour {
 
 		Edge e = newEdge.GetComponent<Edge> ();
 		e.CreateSpline (this, n);
-
-//		Color c = new Color(Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f));
-//		e.GetComponent<LineRenderer>().SetColors(c, c);
 		e.name = this.name + "—" + n.name;
 		
 		_edges.Add(e);
@@ -43,15 +47,6 @@ public class Node : MonoBehaviour {
 
 	public void AddNode(Node n){
 		_adjacents.Add (n);
-	}
-
-	public Edge ConnectingEdge(Node n){
-		foreach (Edge e in _edges) {
-			if (e.GetVert2 () == n) {
-				return e;
-			}
-		}
-		return null;
 	}
 
 	public Edge GetClosestEdgeDirection(Vector3 direction, bool reversed = false){
@@ -113,11 +108,16 @@ public class Node : MonoBehaviour {
 //		}
 	}
 
-	void Start () {
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+	public void SetColour(){
+		c.a = proximity + Mathf.Abs(Mathf.Sin (Time.time * 3 + timeOffset)/4) + 0.1f;
+		GetComponent<SpriteRenderer>().color = c;
+
+		foreach (Edge e in _edges) {
+			if (e.GetVert1 () == this) {
+				e.GetComponent<LineRenderer> ().SetColors (c, e.GetVert2().c); 
+			} else {
+				e.GetComponent<LineRenderer> ().SetColors (e.GetVert1().c, c);
+			}
+		}
 	}
 }

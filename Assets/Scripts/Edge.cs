@@ -7,9 +7,11 @@ public class Edge : MonoBehaviour {
 	private EdgeDecorator decorator;
 
 	private Node[] _edgeVertices;
+	private bool isActive;
 	public int Strength = 1; 
 
 	void Awake () {
+		isActive = false;
 		curve = GetComponent<BezierSpline> ();
 		decorator = GetComponent<EdgeDecorator> ();
 	}
@@ -22,13 +24,17 @@ public class Edge : MonoBehaviour {
 		return (n == _edgeVertices [0]);
 	}
 
+	public void SetActive(bool x){
+		isActive = x;
+	}
+
 	public Node GetVert1(){
 		return _edgeVertices[0];
 	}
 	public Node GetVert2(){
 		return _edgeVertices[1];
 	}
-
+		
 	public bool ConnectedTo(Node n){
 		if (n == _edgeVertices [0] || n == _edgeVertices [1]) return true;
 
@@ -89,7 +95,6 @@ public class Edge : MonoBehaviour {
 		}
 			
 		curve.CreateCurve (_edgeVertices[0].transform, _edgeVertices[1].transform, distance, v1, v2);
-
 		decorator.Decorate ();
 	}
 
@@ -97,4 +102,8 @@ public class Edge : MonoBehaviour {
 		return curve;
 	}
 
+	public void SetNodeProximity(float progress){
+		_edgeVertices [0].proximity = 1-progress;
+		_edgeVertices [1].proximity = progress;
+	}
 }

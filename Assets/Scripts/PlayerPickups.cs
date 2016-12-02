@@ -75,7 +75,9 @@ public class PlayerPickups : MonoBehaviour {
 			} else {
 				Node.nodeCount++;
 				GameObject newNode = (GameObject)Instantiate (nodePrefab, p.cursor.transform.position, Quaternion.identity);
+				newNode.GetComponent<Node> ().timeOffset = Time.time;
 				p.curEdge = p.curNode.CreateEdge (newNode.GetComponent<Node> ());
+
 			}
 		}
 	}

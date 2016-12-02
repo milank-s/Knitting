@@ -26,7 +26,9 @@ public class PlayerTraversal : MonoBehaviour {
 	
 	[Header("Max space between Edges")]
 	public float maxAngleBetweenEdges;
-	
+
+	public AudioClip[] sounds;
+
 	public SplineWalkerMode mode;
 
 	//components I want to access
@@ -59,6 +61,7 @@ public class PlayerTraversal : MonoBehaviour {
 			if (!traversing) {
 				AtNodeIntersection ();
 			} else {
+				curEdge.SetNodeProximity (progress);
 				UpdateNode ();
 				PlayerMovement ();
 			}
@@ -111,6 +114,7 @@ public class PlayerTraversal : MonoBehaviour {
 			curNode = curEdge.GetVert1 ();
 			AtNodeIntersection ();
 		}
+		sound.PlayOneShot (sounds [0]);
 	}
 
 	public void AtNodeIntersection(){
@@ -141,8 +145,9 @@ public class PlayerTraversal : MonoBehaviour {
 				goingForward = false;
 			}
 		}
-
+		curEdge.SetActive(false);
 		curEdge = e;
+		curEdge.SetActive (true);
 		traversing = true;
 	}
 //		if (goingForward) {
@@ -223,10 +228,10 @@ public class PlayerTraversal : MonoBehaviour {
 	public void Effects(){
 		float Absflow = Mathf.Abs (flow);
 		//extend trail with more flow
-		t.time = Absflow/5;
+		t.time = Absflow;
 
 		//increase volume with more flow
-		sound.volume = Absflow/10;
+//		sound.volume = Absflow/10;
 
 		//emit more particles with more flow
 //		ParticleSystem.EmissionModule m = GetComponent<ParticleSystem> ().emission;
@@ -236,6 +241,7 @@ public class PlayerTraversal : MonoBehaviour {
 //		l.SetPosition(0, transform.position);
 //		l.SetPosition(1, transform.position + spline.GetDirection(progress));
 	}
+		
 
 	public bool GetTraversing(){
 		return traversing;

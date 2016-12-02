@@ -58,13 +58,10 @@ public class EdgeDecorator : MonoBehaviour {
 	public void DestroySpline (Node toDelete, Node toAnchor){
 		Destroy (curve);
 		Destroy (l);
-
-
-		transform.position = toAnchor.transform.position;
-		GameObject ropeEnd = new GameObject ();
-		ropeEnd.transform.position = toDelete.transform.position;
-		rope.target = ropeEnd.transform;
-		rope.enabled = true;
-
+//		transform.position = toAnchor.transform.position;
+//		GameObject ropeEnd = new GameObject ();
+//		ropeEnd.transform.position = toDelete.transform.position;
+//		rope.target = ropeEnd.transform;
+//		rope.enabled = true;
 	}
 }
