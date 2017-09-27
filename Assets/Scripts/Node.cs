@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 public class Node : MonoBehaviour {
 
+	public float tension;
+	public float bias;
+	public float continuity;
+
 	public GameObject edgePrefab;
 
 	private List<Node> _adjacents;
@@ -14,8 +18,8 @@ public class Node : MonoBehaviour {
 	public float proximity = 0;
 
 	 void Awake(){
-//		c = new Color (1, 1, 1, 0);
-		c = new Color(Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f), 0);
+		c = new Color (1, 1, 1, 0);
+//		c = new Color(Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f),Random.Range(0.50f , 1.00f), 0);
 		gameObject.name = "v" + Node.nodeCount;
 		_adjacents = new List<Node> ();
 		_edges = new List<Edge> ();
@@ -49,8 +53,17 @@ public class Node : MonoBehaviour {
 		_adjacents.Add (n);
 	}
 
+	public void RemoveEdge(Edge e){
+		_edges.Remove (e);
+	}
+
+	public void RemoveNode(Node n){
+		_adjacents.Remove (n);
+	}
+
 	public Edge GetClosestEdgeDirection(Vector3 direction, bool reversed = false){
 
+	
 		float minAngle = Mathf.Infinity;
 		Edge closestEdge = null;
 
@@ -70,7 +83,7 @@ public class Node : MonoBehaviour {
 	}
 
 	public void Improve(){
-		GetComponent<SpriteRenderer> ().color *= 1.5f;
+		//edit tension/bias/continuity
 	}
 
 	public bool HasEdges(){
@@ -98,10 +111,13 @@ public class Node : MonoBehaviour {
 	}
 
 	public void DestroyEdges(){
-		foreach (Node n in _adjacents) {
-			n.GetConnectingEdge (this).GetComponent<EdgeDecorator> ().DestroySpline (this, n);
-			n._edges.Remove (n.GetConnectingEdge (this));
-			n._adjacents.Remove (this);
+		foreach (Edge e in _edges) {
+			e.GetVert1 ().RemoveNode (e.GetVert2 ());
+			e.GetVert2 ().RemoveNode (e.GetVert1 ());
+			e.GetVert1 ().RemoveEdge (e);
+			e.GetVert2 ().RemoveEdge (e);
+			Destroy (e.gameObject);
+			Destroy (this);
 		}
 //		foreach (Edge e in _edges) {
 //			e.GetComponent<EdgeDecorator>().DestroySpline (this);
@@ -109,7 +125,7 @@ public class Node : MonoBehaviour {
 	}
 
 	public void SetColour(){
-		c.a = proximity + Mathf.Abs(Mathf.Sin (Time.time * 3 + timeOffset)/5) + 0.1f;
+		c.a = proximity + Mathf.Clamp01((Mathf.Sin (3 * Time.time+ timeOffset)/4)) + 0.2f;
 		GetComponent<SpriteRenderer>().color = c;
 
 		foreach (Edge e in _edges) {

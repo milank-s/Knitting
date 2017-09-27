@@ -1,0 +1,160 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf820
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Light;}
+{\colortbl;\red255\green255\blue255;\red14\green121\blue255;\red252\green79\blue218;\red53\green173\blue255;
+\red29\green229\blue255;\red255\green255\blue167;\red252\green76\blue8;\red251\green0\blue7;\red251\green0\blue7;
+\red251\green0\blue141;\red101\green0\blue255;}
+{\*\expandedcolortbl;;\cssrgb\c0\c56578\c100000;\cssrgb\c100000\c43586\c88448;\cssrgb\c24195\c73885\c100000;
+\cssrgb\c0\c91429\c100000;\cssrgb\c99792\c100000\c71154;\cssrgb\c100000\c39164\c0;\cssrgb\c100000\c12345\c0;\cssrgb\c100000\c0\c0;
+\cssrgb\c100000\c0\c62209;\cssrgb\c48030\c18293\c100000;}
+\margl1440\margr1440\vieww5860\viewh16300\viewkind0
+{\*\background {\shp{\*\shpinst\shpleft0\shptop0\shpright0\shpbottom0\shpfhdr0\shpbxmargin\shpbymargin\shpwr0\shpwrk0\shpfblwtxt1\shpz0\shplid1025{\sp{\sn shapeType}{\sv 1}}{\sp{\sn fFlipH}{\sv 0}}{\sp{\sn fFlipV}{\sv 0}}{\sp{\sn fillColor}{\sv 0}}{\sp{\sn fFilled}{\sv 1}}{\sp{\sn lineWidth}{\sv 0}}{\sp{\sn fLine}{\sv 0}}{\sp{\sn bWMode}{\sv 9}}{\sp{\sn fBackground}{\sv 1}}}}}
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf2 \
+
+\b\fs36 \cf3 \{FIX\}
+\b0\fs24 \
+	\
+	
+\f1\fs28 Player moves at constant velocity regardless of length\
+	Line renderer is bugged while drawing splines
+\f0\fs24 \
+	
+\i \cf2 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf4 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\i0\b\fs36 \cf5 \{ADD\}	\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\b0\fs28 \cf5 	Z Axis Spawning on Nodes\
+\
+	Straight line spawning only
+\i\fs24 	\
+\
+	
+\i0\fs28 Unidirectional Edges\
+\
+	Kochanek_bartels_spline (with button input for tension)\
+\
+	Tension/Continuity based on reinforcement (grooves)\
+\
+
+\i 	
+\i0 Use mesh instead of line renderer PLEASE\
+\
+	Skating to create new nodes\
+\
+	Complete Keyboard controls (Super Hexagon)\
+\
+	Implement momentum from button presses not skating\
+	\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\b\fs36 \cf6 \{DONE\}
+\i\b0\fs24 \
+	\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\i0 \cf7 \strike \strikec0 Button Presses on Nodes\
+Picking up Nodes\
+	Player presses button on node to gather it\
+\
+\
+Collected nodes gathering/circling around player\
+	Like flOw\cf0 \strike0\striked0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf8 \strike \strikec8 Making Graph Data Struct\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf8 Creating New Nodes\
+	Player presses button to fork node off path?\
+	Distance from Cursor based on flow\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf9 \strikec9 LineDrawing is coroutine\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\i \cf10 \strikec10 Player stops at nodes with angle > threshold\strike0\striked0 \
+\
+\strike \strikec10 Player doesn\'92t properly move off intersections\cf0 \strike0\striked0 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\i0 \cf0 \
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\b\fs36 \cf11 \{NOTES\}
+\b0\fs24 \
+\
+\
+I should have used a fucking mesh\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.youtube.com/watch?v=suTQo1W5tFk"}}{\fldrslt \cf11 http://easy.creatino.at/}}\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "http://easy.creatino.at/EasyCurves%20-%20Documentation.pdf"}}{\fldrslt 
+\i \cf11 http://easy.creatino.at/EasyCurves%20-%20Documentation.pdf}}
+\i \
+\
+Hohokum player movement\
+Flow increases based on difference in angles\
+while maintaining accuracy\
+\
+Player node length & flow: once player starts holding x they start skating freeform and losing flow. \
+	speed, reinforcement, journey, journey scarf, strength\
+	creativity\
+	can use
+\i0  splines to draw multiple curve edges.\
+	start drawing new curve in spline based on magnitude
+\i \
+\
+Player moves based on timed button presses not directional input. \
+\
+Player gather\'92s tons of momentum before placing new node, weightlessly skating into new space. 
+\i0 \
+\
+Nautilus Shell, solar system, Rilke text\
+	Home base, diagrammatic poems with venn circles\
+	At the seashells centre lies cornucopias smallest door\
+\
+Physics system for lines\
+	Nodes have rigid bodies\
+	Are roped together\
+	rope physics scripts  on edges\
+		straight line = 0 line segments\
+		rigid bodies can be disabled for discrete lines\
+		uses meshes instead of linerenders\
+\
+Wave behaviour, fourier translations on lines\
+	Lines are alive, vibrating, humming, elastic\
+\
+ART
+\i . 
+\i0 Bon iver music video. Conway. Hannah
+\i \
+	Unity 3d too much fidelity\
+	Very simple symbolic language, complexity from system\
+	Arcade vernacular\
+\
+Nodes like molecular bonds/covalency\
+\
+Get Cello string lines \
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\i0 \cf11 Sounds/Lights in the Distance
+\i \
+\
+PAPER PROTOTYPING\
+
+\i0 	
+\i Everything can be accomplished on paper\
+	you can do this in your notebook\
+
+\i0 \
+}

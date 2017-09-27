@@ -189,29 +189,59 @@ public class BezierSpline : MonoBehaviour {
 	}
 
 
+//	for (k=1; k<(points.Length-2); k++)
+//	{
+//		for (i=0; i<maxVerticesCurve; i++)
+//		{
+//			u = (double)i / (double)(maxVerticesCurve-1);
+//			spline2D[maxVerticesCurve*(k-1)+i][0] = (2*u*u*u - 3*u*u + 1)*control[k][0] 
+//				+ (-2*u*u*u + 3*u*u)*control[k+1][0]
+//				+ (u*u*u - 2*u*u + u)*(0.5*(1-tension)*((1+bias)*(1-continuity)*(control[k][0]-control[k-1][0])
+//					+ (1-bias)*(1+continuity)*(control[k+1][0]-control[k][0])))
+//				+ (u*u*u - u*u)*(0.5*(1-tension)*((1+bias)*(1+continuity)*(control[k+1][0]-control[k][0])
+//					+ (1-bias)*(1-continuity)*(control[k+2][0]-control[k+1][0])));
+//			spline2D[maxVerticesCurve*(k-1)+i][1] = (2*u*u*u - 3*u*u + 1)*control[k][1] 
+//				+ (-2*u*u*u + 3*u*u)*control[k+1][1]
+//				+ (u*u*u - 2*u*u + u)*(0.5*(1-tension)*((1+bias)*(1-continuity)*(control[k][1]-control[k-1][1])
+//					+ (1-bias)*(1+continuity)*(control[k+1][1]-control[k][1])))
+//				+ (u*u*u - u*u)*(0.5*(1-tension)*((1+bias)*(1+continuity)*(control[k+1][1]-control[k][1])
+//					+ (1-bias)*(1-continuity)*(control[k+2][1]-control[k+1][1])));
+//			spline2D[maxVerticesCurve*(k-1)+i][2] = (2*u*u*u - 3*u*u + 1)*control[k][2] 
+//				+ (-2*u*u*u + 3*u*u)*control[k+1][2]
+//				+ (u*u*u - 2*u*u + u)*(0.5*(1-tension)*((1+bias)*(1-continuity)*(control[k][2]-control[k-1][2])
+//					+ (1-bias)*(1+continuity)*(control[k+1][2]-control[k][2])))
+//				+ (u*u*u - u*u)*(0.5*(1-tension)*((1+bias)*(1+continuity)*(control[k+1][2]-control[k][2])
+//					+ (1-bias)*(1-continuity)*(control[k+2][2]-control[k+1][2])));
+//		}
+//	}
+
+
 	public void CreateCurve (Transform p1, Transform p2, float distance, Vector3 v1 = default(Vector3), Vector3 v2 = default(Vector3)) {
 		Vector3 target = p2.position - p1.position;
 
 
 		points = new Vector3[4];
 		points [0] = Vector3.zero;
-
+//		points [1] = Vector3.Lerp (Vector3.zero, target, 0.33f);
+//		points [2] = Vector3.Lerp (points[1], target, 0.5f);
+//
 		if (v1 == Vector3.zero) {
 			points [1] = Vector3.Lerp (Vector3.zero, target, 0.33f);
 		} else {
-			points [1] = v1 ; //multiplicant should range between 0 and 1. Should also scale with line length
+			points [1] = v1; //multiplicant should range between 0 and 1. Should also scale with line length
 		}
 
 		if (v2 != Vector3.zero) {
 			points [2] = target + v2;
 	
+//		Lerp Second point with the inverse of Point 1's velocity
 		} else if (v1 != Vector3.zero) {
 //			v2 = Quaternion.Euler(0, 0, 0) * v1; //rotate v1 180 degrees
 			points [2] = target + ((v1 - target));
 //			points[2] = Vector3.Reflect(v1, (target-v1));
-
 		} else {
-			points [2] = Vector3.Lerp (points[1], target, 0.5f);
+			points [2] = Vector3.Lerp (points[1], target, 0.66f);
+		
 		}
 
 		points[3] = target;
@@ -221,35 +251,6 @@ public class BezierSpline : MonoBehaviour {
 			BezierControlPointMode.Aligned
 		};
 	}
-
-//	public void CreateCurve (Transform p1, Transform p2) {
-//		Vector3 target = p2.position - p1.position;
-//		points = new Vector3[] {
-//			Vector3.zero,
-//			new Vector3 (Vector3.Lerp(Vector3.zero, target, 0.33f).x, 0, 0),
-//			new Vector3 (Vector3.Lerp(Vector3.zero, target, 0.66f).x, target.y, 0),
-//			Vector3.Lerp(Vector3.zero, target, 0.33f),
-//			Vector3.Lerp(Vector3.zero, target, 0.66f),
-//			target
-//		};
-//		modes = new BezierControlPointMode[] {
-//			BezierControlPointMode.Free,
-//			BezierControlPointMode.Free
-//		};
-//	}
-
-//	public void Reset () {
-//		points = new Vector3[] {
-//			new Vector3(1f, 0f, 0f),
-//			new Vector3(2f, 0f, 0f),
-//			new Vector3(3f, 0f, 0f),
-//			new Vector3(4f, 0f, 0f)
-//		};
-//		modes = new BezierControlPointMode[] {
-//			BezierControlPointMode.Free,
-//			BezierControlPointMode.Free
-//		};
-//	}
 
 	public void SetSpline(Vector3[] newPoints, BezierControlPointMode[] newModes){
 		points = newPoints;
