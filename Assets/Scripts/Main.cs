@@ -7,7 +7,8 @@ public class Main : MonoBehaviour {
 	public GameObject Cursor;
 	public GameObject Player;
 
-	void Start () {
+	void Awake () {
+
 		Services.Player = Player;
 		Services.Cursor = Cursor;
 		Services.Nodes = GetComponent<NodeManager> ();

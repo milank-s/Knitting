@@ -80,63 +80,13 @@ public class Point : MonoBehaviour
 	public void RemoveNode(Point p){
 		_neighbours.Remove (p);
 	}
-		
 
-	public Spline GetNextSpline(Vector3 direction){
-
-		float minAngle = Mathf.Infinity;
-		Spline closestSpline = null;
-		Point pointDest = null;
-
-		foreach (Spline s in _connectedSplines) {
-
-			foreach (Point p in s.SplinePoints) {
-
-				if (Mathf.Abs (s.SplinePoints.IndexOf (p) - s.SplinePoints.IndexOf (this)) > 1 || p == this) {
-					//do nothing if the point is more than 1 away on the spline
-				} else {
-
-					float curAngle;
-
-					if (s.SplinePoints.IndexOf (p) < s.SplinePoints.IndexOf (this)) {
-						curAngle = s.CompareAngleAtPoint (direction, p, true);
-					} else {
-						curAngle = s.CompareAngleAtPoint (direction, this);
-					}
-
-
-					if (curAngle < minAngle) {
-						minAngle = curAngle;
-						closestSpline = s;
-						pointDest = p;
-					
-					}
-				}
-			}
-		}
-			
-			
-		if (closestSpline.SplinePoints.IndexOf (pointDest) < closestSpline.SplinePoints.IndexOf (this)) {
-			closestSpline.Selected = pointDest;
-			Services.Player.GetComponent<PlayerBehaviour> ().SetProgress (1);
-		} else {
-			Services.Player.GetComponent<PlayerBehaviour> ().SetProgress (0);
-			closestSpline.Selected = this;
-		}
-		Debug.Log ("New destination: " + pointDest.name);
-		Debug.Log ("New selected is: " + closestSpline.Selected);
-			
-		Debug.DrawLine(closestSpline.GetVelocity(0) + this.Pos, this.Pos) ;
-		Debug.DrawLine(-closestSpline.GetVelocity(1) + this.Pos, this.Pos) ;
-
-		return closestSpline;
-
-		// add information for which direction (forward/backward) the new point is
-		// set the new current point with this information
+	public void OnPointEnter(){
+		continuity = Mathf.Clamp01 (continuity - 0.1f);
+//		bias  = Mathf.Clamp01 (bias + 0.1f);
 	}
 
-	public void Improve(){
-		//edit tension/bias/continuity
+	public void OnPointExit(){
 	}
 
 	public bool HasSplines(){
@@ -177,16 +127,4 @@ public class Point : MonoBehaviour
 		//		}
 	}
 
-//	public void SetColour(){
-//		color.a = proximity + Mathf.Clamp01((Mathf.Sin (3 * Time.time + timeOffset)/4)) + 0.2f;
-//		GetComponent<SpriteRenderer>().color = color;
-//
-//		foreach (Spline s in _connectedSplines) {
-//			if (s.GetVert1 () == this) {
-//				s.GetComponent<LineRenderer> ().SetColors (color, s.GetVert2().color); 
-//			} else {
-//				s.GetComponent<LineRenderer> ().SetColors (s.GetVert1().color, color);
-//			}
-//		}
-//	}
 }
