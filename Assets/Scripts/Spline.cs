@@ -20,6 +20,7 @@ public class Spline : MonoBehaviour {
 	public float distance = 0; 
 	public bool closed = false;
 	public int LoopIndex;
+	public bool locked = false;
 
 	private static string path;
 	public static string SavePath
@@ -49,11 +50,11 @@ public class Spline : MonoBehaviour {
 
 
 	public void OnSplineEnter(){
-	
+		CalculateDistance ();
 	}
 
 	public void OnSplineExit(){
-		CalculateDistance ();
+		CleanUpLines ();
 	}
 		
 	void OnDestroy()
@@ -66,11 +67,21 @@ public class Spline : MonoBehaviour {
 		Splines.Add(this);
 		l = GetComponent<LineRenderer> ();
 		l.positionCount = 0;
-		SplinePoints = new List<Point> ();
+		if (SplinePoints.Count > 0) {
+			foreach (Point p in SplinePoints) {
+				AddPoint (p);
+			}
+		} else {
+			SplinePoints = new List<Point> ();
+		}
 	}
 	void Update () {
 		LineColors ();
 		DrawMesh ();
+	}
+
+	void CleanUpLines(){
+		l2.positionCount = 0;
 	}
 
 
@@ -78,25 +89,17 @@ public class Spline : MonoBehaviour {
 	//HELPER FUNCTIONS
 
 	public Point StartPoint(){
-		if (SplinePoints [0] != null) {
-			return SplinePoints [0];
-		}
-		return null;
+		return SplinePoints [0];
 	}
 
 	public Point MiddlePoint(){
-		if (SplinePoints [1] != null) {
-			return SplinePoints [1];
-		}
-		return null;
+		return SplinePoints [1];
+
 	}
 
 	public Point EndPoint(){
-		if (SplinePoints [SplinePoints.Count-1] != null) {
-			return SplinePoints [SplinePoints.Count -1];
-		}
-			
-		return null;
+		return SplinePoints [SplinePoints.Count -1];
+
 	}
 
 	public bool IsPointConnectedTo(Point p){
@@ -247,7 +250,7 @@ public class Spline : MonoBehaviour {
 		v = transform.TransformPoint (v) - transform.position;
 
 		if (v == Vector3.zero && t == 1) {
-			v = GetVelocity (0.99f);
+			v = GetVelocityAtIndex(i, 0.99f);
 		}
 		return v;
 	}
@@ -392,15 +395,46 @@ public class Spline : MonoBehaviour {
 			} else if (newIndex == SplinePoints.Count - 1 && SplinePoints.Count > 2) {
 				p.AddPoint (SplinePoints [newIndex - 1]);
 				SplinePoints [newIndex - 1].AddPoint (p);
-			}else if (newIndex > 0 && newIndex < SplinePoints.Count - 1){
-				p.AddPoint(SplinePoints [newIndex + 1]);
-				p.AddPoint(SplinePoints [newIndex - 1]);
-				SplinePoints [newIndex - 1].AddPoint(p);
-				SplinePoints [newIndex + 1].AddPoint(p);
 			}
+//			}else if (newIndex > 0 && newIndex < SplinePoints.Count - 1){
+//				p.AddPoint(SplinePoints [newIndex + 1]);
+//				p.AddPoint(SplinePoints [newIndex - 1]);
+//				SplinePoints [newIndex - 1].AddPoint(p);
+//				SplinePoints [newIndex + 1].AddPoint(p);
+//			}
 		}
 	}
 		
+	public void DrawVelocities(float t, float x){
+		l2.positionCount = 3;
+		int step = (int)(t * curveFidelity);
+		t = (float)step / (float) curveFidelity;
+		l2.SetPosition (l2.positionCount - 1, GetPoint (t));
+		l2.SetPosition (l2.positionCount - 2, GetPoint(t) + (GetDirection (t) * x));
+		l2.SetPosition (l2.positionCount - 3, GetPoint(t));
+	}
+
+	public void DrawLineSegmentVelocity(float t, float x, float startVal){
+
+		l2.positionCount = 3;
+		t = Mathf.Abs(startVal - t);
+		int steps = (int)(t * (float)curveFidelity);
+
+		for (int k = 0; k < steps ; k++){
+
+			t = (float)k / steps;
+			t = Mathf.Abs (startVal - t);
+
+			if(l2.positionCount <= k * 3){
+				l2.positionCount = l2.positionCount + 3;
+			}
+
+			l2.SetPosition (l2.positionCount - 1, GetPoint(t));
+			l2.SetPosition (l2.positionCount - 2, GetPoint (t) + GetDirection(t) * 3 * x);
+			l2.SetPosition (l2.positionCount - 3, GetPoint(t));
+		}
+
+	}
 
 	IEnumerator DrawVelocities (){
 		
@@ -460,7 +494,7 @@ public class Spline : MonoBehaviour {
 				l2.SetPosition (l2.positionCount - 2, GetPointAtIndex (i,step) + GetVelocityAtIndex (i,step));
 				l2.SetPosition (l2.positionCount - 3, GetPointAtIndex (i,step));
 
-				yield return new WaitForSeconds(Time.deltaTime /drawSpeed);
+				yield return null;
 			}
 		}
 
@@ -497,6 +531,8 @@ public class Spline : MonoBehaviour {
 				yield return null;
 			}
 		}
+
+		StartCoroutine (DrawMeshOverTime());
 	}
 
 	public void DrawMesh(){
@@ -528,23 +564,33 @@ public class Spline : MonoBehaviour {
 				lastPosition = v;
 			}
 		}
+
+//		StartCoroutine (DrawMeshOverTime ());
 	}
 
 
 	public void LineColors(){
 
-		GradientAlphaKey[] alphas = new GradientAlphaKey[Mathf.Clamp(SplinePoints.Count, 0, 8)]; 
-		GradientColorKey[] colors = new GradientColorKey[1];
-		colors [0].color = Color.white;
+		GradientColorKey[] colors = new GradientColorKey[Mathf.Clamp(SplinePoints.Count, 0, 8)]; 
+		GradientAlphaKey[] alphas = new GradientAlphaKey[1];
+		AnimationCurve lineWidth = new AnimationCurve ();
+		alphas [0].alpha = 1;
+		for(int i = 0; i < colors.Length; i++){
+			int index = (int)(((float) i/(float)colors.Length) * ((float)SplinePoints.Count-1));
 
-		for(int i = 0; i < alphas.Length; i++){
-			alphas [i].alpha = SplinePoints [i].proximity + Mathf.Clamp01((Mathf.Sin (3 * Time.time + SplinePoints[i].timeOffset)/4)) + 0.2f;
-			alphas [i].time = (float)i / (float)(SplinePoints.Count - 1);
+			float c = Mathf.Lerp(SplinePoints[index].proximity + Mathf.Clamp01((Mathf.Sin (3 * Time.time + SplinePoints[index].timeOffset)/4)) + 0.1f, 0, Mathf.Clamp01(SplinePoints[index].GetCooldown()));
+			colors [i].color = new Color (c, c, c);
+			colors [i].time = (float)index / (float)(SplinePoints.Count - 1);
+			Keyframe k = new Keyframe ();
+			k.time = colors[i].time;
+			k.value = SplinePoints [index].NeighbourCount ();
+			lineWidth.AddKey (k);
 		}
 
 		Gradient newGradient = new Gradient ();
 		newGradient.SetKeys (colors, alphas);
 		l.colorGradient = newGradient;
+		l.widthCurve = lineWidth;
 	}
 		
 	//IO FUNCTIONS

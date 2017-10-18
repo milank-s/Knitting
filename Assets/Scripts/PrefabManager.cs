@@ -4,13 +4,12 @@ using UnityEngine;
 
 public class PrefabManager : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+	public GameObject SoundEffectObject;
+	public GameObject Point;
+	public GameObject Spline;
+
+	public void CreateSoundEffect(AudioClip clip, Vector3 pos){
+		Instantiate (SoundEffectObject, pos, Quaternion.Euler (0, 0, 0));
+		SoundEffectObject.GetComponent<AudioSource> ().clip = clip;
 	}
 }

@@ -11,7 +11,7 @@ public class Main : MonoBehaviour {
 
 		Services.Player = Player;
 		Services.Cursor = Cursor;
-		Services.Nodes = GetComponent<NodeManager> ();
+		Services.Points = GetComponent<PointManager> ();
 		Services.Prefabs = GetComponent<PrefabManager> ();
 	}
 

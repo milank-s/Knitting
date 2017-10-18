@@ -17,17 +17,27 @@ public class Point : MonoBehaviour
 	public float bias;
 	public float continuity;
 
-	public GameObject splinePrefab;
+	public float boostCooldown;
+
+	public GameObject activatedSprite;
+	public GameObject directionalSprite;
 
 	public List<Point> _neighbours;
 	public List<Spline> _connectedSplines;
 
+
+	public bool isPlaced = false;
 	public Color color;
 	public float timeOffset;
-	public float proximity = 0;
+	public float proximity = 1;
+	public bool locked = false; 
 
 	public static Point Select;
-	
+	private float cooldown;
+	private SpriteRenderer SR;
+	private LineRenderer l;
+	private List<GameObject> _directionalSprites;
+	private float c = 0;
 	public bool isSelect
 	{
 		get
@@ -38,12 +48,21 @@ public class Point : MonoBehaviour
 
 
 	void Awake(){
-		Point.pointCount++;
-		color = new Color (1, 1, 1, 0);
-		gameObject.name = "v" + Point.pointCount;
-		_neighbours = new List<Point> ();
-		_connectedSplines = new List<Spline> ();
+		_directionalSprites = new List<GameObject> ();
 
+		Point.pointCount++;
+		color = new Color (1, 1, 1, 1);
+		gameObject.name = "v" + Point.pointCount;
+		if (_neighbours.Count == 0) {
+			_neighbours = new List<Point> ();
+		}
+		if (_connectedSplines.Count == 0) {
+			_connectedSplines = new List<Spline> ();
+		}
+		cooldown = boostCooldown;
+		SR = GetComponent<SpriteRenderer> ();
+		l = GetComponent<LineRenderer> ();
+		c = 1;
 	}
 //	void OnMouseDown()
 //	{
@@ -61,9 +80,46 @@ public class Point : MonoBehaviour
 
 	//HELPER FUNCTIONS
 
+	public void Update(){
+		cooldown -= Time.deltaTime;
+
+		c = Mathf.Lerp(proximity + Mathf.Clamp01((Mathf.Sin (3 * Time.time + timeOffset)/4)) + 0.1f, 0, Mathf.Clamp01(cooldown));
+		SR.color = new Color (c,c,c);
+
+//		l.SetPosition (0, transform.position);
+//		l.SetPosition (1, GetComponent<SpringJoint>().connectedBody.transform.position);
+
+		if (_neighbours.Count > 2) {
+			SetDirectionalArrows ();
+		}
+	}
+
 	public void AddSpline(Spline s){
 		if (!_connectedSplines.Contains (s)) {
 			_connectedSplines.Add (s);
+		}
+	}
+
+	public void SetDirectionalArrows(){
+		int index = 0; 
+
+		foreach (Spline s in _connectedSplines) {
+			foreach (Point p in _neighbours) {
+				
+				if (!p._connectedSplines.Contains (s)) {
+					//do nothing if the point is in another spline
+				} else {
+					if (index > _directionalSprites.Count - 1) {
+						GameObject newSprite = (GameObject)Instantiate (directionalSprite, Vector3.zero, Quaternion.identity);
+						newSprite.transform.parent = transform;
+						_directionalSprites.Add (newSprite);
+					}
+					SetPosAndVelocity (_directionalSprites [index], 0, s, p);
+					float cc = c + Mathf.Clamp01 (cooldown);
+					_directionalSprites[index].GetComponent<SpriteRenderer>().color =  new Color (cc,cc,cc);
+					index++;
+				}
+			}
 		}
 	}
 
@@ -71,6 +127,26 @@ public class Point : MonoBehaviour
 		if (!_neighbours.Contains (p)) {
 			_neighbours.Add (p);
 		}
+	}
+
+	public void SetPosAndVelocity(GameObject g, float t, Spline s, Point p){
+		int indexdiff = s.SplinePoints.IndexOf (p) - s.SplinePoints.IndexOf (this);
+		int index = 0;
+
+		if (indexdiff == -1 || indexdiff > 1) {
+			index = s.SplinePoints.IndexOf (p);
+			t = 1 - t;
+			g.transform.up = -s.GetVelocityAtIndex (index, t);
+		} else {
+			index = s.SplinePoints.IndexOf (this);
+			g.transform.up = s.GetVelocityAtIndex (index, t);
+		}
+		g.transform.position = s.GetPointAtIndex (index, t);
+
+	}
+
+	public float NeighbourCount(){
+		return _connectedSplines.Count;
 	}
 
 	public void RemoveSpline(Spline s){
@@ -82,12 +158,12 @@ public class Point : MonoBehaviour
 	}
 
 	public void OnPointEnter(){
-		continuity = Mathf.Clamp01 (continuity - 0.1f);
-//		bias  = Mathf.Clamp01 (bias + 0.1f);
 	}
 
 	public void OnPointExit(){
+		continuity = Mathf.Clamp01((NeighbourCount() - 1)/ 6);
 	}
+
 
 	public bool HasSplines(){
 		return _connectedSplines.Count > 0 ? true : false;
@@ -107,6 +183,29 @@ public class Point : MonoBehaviour
 
 	public List<Spline> GetSplines(){
 		return _connectedSplines;
+	}
+
+	public bool IsOffCooldown(){
+		if (cooldown <= 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public float GetCooldown(){
+		return cooldown;
+	}
+
+	public bool PutOnCooldown(){
+		if (cooldown <= 0) {
+			cooldown = boostCooldown;
+			GameObject fx = Instantiate (activatedSprite, transform.position, Quaternion.identity);
+			fx.transform.parent = transform;
+
+			return true;
+		}
+		return false;
 	}
 
 	public List<Point> GetNeighbours(){
