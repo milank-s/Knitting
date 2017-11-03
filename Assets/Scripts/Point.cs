@@ -37,7 +37,7 @@ public class Point : MonoBehaviour
 	private SpriteRenderer SR;
 	private LineRenderer l;
 	private List<GameObject> _directionalSprites;
-	private float c = 0;
+	public float c = 0;
 	public bool isSelect
 	{
 		get
@@ -83,15 +83,16 @@ public class Point : MonoBehaviour
 	public void Update(){
 		cooldown -= Time.deltaTime;
 
-		c = Mathf.Lerp(proximity + Mathf.Clamp01((Mathf.Sin (3 * Time.time + timeOffset)/4)) + 0.1f, 0, Mathf.Clamp01(cooldown));
-		SR.color = new Color (c,c,c);
+		c = Mathf.Lerp(proximity + Mathf.Clamp01((Mathf.Sin (3 * Time.time + timeOffset)/4)) + 0.1f, 1, Mathf.Clamp01(cooldown));
+		SR.color = Color.Lerp (new Color (c, c, c), Color.white, Mathf.Clamp01(cooldown));
+		color = SR.color;
 
 //		l.SetPosition (0, transform.position);
 //		l.SetPosition (1, GetComponent<SpringJoint>().connectedBody.transform.position);
 
-		if (_neighbours.Count > 2) {
-			SetDirectionalArrows ();
-		}
+//		if (_neighbours.Count > 2) {
+//			SetDirectionalArrows ();
+//		}
 	}
 
 	public void AddSpline(Spline s){
