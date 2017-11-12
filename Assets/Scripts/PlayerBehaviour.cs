@@ -116,14 +116,13 @@ public class PlayerBehaviour: MonoBehaviour {
 	void Update () {
 
 		CursorInput();
-		Effects ();
 
 		creationInterval-= Time.deltaTime;
 
 
 		if (state == PlayerState.Traversing && curSpline != null) {
 			
-			float alignment = Vector3.Angle (cursorDir, curSpline.GetDirection (progress));
+			float alignment = Vector2.Angle (cursorDir, curSpline.GetDirection (progress));
 			flow = Mathf.Clamp (flow, -maxSpeed, maxSpeed);
 			accuracy = (90 - alignment) / 90;
 			if ((accuracy < 0.5f && accuracy > -0.5f) || Input.GetButton("Button2")) {
@@ -134,10 +133,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (state == PlayerState.Flying) {
 			FreeMovement ();
 			return;
-		}
-			
-		if (curPoint.HasSplines ()) {
-			transform.position = curSpline.GetPoint (progress); 
 		}
 
 		if (state == PlayerState.Traversing) {
@@ -177,15 +172,22 @@ public class PlayerBehaviour: MonoBehaviour {
 				state = PlayerState.Traversing;
 
 				if (curPoint.IsOffCooldown ()) {
-					flow += flowAmount * curPoint.NeighbourCount ();
-					boost = boostAmount * (curPoint.NeighbourCount () / 2);
+					flow += flowAmount;
+					boost = boostAmount;
 					curPoint.PutOnCooldown ();
 				}
+
+				PlayerMovement ();
 			} else {
 				flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
 			}
 		}
 
+		if (curPoint.HasSplines () && curSpline != null) {
+			transform.position = curSpline.GetPoint (progress); 
+		}
+
+		Effects ();
 		#region
 		if (Input.GetAxis ("Joy Y") != 0) {
 			controllerConnected = true;
@@ -326,8 +328,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 	public Point CheckIfOverPoint(Vector3 pos){
-		
-		Ray ray = Camera.main.ScreenPointToRay (Camera.main.WorldToScreenPoint (pos));
+		Ray ray = new Ray (pos + -(Vector3.forward * 0.1f), Vector3.forward);
+//		Ray ray = Camera.main.ScreenPointToRay (Camera.main.WorldToScreenPoint (pos));
+//		Debug.DrawRay (ray.origin, ray.origin + ray.direction * 10);
 		RaycastHit hit;
 
 		if (Physics.Raycast (ray, out hit)) {
@@ -388,7 +391,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			creationInterval = creationCD;
 			newPoint = true;
 			p2 = CreatePoint (atPos); 
-			Services.Points.AddPoint (p2);
 		}else if (p2 == p1) {
 			result.p = p1;
 			result.s = s;
@@ -520,14 +522,14 @@ public class PlayerBehaviour: MonoBehaviour {
 //		Point newPoint = inventory [inventory.Count-1];
 
 		Point newPoint = Instantiate(Services.Prefabs.Point, Vector3.zero, Quaternion.identity).GetComponent<Point>();
-
+		Services.Points.AddPoint (newPoint);
 //		inventory.Remove (newPoint);
 
 		newPoint.isPlaced = true;
-		newPoint.bias = flow / maxSpeed;
+//		newPoint.bias = flow / maxSpeed;
 		newPoint.transform.parent = null;
 		newPoint.transform.position = pos;
-		newPoint.timeOffset = Time.time;
+		newPoint.timeOffset = Services.Points._points.Count * 0.1f;
 		newPoint.GetComponent<Collider> ().enabled = true;
 		newPoint.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 		newPoint.transform.GetChild (0).position = newPoint.transform.position;
@@ -586,7 +588,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (controllerConnected) {
 
 			cursorDir = new Vector3(-Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
-			cursor.transform.position = transform.position + cursorDir;
+
 			//free movement: transform.position = transform.position + new Vector3 (-Input.GetAxis ("Joy X") / 10, Input.GetAxis ("Joy Y") / 10, 0);
 			//angle to joystick position
 			//zAngle = Mathf.Atan2 (Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y")) * Mathf.Rad2Deg;
@@ -606,10 +608,16 @@ public class PlayerBehaviour: MonoBehaviour {
 			cursorDir = (cursor.transform.position - transform.position).normalized;
 		}
 			
+			
 		if (cursorDir.magnitude > 1) {
 			cursorDir.Normalize ();
-			cursor.transform.position = transform.position + cursorDir;
 		}
+
+		if(curPoint.HasSplines() && curSpline != null){
+			cursorDir.z = curSpline.GetDirection (progress).z * Mathf.Sign(accuracy);
+		}
+
+		cursor.transform.position = transform.position + cursorDir/2;
 
 		cursorPos = cursor.transform.position;
 
@@ -649,12 +657,15 @@ public class PlayerBehaviour: MonoBehaviour {
 //		BrakingSound.volume = Mathf.Clamp01(1- Mathf.Abs (accuracy))/6;
 		AccelerationSound.volume = Mathf.Clamp01(flow / (maxSpeed/5));
 
+		l.SetPosition(0, transform.position);
+		l.SetPosition(1, cursorPos);
+
 		if (curSpline != null) {
 //			curSpline.DrawLineSegmentVelocity (progress, Mathf.Sign (accuracy), goingForward ? 0 : 1);
 			l.SetPosition(0, transform.position);
 //			l.SetPosition(1, transform.position + (curSpline.GetDirection(progress) * Mathf.Sign(accuracy))/2);
 			l.SetPosition(1, cursorPos);
-			GetComponentInChildren<Camera>().orthographicSize = Mathf.Lerp(GetComponentInChildren<Camera>().orthographicSize,  flow + 4, Time.deltaTime * 10);
+			GetComponentInChildren<Camera>().farClipPlane = Mathf.Lerp(GetComponentInChildren<Camera>().farClipPlane,  flow + 12, Time.deltaTime * 10);
 		}
 
 

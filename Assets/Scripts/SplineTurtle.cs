@@ -6,8 +6,6 @@ public class SplineTurtle : MonoBehaviour {
 
 	public static float maxTotalPoints = 100;
 
-	public float minDistance = 2;
-	public float maxDistance = 4;
 	public float minAngle = 10;
 	public float maxAngle = 30;
 	public float scaleFactor = 0;
@@ -31,7 +29,7 @@ public class SplineTurtle : MonoBehaviour {
 		firstPoint.continuity = continuity;
 		transform.Rotate (0, 0, Random.Range (minAngle, maxAngle));
 		moveDistance += scaleFactor;
-		transform.position += transform.up * Random.Range (minDistance, maxDistance) * moveDistance;
+		transform.position += transform.up * moveDistance + offsetDirection;
 		Point secondPoint = Services.PlayerBehaviour.CreatePoint(transform.position);
 		secondPoint.continuity = continuity;
 

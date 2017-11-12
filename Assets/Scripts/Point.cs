@@ -59,10 +59,12 @@ public class Point : MonoBehaviour
 		if (_connectedSplines.Count == 0) {
 			_connectedSplines = new List<Spline> ();
 		}
-		cooldown = boostCooldown;
+		cooldown = 0;
+		proximity = 0;
 		SR = GetComponent<SpriteRenderer> ();
 		l = GetComponent<LineRenderer> ();
 		c = 1;
+
 	}
 //	void OnMouseDown()
 //	{

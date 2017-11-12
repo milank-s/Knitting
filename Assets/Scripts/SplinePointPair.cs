@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SplinePointPair : MonoBehaviour {
+public class SplinePointPair {
 
 	public Spline s { get; set;}
 	public Point p { get; set; }

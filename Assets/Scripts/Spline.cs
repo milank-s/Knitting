@@ -374,9 +374,9 @@ public class Spline : MonoBehaviour {
 	public float CompareAngleAtPoint(Vector3 direction, Point p, bool reversed = false){
 
 		if (reversed) {
-			return Vector3.Angle (direction, GetReversedInitVelocity (p));
+			return Vector2.Angle (direction, GetReversedInitVelocity (p));
 		} else {
-			return Vector3.Angle (direction, GetInitVelocity (p));
+			return Vector2.Angle (direction, GetInitVelocity (p));
 		}
 	}
 
