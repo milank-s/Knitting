@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FadeInSprite : MonoBehaviour {
+public class FadeInSpriteOnPoint : MonoBehaviour {
 
 	bool fading = false;
 	float alpha = 1;

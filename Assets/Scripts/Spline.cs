@@ -18,6 +18,7 @@ public class Spline : MonoBehaviour {
 
 	public static Spline Select;
 
+
 	public int curveFidelity = 10;
 	public float drawSpeed = 6;
 	public float distance = 0; 
@@ -25,6 +26,8 @@ public class Spline : MonoBehaviour {
 	public int LoopIndex;
 	public bool locked = false;
 	public bool DrawLine;
+
+	public bool isPlayerOn;
 
 	public bool isSelect
 	{
@@ -62,10 +65,12 @@ public class Spline : MonoBehaviour {
 
 
 	public void OnSplineEnter(){
+		isPlayerOn = true;
 		CalculateDistance ();
 	}
 
 	public void OnSplineExit(){
+		isPlayerOn = false;
 		CleanUpLines ();
 	}
 		
@@ -469,21 +474,36 @@ public class Spline : MonoBehaviour {
 	public void DrawLineSegmentVelocity(float t, float x, float startVal){
 
 		l2.positionCount = 3;
-		t = Mathf.Abs(startVal - t);
-		int steps = (int)(t * (float)curveFidelity);
+		float difference = Mathf.Abs(1 - Mathf.Abs(startVal - t));
+		int steps = (int)(difference * (float)curveFidelity);
+		float step = 1.0f / ((float)curveFidelity);
+
+		if (x < 0) {
+			t = 0;
+		} else {
+			t = 1;
+		}
+			
 
 		for (int k = 0; k < steps ; k++){
 
-			t = (float)k / steps;
-			t = Mathf.Abs (startVal - t);
+//			t = (float)k / steps;
+//			t = Mathf.Abs (startVal - t);
 
 			if(l2.positionCount <= k * 3){
 				l2.positionCount = l2.positionCount + 3;
 			}
 
+			if(x < 0){
+				t += step;
+			}else{
+				t -=step ;
+			}
+
 			l2.SetPosition (l2.positionCount - 1, GetPoint(t));
-			l2.SetPosition (l2.positionCount - 2, GetPoint (t) + GetDirection(t) * 3 * x);
+			l2.SetPosition (l2.positionCount - 2, GetPoint (t) + GetDirection(t) * x *Mathf.Pow(Mathf.Sin(t * Mathf.PI), 2) * 1.5f);
 			l2.SetPosition (l2.positionCount - 3, GetPoint(t));
+
 		}
 
 	}

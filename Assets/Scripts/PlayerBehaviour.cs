@@ -22,6 +22,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	[Header("Cursor")]
 	public GameObject cursor;
 
+	[Header("Sprite")]
+	public GameObject sprite;
+
 	[Header("Speed")]
 	public float speed;
 
@@ -92,7 +95,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		state = PlayerState.Switching;
 		sounds = GetComponent<PlayerSounds> ();
 		l = GetComponent<LineRenderer> ();
-		t = GetComponent<TrailRenderer> ();
+		t = GetComponentInChildren<TrailRenderer> ();
 		traversing = false;
 		inventory = new List<Point>();
 		ps = GetComponent<ParticleSystem> ();
@@ -107,7 +110,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 			
 		lastPoint = curPoint;
-		curSpline = null;
 
 
 	}
@@ -159,7 +161,7 @@ public class PlayerBehaviour: MonoBehaviour {
 							SplinePointPair spp = ConnectNewPoint (curSpline, curPoint, nextPoint, cursorPos);
 							
 							curSpline = spp.s;
-							Debug.Log (curSpline);
+
 							creationInterval = creationCD;
 							canTraverse = true;
 						}
@@ -255,8 +257,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	void PlayerMovement(){ 
 
 //		adding this value to flow
-//		flow += Mathf.Sign(accuracy) * Mathf.Pow(Mathf.Abs(accuracy), 1) * acceleration;
-		
+
+		flow += Mathf.Pow(Mathf.Abs(accuracy), 2) * acceleration * Time.deltaTime;
+
 		progress += ((flow + boost + (speed * Mathf.Abs(accuracy))) * Mathf.Sign(accuracy) * Time.deltaTime)/curSpline.distance;
 
 		//set player position to a point along the curve
@@ -317,7 +320,10 @@ public class PlayerBehaviour: MonoBehaviour {
 			if (PointArrivedAt != curPoint) {
 				lastPoint = PointArrivedAt;
 
-				curPoint.OnPointEnter ();
+				if (!curPoint.locked) {
+					curPoint.OnPointEnter ();
+				}
+
 				curPoint.GetComponent<Rigidbody> ().AddForce (cursorDir * flow * 10);
 			}
 
@@ -328,7 +334,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 	public Point CheckIfOverPoint(Vector3 pos){
-		Ray ray = new Ray (pos + -(Vector3.forward * 0.1f), Vector3.forward);
+		Ray ray = new Ray (pos + -(Vector3.forward) * 100, Vector3.forward);
 //		Ray ray = Camera.main.ScreenPointToRay (Camera.main.WorldToScreenPoint (pos));
 //		Debug.DrawRay (ray.origin, ray.origin + ray.direction * 10);
 		RaycastHit hit;
@@ -449,8 +455,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		angleToSpline = Mathf.Infinity;
 
 		if (curPoint.HasSplines ()) {
-
-			goingForward = true;
 
 			Spline closestSpline = null;
 			Point pointDest = null;
@@ -588,7 +592,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (controllerConnected) {
 
 			cursorDir = new Vector3(-Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
-
+			sprite.transform.up = cursorDir;
 			//free movement: transform.position = transform.position + new Vector3 (-Input.GetAxis ("Joy X") / 10, Input.GetAxis ("Joy Y") / 10, 0);
 			//angle to joystick position
 			//zAngle = Mathf.Atan2 (Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y")) * Mathf.Rad2Deg;
@@ -604,23 +608,24 @@ public class PlayerBehaviour: MonoBehaviour {
 //			}else{
 //				cursorDir = (mousePos - transform.position);
 //			}
-			cursor.transform.RotateAround (transform.position, transform.forward, -Input.GetAxis("Horizontal") * cursorRotateSpeed * Time.deltaTime);
-			cursorDir = (cursor.transform.position - transform.position).normalized;
+			sprite.transform.RotateAround (transform.position, transform.forward, -Input.GetAxis("Horizontal") * cursorRotateSpeed * Time.deltaTime);
+			cursorDir = sprite.transform.up;
 		}
 			
 			
 		if (cursorDir.magnitude > 1) {
 			cursorDir.Normalize ();
+
 		}
 
 		if(curPoint.HasSplines() && curSpline != null){
 			cursorDir.z = curSpline.GetDirection (progress).z * Mathf.Sign(accuracy);
 		}
 
-		cursor.transform.position = transform.position + cursorDir/2;
 
-		cursorPos = cursor.transform.position;
 
+		cursorPos = transform.position + cursorDir * cursorDistance;
+		cursor.transform.position = cursorPos;
 	}
 		
 
@@ -645,11 +650,18 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	public void Effects(){
+
+		if (accuracy < 0) {
+			goingForward = false;
+		} else {
+			goingForward = true;
+		}
+
 		float Absflow = Mathf.Abs (flow);
 		if (flying) {
 			t.time = Absflow;
 		} else {
-			t.time = Mathf.Lerp(t.time, 0, Time.deltaTime);
+			t.time = Mathf.Lerp(t.time, 1, Time.deltaTime);
 		}
 		ParticleSystem.EmissionModule e = ps.emission;	
 			
@@ -657,15 +669,12 @@ public class PlayerBehaviour: MonoBehaviour {
 //		BrakingSound.volume = Mathf.Clamp01(1- Mathf.Abs (accuracy))/6;
 		AccelerationSound.volume = Mathf.Clamp01(flow / (maxSpeed/5));
 
-		l.SetPosition(0, transform.position);
-		l.SetPosition(1, cursorPos);
-
 		if (curSpline != null) {
-//			curSpline.DrawLineSegmentVelocity (progress, Mathf.Sign (accuracy), goingForward ? 0 : 1);
-			l.SetPosition(0, transform.position);
+			curSpline.DrawLineSegmentVelocity (progress, Mathf.Sign (accuracy), goingForward ? 0 : 1);
+//			l.SetPosition(0, transform.position);
 //			l.SetPosition(1, transform.position + (curSpline.GetDirection(progress) * Mathf.Sign(accuracy))/2);
-			l.SetPosition(1, cursorPos);
-			GetComponentInChildren<Camera>().farClipPlane = Mathf.Lerp(GetComponentInChildren<Camera>().farClipPlane,  flow + 12, Time.deltaTime * 10);
+//			l.SetPosition(1, transform.position + cursorDir/2);
+//			GetComponentInChildren<Camera>().farClipPlane = Mathf.Lerp(GetComponentInChildren<Camera>().farClipPlane,  flow + 12, Time.deltaTime * 10);
 		}
 
 

@@ -85,7 +85,7 @@ public class Point : MonoBehaviour
 	public void Update(){
 		cooldown -= Time.deltaTime;
 
-		c = Mathf.Lerp(proximity + Mathf.Clamp01((Mathf.Sin (3 * Time.time + timeOffset)/4)) + 0.1f, 1, Mathf.Clamp01(cooldown));
+		c = Mathf.Lerp(proximity + Mathf.Clamp01((Mathf.Sin (2 * Time.time + timeOffset)/5)) + 0.1f, 1, Mathf.Clamp01(cooldown));
 		SR.color = Color.Lerp (new Color (c, c, c), Color.white, Mathf.Clamp01(cooldown));
 		color = SR.color;
 
@@ -161,10 +161,10 @@ public class Point : MonoBehaviour
 	}
 
 	public void OnPointEnter(){
+		continuity = Mathf.Clamp01((NeighbourCount() - 1)/ 6);
 	}
 
 	public void OnPointExit(){
-		continuity = Mathf.Clamp01((NeighbourCount() - 1)/ 6);
 	}
 
 
