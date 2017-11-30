@@ -60,7 +60,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float progress;
 	public float accuracy;
 	public float creationCD = 0.25f;
-	public float flyingSpeedThreshold = 5;
+	public float flyingSpeedThreshold = 3;
 	public float cursorDistance;
 	private bool traversing;
 	public bool goingForward = true;
@@ -71,17 +71,15 @@ public class PlayerBehaviour: MonoBehaviour {
 	private List<Point> inventory;
 	public Point lastPoint;
 
-	public float PointDrawDistance = 2;
-	private float curDrawDistance = 2;
+	public float PointDrawDistance = 0.01f;
+	private float curDrawDistance = 0.1f;
 
 	public AudioSource AccelerationSound;
 	public AudioSource BrakingSound;
 
 	private ParticleSystem ps;
-	private float creationInterval = 2;
+	private float creationInterval = 0.2f;
 	private PlayerSounds sounds;
-	bool flying = false;
-	bool finishedFlying = false;
 
 	Spline nextSpline = null; 
 	Point nextPoint = null;
@@ -89,7 +87,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	bool newPoint = false; 
 	bool connectPoint = false;
 	float angleToSpline = Mathf.Infinity;
-	private List<Point> newPointList;
+	private List<Vector3> newPointList;
+	Vector3 lastPos;
 
 	void Awake(){
 		state = PlayerState.Switching;
@@ -99,16 +98,17 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversing = false;
 		inventory = new List<Point>();
 		ps = GetComponent<ParticleSystem> ();
-		newPointList = new List<Point> ();
+		newPointList = new List<Vector3> ();
 
 		int i = 0;
 
-		while(i < 50) {
-			GameObject p = (GameObject)Instantiate (PointPrefab, Vector3.zero, Quaternion.identity);
-			StartCoroutine(CollectPoint (p.GetComponent<Point> ()));
-			i++;
-		}
-			
+//		while(i < 50) {
+//			GameObject p = (GameObject)Instantiate (PointPrefab, Vector3.zero, Quaternion.identity);
+//			StartCoroutine(CollectPoint (p.GetComponent<Point> ()));
+//			i++;
+//		}
+//			
+
 		lastPoint = curPoint;
 
 
@@ -123,13 +123,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 		if (state == PlayerState.Traversing && curSpline != null) {
-			
-			float alignment = Vector2.Angle (cursorDir, curSpline.GetDirection (progress));
-			flow = Mathf.Clamp (flow, -maxSpeed, maxSpeed);
-			accuracy = (90 - alignment) / 90;
-			if ((accuracy < 0.5f && accuracy > -0.5f) || Input.GetButton("Button2")) {
-				flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
-			}
+
+			SetCursorAlignment ();
 		}
 
 		if (state == PlayerState.Flying) {
@@ -152,19 +147,21 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if (Input.GetButton ("Button1") && angleToSpline > LineAngleDiff && creationInterval <= 0) {
 					if (!Input.GetButton ("Button2") && flow > flyingSpeedThreshold) {
-						curSpline.OnSplineExit ();
 						state = PlayerState.Flying;
+						newPointList.Clear ();
+						newPointList.Add (transform.position);
+						curDrawDistance = PointDrawDistance;
 					} else {
-						if (inventory.Count > 0) {
+//						if (inventory.Count > 0) {
 							Point nextPoint = null;
 							nextPoint = CheckIfOverPoint (cursorPos);
 							SplinePointPair spp = ConnectNewPoint (curSpline, curPoint, nextPoint, cursorPos);
 							
 							curSpline = spp.s;
-
+							
 							creationInterval = creationCD;
 							canTraverse = true;
-						}
+//						}
 					}
 				}
 			}
@@ -179,13 +176,16 @@ public class PlayerBehaviour: MonoBehaviour {
 					curPoint.PutOnCooldown ();
 				}
 
+				//this is making it impossible to get off points that are widows. wtf. 
+				SetCursorAlignment();
 				PlayerMovement ();
+
 			} else {
 				flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
 			}
 		}
 
-		if (curPoint.HasSplines () && curSpline != null) {
+		if (state != PlayerState.Animating && curPoint.HasSplines () && curSpline != null) {
 			transform.position = curSpline.GetPoint (progress); 
 		}
 
@@ -197,17 +197,98 @@ public class PlayerBehaviour: MonoBehaviour {
 		#endregion
 	}
 
-	public IEnumerator ReturnToLastPoint(){
-		yield return null;
+	public void SetCursorAlignment(){
+		float alignment = Vector2.Angle (cursorDir, curSpline.GetDirection (progress));
+		flow = Mathf.Clamp (flow, -maxSpeed, maxSpeed);
+		accuracy = (90 - alignment) / 90;
+		if ((accuracy < 0.5f && accuracy > -0.5f) || Input.GetButton("Button2")) {
+			flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
+		}
+
+		if (accuracy < 0) {
+			goingForward = false;
+		} else {
+			goingForward = true;
+		}
 	}
 
-	public IEnumerator FlyIntoNewPoint(Point p){
+	public IEnumerator ReturnToLastPoint(){
+		
+		float speed = 0.001f;
+		int index = newPointList.Count - 1;
+		float t = 0; 
+		float distance = Vector3.Distance (newPointList [index], newPointList [index - 1]);
+		Vector3 lastPos = transform.position;
+
+		while(index > 0){
+
+			speed += Time.deltaTime * 1/index;
+			t += speed/distance;
+			transform.position = Vector3.Lerp (newPointList[index], newPointList [index - 1], t);
+
+			float curDistance = Vector3.Distance (newPointList [index], transform.position);
+			sprite.transform.up = transform.position - newPointList [index - 1];
+
+			if(t >= 1){
+				index--;
+				if (index < 1) {
+					break;
+				}
+				distance = Vector3.Distance (newPointList [index], newPointList [index - 1]);
+				t = 0;
+			}
+
+			yield return null;
+		}
+
+		newPointList.Clear ();
+		state = PlayerState.Switching;
+	}
+
+	public void FlyIntoNewPoint(Point p){
 
 		state = PlayerState.Animating;
 
+		int index = 10;
+		float t = 0; 
+
+		Point curP = curPoint;
+		Spline s = curSpline;
+
+		while (index < newPointList.Count) {
+
+			SplinePointPair spp;
+
+			Point newPoint = Services.PlayerBehaviour.CheckIfOverPoint (newPointList[index]);
+			spp = Services.PlayerBehaviour.ConnectNewPoint (s, curP, newPoint, newPointList[index]);
+
+
+			s = spp.s;
+			curP = spp.p;
+			curP.transform.parent = s.transform;
+			s.transform.parent = s.transform;
+
+			index += 10;
+		}
+			
+		//could add another point at the player's current position between curP (last in index) and p (destination) to make player position not jump
+		//whats with phantom splines
+		//must be an error with closed/looping splines getting created and fucking up
+
+		SplinePointPair	sp = ConnectNewPoint (s, curP, p, curP.transform.position);
+		curSpline = sp.s;
+		curPoint = curP;
+		s.Selected = curP;
+		progress = 0;
+		Vector3 pos = transform.position;
+
+//		while (t < 1) {
+//			transform.position = Vector3.Lerp (pos, p.Pos, t);
+//			t += Time.deltaTime * flow;
+//			yield return null;
+//		}
 //		if (!p._connectedSplines.Contains (curSpline)) {
 //			nextPoint = p;
-//			CreatePoint (true, transform.position);
 //			SetPlayerAtEnd (nextSpline, nextPoint);
 //			CheckProgress ();
 //
@@ -217,15 +298,15 @@ public class PlayerBehaviour: MonoBehaviour {
 //			CheckProgress ();
 //		}
 
-			yield return null;
-
+//		SetPlayerAtEnd (s, p);
+//		CheckProgress();
 
 		state = PlayerState.Switching;
 	}
 
 	void FreeMovement(){
 		Vector3 inertia;
-		Vector3 lastPos = transform.position;
+		lastPos = transform.position;
 
 
 		float speed;
@@ -234,22 +315,24 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 		if (flow < 0) {
+			
+			newPointList.Add (transform.position);
+			state = PlayerState.Animating;
 			StartCoroutine (ReturnToLastPoint ());
+
 		} else {
 			inertia = cursorDir * flow;
 			flow -= Time.deltaTime;
 			transform.position += inertia * Time.deltaTime;
-		}
 
-//		curDrawDistance -= Vector3.Distance (lastPos, transform.position);
-//		if (curDrawDistance <= 0) {
-//			curDrawDistance = PointDrawDistance;
-//
-//			CreatePoint (false, transform.position);
-//
-//			curPoint = nextPoint;
-//
-//		}
+			curDrawDistance -= (inertia * Time.deltaTime).magnitude;
+
+			if (curDrawDistance <= 0) {
+				curDrawDistance = PointDrawDistance;
+				newPointList.Add (transform.position);
+			}
+		}
+			
 	}
 
 
@@ -287,7 +370,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (progress > 1 || progress < 0) {
 
-			traversing = false;
 
 			if (!curPoint.locked) {
 				curPoint.OnPointExit ();
@@ -405,7 +487,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			//ALL CASES WHERE THE CLICKED ON/CREATED POINTS ARE ADDED TO CURRENT SPLINE
 
-		if (s == null || s.closed || s.locked || s.SplinePoints.Count >= 8) {
+		if (s == null || s.closed || s.locked) {
 			newSpline = CreateSpline (p1,p2);
 
 		} else {
@@ -512,6 +594,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //		if (lastPoint != curPoint) {
 //			s.AddPoint (lastPoint);
 //		}
+
 		s.AddPoint (firstP);
 		s.AddPoint (nextP);
 
@@ -548,9 +631,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (col.tag == "Point") {
 			if (!col.GetComponent<Point> ().isPlaced) {
 				StartCoroutine (CollectPoint (col.GetComponent<Point> ()));
-			} else if(flying) {
+			} else if(state == PlayerState.Flying) {
 
-				StartCoroutine (FlyIntoNewPoint(col.GetComponent<Point>()));
+				FlyIntoNewPoint(col.GetComponent<Point>());
 			}
 		}
 	}
@@ -650,15 +733,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	public void Effects(){
-
-		if (accuracy < 0) {
-			goingForward = false;
-		} else {
-			goingForward = true;
-		}
-
+		
 		float Absflow = Mathf.Abs (flow);
-		if (flying) {
+		if (state == PlayerState.Flying) {
 			t.time = Absflow;
 		} else {
 			t.time = Mathf.Lerp(t.time, 1, Time.deltaTime);

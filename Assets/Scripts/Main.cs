@@ -9,6 +9,8 @@ public class Main : MonoBehaviour {
 
 	void Awake () {
 
+		SplineTurtle.maxCrawlers = 0;
+		SplineTurtle.maxTotalPoints = 0;
 
 		Services.Player = Player;
 		Services.PlayerBehaviour = Player.GetComponent<PlayerBehaviour>();
@@ -16,6 +18,7 @@ public class Main : MonoBehaviour {
 		Services.Cursor = Cursor;
 		Services.Points = GetComponent<PointManager> ();
 		Services.Prefabs = GetComponent<PrefabManager> ();
+		Services.Prefabs.LoadResources ();
 	}
 
 }

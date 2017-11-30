@@ -9,8 +9,10 @@ using System;
 public class Spline : MonoBehaviour {
 
 	public static List<Spline> Splines=new List<Spline>();
+	[HideInInspector]
 	public List<Vector3> LineSegmentPoints;
 	public List<Point> SplinePoints;
+	[HideInInspector]
 	public Point Selected; 
 
 	private LineRenderer l;
@@ -27,7 +29,7 @@ public class Spline : MonoBehaviour {
 	public bool locked = false;
 	public bool DrawLine;
 
-	public bool isPlayerOn;
+	public bool isPlayerOn = false;
 
 	public bool isSelect
 	{
@@ -94,7 +96,8 @@ public class Spline : MonoBehaviour {
 			
 		Select=this;
 		Splines.Add(this);
-
+		GetComponentInChildren<SpriteRenderer> ().sprite = Services.Prefabs.Symbols [UnityEngine.Random.Range (0, Services.Prefabs.Symbols.Length)];
+		GetComponentInChildren<TextMesh> ().text = Splines.Count.ToString ();
 	}
 	void Update () {
 		LineColors ();
@@ -460,6 +463,8 @@ public class Spline : MonoBehaviour {
 //				SplinePoints [newIndex + 1].AddPoint(p);
 //			}
 		}
+		 
+		l.material = Services.Prefabs.Lines [Mathf.Clamp(SplinePoints.Count-2, 0, Services.Prefabs.Lines.Length-1)];
 	}
 		
 	public void DrawVelocities(float t, float x){
@@ -494,14 +499,23 @@ public class Spline : MonoBehaviour {
 				l2.positionCount = l2.positionCount + 3;
 			}
 
+			float length;
+
 			if(x < 0){
 				t += step;
+//				length = Mathf.Sin (((1 - t) * Mathf.PI / 2) + Mathf.PI / 2);
+				length = t;
 			}else{
 				t -=step ;
+//				length = Mathf.Sin ((t * Mathf.PI / 2) + Mathf.PI / 2);
+				length = 1-t;
 			}
+				
+//			length = Mathf.Pow (length, 2);
+			length *= 2;
 
 			l2.SetPosition (l2.positionCount - 1, GetPoint(t));
-			l2.SetPosition (l2.positionCount - 2, GetPoint (t) + GetDirection(t) * x *Mathf.Pow(Mathf.Sin(t * Mathf.PI), 2) * 1.5f);
+			l2.SetPosition (l2.positionCount - 2, GetPoint (t) + GetDirection(t) * x * length);
 			l2.SetPosition (l2.positionCount - 3, GetPoint(t));
 
 		}

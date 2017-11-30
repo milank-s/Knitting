@@ -5,20 +5,41 @@ using UnityEngine;
 public class SplineTurtle : MonoBehaviour {
 
 	public static float maxTotalPoints = 0;
+	public static float maxCrawlers = 0;
+
+	public bool Randomize;
+
+	public int initialAmount;
+	public float initialAngleMax;
+	public float initialAngleMin;
 
 	public float angleChange = 0;
 	public float minAngle = 10;
 	public float maxAngle = 30;
 	public float scaleChange = 0;
-	public float maxDistance = 2;
-	public float minDistance = 1;
+	public float maxDist = 2;
+	public float minDist = 1;
 	public float branchFactor = 0;
 	public int maxPoints = 50;
 	public float continuity = 0;
 	public bool Raycast = true;
 	public bool LockAngle = false;
+	public bool alternateAngle = false;
 
-	public Vector3 startDirection = Vector3.right;
+	private float mAngle;
+	private float mxAngle;
+	private float mxDist;
+	private float mDist;
+
+	public bool PivotAroundCenter;
+	public float  PivotSpeed;
+	public bool closed;
+	public bool childrenInherit = false;
+	private bool turnleft = false;
+
+	GameObject parent;
+
+	public Vector3 startDirection;
 	public Vector3 offsetDirection = Vector3.zero;
 
 
@@ -28,59 +49,189 @@ public class SplineTurtle : MonoBehaviour {
 
 	void Start () {
 
-		curPoint = Services.PlayerBehaviour.CreatePoint (transform.position);
-		Services.PlayerBehaviour.curPoint = curPoint;
+		if (Randomize) {
 
-		Step ();
+			initialAngleMax = Random.Range(-90, 45);
+			initialAngleMin = Random.Range(initialAngleMax, 90);
 
-		Point secondPoint = Services.PlayerBehaviour.CreatePoint(transform.position);
-		curSpline = Services.PlayerBehaviour.CreateSpline (curPoint, secondPoint);
-		curPoint = secondPoint;
-
-		for(int i = 2; i < maxPoints; i++) {
-			
-			Step ();
-
-			if (Random.Range (0f, 100f) < branchFactor) {
-//				branching code. make new SplineTurtle
-				if (maxTotalPoints < 100) {
-					Instantiate (Services.Prefabs.SplineTurtle, transform.position, Quaternion.LookRotation (transform.forward));
-				}
+			angleChange = Random.Range (0,3);
+			minAngle = Random.Range (-90, 10);
+			maxAngle = Random.Range (minAngle, 90);
+			scaleChange = Random.Range (0.98f, 1.02f);
+			if (Random.Range (0, 100) < 90) {
+				maxDist = Random.Range (1f, 2f);
+				minDist = Random.Range (1, maxDist);
+				maxPoints = Random.Range (3, 5);
+				initialAmount = 1;
+			} else {
+				maxDist = Random.Range (6f, 10f);
+				minDist = Random.Range (5, maxDist);
+				initialAmount = Random.Range (20,25);
+				maxPoints = Random.Range (8, 10);
 			}
+			branchFactor = Random.Range(0,0);
+			continuity = Random.Range(0,2);
+
+			LockAngle = Random.Range (0f, 100f) > 50 ? true : false;
+			alternateAngle = Random.Range (0f, 100f) > 50 ? true : false;
+		
+
+
+			PivotAroundCenter = Random.Range (0f, 100f) > 50 ? true : false;
+			PivotSpeed = Random.Range (0f, 2f);
+
+		}
+
+		StartCoroutine(InitializeSpline ());
+
+	}
+
+	IEnumerator Draw(){
+		for(int i = 2; i < maxPoints; i++) {
+
+			Step ();
+			NewPoint ();
+			yield return new WaitForSeconds (0.05f);
+
+			if (PivotAroundCenter) {
+				transform.RotateAround (Vector3.zero, Vector3.forward, PivotSpeed);
+			}
+		}
+
+		if (closed) {
 
 			SplinePointPair spp;
 
-			if (!Raycast) {
-				spp = Services.PlayerBehaviour.ConnectNewPoint (curSpline, curPoint, null, transform.position);
-			} else {
-				Point newPoint = Services.PlayerBehaviour.CheckIfOverPoint (transform.position);
-				spp = Services.PlayerBehaviour.ConnectNewPoint (curSpline, curPoint, newPoint, transform.position);
-			}
+			spp = Services.PlayerBehaviour.ConnectNewPoint (curSpline, curSpline.SplinePoints[curSpline.SplinePoints.Count-1], curSpline.SplinePoints[0], transform.position);
 			curSpline = spp.s;
 			curPoint = spp.p;
+			curPoint.transform.parent = parent.transform;
+			curSpline.transform.parent = parent.transform;
+		}
 
+		if (maxCrawlers < 100) {
+			for (int i = 0; i < initialAmount; i++) {
+				SpawnTurtle ().transform.Rotate (0, 0, Random.Range (initialAngleMin, initialAngleMax) * i);	
+				maxCrawlers++;
+			}
+			yield return new WaitForSeconds (0.1f);
 		}
 	}
-	
+
+	IEnumerator InitializeSpline(){
+
+
+		parent = new GameObject ();
+			
+		mxAngle = maxAngle;
+		mAngle = minAngle;
+		mxDist = maxDist;
+		mDist = minDist;
+
+
+		if (Services.PlayerBehaviour.CheckIfOverPoint (transform.position) != null) {
+			curPoint = Services.PlayerBehaviour.CheckIfOverPoint (transform.position);
+			if (curPoint.HasSplines ()) {
+				curSpline = curPoint._connectedSplines [0];
+			}
+			Step ();
+			NewPoint ();
+		} else {
+
+			curPoint = Services.PlayerBehaviour.CreatePoint (transform.position);
+			curPoint.transform.parent = parent.transform;
+
+			yield return new WaitForSeconds (0.1f);
+
+			Step ();
+
+			Point secondPoint = Services.PlayerBehaviour.CreatePoint (transform.position);
+			curSpline = Services.PlayerBehaviour.CreateSpline (curPoint, secondPoint);
+			curPoint = secondPoint;
+			curPoint.transform.parent = parent.transform;
+
+			yield return new WaitForSeconds (0.1f);
+		}
+			
+
+		StartCoroutine (Draw ());
+	}
+
+	public GameObject SpawnTurtle(){
+		GameObject newTurtle = Instantiate (Services.Prefabs.SplineTurtle, transform.position, Quaternion.LookRotation (transform.forward));
+		SplineTurtle newTurtleScript = newTurtle.GetComponent<SplineTurtle> ();
+
+		newTurtle.transform.Rotate (0,0,Random.Range (initialAngleMin, initialAngleMax));
+
+		if (!childrenInherit) {
+			newTurtleScript.maxAngle = maxAngle;
+			newTurtleScript.minAngle = minAngle;
+			newTurtleScript.maxDist = maxDist;
+			newTurtleScript.minDist = minDist;
+		}
+		return newTurtle;
+	}
+
+	public void NewPoint(){
+		
+		if (Random.Range (0f, 100f) < branchFactor) {
+			if (maxTotalPoints < 200) {
+				SpawnTurtle ();
+			}
+		}
+
+		SplinePointPair spp;
+
+		if (!Raycast) {
+			spp = Services.PlayerBehaviour.ConnectNewPoint (curSpline, curPoint, null, transform.position);
+		} else {
+			Point newPoint = Services.PlayerBehaviour.CheckIfOverPoint (transform.position);
+			spp = Services.PlayerBehaviour.ConnectNewPoint (curSpline, curPoint, newPoint, transform.position);
+		}
+
+		curSpline = spp.s;
+		curPoint = spp.p;
+		curPoint.transform.parent = parent.transform;
+		curSpline.transform.parent = parent.transform;
+	}
+
+	public void Rotate(){
+		float rotation;
+		if (LockAngle) {
+			if (alternateAngle) {
+				if (turnleft) {
+					rotation = mAngle;
+					turnleft = !turnleft;
+				} else {
+					rotation = mxAngle;
+					turnleft = !turnleft;
+				}
+			} else {
+				if (Random.Range (0f, 100f) >= 50) {
+					rotation = mAngle;
+				} else {
+					rotation = mxAngle;
+				}
+			}
+		} else {
+			rotation = Random.Range (mAngle, mxAngle);
+		}
+
+		mAngle += angleChange;
+		mxAngle += angleChange;
+
+		transform.Rotate (0, 0, rotation);
+	}
+
 	void Step(){
 		maxTotalPoints++;
 
-		float rotation;
-		if (LockAngle) {
-			if (Random.Range (0f, 100f) >= 50) {
-				rotation = minAngle;
-			} else {
-				rotation = maxAngle;
-			}
-		} else {
-			rotation = Random.Range (minAngle, maxAngle);
-		}
+		Rotate ();
 
-		transform.Rotate (0, 0, rotation);
-		float moveDistance = Random.Range (minDistance, maxDistance);
-		minDistance *= scaleChange;
-		maxDistance *= scaleChange;
-		transform.position += transform.up * moveDistance + offsetDirection;
+		float moveDistance = Random.Range (mDist, mxDist);
+		mDist *= scaleChange;
+		mxDist *= scaleChange;
+		transform.localPosition += transform.up * moveDistance + offsetDirection;
 		curPoint.continuity = continuity;
 	}
 }

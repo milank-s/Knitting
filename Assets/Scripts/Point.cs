@@ -161,7 +161,7 @@ public class Point : MonoBehaviour
 	}
 
 	public void OnPointEnter(){
-		continuity = Mathf.Clamp01((NeighbourCount() - 1)/ 6);
+//		continuity = Mathf.Clamp01((NeighbourCount() - 1)/ 6);
 	}
 
 	public void OnPointExit(){
