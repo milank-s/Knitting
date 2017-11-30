@@ -245,7 +245,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		state = PlayerState.Switching;
 	}
 
-	public void FlyIntoNewPoint(Point p){
+	public IEnumerator FlyIntoNewPoint(Point p){
 
 		state = PlayerState.Animating;
 
@@ -277,16 +277,17 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		SplinePointPair	sp = ConnectNewPoint (s, curP, p, curP.transform.position);
 		curSpline = sp.s;
-		curPoint = curP;
+		curPoint = p;
 		s.Selected = curP;
-		progress = 0;
+		progress = 1;
 		Vector3 pos = transform.position;
 
-//		while (t < 1) {
-//			transform.position = Vector3.Lerp (pos, p.Pos, t);
+		while (Vector3.Distance(transform.position, p.Pos) > 0.1f) {
+			transform.position += (p.Pos - transform.position) * flow * Time.deltaTime;
 //			t += Time.deltaTime * flow;
-//			yield return null;
-//		}
+			yield return null;
+		}
+
 //		if (!p._connectedSplines.Contains (curSpline)) {
 //			nextPoint = p;
 //			SetPlayerAtEnd (nextSpline, nextPoint);
@@ -633,7 +634,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				StartCoroutine (CollectPoint (col.GetComponent<Point> ()));
 			} else if(state == PlayerState.Flying) {
 
-				FlyIntoNewPoint(col.GetComponent<Point>());
+				StartCoroutine(FlyIntoNewPoint(col.GetComponent<Point>()));
 			}
 		}
 	}
