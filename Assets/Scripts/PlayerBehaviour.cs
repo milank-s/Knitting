@@ -149,7 +149,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					if (!Input.GetButton ("Button2") && flow > flyingSpeedThreshold) {
 						state = PlayerState.Flying;
 						newPointList.Clear ();
-						newPointList.Add (transform.position);
+						newPointList.Add (curPoint.transform.position);
 						curDrawDistance = PointDrawDistance;
 					} else {
 //						if (inventory.Count > 0) {
@@ -249,7 +249,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		state = PlayerState.Animating;
 
-		int index = 10;
+		int index = 0;
 		float t = 0; 
 
 		Point curP = curPoint;
@@ -262,6 +262,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			Point newPoint = Services.PlayerBehaviour.CheckIfOverPoint (newPointList[index]);
 			spp = Services.PlayerBehaviour.ConnectNewPoint (s, curP, newPoint, newPointList[index]);
 
+			Debug.Log (newPointList [index]);
 
 			s = spp.s;
 			curP = spp.p;
@@ -282,8 +283,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		progress = 1;
 		Vector3 pos = transform.position;
 
-		while (Vector3.Distance(transform.position, p.Pos) > 0.1f) {
-			transform.position += (p.Pos - transform.position) * flow * Time.deltaTime;
+		while (Vector3.Distance(transform.position, p.Pos) > 0.01f) {
+			transform.position += (p.Pos - transform.position).normalized * flow * Time.deltaTime;
 //			t += Time.deltaTime * flow;
 			yield return null;
 		}
@@ -344,7 +345,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		flow += Mathf.Pow(Mathf.Abs(accuracy), 2) * acceleration * Time.deltaTime;
 
-		progress += ((flow + boost + (speed * Mathf.Abs(accuracy))) * Mathf.Sign(accuracy) * Time.deltaTime)/curSpline.distance;
+		progress += (((flow + boost + speed)* Mathf.Abs(accuracy)) * Mathf.Sign(accuracy) * Time.deltaTime)/curSpline.distance;
 
 		//set player position to a point along the curve
 
@@ -599,6 +600,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		s.AddPoint (firstP);
 		s.AddPoint (nextP);
 
+		s.GetComponentInChildren<SpriteRenderer> ().sprite = Services.Prefabs.Symbols [UnityEngine.Random.Range (0, Services.Prefabs.Symbols.Length)];
+		s.GetComponentInChildren<TextMesh> ().text = Spline.Splines.Count.ToString ();
+
 		s.transform.position = Vector3.Lerp (firstP.Pos, nextP.Pos, 0.5f);
 			
 		s.DrawMesh();
@@ -749,6 +753,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (curSpline != null) {
 			curSpline.DrawLineSegmentVelocity (progress, Mathf.Sign (accuracy), goingForward ? 0 : 1);
+			curSpline.l.material.mainTextureOffset -= Vector2.right * Mathf.Sign (accuracy) * flow * 10 * Time.deltaTime;
 //			l.SetPosition(0, transform.position);
 //			l.SetPosition(1, transform.position + (curSpline.GetDirection(progress) * Mathf.Sign(accuracy))/2);
 //			l.SetPosition(1, transform.position + cursorDir/2);

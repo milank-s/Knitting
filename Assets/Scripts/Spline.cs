@@ -15,12 +15,14 @@ public class Spline : MonoBehaviour {
 	[HideInInspector]
 	public Point Selected; 
 
-	private LineRenderer l;
+	[HideInInspector]
+	public LineRenderer l;
 	public LineRenderer l2;
 
 	public static Spline Select;
 
-
+	private float[] widthVals ;
+	private Keyframe[] widthKeys;
 	public int curveFidelity = 10;
 	public float drawSpeed = 6;
 	public float distance = 0; 
@@ -83,6 +85,18 @@ public class Spline : MonoBehaviour {
 
 	void Awake()
 	{
+		widthKeys = new Keyframe[8];
+		widthKeys [0] = new Keyframe (0f, 1f);
+		widthVals = new float[8];
+
+		for (int i = 0; i < 8; i++) {
+			widthVals[i] = UnityEngine.Random.Range(0f, 1f);
+
+		}
+
+		widthKeys [7] = new Keyframe (0f, 1f);
+
+
 		Splines.Add(this);
 		l = GetComponent<LineRenderer> ();
 		l.positionCount = 0;
@@ -94,14 +108,14 @@ public class Spline : MonoBehaviour {
 			SplinePoints = new List<Point> ();
 		}
 			
+
 		Select=this;
 		Splines.Add(this);
-		GetComponentInChildren<SpriteRenderer> ().sprite = Services.Prefabs.Symbols [UnityEngine.Random.Range (0, Services.Prefabs.Symbols.Length)];
-		GetComponentInChildren<TextMesh> ().text = Splines.Count.ToString ();
 	}
 	void Update () {
 		LineColors ();
 		DrawMesh ();
+
 
 		if(Select==null)
 			Select=this;
@@ -639,7 +653,15 @@ public class Spline : MonoBehaviour {
 				float t = (float)k / (float)(curveFidelity-1);
 
 				Vector3 v= GetPointAtIndex(i, t);
+				if (isPlayerOn) {
+					float offset = Mathf.Pow(1 - Mathf.Abs(Services.PlayerBehaviour.accuracy), 3);
+					offset /= 3f;
+					Vector3 direction = GetVelocityAtIndex (i, t);
+					direction = new Vector3 (-direction.y, direction.x, direction.z);
+					v += direction * UnityEngine.Random.Range(-offset, offset);
+				}
 				LineSegmentPoints.Add(v);
+
 
 				if(l.positionCount < (i * curveFidelity) + k){
 					l.positionCount = ((i * curveFidelity) + k);
@@ -657,12 +679,16 @@ public class Spline : MonoBehaviour {
 
 	public void LineColors(){
 
+
 		GradientColorKey[] colors = new GradientColorKey[Mathf.Clamp(SplinePoints.Count, 0, 8)]; 
 		GradientAlphaKey[] alphas = new GradientAlphaKey[1];
-//		AnimationCurve lineWidth = new AnimationCurve ();
+
+
 		alphas [0].alpha = 1;
 		for(int i = 0; i < colors.Length; i++){
 			int index = (int)(((float) i/(float)colors.Length) * ((float)SplinePoints.Count-1));
+	
+			widthKeys [i] = new Keyframe ((float)i / ((float)colors.Length - 1), Mathf.Sin (widthVals [i] * 10+ Time.time * 3)/2f + 0.6f);
 
 			Color c = SplinePoints[index].color;
 			colors [i].color = c;
@@ -670,13 +696,16 @@ public class Spline : MonoBehaviour {
 			Keyframe k = new Keyframe ();
 			k.time = colors[i].time;
 			k.value = SplinePoints [index].NeighbourCount ();
-//			lineWidth.AddKey (k);
 		}
+
+		widthKeys [0] = new Keyframe (0f, 1f);
+		widthKeys [colors.Length - 1] = new Keyframe (1f, 1f);
+
+		l.widthCurve = new AnimationCurve(widthKeys);
 
 		Gradient newGradient = new Gradient ();
 		newGradient.SetKeys (colors, alphas);
 		l.colorGradient = newGradient;
-//		l.widthCurve = lineWidth;
 	}
 		
 	//IO FUNCTIONS
