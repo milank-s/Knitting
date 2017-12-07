@@ -61,11 +61,11 @@ public class SplineTurtle : MonoBehaviour {
 			if (Random.Range (0, 100) < 90) {
 				maxDist = Random.Range (1f, 2f);
 				minDist = Random.Range (1, maxDist);
-				maxPoints = Random.Range (3, 5);
+				maxPoints = Random.Range (5, 10);
 				initialAmount = 1;
 			} else {
-				maxDist = Random.Range (6f, 10f);
-				minDist = Random.Range (5, maxDist);
+				maxDist = Random.Range (3f, 5f);
+				minDist = Random.Range (2, maxDist);
 				initialAmount = Random.Range (20,25);
 				maxPoints = Random.Range (8, 10);
 			}
@@ -175,7 +175,7 @@ public class SplineTurtle : MonoBehaviour {
 	public void NewPoint(){
 		
 		if (Random.Range (0f, 100f) < branchFactor) {
-			if (maxTotalPoints < 200) {
+			if (maxTotalPoints < 300) {
 				SpawnTurtle ();
 			}
 		}

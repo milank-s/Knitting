@@ -71,7 +71,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	private List<Point> inventory;
 	public Point lastPoint;
 
-	public float PointDrawDistance = 0.01f;
+	public float PointDrawDistance;
 	private float curDrawDistance = 0.1f;
 
 	public AudioSource AccelerationSound;
@@ -87,8 +87,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	bool newPoint = false; 
 	bool connectPoint = false;
 	float angleToSpline = Mathf.Infinity;
-	private List<Vector3> newPointList;
-	Vector3 lastPos;
+	private List<Transform> newPointList;
 
 	void Awake(){
 		state = PlayerState.Switching;
@@ -98,7 +97,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversing = false;
 		inventory = new List<Point>();
 		ps = GetComponent<ParticleSystem> ();
-		newPointList = new List<Vector3> ();
+		newPointList = new List<Transform> ();
 
 		int i = 0;
 
@@ -149,8 +148,10 @@ public class PlayerBehaviour: MonoBehaviour {
 					if (!Input.GetButton ("Button2") && flow > flyingSpeedThreshold) {
 						state = PlayerState.Flying;
 						newPointList.Clear ();
-						newPointList.Add (curPoint.transform.position);
+						l.positionCount = 1;
+						l.SetPosition (0, curPoint.Pos);
 						curDrawDistance = PointDrawDistance;
+
 					} else {
 //						if (inventory.Count > 0) {
 							Point nextPoint = null;
@@ -167,6 +168,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 			if (canTraverse && !Input.GetButton ("Button2")) {
+
 				curSpline.OnSplineEnter ();
 				state = PlayerState.Traversing;
 
@@ -215,26 +217,45 @@ public class PlayerBehaviour: MonoBehaviour {
 	public IEnumerator ReturnToLastPoint(){
 		
 		float speed = 0.001f;
-		int index = newPointList.Count - 1;
+		int index = 0;
 		float t = 0; 
-		float distance = Vector3.Distance (newPointList [index], newPointList [index - 1]);
-		Vector3 lastPos = transform.position;
+		float distance = Vector3.Distance (newPointList [index].position, newPointList [index + 1].position);
 
-		while(index > 0){
+		while(index < newPointList.Count -1){
 
-			speed += Time.deltaTime * 1/index;
-			t += speed/distance;
-			transform.position = Vector3.Lerp (newPointList[index], newPointList [index - 1], t);
+			speed += Time.deltaTime / distance;
+			t += speed;
+			Vector3 lastPos = transform.position;
+//			transform.position = Vector3.Lerp (newPointList[index].position, newPointList [index - 1].position, t);
+			Transform curJoint = newPointList[index];
+			curJoint.position = Vector3.Lerp(curJoint.position, newPointList[index+1].position, t);
+//			float curDistance = Vector3.Distance (newPointList [index].position, transform.position);
+			transform.position = curJoint.position;
+			sprite.transform.up = transform.position - lastPos;
 
-			float curDistance = Vector3.Distance (newPointList [index], transform.position);
-			sprite.transform.up = transform.position - newPointList [index - 1];
+			for(int i = newPointList.Count; i > index; i--){
+				l.SetPosition(i - index, newPointList[i-1].position);
+			}
+			l.SetPosition (0, transform.position);
 
 			if(t >= 1){
-				index--;
-				if (index < 1) {
+				GameObject toDestroy = newPointList [index].gameObject;
+				Destroy (toDestroy);
+
+				index++;
+				l.positionCount = newPointList.Count - index + 1;
+
+				if (index >= newPointList.Count -1) {
+					Destroy (newPointList [index].gameObject);
 					break;
 				}
-				distance = Vector3.Distance (newPointList [index], newPointList [index - 1]);
+
+	
+
+				newPointList [index].GetComponent<SpringJoint> ().connectedBody = newPointList [index+1].GetComponent<Rigidbody>();
+				distance = Vector3.Distance (newPointList [index].position, newPointList [index+1].position);
+
+
 				t = 0;
 			}
 
@@ -247,29 +268,25 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public IEnumerator FlyIntoNewPoint(Point p){
 
-		state = PlayerState.Animating;
-
-		int index = 0;
+		int index = newPointList.Count - 1;
 		float t = 0; 
 
 		Point curP = curPoint;
 		Spline s = curSpline;
 
-		while (index < newPointList.Count) {
+		while (index >= 0) {
 
 			SplinePointPair spp;
 
-			Point newPoint = Services.PlayerBehaviour.CheckIfOverPoint (newPointList[index]);
-			spp = Services.PlayerBehaviour.ConnectNewPoint (s, curP, newPoint, newPointList[index]);
-
-			Debug.Log (newPointList [index]);
+			Point newPoint = Services.PlayerBehaviour.CheckIfOverPoint (newPointList[index].position);
+			spp = Services.PlayerBehaviour.ConnectNewPoint (s, curP, newPoint, newPointList[index].position);
 
 			s = spp.s;
 			curP = spp.p;
 			curP.transform.parent = s.transform;
 			s.transform.parent = s.transform;
 
-			index += 10;
+			index -= 3;
 		}
 			
 		//could add another point at the player's current position between curP (last in index) and p (destination) to make player position not jump
@@ -283,9 +300,14 @@ public class PlayerBehaviour: MonoBehaviour {
 		progress = 1;
 		Vector3 pos = transform.position;
 
+		float distance = Vector3.Distance (transform.position, p.Pos);
 		while (Vector3.Distance(transform.position, p.Pos) > 0.01f) {
 			transform.position += (p.Pos - transform.position).normalized * flow * Time.deltaTime;
-//			t += Time.deltaTime * flow;
+
+			for(int i = 0; i < newPointList.Count; i++){
+				l.SetPosition(i, Vector3.Lerp(l.GetPosition(i), newPointList[i].position, 1 -(Vector3.Distance(transform.position, p.Pos)/distance)));
+			}
+
 			yield return null;
 		}
 
@@ -302,23 +324,39 @@ public class PlayerBehaviour: MonoBehaviour {
 
 //		SetPlayerAtEnd (s, p);
 //		CheckProgress();
+		for (int i = newPointList.Count - 1; i >= 0; i--) {
+			Destroy (newPointList [i].gameObject);
+		}
 
+		newPointList.Clear ();
+		l.positionCount = 0;
 		state = PlayerState.Switching;
 	}
 
 	void FreeMovement(){
 		Vector3 inertia;
-		lastPos = transform.position;
 
 
 		float speed;
 		// Make drawing points while you skate. 
 		//should solve the problems of jumping across new points on the same spline. 
+		l.positionCount = newPointList.Count + 1;
 
-
-		if (flow < 0) {
+		for (int i = newPointList.Count; i > 0; i--) {
+			l.SetPosition (i, newPointList [i-1].position);
+		}
 			
-			newPointList.Add (transform.position);
+		l.SetPosition (0, transform.position);
+
+		Point RaycastHitObj = CheckIfOverPointOnCamera (transform.position);
+
+		if (RaycastHitObj != null && RaycastHitObj.GetComponent<Point> ().isPlaced && RaycastHitObj != curPoint) {
+			state = PlayerState.Animating;
+			StartCoroutine(FlyIntoNewPoint(RaycastHitObj));
+
+		}else if (flow < 0) {
+//			CreateJoint (newPointList[newPointList.Count-1].GetComponent<Rigidbody>());
+
 			state = PlayerState.Animating;
 			StartCoroutine (ReturnToLastPoint ());
 
@@ -327,17 +365,32 @@ public class PlayerBehaviour: MonoBehaviour {
 			flow -= Time.deltaTime;
 			transform.position += inertia * Time.deltaTime;
 
-			curDrawDistance -= (inertia * Time.deltaTime).magnitude;
+			if (newPointList.Count == 0) {
+				curDrawDistance = Vector3.Distance (transform.position, curPoint.Pos);
+			} else {
+				curDrawDistance = Vector3.Distance (newPointList [newPointList.Count - 1].position, curPoint.Pos);
+			}
 
-			if (curDrawDistance <= 0) {
-				curDrawDistance = PointDrawDistance;
-				newPointList.Add (transform.position);
+			if (curDrawDistance >= PointDrawDistance) {
+				curDrawDistance = 0;
+				if (newPointList.Count == 0) {
+					CreateJoint (GetComponent<Rigidbody>());
+				} else {
+					CreateJoint (newPointList [newPointList.Count - 1].GetComponent<Rigidbody> ());
+				}
 			}
 		}
 			
 	}
 
-
+	GameObject CreateJoint(Rigidbody r){
+		Transform newJoint = Instantiate (Services.Prefabs.Joint, curPoint.transform.position, Quaternion.identity).transform;
+		newJoint.GetComponent<SpringJoint> ().connectedBody = r;
+		newJoint.GetComponent<Rigidbody> ().velocity = newJoint.GetComponent<SpringJoint> ().connectedBody.velocity/2;
+		newJoint.name = newPointList.Count.ToString();
+		newPointList.Add(newJoint);
+		return newJoint.gameObject;
+	}
 
 	void PlayerMovement(){ 
 
@@ -416,14 +469,29 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 	}
 
-
 	public Point CheckIfOverPoint(Vector3 pos){
-		Ray ray = new Ray (pos + -(Vector3.forward) * 100, Vector3.forward);
-//		Ray ray = Camera.main.ScreenPointToRay (Camera.main.WorldToScreenPoint (pos));
-//		Debug.DrawRay (ray.origin, ray.origin + ray.direction * 10);
+		Ray ray = new Ray (pos  - (Vector3.forward) * 10, Vector3.forward);
+		//		Debug.DrawRay (ray.origin, ray.origin + ray.direction * 10);
 		RaycastHit hit;
 
-		if (Physics.Raycast (ray, out hit)) {
+		if (Physics.Raycast (ray, out hit, 20f, LayerMask.GetMask("Points"))) {
+			if (hit.collider.tag == "Point") {
+				Point hitPoint = hit.collider.GetComponent<Point> ();
+
+				return hitPoint;
+
+			} 
+		}
+		return null;
+	}
+
+	public Point CheckIfOverPointOnCamera(Vector3 pos){
+//		Ray ray = new Ray (pos + -(Vector3.forward) * 100, Vector3.forward);
+		Ray ray = Camera.main.ScreenPointToRay (Camera.main.WorldToScreenPoint (pos));
+
+		RaycastHit hit;
+		Debug.DrawRay(Camera.main.ScreenToWorldPoint(Camera.main.WorldToScreenPoint (pos)), Camera.main.ScreenPointToRay (Camera.main.WorldToScreenPoint (pos)).direction);
+		if (Physics.Raycast (ray, out hit, Mathf.Infinity, LayerMask.GetMask("Points"))) {
 			if (hit.collider.tag == "Point") {
 				Point hitPoint = hit.collider.GetComponent<Point> ();
 
@@ -636,9 +704,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (col.tag == "Point") {
 			if (!col.GetComponent<Point> ().isPlaced) {
 				StartCoroutine (CollectPoint (col.GetComponent<Point> ()));
-			} else if(state == PlayerState.Flying) {
-
-				StartCoroutine(FlyIntoNewPoint(col.GetComponent<Point>()));
 			}
 		}
 	}
@@ -741,10 +806,12 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		float Absflow = Mathf.Abs (flow);
 		if (state == PlayerState.Flying) {
-			t.time = Absflow;
+//			t.time = Absflow;
+			//do shit with particle systems for flying
 		} else {
-			t.time = Mathf.Lerp(t.time, 1, Time.deltaTime);
+//			t.time = Mathf.Lerp(t.time, 0, Time.deltaTime);
 		}
+
 		ParticleSystem.EmissionModule e = ps.emission;	
 			
 		e.rateOverTimeMultiplier = (int)Mathf.Lerp (0, flow * 25, Mathf.Pow (1 - Mathf.Abs (accuracy), 2));
@@ -752,7 +819,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		AccelerationSound.volume = Mathf.Clamp01(flow / (maxSpeed/5));
 
 		if (curSpline != null) {
-			curSpline.DrawLineSegmentVelocity (progress, Mathf.Sign (accuracy), goingForward ? 0 : 1);
+//			curSpline.DrawLineSegmentVelocity (progress, Mathf.Sign (accuracy), goingForward ? 0 : 1);
 			curSpline.l.material.mainTextureOffset -= Vector2.right * Mathf.Sign (accuracy) * flow * 10 * Time.deltaTime;
 //			l.SetPosition(0, transform.position);
 //			l.SetPosition(1, transform.position + (curSpline.GetDirection(progress) * Mathf.Sign(accuracy))/2);

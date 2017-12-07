@@ -8,6 +8,7 @@ public class PrefabManager : MonoBehaviour {
 	public GameObject Point;
 	public GameObject Spline;
 	public GameObject SplineTurtle;
+	public GameObject Joint;
 	public Sprite[] Symbols;
 	public Material[] Lines;
 

@@ -169,8 +169,6 @@ public class Spline : MonoBehaviour {
 			}
 
 
-
-
 			if (flag) {
 				return;
 			}
@@ -382,7 +380,7 @@ public class Spline : MonoBehaviour {
 
 	public Vector3 GetInitVelocity(Point p){
 
-		return GetVelocityAtIndex(GetPointIndex(p), 0);
+		return GetVelocityAtIndex(GetPointIndex(p), 0.1f);
 	
 	}
 
@@ -390,7 +388,7 @@ public class Spline : MonoBehaviour {
 
 		//JUST WHAT SHOULD BE GOING ON HERE
 
-		return -GetVelocityAtIndex(GetPointIndex(p), 1);
+		return -GetVelocityAtIndex(GetPointIndex(p), 0.9f);
 	}
 
 	public float CompareAngleAtPoint(Vector3 direction, Point p, bool reversed = false){
