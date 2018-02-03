@@ -7,6 +7,7 @@ public class DrawLineToTarget : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		l = GetComponent<LineRenderer> ();
+		l.positionCount = 2;
 	}
 	
 	// Update is called once per frame

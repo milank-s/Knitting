@@ -158,7 +158,7 @@ public class EditorUI : MonoBehaviour {
 			{
 				Destroy( spline.gameObject);
 			}
-			if(!Application.isWebPlayer)
+
 			if(GUILayout.Button("Save"))
 			{
 				spline.Save();
@@ -182,8 +182,7 @@ public class EditorUI : MonoBehaviour {
 		}
 		windowListSplineRect=GUI.Window(2, windowListSplineRect, WindowListSpline, "List Spline ");
 
-		if(!Application.isWebPlayer)
-			windowLoadRect=GUI.Window(3, windowLoadRect, WindowLoad, "Saved Splines");
+
 		if(GUI.Button(new Rect(0,0,100,20),"New Spline"))
 		{
 			GameObject.Instantiate(NewSplinePrefab).name="New Spline";

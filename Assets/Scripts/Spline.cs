@@ -85,6 +85,7 @@ public class Spline : MonoBehaviour {
 
 	void Awake()
 	{
+		
 		widthKeys = new Keyframe[8];
 		widthKeys [0] = new Keyframe (0f, 1f);
 		widthVals = new float[8];
@@ -94,95 +95,99 @@ public class Spline : MonoBehaviour {
 
 		}
 
-		widthKeys [7] = new Keyframe (0f, 1f);
+		widthKeys [7] = new Keyframe (1f, 1f);
 
 
 		Splines.Add(this);
 		l = GetComponent<LineRenderer> ();
 		l.positionCount = 0;
+
 		if (SplinePoints.Count > 0) {
 			foreach (Point p in SplinePoints) {
-				AddPoint (p);
+				AddPoint (null, p);
 			}
 		} else {
 			SplinePoints = new List<Point> ();
 		}
 			
+		SplinePoints = new List<Point> ();
 
 		Select=this;
 		Splines.Add(this);
 	}
 	void Update () {
-		LineColors ();
-		DrawMesh ();
-
-
-		if(Select==null)
-			Select=this;
-		if(!isSelect)
-			return;
-
-		if (Input.GetMouseButtonDown (1)) {
-			Vector3 C = new Vector3 (Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
-			float minDistance = float.MaxValue;
-			int minI = 0;
-			Vector3 minD = Vector3.zero;
-			bool flag = true;
-			minDistance = float.MaxValue;
-			for (int i = 0; i < SplinePoints.Count - 1; i++) {
-
-				Vector3 A = CameraControler.MainCamera.WorldToScreenPoint (SplinePoints [i].Pos);
-				Vector3 B = CameraControler.MainCamera.WorldToScreenPoint (SplinePoints [i + 1].Pos);
-
-				Vector3 D = A + Vector3.Project (C - A, B - A);	
-				Vector3 Va = D - A;
-				Vector3 Vb = D - B;
-
-				if ((Mathf.Sign (Va.x) != Mathf.Sign (Vb.x) || Va.x == 0 && Vb.x == 0) &&
-				   (Mathf.Sign (Va.y) != Mathf.Sign (Vb.y) || Va.y == 0 && Vb.y == 0) &&
-				   (Mathf.Sign (Va.z) != Mathf.Sign (Vb.z) || Va.z == 0 && Vb.z == 0) &&
-				   Vector3.Distance (D, C) < minDistance) {
-					minI = i;
-					minD = D;
-					minDistance = Vector3.Distance (D, C);
-					flag = false;
-				}
-			}
-
-			if (closed) {
-				Vector3 A = CameraControler.MainCamera.WorldToScreenPoint (SplinePoints [0].Pos);
-				Vector3 B = CameraControler.MainCamera.WorldToScreenPoint (SplinePoints [SplinePoints.Count - 1].Pos);
-
-				Vector3 D = A + Vector3.Project (C - A, B - A);	
-				Vector3 Va = D - A;
-				Vector3 Vb = D - B;
-
-				if ((Mathf.Sign (Va.x) != Mathf.Sign (Vb.x) || Va.x == 0 && Vb.x == 0) &&
-				   (Mathf.Sign (Va.y) != Mathf.Sign (Vb.y) || Va.y == 0 && Vb.y == 0) &&
-				   (Mathf.Sign (Va.z) != Mathf.Sign (Vb.z) || Va.z == 0 && Vb.z == 0) &&
-				   Vector3.Distance (D, C) < minDistance) {
-					minI = SplinePoints.Count - 1;
-					minD = D;
-					minDistance = Vector3.Distance (D, C);
-					flag = false;
-				}
-			}
-
-
-			if (flag) {
-				return;
-			}
-
-			Point point = GameObject.Instantiate (Services.Prefabs.Point).GetComponent<Point>();
-			point.transform.parent = transform;
-			Vector3 curentPos = CameraControler.MainCamera.ScreenToWorldPoint (minD);
-			point.transform.position = curentPos;
-			AddPoint(point);
+		if (SplinePoints.Count > 0) {
+			LineColors ();
+			DrawMesh ();
 		}
+
+
+//		if(Select==null)
+//			Select=this;
+//		if(!isSelect)
+//			return;
+//
+//		if (Input.GetMouseButtonDown (1)) {
+//			Vector3 C = new Vector3 (Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
+//			float minDistance = float.MaxValue;
+//			int minI = 0;
+//			Vector3 minD = Vector3.zero;
+//			bool flag = true;
+//			minDistance = float.MaxValue;
+//			for (int i = 0; i < SplinePoints.Count - 1; i++) {
+//
+//				Vector3 A = CameraControler.MainCamera.WorldToScreenPoint (SplinePoints [i].Pos);
+//				Vector3 B = CameraControler.MainCamera.WorldToScreenPoint (SplinePoints [i + 1].Pos);
+//
+//				Vector3 D = A + Vector3.Project (C - A, B - A);	
+//				Vector3 Va = D - A;
+//				Vector3 Vb = D - B;
+//
+//				if ((Mathf.Sign (Va.x) != Mathf.Sign (Vb.x) || Va.x == 0 && Vb.x == 0) &&
+//				   (Mathf.Sign (Va.y) != Mathf.Sign (Vb.y) || Va.y == 0 && Vb.y == 0) &&
+//				   (Mathf.Sign (Va.z) != Mathf.Sign (Vb.z) || Va.z == 0 && Vb.z == 0) &&
+//				   Vector3.Distance (D, C) < minDistance) {
+//					minI = i;
+//					minD = D;
+//					minDistance = Vector3.Distance (D, C);
+//					flag = false;
+//				}
+//			}
+//
+//			if (closed) {
+//				Vector3 A = CameraControler.MainCamera.WorldToScreenPoint (SplinePoints [0].Pos);
+//				Vector3 B = CameraControler.MainCamera.WorldToScreenPoint (SplinePoints [SplinePoints.Count - 1].Pos);
+//
+//				Vector3 D = A + Vector3.Project (C - A, B - A);	
+//				Vector3 Va = D - A;
+//				Vector3 Vb = D - B;
+//
+//				if ((Mathf.Sign (Va.x) != Mathf.Sign (Vb.x) || Va.x == 0 && Vb.x == 0) &&
+//				   (Mathf.Sign (Va.y) != Mathf.Sign (Vb.y) || Va.y == 0 && Vb.y == 0) &&
+//				   (Mathf.Sign (Va.z) != Mathf.Sign (Vb.z) || Va.z == 0 && Vb.z == 0) &&
+//				   Vector3.Distance (D, C) < minDistance) {
+//					minI = SplinePoints.Count - 1;
+//					minD = D;
+//					minDistance = Vector3.Distance (D, C);
+//					flag = false;
+//				}
+//			}
+//
+//
+//			if (flag) {
+//				return;
+//			}
+//
+//			Point point = GameObject.Instantiate (Services.Prefabs.Point).GetComponent<Point>();
+//			point.transform.parent = transform;
+//			Vector3 curentPos = CameraControler.MainCamera.ScreenToWorldPoint (minD);
+//			point.transform.position = curentPos;
+//			AddPoint(point);
+//		}
 	}
 
 	void CleanUpLines(){
-		l2.positionCount = 0;
+//		l2.positionCount = 0;
 	}
 
 
@@ -423,11 +428,11 @@ public class Spline : MonoBehaviour {
 		SplinePoints.Clear ();
 
 		foreach (Point p in points) {
-			AddPoint (p);
+			AddPoint (null, p);
 		}
 	}
 
-	public void AddPoint(Point p)
+	public void AddPoint(Point curPoint, Point p)
 	{
 		if (SplinePoints.Contains (p)) {
 			return;
@@ -445,7 +450,7 @@ public class Spline : MonoBehaviour {
 	
 
 		//ADDING POINTS OFF THE BACK OF THE START POINT
-		if (SplinePoints.Count > 1 && Services.Player.GetComponent<PlayerBehaviour>().curPoint == StartPoint()) {
+		if (SplinePoints.Count >= 1 && curPoint == StartPoint()) {
 			SplinePoints.Insert (0, p);
 			p.AddPoint (MiddlePoint ());
 			MiddlePoint ().AddPoint (p);
@@ -475,7 +480,11 @@ public class Spline : MonoBehaviour {
 //				SplinePoints [newIndex + 1].AddPoint(p);
 //			}
 		}
-		 
+
+		if (GetComponent<WordBank>() != null) {
+			p.text = GetComponent<WordBank> ().GetWord ();
+		}
+
 		l.material = Services.Prefabs.Lines [Mathf.Clamp(SplinePoints.Count-2, 0, Services.Prefabs.Lines.Length-1)];
 	}
 		
@@ -642,6 +651,7 @@ public class Spline : MonoBehaviour {
 
 		int Count = SplinePoints.Count;
 		Vector3 lastPosition = GetPointAtIndex (0, 0);
+
 		l.SetPosition(0, lastPosition);
 
 		for (int i = 0; i < Count - (closed?0:1); i++){
@@ -651,9 +661,10 @@ public class Spline : MonoBehaviour {
 				float t = (float)k / (float)(curveFidelity-1);
 
 				Vector3 v= GetPointAtIndex(i, t);
+
 				if (isPlayerOn) {
 					float offset = Mathf.Pow(1 - Mathf.Abs(Services.PlayerBehaviour.accuracy), 3);
-					offset /= 3f;
+					offset *= Services.PlayerBehaviour.flow /10;
 					Vector3 direction = GetVelocityAtIndex (i, t);
 					direction = new Vector3 (-direction.y, direction.x, direction.z);
 					v += direction * UnityEngine.Random.Range(-offset, offset);
@@ -683,6 +694,7 @@ public class Spline : MonoBehaviour {
 
 
 		alphas [0].alpha = 1;
+
 		for(int i = 0; i < colors.Length; i++){
 			int index = (int)(((float) i/(float)colors.Length) * ((float)SplinePoints.Count-1));
 	
@@ -697,7 +709,7 @@ public class Spline : MonoBehaviour {
 		}
 
 		widthKeys [0] = new Keyframe (0f, 1f);
-		widthKeys [colors.Length - 1] = new Keyframe (1f, 1f);
+		widthKeys [Mathf.Clamp(colors.Length - 1 , 0, widthKeys.Length -1)] = new Keyframe (1f, 1f);
 
 		l.widthCurve = new AnimationCurve(widthKeys);
 

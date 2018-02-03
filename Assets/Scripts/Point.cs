@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 
 public class Point : MonoBehaviour
 {
@@ -12,7 +13,8 @@ public class Point : MonoBehaviour
 		}
 	}
 	public static int pointCount = 0;
-
+	public Rigidbody rb;
+	public string text;
 	public float tension;
 	public float bias;
 	public float continuity;
@@ -25,11 +27,10 @@ public class Point : MonoBehaviour
 	public List<Point> _neighbours;
 	public List<Spline> _connectedSplines;
 
-
 	public bool isPlaced = false;
 	public Color color;
 	public float timeOffset;
-	public float proximity = 1;
+	public float proximity = 0;
 	public bool locked = false; 
 
 	public static Point Select;
@@ -47,23 +48,31 @@ public class Point : MonoBehaviour
 	}
 
 
-	void Awake(){
-		_directionalSprites = new List<GameObject> ();
 
+
+	void Awake(){
+		Services.Points.AddPoint (this);
 		Point.pointCount++;
-		color = new Color (1, 1, 1, 1);
+		timeOffset = Point.pointCount * 0.1f;
 		gameObject.name = "v" + Point.pointCount;
+		_directionalSprites = new List<GameObject> ();
+		color = new Color (1, 1, 1, 1);
+		rb = GetComponent<Rigidbody> ();
 		if (_neighbours.Count == 0) {
 			_neighbours = new List<Point> ();
 		}
 		if (_connectedSplines.Count == 0) {
 			_connectedSplines = new List<Spline> ();
 		}
-		cooldown = 0;
-		proximity = 0;
+
+		_connectedSplines =  new List<Spline> ();
+		_neighbours = new List<Point> ();
+
+		cooldown = (((float)Point.pointCount) % boostCooldown)/3f;
 		SR = GetComponent<SpriteRenderer> ();
-		l = GetComponent<LineRenderer> ();
-		c = 1;
+
+//		l = GetComponent<LineRenderer> ();
+		c = 0;
 
 	}
 //	void OnMouseDown()
@@ -85,10 +94,14 @@ public class Point : MonoBehaviour
 	public void Update(){
 		cooldown -= Time.deltaTime;
 
-		c = Mathf.Lerp(proximity + Mathf.Clamp01((Mathf.Sin (2 * Time.time + timeOffset)/5)) + 0.1f, 1, Mathf.Clamp01(cooldown));
+		c = Mathf.Lerp(proximity + Mathf.Clamp01((Mathf.Sin (3 * Time.time + timeOffset)/5)) + 0.1f, 1, Mathf.Clamp01(cooldown));
+		c = Mathf.Pow (c, 1);
 		SR.color = Color.Lerp (new Color (c, c, c), Color.white, Mathf.Clamp01(cooldown));
 		color = SR.color;
 
+		if (_connectedSplines.Count == 0) {
+			c = 1;
+		}
 //		l.SetPosition (0, transform.position);
 //		l.SetPosition (1, GetComponent<SpringJoint>().connectedBody.transform.position);
 
@@ -160,11 +173,16 @@ public class Point : MonoBehaviour
 		_neighbours.Remove (p);
 	}
 
-	public void OnPointEnter(){
-//		continuity = Mathf.Clamp01((NeighbourCount() - 1)/ 6);
+	public void OnPointEnter(Spline s){
+		if (GetComponentInParent<WordBank>() != null) {
+			GameObject newText = (GameObject)Instantiate (Services.Prefabs.SpawnedText, transform.position + Vector3.up, Quaternion.identity);
+			newText.GetComponent<TextMesh>().text = GetComponentInParent<WordBank>().GetWord ();
+			newText.transform.parent = transform;
+		}
 	}
 
 	public void OnPointExit(){
+		proximity = 0.5f;
 	}
 
 
@@ -228,5 +246,6 @@ public class Point : MonoBehaviour
 		//			s.GetComponent<SplineDecorator>().DestroySpline (this);
 		//		}
 	}
+
 
 }

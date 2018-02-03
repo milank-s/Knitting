@@ -7,6 +7,9 @@ public class SplineTurtle : MonoBehaviour {
 	public static float maxTotalPoints = 0;
 	public static float maxCrawlers = 0;
 
+	public string parentName;
+
+	public bool createSplines;
 	public bool Randomize;
 
 	public int initialAmount;
@@ -35,7 +38,7 @@ public class SplineTurtle : MonoBehaviour {
 	public float  PivotSpeed;
 	public bool closed;
 	public bool childrenInherit = false;
-	private bool turnleft = false;
+	private bool turnleft = true;
 
 	GameObject parent;
 
@@ -98,11 +101,11 @@ public class SplineTurtle : MonoBehaviour {
 			}
 		}
 
-		if (closed) {
+		if (createSplines && closed) {
 
 			SplinePointPair spp;
 
-			spp = Services.PlayerBehaviour.ConnectNewPoint (curSpline, curSpline.SplinePoints[curSpline.SplinePoints.Count-1], curSpline.SplinePoints[0], transform.position);
+			spp = SplineUtil.ConnectPoints (curSpline, curSpline.SplinePoints[curSpline.SplinePoints.Count-1], curSpline.SplinePoints[0]);
 			curSpline = spp.s;
 			curPoint = spp.p;
 			curPoint.transform.parent = parent.transform;
@@ -111,7 +114,7 @@ public class SplineTurtle : MonoBehaviour {
 
 		if (maxCrawlers < 100) {
 			for (int i = 0; i < initialAmount; i++) {
-				SpawnTurtle ().transform.Rotate (0, 0, Random.Range (initialAngleMin, initialAngleMax) * i);	
+				SpawnTurtle ().transform.Rotate (0, 0, transform.eulerAngles.z + Random.Range (initialAngleMin, initialAngleMax) * i);	
 				maxCrawlers++;
 			}
 			yield return new WaitForSeconds (0.1f);
@@ -122,6 +125,7 @@ public class SplineTurtle : MonoBehaviour {
 
 
 		parent = new GameObject ();
+		parent.name = parentName;
 			
 		mxAngle = maxAngle;
 		mAngle = minAngle;
@@ -129,8 +133,8 @@ public class SplineTurtle : MonoBehaviour {
 		mDist = minDist;
 
 
-		if (Services.PlayerBehaviour.CheckIfOverPoint (transform.position) != null) {
-			curPoint = Services.PlayerBehaviour.CheckIfOverPoint (transform.position);
+		if (SplineUtil.RaycastDownToPoint (transform.position, Mathf.Infinity, 1000f) != null) {
+			curPoint = SplineUtil.RaycastDownToPoint (transform.position, Mathf.Infinity, 1000f);
 			if (curPoint.HasSplines ()) {
 				curSpline = curPoint._connectedSplines [0];
 			}
@@ -138,15 +142,18 @@ public class SplineTurtle : MonoBehaviour {
 			NewPoint ();
 		} else {
 
-			curPoint = Services.PlayerBehaviour.CreatePoint (transform.position);
+			curPoint = SplineUtil.CreatePoint (transform.position);
 			curPoint.transform.parent = parent.transform;
 
 			yield return new WaitForSeconds (0.1f);
 
 			Step ();
 
-			Point secondPoint = Services.PlayerBehaviour.CreatePoint (transform.position);
-			curSpline = Services.PlayerBehaviour.CreateSpline (curPoint, secondPoint);
+			Point secondPoint = SplineUtil.CreatePoint (transform.position);
+
+			if (createSplines) {
+				curSpline = SplineUtil.CreateSpline (curPoint, secondPoint);
+			}
 			curPoint = secondPoint;
 			curPoint.transform.parent = parent.transform;
 
@@ -158,7 +165,8 @@ public class SplineTurtle : MonoBehaviour {
 	}
 
 	public GameObject SpawnTurtle(){
-		GameObject newTurtle = Instantiate (Services.Prefabs.SplineTurtle, transform.position, Quaternion.LookRotation (transform.forward));
+		GameObject newTurtle = Instantiate (gameObject, transform.position, Quaternion.Euler(transform.eulerAngles));
+
 		SplineTurtle newTurtleScript = newTurtle.GetComponent<SplineTurtle> ();
 
 		newTurtle.transform.Rotate (0,0,Random.Range (initialAngleMin, initialAngleMax));
@@ -182,17 +190,26 @@ public class SplineTurtle : MonoBehaviour {
 
 		SplinePointPair spp;
 
-		if (!Raycast) {
-			spp = Services.PlayerBehaviour.ConnectNewPoint (curSpline, curPoint, null, transform.position);
+		Point newPoint = null;
+
+		if (Raycast) {
+			newPoint = SplineUtil.RaycastDownToPoint (transform.position, Mathf.Infinity, 1000f);
+			if (newPoint == null) {
+				newPoint = SplineUtil.CreatePoint (transform.position);
+			}
 		} else {
-			Point newPoint = Services.PlayerBehaviour.CheckIfOverPoint (transform.position);
-			spp = Services.PlayerBehaviour.ConnectNewPoint (curSpline, curPoint, newPoint, transform.position);
+			newPoint = SplineUtil.CreatePoint (transform.position);
 		}
 
-		curSpline = spp.s;
-		curPoint = spp.p;
-		curPoint.transform.parent = parent.transform;
-		curSpline.transform.parent = parent.transform;
+		if (createSplines) {
+			spp = SplineUtil.ConnectPoints (curSpline, curPoint, newPoint);
+			curSpline = spp.s;
+			curPoint = spp.p;
+			curPoint.transform.parent = parent.transform;
+			curSpline.transform.parent = parent.transform;
+		} else {
+			newPoint.transform.parent = parent.transform;
+		}
 	}
 
 	public void Rotate(){
@@ -219,6 +236,14 @@ public class SplineTurtle : MonoBehaviour {
 
 		mAngle += angleChange;
 		mxAngle += angleChange;
+		if (Mathf.Abs (mAngle) > minAngle) {
+			angleChange = -angleChange;
+//			mAngle = mAngle % minAngle;
+		}
+		if (Mathf.Abs (mxAngle) > maxAngle) {
+//			mxAngle = maxAngle % maxAngle;
+//			angleChange = -angleChange;
+		}
 
 		transform.Rotate (0, 0, rotation);
 	}
