@@ -117,7 +117,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		connectTime -= Time.deltaTime / connectTimeCoefficient;
 		Point.hitColorLerp = connectTime;
 
-		if (connectTime < 0) {
+		if (connectTime < 0 && PointManager._pointsHit.Count > 0) {
 			PointManager.ResetPoints ();
 			connectTime = 0;
 		}
@@ -158,34 +158,33 @@ public class PlayerBehaviour: MonoBehaviour {
 					if (nextPoint != null) {
 						SplinePointPair spp = SplineUtil.ConnectPoints (curSpline, curPoint, nextPoint);
 
-						curSpline = spp.s;
+						if (curSpline != null && curSpline != spp.s){
+							curSpline.OnSplineExit ();
+						}
 
+						curSpline = spp.s;
+						curSpline.OnSplineEnter ();
 						creationInterval = creationCD;
+						SetPlayerAtStart (curSpline, spp.p);
 						canTraverse = true;
 
 					}else if (!Input.GetButton ("Button2") && flow > flyingSpeedThreshold && PointManager.PointsHit()) {
 						state = PlayerState.Flying;
-						curSpline.OnSplineExit ();
-						curPoint.OnPointExit ();
 						newPointList.Clear ();
 						l.positionCount = 1;
 						l.SetPosition (0, curPoint.Pos);
 						curDrawDistance = 0;
-
+						curSpline.OnSplineExit ();
+						curPoint.OnPointExit ();
 					}
 				}
 			}
 
 			if (canTraverse && !Input.GetButton ("Button2")) {
 
-				curSpline.OnSplineEnter ();
-				state = PlayerState.Traversing;
+				curPoint.OnPointExit ();
 
-//				if (curPoint.IsOffCooldown ()) {
-					flow += flowAmount;
-					boost = boostAmount;
-					curPoint.PutOnCooldown ();
-//				}
+				state = PlayerState.Traversing;
 
 				//this is making it impossible to get off points that are widows. wtf. 
 				SetCursorAlignment();
@@ -457,11 +456,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 			connectTime = 1;
-
-			if (!curPoint.locked) {
-				curPoint.OnPointExit ();
-			}
-
+		
 			Point PointArrivedAt = curPoint;
 
 			if (progress > 1) {
@@ -483,7 +478,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 			curPoint.OnPointEnter (curSpline);
 			curPoint.proximity = 1;
-			curPoint.GetComponent<Rigidbody> ().AddForce (cursorDir * flow * 10);
+			curPoint.GetComponent<Rigidbody> ().AddForce (cursorDir * flow);
 
 			if (curPoint.IsOffCooldown ()) {
 				Services.Prefabs.CreateSoundEffect (sounds.pointSounds[Random.Range(0, sounds.pointSounds.Length)],curPoint.Pos);

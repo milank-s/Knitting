@@ -52,14 +52,11 @@ public class Point : MonoBehaviour
 	}
 
 
-
-
 	void Awake(){
 		Point.pointCount++;
 		timeOffset = Point.pointCount * 0.1f;
 		gameObject.name = "v" + Point.pointCount;
 		_directionalSprites = new List<GameObject> ();
-		color = new Color (1, 1, 1, 1);
 		rb = GetComponent<Rigidbody> ();
 		if (_neighbours.Count == 0) {
 			_neighbours = new List<Point> ();
@@ -76,7 +73,6 @@ public class Point : MonoBehaviour
 
 //		l = GetComponent<LineRenderer> ();
 		c = 0;
-
 	}
 //	void OnMouseDown()
 //	{
@@ -98,8 +94,9 @@ public class Point : MonoBehaviour
 
 		c = proximity + Mathf.Clamp01((Mathf.Sin (3 * Time.time + timeOffset)/5)) + 0.1f;
 		c = Mathf.Pow (c, 1);
+
 		if (hit) {
-			SR.color = Color.Lerp (SR.color, Color.Lerp (new Color (c, c, c), Color.red, Mathf.Clamp01 (hitColorLerp)), Time.deltaTime);
+			SR.color = Color.Lerp (SR.color, Color.Lerp (new Color (c, c, c), Color.magenta, Mathf.Clamp01 (hitColorLerp)), Time.deltaTime * 10);
 		} else {
 			SR.color = new Color (c, c, c);
 		}
@@ -185,6 +182,8 @@ public class Point : MonoBehaviour
 	}
 
 	public void OnPointEnter(Spline s){
+		PutOnCooldown ();
+
 		if (GetComponentInParent<WordBank>() != null) {
 			GameObject newText = (GameObject)Instantiate (Services.Prefabs.SpawnedText, transform.position + Vector3.up, Quaternion.identity);
 			newText.GetComponent<TextMesh>().text = GetComponentInParent<WordBank>().GetWord ();
@@ -232,6 +231,7 @@ public class Point : MonoBehaviour
 		if (!PointManager._pointsHit.Contains (this)) {
 			PointManager._pointsHit.Add (this);
 		}
+
 	}
 
 	public List<Point> GetNeighbours(){
