@@ -12,6 +12,9 @@ public class Point : MonoBehaviour
 			return transform.position;
 		}
 	}
+
+	public static float hitColorLerp;
+
 	public static int pointCount = 0;
 	public Rigidbody rb;
 	public string text;
@@ -39,6 +42,7 @@ public class Point : MonoBehaviour
 	private LineRenderer l;
 	private List<GameObject> _directionalSprites;
 	public float c = 0;
+	public bool hit;
 	public bool isSelect
 	{
 		get
@@ -51,7 +55,6 @@ public class Point : MonoBehaviour
 
 
 	void Awake(){
-		Services.Points.AddPoint (this);
 		Point.pointCount++;
 		timeOffset = Point.pointCount * 0.1f;
 		gameObject.name = "v" + Point.pointCount;
@@ -92,16 +95,20 @@ public class Point : MonoBehaviour
 	//HELPER FUNCTIONS
 
 	public void Update(){
-		cooldown -= Time.deltaTime;
 
-		c = Mathf.Lerp(proximity + Mathf.Clamp01((Mathf.Sin (3 * Time.time + timeOffset)/5)) + 0.1f, 1, Mathf.Clamp01(cooldown));
+		c = proximity + Mathf.Clamp01((Mathf.Sin (3 * Time.time + timeOffset)/5)) + 0.1f;
 		c = Mathf.Pow (c, 1);
-		SR.color = Color.Lerp (new Color (c, c, c), Color.white, Mathf.Clamp01(cooldown));
+		if (hit) {
+			SR.color = Color.Lerp (SR.color, Color.Lerp (new Color (c, c, c), Color.red, Mathf.Clamp01 (hitColorLerp)), Time.deltaTime);
+		} else {
+			SR.color = new Color (c, c, c);
+		}
 		color = SR.color;
 
 		if (_connectedSplines.Count == 0) {
 			c = 1;
 		}
+
 //		l.SetPosition (0, transform.position);
 //		l.SetPosition (1, GetComponent<SpringJoint>().connectedBody.transform.position);
 
@@ -143,6 +150,10 @@ public class Point : MonoBehaviour
 		if (!_neighbours.Contains (p)) {
 			_neighbours.Add (p);
 		}
+	}
+
+	public void ResetCooldown(){
+		
 	}
 
 	public void SetPosAndVelocity(GameObject g, float t, Spline s, Point p){
@@ -207,26 +218,20 @@ public class Point : MonoBehaviour
 	}
 
 	public bool IsOffCooldown(){
-		if (cooldown <= 0) {
-			return true;
-		} else {
-			return false;
-		}
+		return !hit;
 	}
 
 	public float GetCooldown(){
 		return cooldown;
 	}
 
-	public bool PutOnCooldown(){
-		if (cooldown <= 0) {
-			cooldown = boostCooldown;
-			GameObject fx = Instantiate (activatedSprite, transform.position, Quaternion.identity);
-			fx.transform.parent = transform;
-
-			return true;
+	public void PutOnCooldown(){
+		GameObject fx = Instantiate (activatedSprite, transform.position, Quaternion.identity);
+		fx.transform.parent = transform;
+		hit = true;
+		if (!PointManager._pointsHit.Contains (this)) {
+			PointManager._pointsHit.Add (this);
 		}
-		return false;
 	}
 
 	public List<Point> GetNeighbours(){

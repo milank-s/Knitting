@@ -64,6 +64,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	private bool traversing;
 	public bool goingForward = true;
 	private bool controllerConnected = false;
+	public float connectTimeCoefficient;
+	private float connectTime;
 
 	private Vector3 cursorPos, cursorDir;
 	private LineRenderer l;
@@ -111,6 +113,15 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void Update () {
 
+
+		connectTime -= Time.deltaTime / connectTimeCoefficient;
+		Point.hitColorLerp = connectTime;
+
+		if (connectTime < 0) {
+			PointManager.ResetPoints ();
+			connectTime = 0;
+		}
+			
 		CursorInput();
 
 		creationInterval-= Time.deltaTime;
@@ -152,7 +163,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						creationInterval = creationCD;
 						canTraverse = true;
 
-					}else if (!Input.GetButton ("Button2") && flow > flyingSpeedThreshold) {
+					}else if (!Input.GetButton ("Button2") && flow > flyingSpeedThreshold && PointManager.PointsHit()) {
 						state = PlayerState.Flying;
 						curSpline.OnSplineExit ();
 						curPoint.OnPointExit ();
@@ -170,11 +181,11 @@ public class PlayerBehaviour: MonoBehaviour {
 				curSpline.OnSplineEnter ();
 				state = PlayerState.Traversing;
 
-				if (curPoint.IsOffCooldown ()) {
+//				if (curPoint.IsOffCooldown ()) {
 					flow += flowAmount;
 					boost = boostAmount;
 					curPoint.PutOnCooldown ();
-				}
+//				}
 
 				//this is making it impossible to get off points that are widows. wtf. 
 				SetCursorAlignment();
@@ -416,8 +427,8 @@ public class PlayerBehaviour: MonoBehaviour {
 //		adding this value to flow
 
 		flow += Mathf.Pow(Mathf.Abs(accuracy), 2) * acceleration * Time.deltaTime;
-
-		progress += (((flow + boost + speed)* Mathf.Abs(accuracy)) * Mathf.Sign(accuracy) * Time.deltaTime)/curSpline.distance;
+//		Mathf.Abs(accuracy)
+		progress += (((flow + boost + speed)) * Mathf.Sign(accuracy) * Time.deltaTime)/curSpline.distance;
 
 		//set player position to a point along the curve
 
@@ -444,6 +455,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (progress > 1 || progress < 0) {
 
+
+			connectTime = 1;
 
 			if (!curPoint.locked) {
 				curPoint.OnPointExit ();

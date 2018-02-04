@@ -2,25 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PointManager : MonoBehaviour {
+public static class PointManager{
 
-	public List<Point> _points;
+	public static List<Point> _pointsHit;
 
-	public void AddPoint(Point p){
-		if(!_points.Contains(p)){
-			_points.Add (p);
+//	public static void Init(){
+//		_pointsHit = new List<Point> ();
+//	}
+
+	public static bool PointsHit(){
+		if (_pointsHit.Count >= Point.pointCount) {
+			return true;
+		} else {
+			return false;
 		}
+
 	}
 
-	public int PointsHit(){
-		int num = 0;
-
-		foreach (Point p in _points) {
-			if (!p.IsOffCooldown ()) {
-				num++;
-			}
+	public static void ResetPoints(){
+		for(int i = _pointsHit.Count-1; i >=0; i--) {
+			_pointsHit [i].hit = false;
+			_pointsHit.Remove (_pointsHit [i]);
 		}
-
-		return num;
 	}
 }
