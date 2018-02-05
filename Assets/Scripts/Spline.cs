@@ -5,7 +5,6 @@ using System.Xml;
 using System.IO;
 using System;
 
-[ExecuteInEditMode]
 public class Spline : MonoBehaviour {
 
 	public static List<Spline> Splines=new List<Spline>();
@@ -698,7 +697,7 @@ public class Spline : MonoBehaviour {
 		for(int i = 0; i < colors.Length; i++){
 			int index = (int)(((float) i/(float)colors.Length) * ((float)SplinePoints.Count-1));
 	
-			widthKeys [i] = new Keyframe ((float)i / ((float)colors.Length - 1), Mathf.Sin (widthVals [i] * 10+ Time.time * 3)/2f + 0.6f);
+//			widthKeys [i] = new Keyframe ((float)i / ((float)colors.Length - 1), Mathf.Sin (widthVals [i] * 10+ Time.time * 3)/2f + 0.6f);
 
 			Color c = SplinePoints[index].color;
 			colors [i].color = c;
@@ -708,10 +707,10 @@ public class Spline : MonoBehaviour {
 			k.value = SplinePoints [index].NeighbourCount ();
 		}
 
-		widthKeys [0] = new Keyframe (0f, 1f);
-		widthKeys [Mathf.Clamp(colors.Length - 1 , 0, widthKeys.Length -1)] = new Keyframe (1f, 1f);
+//		widthKeys [0] = new Keyframe (0f, 1f);
+//		widthKeys [Mathf.Clamp(colors.Length - 1 , 0, widthKeys.Length -1)] = new Keyframe (1f, 1f);
 
-		l.widthCurve = new AnimationCurve(widthKeys);
+//		l.widthCurve = new AnimationCurve(widthKeys);
 
 		Gradient newGradient = new Gradient ();
 		newGradient.SetKeys (colors, alphas);

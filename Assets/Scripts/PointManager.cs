@@ -5,13 +5,15 @@ using UnityEngine;
 public static class PointManager{
 
 	public static List<Point> _pointsHit;
+	public static List<Point> _connectedPoints;
+
 
 //	public static void Init(){
 //		_pointsHit = new List<Point> ();
 //	}
 
 	public static bool PointsHit(){
-		if (_pointsHit.Count >= Point.pointCount) {
+		if (_pointsHit.Count >= _connectedPoints.Count) {
 			return true;
 		} else {
 			return false;

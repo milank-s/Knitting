@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class SplineManager : MonoBehaviour{
 
-	[ExecuteInEditMode]
 	[SerializeField]
 	public Spline[] splines;
 

@@ -19,6 +19,7 @@ public class Main : MonoBehaviour {
 		Services.Prefabs = GetComponent<PrefabManager> ();
 		Services.Prefabs.LoadResources ();
 		PointManager._pointsHit = new List<Point> ();
+		PointManager._connectedPoints = new List<Point> ();
 	}
 
 }

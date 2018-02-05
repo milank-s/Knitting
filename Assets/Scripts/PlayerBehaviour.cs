@@ -84,6 +84,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	float angleToSpline = Mathf.Infinity;
 	private List<Transform> newPointList;
+	bool canFly;
 
 	void Awake(){
 		curPoint.proximity = 1;
@@ -113,7 +114,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void Update () {
 
-
+		canFly = PointManager.PointsHit ();
 		connectTime -= Time.deltaTime / connectTimeCoefficient;
 		Point.hitColorLerp = connectTime;
 
@@ -123,6 +124,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 			
 		CursorInput();
+		Effects ();
 
 		creationInterval-= Time.deltaTime;
 
@@ -142,7 +144,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			CheckProgress ();
 
 		}else if(state == PlayerState.Switching) {
-		
+
 
 			bool canTraverse = false;
 
@@ -168,7 +170,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						SetPlayerAtStart (curSpline, spp.p);
 						canTraverse = true;
 
-					}else if (!Input.GetButton ("Button2") && flow > flyingSpeedThreshold && PointManager.PointsHit()) {
+					}else if (!Input.GetButton ("Button2") && flow > flyingSpeedThreshold && canFly) {
 						state = PlayerState.Flying;
 						newPointList.Clear ();
 						l.positionCount = 1;
@@ -176,18 +178,24 @@ public class PlayerBehaviour: MonoBehaviour {
 						curDrawDistance = 0;
 						curSpline.OnSplineExit ();
 						curPoint.OnPointExit ();
+						boost += boostAmount;
+						flow += flowAmount;
+						return;
 					}
+
+
 				}
 			}
 
 			if (canTraverse && !Input.GetButton ("Button2")) {
 
 				curPoint.OnPointExit ();
-
+				boost += boostAmount;
+				flow += flowAmount;
 				state = PlayerState.Traversing;
 
 				//this is making it impossible to get off points that are widows. wtf. 
-				SetCursorAlignment();
+				SetCursorAlignment ();
 				PlayerMovement ();
 
 			} else {
@@ -199,7 +207,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			transform.position = curSpline.GetPoint (progress); 
 		}
 
-		Effects ();
+
 		#region
 		if (Input.GetAxis ("Joy Y") != 0) {
 			controllerConnected = true;
@@ -232,7 +240,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		while(index < newPointList.Count -1){
 
 			speed += Time.deltaTime/10;
-			t += (Time.deltaTime * (((float)index + 2f)/2f))/(distance * 2);
+			t += Time.deltaTime * ((index + 2)/2);
 //			Vector3 lastPos = transform.position;
 //			transform.position = Vector3.Lerp (newPointList[index].position, newPointList [index - 1].position, t);
 			Transform curJoint = newPointList[newPointList.Count - 1 - index];
@@ -259,7 +267,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				if (index >= newPointList.Count - 1) {
 					Destroy (newPointList [newPointList.Count - 1 - index].gameObject);
 				} else {
+
 					newPointList [newPointList.Count - 1 - index].GetComponent<SpringJoint> ().connectedBody = curPoint.GetComponent<Rigidbody>();
+			
 					distance = Vector3.Distance (newPointList [newPointList.Count - 1 - index].position, curPoint.Pos);
 				}
 
@@ -295,14 +305,19 @@ public class PlayerBehaviour: MonoBehaviour {
 			//IS THIS REALLY THE ONLY CASE I CONNECT SPRINGJOINTS
 			//WHY IS CONNECTING SPRING JOINTS THIS WAY BETTER THAN JUST LEAVING THEM UNCONNECTED
 			if (curP != curPoint) {
+				curP.GetComponent<SpringJoint> ().autoConfigureConnectedAnchor = true;
 				curP.GetComponent<SpringJoint> ().connectedBody = nextp.rb;
+			}
+
+			if (newPointList [index].GetComponentInChildren<SpriteRenderer>()) {
+				newPointList [index].GetComponentInChildren<SpriteRenderer> ().sprite = null;
 			}
 
 			s = spp.s;
 			curP = spp.p;
 //			curP.transform.parent = s.transform;
 
-			index -= 3;
+			index -= 4;
 		}
 			
 		//could add another point at the player's current position between curP (last in index) and p (destination) to make player position not jump
@@ -319,8 +334,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		float distance = Vector3.Distance (transform.position, p.Pos);
 
+		float speed = 1;
+
 		while (Vector3.Distance(transform.position, p.Pos) > 0.01f) {
-			transform.position += (p.Pos - transform.position).normalized * flow * Time.deltaTime;
+			transform.position += (p.Pos - transform.position).normalized * (speed + flow) * Time.deltaTime;
+			speed += Time.deltaTime;
 
 			for(int i = 0; i < newPointList.Count; i++){
 //				newPointList [i].GetComponent<SpringJoint> ().spring = newPointList.Count / (i + 1);
@@ -354,8 +372,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	void FreeMovement(){
+		
 		Vector3 inertia;
-
 
 		float speed;
 		// Make drawing points while you skate. 
@@ -389,7 +407,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		} else {
 			inertia = cursorDir * flow;
-			flow -= Time.deltaTime/2;
+			flow -= Time.deltaTime;
 			transform.position += inertia * Time.deltaTime;
 
 			if (newPointList.Count == 0) {
@@ -464,7 +482,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				progress = 1;
 			
 				if (curSpline.Selected == curSpline.EndPoint() && curSpline.closed) {
-					curPoint = curSpline.SplinePoints [curSpline.LoopIndex];
+					curPoint = curSpline.StartPoint();
 				} else {
 					curPoint = curSpline.SplinePoints [curSpline.GetPointIndex(curSpline.Selected) + 1];
 				}
@@ -478,7 +496,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 			curPoint.OnPointEnter (curSpline);
 			curPoint.proximity = 1;
-			curPoint.GetComponent<Rigidbody> ().AddForce (cursorDir * flow);
+			curPoint.GetComponent<Rigidbody> ().AddForce (cursorDir * flow * 5);
 
 			if (curPoint.IsOffCooldown ()) {
 				Services.Prefabs.CreateSoundEffect (sounds.pointSounds[Random.Range(0, sounds.pointSounds.Length)],curPoint.Pos);
@@ -687,24 +705,31 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	public void Effects(){
-		
+
+		ParticleSystem.EmissionModule e = ps.emission;	
+
 		float Absflow = Mathf.Abs (flow);
 		if (state == PlayerState.Flying) {
+
 //			t.time = Absflow;
 			//do shit with particle systems for flying
 		} else {
 //			t.time = Mathf.Lerp(t.time, 0, Time.deltaTime);
 		}
 
-		ParticleSystem.EmissionModule e = ps.emission;	
+		if (canFly) {
+			t.time = 2f;
+		} else {
+			t.time = 0.25f;
+		}
 			
-		e.rateOverTimeMultiplier = (int)Mathf.Lerp (0, flow * 25, Mathf.Pow (1 - Mathf.Abs (accuracy), 2));
+//		e.rateOverTimeMultiplier = (int)Mathf.Lerp (0, flow * 25, Mathf.Pow (1 - Mathf.Abs (accuracy), 2));
 //		BrakingSound.volume = Mathf.Clamp01(1- Mathf.Abs (accuracy))/6;
 		AccelerationSound.volume = Mathf.Clamp01(flow / (maxSpeed/5));
 
 		if (curSpline != null) {
-//			curSpline.DrawLineSegmentVelocity (progress, Mathf.Sign (accuracy), goingForward ? 0 : 1);
-			curSpline.l.material.mainTextureOffset -= Vector2.right * Mathf.Sign (accuracy) * flow * 10 * Time.deltaTime;
+//			curSpline.DrawLineSegmentVelocity (progress, Mathf.Sign (accuracy), goingForward ? 0 : 1);\
+			curSpline.l.material.mainTextureOffset -= Vector2.right * Mathf.Sign (accuracy) * flow * curSpline.l.material.mainTextureScale.x * 2 * Time.deltaTime;
 //			l.SetPosition(0, transform.position);
 //			l.SetPosition(1, transform.position + (curSpline.GetDirection(progress) * Mathf.Sign(accuracy))/2);
 //			l.SetPosition(1, transform.position + cursorDir/2);

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 
 public class Point : MonoBehaviour
 {
@@ -51,10 +50,13 @@ public class Point : MonoBehaviour
 		}
 	}
 
+	FadeSprite activationSprite;
 
 	void Awake(){
+
 		Point.pointCount++;
-		timeOffset = Point.pointCount * 0.1f;
+		activationSprite = GetComponentInChildren<FadeSprite> ();
+		timeOffset = Point.pointCount * 0.2f;
 		gameObject.name = "v" + Point.pointCount;
 		_directionalSprites = new List<GameObject> ();
 		rb = GetComponent<Rigidbody> ();
@@ -70,6 +72,7 @@ public class Point : MonoBehaviour
 
 		cooldown = (((float)Point.pointCount) % boostCooldown)/3f;
 		SR = GetComponent<SpriteRenderer> ();
+
 
 //		l = GetComponent<LineRenderer> ();
 		c = 0;
@@ -92,18 +95,26 @@ public class Point : MonoBehaviour
 
 	public void Update(){
 
-		c = proximity + Mathf.Clamp01((Mathf.Sin (3 * Time.time + timeOffset)/5)) + 0.1f;
-		c = Mathf.Pow (c, 1);
+//		if (hit) {
+//			activationSprite.time = Mathf.Lerp (activationSprite.time, 1, Time.deltaTime * 5);
+//		} else {
+//			activationSprite.time = Mathf.Lerp (activationSprite.time, 0, Time.deltaTime * 2);
+//		}
 
-		if (hit) {
-			SR.color = Color.Lerp (SR.color, Color.Lerp (new Color (c, c, c), Color.magenta, Mathf.Clamp01 (hitColorLerp)), Time.deltaTime * 10);
-		} else {
-			SR.color = new Color (c, c, c);
-		}
-		color = SR.color;
+		c = (Mathf.Sin (3 * Time.time + timeOffset)/4) + 0.3f;
+		c = Mathf.Pow (c, 1);
 
 		if (_connectedSplines.Count == 0) {
 			c = 1;
+		} else {
+
+			if (hit) {
+				SR.color = Color.Lerp (SR.color, Color.white, Mathf.Clamp01 (hitColorLerp));
+				color = SR.color;
+			} else {
+				SR.color = Color.Lerp (SR.color, Color.black, Time.deltaTime * 5);
+				color = Color.Lerp (new Color (c, c, c), SR.color, Time.deltaTime * 5);
+			}
 		}
 
 //		l.SetPosition (0, transform.position);
@@ -147,6 +158,9 @@ public class Point : MonoBehaviour
 		if (!_neighbours.Contains (p)) {
 			_neighbours.Add (p);
 		}
+		if (!PointManager._connectedPoints.Contains (this)) {
+			PointManager._connectedPoints.Add (this);
+		}
 	}
 
 	public void ResetCooldown(){
@@ -184,6 +198,10 @@ public class Point : MonoBehaviour
 	public void OnPointEnter(Spline s){
 		PutOnCooldown ();
 
+		GameObject fx = Instantiate (activatedSprite, transform.position, Quaternion.identity);
+		fx.transform.parent = transform;
+
+
 		if (GetComponentInParent<WordBank>() != null) {
 			GameObject newText = (GameObject)Instantiate (Services.Prefabs.SpawnedText, transform.position + Vector3.up, Quaternion.identity);
 			newText.GetComponent<TextMesh>().text = GetComponentInParent<WordBank>().GetWord ();
@@ -193,6 +211,7 @@ public class Point : MonoBehaviour
 
 	public void OnPointExit(){
 		proximity = 0.5f;
+		PutOnCooldown ();
 	}
 
 
@@ -225,9 +244,8 @@ public class Point : MonoBehaviour
 	}
 
 	public void PutOnCooldown(){
-		GameObject fx = Instantiate (activatedSprite, transform.position, Quaternion.identity);
-		fx.transform.parent = transform;
 		hit = true;
+
 		if (!PointManager._pointsHit.Contains (this)) {
 			PointManager._pointsHit.Add (this);
 		}
