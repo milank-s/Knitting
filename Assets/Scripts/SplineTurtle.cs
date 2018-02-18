@@ -237,7 +237,7 @@ public class SplineTurtle : MonoBehaviour {
 		mAngle += angleChange;
 		mxAngle += angleChange;
 		if (Mathf.Abs (mAngle) > minAngle) {
-			angleChange = -angleChange;
+//			angleChange = -angleChange;
 //			mAngle = mAngle % minAngle;
 		}
 		if (Mathf.Abs (mxAngle) > maxAngle) {

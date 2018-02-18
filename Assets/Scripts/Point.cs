@@ -13,6 +13,7 @@ public class Point : MonoBehaviour
 	}
 
 	public static float hitColorLerp;
+	public bool isFound = false;
 
 	public static int pointCount = 0;
 	public Rigidbody rb;
@@ -158,10 +159,14 @@ public class Point : MonoBehaviour
 		if (!_neighbours.Contains (p)) {
 			_neighbours.Add (p);
 		}
-		if (!PointManager._connectedPoints.Contains (this)) {
+			
+		if (!isFound) {
+			isFound = true;
 			PointManager._connectedPoints.Add (this);
 		}
+	
 	}
+
 
 	public void ResetCooldown(){
 		
@@ -198,12 +203,13 @@ public class Point : MonoBehaviour
 	public void OnPointEnter(Spline s){
 		PutOnCooldown ();
 
+		continuity = Mathf.Clamp(continuity + 0.01f, 0, 1);
 		GameObject fx = Instantiate (activatedSprite, transform.position, Quaternion.identity);
 		fx.transform.parent = transform;
 
 
 		if (GetComponentInParent<WordBank>() != null) {
-			GameObject newText = (GameObject)Instantiate (Services.Prefabs.SpawnedText, transform.position + Vector3.up, Quaternion.identity);
+			GameObject newText = (GameObject)Instantiate (Services.Prefabs.spawnedText, transform.position + Vector3.up, Quaternion.identity);
 			newText.GetComponent<TextMesh>().text = GetComponentInParent<WordBank>().GetWord ();
 			newText.transform.parent = transform;
 		}
@@ -244,10 +250,10 @@ public class Point : MonoBehaviour
 	}
 
 	public void PutOnCooldown(){
-		hit = true;
 
-		if (!PointManager._pointsHit.Contains (this)) {
-			PointManager._pointsHit.Add (this);
+		if (!hit) {
+			PointManager.AddPointHit (this);
+			hit = true;
 		}
 
 	}

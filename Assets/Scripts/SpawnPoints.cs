@@ -8,7 +8,7 @@ public class SpawnPoints : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		for (int i = 0; i < amount; i++) {
-			Instantiate (Services.Prefabs.Point, transform.position, Quaternion.identity);
+			Instantiate (Services.Prefabs.point, transform.position, Quaternion.identity);
 		}
 	}
 }

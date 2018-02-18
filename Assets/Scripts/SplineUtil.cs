@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class SplineUtil : MonoBehaviour {
 
-
 	static public Point CreatePoint(Vector3 pos){
 
-		Point newPoint = Instantiate(Services.Prefabs.Point, Vector3.zero, Quaternion.identity).GetComponent<Point>();
+		Point newPoint = Instantiate(Services.Prefabs.point, Vector3.zero, Quaternion.identity).GetComponent<Point>();
 
 		newPoint.isPlaced = true;
 		newPoint.transform.position = pos;
@@ -120,9 +119,9 @@ public class SplineUtil : MonoBehaviour {
 		return null;
 	}
 
-	static public Spline CreateSpline (Point firstP, Point nextP){
+		static public Spline CreateSpline (Point firstP, Point nextP){
 
-		GameObject newSpline = (GameObject)Instantiate (Services.Prefabs.Spline, Vector3.zero, Quaternion.identity);
+		GameObject newSpline = (GameObject)Instantiate (Services.Prefabs.spline, Vector3.zero, Quaternion.identity);
 
 		Spline s = newSpline.GetComponent<Spline> ();
 

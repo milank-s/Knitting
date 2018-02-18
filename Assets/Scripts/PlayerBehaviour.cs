@@ -8,9 +8,6 @@ public enum PlayerState{Traversing, Switching, Flying, Animating};
 
 public class PlayerBehaviour: MonoBehaviour {
 
-	public GameObject PointPrefab;
-	public GameObject SplinePrefab;
-
 
 	[Header("Current Spline")]
 	public Spline curSpline;
@@ -41,19 +38,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float maxSpeed;	
 	
 
-	public float LineAngleDiff = 30;
-	public float StopAngleDiff = 60;
-
-	public float cursorRotateSpeed = 1;
-
-	public SplineWalkerMode mode;
-
-	//components I want to access
-	private TrailRenderer t;
-
-	private PlayerState state;
-
-	private float boost;
 	public float flow;
 	public float negativeflow;
 	public float progress;
@@ -61,10 +45,28 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float creationCD = 0.25f;
 	public float flyingSpeedThreshold = 3;
 	public float cursorDistance;
-	private bool traversing;
-	public bool goingForward = true;
-	private bool controllerConnected = false;
+
+	public float LineAngleDiff = 30;
+	public float StopAngleDiff = 60;
+
+	public float PointDrawDistance;
 	public float connectTimeCoefficient;
+	public float cursorRotateSpeed = 1;
+
+
+	public AudioSource AccelerationSound;
+	public AudioSource BrakingSound;
+
+	//components I want to access
+	private TrailRenderer t;
+
+	public PlayerState state;
+
+	private float boost;
+
+	private bool traversing;
+	private bool goingForward = true;
+	private bool controllerConnected = false;
 	private float connectTime;
 
 	private Vector3 cursorPos, cursorDir;
@@ -72,11 +74,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	private List<Point> inventory;
 	public Point lastPoint;
 
-	public float PointDrawDistance;
-	private float curDrawDistance = 0.1f;
 
-	public AudioSource AccelerationSound;
-	public AudioSource BrakingSound;
+	private float curDrawDistance = 0.1f;
 
 	private ParticleSystem ps;
 	private float creationInterval = 0.2f;
@@ -87,6 +86,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	bool canFly;
 
 	void Awake(){
+		
 		curPoint.proximity = 1;
 		state = PlayerState.Switching;
 		sounds = GetComponent<PlayerSounds> ();
@@ -288,7 +288,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public IEnumerator FlyIntoNewPoint(Point p){
 
-		int index = newPointList.Count - 4;
+		int index = newPointList.Count - 4; 
+//		int index = newPointList.Count/2;
+
 		float t = 0; 
 
 		Point curP = curPoint;
@@ -319,7 +321,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			index -= 4;
 		}
-			
+
+
 		//could add another point at the player's current position between curP (last in index) and p (destination) to make player position not jump
 		//whats with phantom splines
 		//must be an error with closed/looping splines getting created and fucking up
@@ -429,7 +432,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	GameObject CreateJoint(Rigidbody r){
-		Transform newJoint = Instantiate (Services.Prefabs.Joint, curPoint.transform.position, Quaternion.identity).transform;
+		Transform newJoint = Instantiate (Services.Prefabs.joint, curPoint.transform.position, Quaternion.identity).transform;
 		newJoint.GetComponent<SpringJoint> ().connectedBody = r;
 		newJoint.name = newPointList.Count.ToString();
 		newPointList.Add(newJoint);

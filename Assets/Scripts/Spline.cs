@@ -484,7 +484,7 @@ public class Spline : MonoBehaviour {
 			p.text = GetComponent<WordBank> ().GetWord ();
 		}
 
-		l.material = Services.Prefabs.Lines [Mathf.Clamp(SplinePoints.Count-2, 0, Services.Prefabs.Lines.Length-1)];
+		l.material = Services.Prefabs.lines [Mathf.Clamp(SplinePoints.Count-2, 0, Services.Prefabs.lines.Length-1)];
 	}
 		
 	public void DrawVelocities(float t, float x){

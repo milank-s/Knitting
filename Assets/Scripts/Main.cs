@@ -9,15 +9,10 @@ public class Main : MonoBehaviour {
 
 	void Awake () {
 
-		SplineTurtle.maxCrawlers = 0;
-		SplineTurtle.maxTotalPoints = 0;
-
 		Services.Player = Player;
 		Services.PlayerBehaviour = Player.GetComponent<PlayerBehaviour>();
 
 		Services.Cursor = Cursor;
-		Services.Prefabs = GetComponent<PrefabManager> ();
-		Services.Prefabs.LoadResources ();
 		PointManager._pointsHit = new List<Point> ();
 		PointManager._connectedPoints = new List<Point> ();
 	}
