@@ -115,7 +115,7 @@ public class SplineTurtle : MonoBehaviour {
 		if (maxCrawlers < 100) {
 			for (int i = 0; i < initialAmount; i++) {
 				SpawnTurtle ().transform.Rotate (0, 0, transform.eulerAngles.z + Random.Range (initialAngleMin, initialAngleMax) * i);	
-				maxCrawlers++;
+
 			}
 			yield return new WaitForSeconds (0.1f);
 		}
@@ -137,6 +137,16 @@ public class SplineTurtle : MonoBehaviour {
 			curPoint = SplineUtil.RaycastDownToPoint (transform.position, Mathf.Infinity, 1000f);
 			if (curPoint.HasSplines ()) {
 				curSpline = curPoint._connectedSplines [0];
+			} else {
+				Step ();
+
+				Point secondPoint = SplineUtil.CreatePoint (transform.position);
+
+				if (createSplines) {
+					curSpline = SplineUtil.CreateSpline (curPoint, secondPoint);
+				}
+				curPoint = secondPoint;
+				curPoint.transform.parent = parent.transform;
 			}
 			Step ();
 			NewPoint ();
@@ -177,13 +187,14 @@ public class SplineTurtle : MonoBehaviour {
 			newTurtleScript.maxDist = maxDist;
 			newTurtleScript.minDist = minDist;
 		}
+		maxCrawlers++;
 		return newTurtle;
 	}
 
 	public void NewPoint(){
 		
 		if (Random.Range (0f, 100f) < branchFactor) {
-			if (maxTotalPoints < 300) {
+			if (maxTotalPoints < 100) {
 				SpawnTurtle ();
 			}
 		}

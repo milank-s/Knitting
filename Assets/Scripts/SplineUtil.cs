@@ -140,8 +140,6 @@ public class SplineUtil : MonoBehaviour {
 
 		s.transform.position = Vector3.Lerp (firstP.Pos, nextP.Pos, 0.5f);
 
-		s.DrawMesh();
-
 		return s;
 	}
 }

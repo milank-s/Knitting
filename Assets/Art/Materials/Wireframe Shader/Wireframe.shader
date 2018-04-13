@@ -11,8 +11,8 @@ Shader "Custom/Wireframe"
 	SubShader 
 	{
 	
-	    Tags { "Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent" }
-		Blend SrcAlpha OneMinusSrcAlpha
+	    Tags { "Queue"="Transparent" "IgnoreProjector"="True"}
+//		Blend SrcAlpha OneMinusSrcAlpha
 
     	Pass 
     	{
@@ -51,7 +51,7 @@ Shader "Custom/Wireframe"
 			void geom(triangle v2g IN[3], inout TriangleStream<g2f> triStream)
 			{
 			
-				float2 WIN_SCALE = float2(_ScreenParams.x/2.0, _ScreenParams.y/2.0);
+				float2 WIN_SCALE = float2(_ScreenParams.x, _ScreenParams.y);
 				
 				//frag position
 				float2 p0 = WIN_SCALE * IN[0].pos.xy / IN[0].pos.w;
@@ -90,7 +90,7 @@ Shader "Custom/Wireframe"
 				//fade based on dist from center
  				float I = exp2(-4.0*d*d);
  				
- 				return lerp(_Color, _WireColor, I);				
+ 				return _WireColor;				
 			}
 			
 			ENDCG

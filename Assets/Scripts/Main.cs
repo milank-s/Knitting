@@ -15,6 +15,7 @@ public class Main : MonoBehaviour {
 		Services.Cursor = Cursor;
 		PointManager._pointsHit = new List<Point> ();
 		PointManager._connectedPoints = new List<Point> ();
+		Services.Sounds = GetComponent<SoundBank> ();
 	}
 
 }

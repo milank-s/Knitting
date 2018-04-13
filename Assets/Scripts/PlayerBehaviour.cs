@@ -106,7 +106,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //		}
 //			
 
-		lastPoint = curPoint;
+		lastPoint = null;
 
 
 	}
@@ -145,6 +145,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		}else if(state == PlayerState.Switching) {
 
+			connectTime = 1;
 
 			bool canTraverse = false;
 
@@ -157,20 +158,34 @@ public class PlayerBehaviour: MonoBehaviour {
 					Point nextPoint = null;
 					nextPoint = SplineUtil.RaycastFromCamera(cursorPos, 20f);
 
-					if (nextPoint != null) {
+					if (nextPoint != null && nextPoint != curPoint) {
 						SplinePointPair spp = SplineUtil.ConnectPoints (curSpline, curPoint, nextPoint);
+							
 
-						if (curSpline != null && curSpline != spp.s){
+						bool forcedraw = false;
+
+						if (nextPoint == spp.s.StartPoint()) {
+
+							forcedraw = true;
+						}
+
+						bool isEntering = false;
+						if (curSpline != null && curSpline != spp.s) {
+							isEntering = true;
 							curSpline.OnSplineExit ();
+						} else if (curSpline == null) {
+							isEntering = true;
 						}
 
 						curSpline = spp.s;
-						curSpline.OnSplineEnter ();
+						curSpline.OnSplineEnter (isEntering, curPoint, spp.p, forcedraw);
+
 						creationInterval = creationCD;
 						SetPlayerAtStart (curSpline, spp.p);
 						canTraverse = true;
 
-					}else if (!Input.GetButton ("Button2") && flow > flyingSpeedThreshold && canFly) {
+					} else if (!Input.GetButton ("Button2") && canFly && flow > flyingSpeedThreshold) {
+
 						state = PlayerState.Flying;
 						newPointList.Clear ();
 						l.positionCount = 1;
@@ -199,7 +214,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				PlayerMovement ();
 
 			} else {
-				flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
+				flow -= decay * Time.deltaTime;
+				flow = Mathf.Clamp (flow, 0, maxSpeed);
 			}
 		}
 
@@ -220,7 +236,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		flow = Mathf.Clamp (flow, -maxSpeed, maxSpeed);
 		accuracy = (90 - alignment) / 90;
 		if ((accuracy < 0.5f && accuracy > -0.5f) || Input.GetButton("Button2")) {
-			flow = Mathf.Lerp (flow, 0, decay * Time.deltaTime);
+			flow -= decay * Time.deltaTime;
+			flow = Mathf.Clamp (flow,  0, maxSpeed);
 		}
 
 		if (accuracy < 0) {
@@ -337,20 +354,22 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		float distance = Vector3.Distance (transform.position, p.Pos);
 
-		float speed = 1;
+		float speed = 0;
 
-		while (Vector3.Distance(transform.position, p.Pos) > 0.01f) {
-			transform.position += (p.Pos - transform.position).normalized * (speed + flow) * Time.deltaTime;
+		while (speed < 1) {
+			transform.position = Vector3.Lerp(transform.position, p.Pos, speed);
+			speed += flow  * Time.deltaTime;
 			speed += Time.deltaTime;
 
-			for(int i = 0; i < newPointList.Count; i++){
-//				newPointList [i].GetComponent<SpringJoint> ().spring = newPointList.Count / (i + 1);
-//				l.SetPosition(i, Vector3.Lerp(l.GetPosition(i), newPointList[i].position, 1 -(Vector3.Distance(transform.position, p.Pos)/distance)));
-//				l.SetPosition(i, newPointList[i].position);
-			}
+//			for(int i = 0; i < newPointList.Count; i++){
+////				newPointList [i].GetComponent<SpringJoint> ().spring = newPointList.Count / (i + 1);
+////				l.SetPosition(i, Vector3.Lerp(l.GetPosition(i), newPointList[i].position, 1 -(Vector3.Distance(transform.position, p.Pos)/distance)));
+////				l.SetPosition(i, newPointList[i].position);
+//			}
 
-			yield return null;
+				yield return null;
 		}
+		transform.position = p.Pos;
 
 //		if (!p._connectedSplines.Contains (curSpline)) {
 //			nextPoint = p;
@@ -448,7 +467,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		flow += Mathf.Pow(Mathf.Abs(accuracy), 2) * acceleration * Time.deltaTime;
 //		Mathf.Abs(accuracy)
-		progress += (((flow + boost + speed)) * Mathf.Sign(accuracy) * Time.deltaTime)/curSpline.distance;
+		progress += (((flow + boost + speed)) * Mathf.Sign(accuracy) * Time.deltaTime * Mathf.Pow(Mathf.Abs(accuracy), 2))/curSpline.distance;
 
 		//set player position to a point along the curve
 
@@ -458,7 +477,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				curSpline.SplinePoints [curSpline.LoopIndex].proximity = progress;
 			} else {
 				
-				curSpline.SplinePoints [Mathf.Clamp(curSpline.GetPointIndex(curSpline.Selected)+1, 0, curSpline.SplinePoints.Count-1)].proximity = progress;;
+				curSpline.SplinePoints [Mathf.Clamp(curSpline.GetPointIndex(curSpline.Selected)+1, 0, curSpline.SplinePoints.Count-1)].proximity = progress;
 			}
 
 		} else {
@@ -497,25 +516,21 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			}
 				
-			curPoint.OnPointEnter (curSpline);
 			curPoint.proximity = 1;
 			curPoint.GetComponent<Rigidbody> ().AddForce (cursorDir * flow * 5);
 
 			if (curPoint.IsOffCooldown ()) {
-				Services.Prefabs.CreateSoundEffect (sounds.pointSounds[Random.Range(0, sounds.pointSounds.Length)],curPoint.Pos);
+				//Should probably do something here
 			}
 
 			if (PointArrivedAt != curPoint) {
 				lastPoint = PointArrivedAt;
 			}
 
-			curSpline.OnSplineExit ();
 		 	state = PlayerState.Switching;
 		}
 	}
 		
-
-
 	public void SetPlayerAtStart(Spline s, Point p2){
 		int indexdiff = s.SplinePoints.IndexOf (p2) - s.SplinePoints.IndexOf (curPoint);
 
@@ -563,7 +578,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			foreach (Spline s in curPoint.GetSplines()) {
 
-				s.OnSplineExit ();
+
 				foreach (Point p in curPoint.GetNeighbours()) {
 
 					if (!p._connectedSplines.Contains (s)) {
@@ -593,9 +608,19 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 				
 			if (angleToSpline <= StopAngleDiff) {
+				bool isEntering = false;
 				SetPlayerAtStart (closestSpline, pointDest);
+				if (curSpline != null && curSpline != closestSpline) {
+					curSpline.OnSplineExit ();
+					isEntering = true;
+				} else if(curSpline == null){
+					isEntering = true;
+				}
+					
 				curSpline = closestSpline;
-				curSpline.OnSplineEnter ();
+				if (lastPoint != pointDest) {
+					curSpline.OnSplineEnter (isEntering, curPoint, pointDest);
+				}
 				return true;
 			}
 		}
@@ -728,7 +753,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			
 //		e.rateOverTimeMultiplier = (int)Mathf.Lerp (0, flow * 25, Mathf.Pow (1 - Mathf.Abs (accuracy), 2));
 //		BrakingSound.volume = Mathf.Clamp01(1- Mathf.Abs (accuracy))/6;
-		AccelerationSound.volume = Mathf.Clamp01(flow / (maxSpeed/5));
+//		AccelerationSound.volume = Mathf.Clamp01(flow / (maxSpeed/5));
 
 		if (curSpline != null) {
 //			curSpline.DrawLineSegmentVelocity (progress, Mathf.Sign (accuracy), goingForward ? 0 : 1);\

@@ -45,7 +45,7 @@ public static class PointManager{
 		CameraDolly.rightBound = CameraDolly.leftBound;
 		CameraDolly.bottomBound = CameraDolly.topBound;
 
-		for(int i = _pointsHit.Count-1; i >=0; i--) {
+		for(int i = _pointsHit.Count-1; i >= 0; i--) {
 			_pointsHit [i].hit = false;
 			_pointsHit.Remove (_pointsHit [i]);
 		}

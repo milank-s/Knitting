@@ -92,7 +92,7 @@ public class EditorUI : MonoBehaviour {
 
 		Spline.Select.closed = GUILayout.Toggle( Spline.Select.closed," Closed");
 
-		Spline.Select.DrawLine = GUILayout.Toggle(Spline.Select.DrawLine," Draw Line");
+//		Spline.Select.DrawLine = GUILayout.Toggle(Spline.Select.DrawLine," Draw Line");
 
 		GUI.DragWindow();
 

@@ -15,16 +15,15 @@ public class PrefabManager : MonoBehaviour {
 
 
 	void Start(){
-		SplineTurtle.maxCrawlers = 0;
-		SplineTurtle.maxTotalPoints = 0;
 
 		Services.Prefabs = this;
 		LoadResources ();
 	}
 
-	public void CreateSoundEffect(AudioClip clip, Vector3 pos){
-		Instantiate (soundEffectObject, pos, Quaternion.Euler (0, 0, 0));
-		soundEffectObject.GetComponent<AudioSource> ().clip = clip;
+	public AudioSource CreateSoundEffect(AudioClip clip, Vector3 pos){
+		GameObject newSound = (GameObject)Instantiate (soundEffectObject, pos, Quaternion.Euler (0, 0, 0));
+		newSound.GetComponent<AudioSource> ().clip = clip;
+		return newSound.GetComponent<AudioSource> ();
 	}
 
 	public void LoadResources(){

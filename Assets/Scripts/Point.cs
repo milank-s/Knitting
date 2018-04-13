@@ -102,7 +102,7 @@ public class Point : MonoBehaviour
 //			activationSprite.time = Mathf.Lerp (activationSprite.time, 0, Time.deltaTime * 2);
 //		}
 
-		c = (Mathf.Sin (3 * Time.time + timeOffset)/4) + 0.3f;
+		c = (Mathf.Sin (3 * Time.time + timeOffset))/10;
 		c = Mathf.Pow (c, 1);
 
 		if (_connectedSplines.Count == 0) {
@@ -110,11 +110,12 @@ public class Point : MonoBehaviour
 		} else {
 
 			if (hit) {
-				SR.color = Color.Lerp (SR.color, Color.white, Mathf.Clamp01 (hitColorLerp));
-				color = SR.color;
+				color = Color.Lerp (color, Color.white, Time.deltaTime * 5);
+				SR.color = color;
 			} else {
-				SR.color = Color.Lerp (SR.color, Color.black, Time.deltaTime * 5);
-				color = Color.Lerp (new Color (c, c, c), SR.color, Time.deltaTime * 5);
+				color = Color.Lerp (color, new Color (c, c, c), Time.deltaTime * 5);
+//				SR.color = Color.Lerp (SR.color, Color.black, Time.deltaTime * 5);
+				SR.color = color;
 			}
 		}
 

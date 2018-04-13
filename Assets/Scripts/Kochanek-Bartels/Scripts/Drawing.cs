@@ -29,8 +29,7 @@ public class Drawing : MonoBehaviour {
 			lineMaterial.SetPass( 0 );
 			GL.Begin( GL.LINES );
 			
-			if(spline.DrawLine)
-			{
+
 				if(spline.isSelect)
 					GL.Color( Color.white );
 				else
@@ -43,16 +42,16 @@ public class Drawing : MonoBehaviour {
 				{
 					DrawLine(spline.SplinePoints[0].Pos,spline.SplinePoints[spline.SplinePoints.Count-1].Pos);
 				}
-			}
+			
 			if(spline.isSelect)
 				GL.Color( Color.red );
 			else
 				GL.Color( new Color(1,1,1,0.4f) );
-			for(int i=0; i<spline.LineSegmentPoints.Count-1;i++)
-			{
-				DrawLine(spline.LineSegmentPoints[i],spline.LineSegmentPoints[i+1]);
-			}
-			
+//			for(int i=0; i<spline.LineSegmentPoints.Count-1;i++)
+//			{
+//				DrawLine(spline.LineSegmentPoints[i],spline.LineSegmentPoints[i+1]);
+//			}
+//			
 			GL.End();
 		}
 	}
