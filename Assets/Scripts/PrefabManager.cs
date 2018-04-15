@@ -11,7 +11,7 @@ public class PrefabManager : MonoBehaviour {
 	public GameObject splineTurtle;
 	public GameObject joint;
 	public Sprite[] symbols;
-	public Material[] lines;
+	public Texture2D[] lines;
 
 
 	void Start(){
@@ -28,6 +28,6 @@ public class PrefabManager : MonoBehaviour {
 
 	public void LoadResources(){
 		symbols = Resources.LoadAll<Sprite> ("Symbols");
-		lines = Resources.LoadAll <Material>("Lines");
+		lines = Resources.LoadAll <Texture2D>("Lines");
 	}
 }

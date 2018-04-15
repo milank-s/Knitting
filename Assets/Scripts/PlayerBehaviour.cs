@@ -65,9 +65,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	private float boost;
 
 	private bool traversing;
-	private bool goingForward = true;
+	public bool goingForward = true;
 	private bool controllerConnected = false;
-	private float connectTime;
+	public float connectTime;
 
 	private Vector3 cursorPos, cursorDir;
 	private LineRenderer l;
@@ -144,8 +144,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			CheckProgress ();
 
 		}else if(state == PlayerState.Switching) {
-
-			connectTime = 1;
+			
 
 			bool canTraverse = false;
 
@@ -179,7 +178,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 						curSpline = spp.s;
 						curSpline.OnSplineEnter (isEntering, curPoint, spp.p, forcedraw);
-
+						connectTime = 1;
 						creationInterval = creationCD;
 						SetPlayerAtStart (curSpline, spp.p);
 						canTraverse = true;
@@ -494,8 +493,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (progress > 1 || progress < 0) {
 
-
-			connectTime = 1;
 		
 			Point PointArrivedAt = curPoint;
 
@@ -520,7 +517,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			curPoint.GetComponent<Rigidbody> ().AddForce (cursorDir * flow * 5);
 
 			if (curPoint.IsOffCooldown ()) {
-				//Should probably do something here
+				curPoint.OnPointEnter ();
 			}
 
 			if (PointArrivedAt != curPoint) {
@@ -618,9 +615,12 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 					
 				curSpline = closestSpline;
-				if (lastPoint != pointDest) {
-					curSpline.OnSplineEnter (isEntering, curPoint, pointDest);
-				}
+//				if (lastPoint != pointDest) {
+//					curSpline.OnSplineEnter (isEntering, curPoint, pointDest);
+//					connectTime = 1;
+//				}
+				curSpline.OnSplineEnter (isEntering, curPoint, pointDest);
+				connectTime = 1;
 				return true;
 			}
 		}

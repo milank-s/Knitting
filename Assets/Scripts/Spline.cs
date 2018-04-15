@@ -153,10 +153,12 @@ public class Spline : MonoBehaviour
 
 	public void ManageSound (bool fade, float lerpVal)
 	{
+//		Services.PlayerBehaviour.flow / (Services.PlayerBehaviour.maxSpeed/2))
+
 		if (fade) {
-			sound.volume = Mathf.Lerp (Mathf.Lerp (0.1f, 1, Services.PlayerBehaviour.flow / (Services.PlayerBehaviour.maxSpeed/2)), 0, lerpVal);
+			sound.volume = Mathf.Lerp (Services.PlayerBehaviour.connectTime, 0, lerpVal);
 		} else {
-			sound.volume = Mathf.Lerp (0, Mathf.Lerp (0.1f, 1, Services.PlayerBehaviour.flow / (Services.PlayerBehaviour.maxSpeed)/2), lerpVal);
+			sound.volume = Mathf.Lerp (0, Services.PlayerBehaviour.connectTime, lerpVal);
 		}
 	}
 
@@ -176,7 +178,7 @@ public class Spline : MonoBehaviour
 
 			ManageSound (false, t);
 
-			t += Time.deltaTime * 3;
+			t += Time.deltaTime;
 			yield return null;
 		}
 
@@ -247,7 +249,7 @@ public class Spline : MonoBehaviour
 		line.smoothWidth = true;
 		line.smoothColor = true;
 		line.points3 = new List<Vector3> ();
-
+		line.textureScale = 0.1f;
 	}
 
 	void Update ()
@@ -260,7 +262,7 @@ public class Spline : MonoBehaviour
 
 			if (!isDrawing) {
 				DrawMesh ();
-
+				line.texture = Services.Prefabs.lines [UnityEngine.Random.Range (0, Services.Prefabs.lines.Length)];
 				if (isPlayerOn) {
 //					drawTimer -= Time.deltaTime;
 //
@@ -863,8 +865,14 @@ public class Spline : MonoBehaviour
 
 				if (isPlayerOn) {
 
-					float distanceFromPlayer = (float)(indexOfPlayerPos - index) / (float)curveFidelity;
-					float invertedDistance = 1f - Mathf.Clamp01 (Mathf.Abs (distanceFromPlayer)/5);
+					float distanceFromPlayer;
+
+					if (Services.PlayerBehaviour.goingForward) {
+						distanceFromPlayer = (float)(indexOfPlayerPos - index) / (float)curveFidelity;
+					} else {
+						distanceFromPlayer = (float)(index - indexOfPlayerPos) / (float)curveFidelity;
+					}
+					float invertedDistance = 1f - Mathf.Clamp01 (Mathf.Abs (distanceFromPlayer)/2);
 					float flow = Services.PlayerBehaviour.flow;
 
 					float phase = index;
@@ -873,7 +881,7 @@ public class Spline : MonoBehaviour
 
 					float distortion = Mathf.Lerp (0, Mathf.Pow (1 - Mathf.Abs (Services.PlayerBehaviour.accuracy), 3), flow / 10);
 
-					float amplitude = Mathf.Clamp01 (Services.PlayerBehaviour.flow / Services.PlayerBehaviour.maxSpeed) / 5 + 0.01f;
+					float amplitude = Mathf.Clamp01(Services.PlayerBehaviour.connectTime) / 20 + 0.001f;
 						
 					float curr = (Time.time * frequency + phase) % (2.0f * Mathf.PI);
 					float next = (Time.time * newFrequency) % (2.0f * Mathf.PI);
@@ -891,7 +899,7 @@ public class Spline : MonoBehaviour
 
 					direction = new Vector3 (-direction.y, direction.x, direction.z);
 
-					v += (direction * offset * invertedDistance);
+					v += (direction * offset * Mathf.Clamp01(distanceFromPlayer));
 				}
 
 				if (index >= line.points3.Count) {
@@ -907,7 +915,7 @@ public class Spline : MonoBehaviour
 
 					if (i == indexOfSelected) {
 						line.SetWidth (Mathf.Lerp (1, 10, Mathf.Pow (distanceFromPlayer, 10)), index);
-						line.SetColor (Color.Lerp (Selected.color, Color.white, Mathf.Pow (distanceFromPlayer, 3)), index);
+						line.SetColor (Color.Lerp (Services.PlayerBehaviour.curPoint.color, Color.white * 10, Mathf.Pow (distanceFromPlayer, 3)), index);
 					}
 				}
 			
