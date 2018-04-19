@@ -158,6 +158,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					nextPoint = SplineUtil.RaycastFromCamera(cursorPos, 20f);
 
 					if (nextPoint != null && nextPoint != curPoint) {
+						
 						SplinePointPair spp = SplineUtil.ConnectPoints (curSpline, curPoint, nextPoint);
 							
 
@@ -169,6 +170,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						}
 
 						bool isEntering = false;
+
 						if (curSpline != null && curSpline != spp.s) {
 							isEntering = true;
 							curSpline.OnSplineExit ();
@@ -235,8 +237,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		flow = Mathf.Clamp (flow, -maxSpeed, maxSpeed);
 		accuracy = (90 - alignment) / 90;
 		if ((accuracy < 0.5f && accuracy > -0.5f) || Input.GetButton("Button2")) {
-			flow -= decay * Time.deltaTime;
-			flow = Mathf.Clamp (flow,  0, maxSpeed);
+			if (accuracy < 0) {
+				flow -= decay * Time.deltaTime;
+			} else {
+				flow += decay * Time.deltaTime;
+			}
 		}
 
 		if (accuracy < 0) {
@@ -410,7 +415,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		Point RaycastHitObj = SplineUtil.RaycastFromCamera (transform.position, 50f);
 
-		if (RaycastHitObj != null && RaycastHitObj.GetComponent<Point> ().isPlaced && RaycastHitObj != curPoint) {
+//		RaycastHitObj.GetComponent<Point> ().isPlaced
+
+		if (RaycastHitObj != null && RaycastHitObj != curPoint) {
 			state = PlayerState.Animating;
 			StartCoroutine(FlyIntoNewPoint(RaycastHitObj));
 
@@ -463,10 +470,12 @@ public class PlayerBehaviour: MonoBehaviour {
 	void PlayerMovement(){ 
 
 //		adding this value to flow
+//		MAKE FLOW NON REVERSIBLE. ADJUST LINE ACCURACY WITH FLOW TO MAKE PLAYER NOT STOP AT INTERSECTIONS
+//		NEGOTIATE FLOW CANCELLING OUT CURRENT SPEED
 
-		flow += Mathf.Pow(Mathf.Abs(accuracy), 2) * acceleration * Time.deltaTime;
-//		Mathf.Abs(accuracy)
-		progress += (((flow + boost + speed)) * Mathf.Sign(accuracy) * Time.deltaTime * Mathf.Pow(Mathf.Abs(accuracy), 2))/curSpline.distance;
+		flow += Mathf.Sign(accuracy) * Mathf.Pow(Mathf.Abs(accuracy), 3) * acceleration * Time.deltaTime;
+
+		progress += ((flow)/curSpline.distance) * Time.deltaTime;
 
 		//set player position to a point along the curve
 
@@ -484,7 +493,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			curSpline.Selected.proximity = 1 - progress;
 		}
 
-		GetComponent<Rigidbody> ().velocity = curSpline.GetDirection (progress) * flow * Mathf.Sign (accuracy);
+		GetComponent<Rigidbody> ().velocity = curSpline.GetDirection (progress) * flow;
 
 //		transform.Rotate (0, 0, flow*5);
 	}
@@ -535,11 +544,13 @@ public class PlayerBehaviour: MonoBehaviour {
 			s.Selected = p2;
 			goingForward = false;
 			progress = 1;
+			flow = -Mathf.Abs (flow);
 
 		} else {
 			progress = 0;
 			goingForward = true;
 			s.Selected = curPoint;
+			flow = Mathf.Abs (flow);
 		}
 
 	}
@@ -630,20 +641,13 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 
-	public void OnTriggerEnter(Collider col){
-		if (col.tag == "Point") {
-			if (!col.GetComponent<Point> ().isPlaced) {
-				StartCoroutine (CollectPoint (col.GetComponent<Point> ()));
-			}
-		}
-	}
-
-	public void OnTriggerStay(Collider col){
-		if (col.tag == "Point") {
-			if(traversing){
-			}
-		}
-	}
+//	public void OnTriggerEnter(Collider col){
+//		if (col.tag == "Point") {
+//			if (!col.GetComponent<Point> ().isPlaced) {
+//				StartCoroutine (CollectPoint (col.GetComponent<Point> ()));
+//			}
+//		}
+//	}
 
 	IEnumerator CollectPoint(Point p){
 
@@ -743,18 +747,17 @@ public class PlayerBehaviour: MonoBehaviour {
 			//do shit with particle systems for flying
 		} else {
 //			t.time = Mathf.Lerp(t.time, 0, Time.deltaTime);
+			if ((accuracy < 0 && flow > 0) || accuracy > 0 && flow < 0) {
+				e.rateOverTimeMultiplier = Mathf.Abs (flow) * 100;
+			}
 		}
 
-		if (canFly) {
-			t.time = 2f;
-		} else {
-			t.time = 0.25f;
-		}
+//		if (canFly) {
+//			t.time = 2f;
+//		} else {
+//			t.time = 0.25f;
+//		}
 			
-//		e.rateOverTimeMultiplier = (int)Mathf.Lerp (0, flow * 25, Mathf.Pow (1 - Mathf.Abs (accuracy), 2));
-//		BrakingSound.volume = Mathf.Clamp01(1- Mathf.Abs (accuracy))/6;
-//		AccelerationSound.volume = Mathf.Clamp01(flow / (maxSpeed/5));
-
 		if (curSpline != null) {
 //			curSpline.DrawLineSegmentVelocity (progress, Mathf.Sign (accuracy), goingForward ? 0 : 1);\
 			curSpline.l.material.mainTextureOffset -= Vector2.right * Mathf.Sign (accuracy) * flow * curSpline.l.material.mainTextureScale.x * 2 * Time.deltaTime;

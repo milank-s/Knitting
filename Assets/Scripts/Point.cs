@@ -30,7 +30,6 @@ public class Point : MonoBehaviour
 	public List<Point> _neighbours;
 	public List<Spline> _connectedSplines;
 
-	public bool isPlaced = false;
 	public Color color;
 	public float timeOffset;
 	public float proximity = 0;
