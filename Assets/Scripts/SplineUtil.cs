@@ -37,45 +37,44 @@ public class SplineUtil : MonoBehaviour {
 		}
 
 		//ALL CASES WHERE THE CLICKED ON/CREATED POINTS ARE ADDED TO CURRENT SPLINE
+		if (s == null || s.SplinePoints.Count > 100 ||  s.closed || s.locked) {
+				newSpline = CreateSpline (p1, p2);
 
-		if (s == null || s.closed || s.locked) {
-			newSpline = CreateSpline (p1,p2);
+			} else {
 
-		} else {
+				if (p1 == s.StartPoint () || p1 == s.EndPoint ()) {
 
-			if (p1 == s.StartPoint () || p1 == s.EndPoint ()) {
+					newSpline = s;
 
-				newSpline = s;
+					if (p2 == s.StartPoint () || p2 == s.EndPoint ()) {
 
-				if (p2 == s.StartPoint () || p2 == s.EndPoint ()) {
+						s.closed = true;
+						s.LoopIndex = s.SplinePoints.IndexOf (p2);
 
-					s.closed = true;
-					s.LoopIndex = s.SplinePoints.IndexOf (p2);
+						p1.AddPoint (p2);
+						p2.AddPoint (p1);
 
-					p1.AddPoint (p2);
-					p2.AddPoint (p1);
+						if (s.GetPointIndex (p2) - s.GetPointIndex (p1) > 1) {
+							s.Selected = p2;
+						}
 
-					if (s.GetPointIndex (p2) - s.GetPointIndex (p1) > 1) {
-						s.Selected = p2;
-					}
+					} else if (!s.SplinePoints.Contains (p2)) {
 
-				} else if (!s.SplinePoints.Contains (p2)) {
+						s.AddPoint (p1, p2);
+						s.name = s.StartPoint ().name + "—" + s.EndPoint ().name;
 
-					s.AddPoint (p1, p2);
-					s.name = s.StartPoint ().name + "—" + s.EndPoint ().name;
+					} else {
 
+						newSpline = CreateSpline (p1, p2);
+					}	
 				} else {
 
 					newSpline = CreateSpline (p1, p2);
-				}	
-			} else {
-
-				newSpline = CreateSpline (p1,p2);
+				}
+				//EDGE CASE
+				//Creating endpoint when you're on startpoint 
+				//make it so that the start/midpoint get shifted down one index, insert at startpoin
 			}
-			//EDGE CASE
-			//Creating endpoint when you're on startpoint 
-			//make it so that the start/midpoint get shifted down one index, insert at startpoin
-		}
 		// ??? AHAHAHAHAHA
 
 		result.p = p2;

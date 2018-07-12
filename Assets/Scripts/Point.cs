@@ -38,10 +38,9 @@ public class Point : MonoBehaviour
 	public static Point Select;
 	private float cooldown;
 	private SpriteRenderer SR;
-	private LineRenderer l;
 	private List<GameObject> _directionalSprites;
 	public float c = 0;
-	public bool hit;
+	public bool hit = false;
 	public bool isSelect
 	{
 		get
@@ -56,7 +55,7 @@ public class Point : MonoBehaviour
 
 		Point.pointCount++;
 		activationSprite = GetComponentInChildren<FadeSprite> ();
-		timeOffset = Point.pointCount * 0.2f;
+		timeOffset = Point.pointCount;
 		gameObject.name = "v" + Point.pointCount;
 		_directionalSprites = new List<GameObject> ();
 		rb = GetComponent<Rigidbody> ();
@@ -101,21 +100,22 @@ public class Point : MonoBehaviour
 //			activationSprite.time = Mathf.Lerp (activationSprite.time, 0, Time.deltaTime * 2);
 //		}
 
-		c = (Mathf.Sin (Time.time * 10 + timeOffset))/3 + 0.25f;
+		c = (Mathf.Sin ((Time.time + timeOffset) * 5))/5 + 0.1f;
 		c = Mathf.Pow (c, 1);
 
-		if (_connectedSplines.Count == 0) {
-			c = 1;
+		if (!isFound) {
+			SR.color = Color.white;
+			c = 0;
 		} else {
 
-			if (hit) {
-				color = Color.Lerp (color, Color.white * 3, Time.deltaTime * 5);
-				SR.color = color;
-			} else {
+//			if (hit) {
+//				color = Color.Lerp (color, Color.white, Time.deltaTime * 5);
+//				SR.color = color;
+//			} else {
 				color = Color.Lerp (color, new Color (c, c, c), Time.deltaTime * 5);
 //				SR.color = Color.Lerp (SR.color, Color.black, Time.deltaTime * 5);
 				SR.color = color;
-			}
+//			}
 		}
 
 //		l.SetPosition (0, transform.position);
@@ -203,21 +203,20 @@ public class Point : MonoBehaviour
 	public void OnPointEnter(){
 		PutOnCooldown ();
 
-		continuity = Mathf.Clamp(continuity + 0.01f, 0, 1);
+//		continuity = Mathf.Clamp(continuity + 0.01f, 0, 1);
 		GameObject fx = Instantiate (activatedSprite, transform.position, Quaternion.identity);
 		fx.transform.parent = transform;
 
-
-		if (GetComponentInParent<WordBank>() != null) {
-			GameObject newText = (GameObject)Instantiate (Services.Prefabs.spawnedText, transform.position + Vector3.up, Quaternion.identity);
-			newText.GetComponent<TextMesh>().text = GetComponentInParent<WordBank>().GetWord ();
+		if (GetComponentInParent<PointCloud>() != null) {
+			PointCloud p = GetComponentInParent<PointCloud> ();
+			GameObject newText = (GameObject)Instantiate (Services.Prefabs.spawnedText, transform.position - Vector3.forward/2f + Vector3.up/8f, Quaternion.identity);
+			newText.GetComponent<TextMesh>().text = p.GetWord ();
 			newText.transform.parent = transform;
 		}
 	}
 
 	public void OnPointExit(){
-		proximity = 0.5f;
-		PutOnCooldown ();
+
 	}
 
 

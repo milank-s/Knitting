@@ -42,6 +42,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float negativeflow;
 	public float progress;
 	public float accuracy;
+	public float accuracyCoefficient;
+	public float curSpeed;
 	public float creationCD = 0.25f;
 	public float flyingSpeedThreshold = 3;
 	public float cursorDistance;
@@ -62,19 +64,19 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public PlayerState state;
 
-	private float boost;
+	public float boost;
 
 	private bool traversing;
 	public bool goingForward = true;
 	private bool controllerConnected = false;
 	public float connectTime;
 
-	private Vector3 cursorPos, cursorDir;
+	public Vector3 cursorPos, cursorDir;
 	private LineRenderer l;
 	private List<Point> inventory;
 	public Point lastPoint;
 
-
+	float decayTimer;
 	private float curDrawDistance = 0.1f;
 
 	private ParticleSystem ps;
@@ -145,14 +147,15 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		}else if(state == PlayerState.Switching) {
 			
-
+			transform.position = curPoint.Pos;
 			bool canTraverse = false;
 
 			if (CanPlayerMove ()) {
+
 				canTraverse = true;
 			} else {
 
-				if (Input.GetButton ("Button1") && angleToSpline > LineAngleDiff && creationInterval <= 0) {
+				if (Input.GetButtonDown ("Button1") && creationInterval <= 0) {
 
 					Point nextPoint = null;
 					nextPoint = SplineUtil.RaycastFromCamera(cursorPos, 20f);
@@ -185,6 +188,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						SetPlayerAtStart (curSpline, spp.p);
 						canTraverse = true;
 
+
 					} else if (!Input.GetButton ("Button2") && canFly && flow > flyingSpeedThreshold) {
 
 						state = PlayerState.Flying;
@@ -206,17 +210,34 @@ public class PlayerBehaviour: MonoBehaviour {
 			if (canTraverse && !Input.GetButton ("Button2")) {
 
 				curPoint.OnPointExit ();
-				boost += boostAmount;
-				flow += flowAmount;
+				if (!goingForward) {
+					boost -= boostAmount;
+					flow -= flowAmount;
+				} else {
+					boost += boostAmount;
+					flow += flowAmount;
+				}
 				state = PlayerState.Traversing;
-
+				decayTimer = 0.25f;
 				//this is making it impossible to get off points that are widows. wtf. 
 				SetCursorAlignment ();
 				PlayerMovement ();
 
 			} else {
-				flow -= decay * Time.deltaTime;
-				flow = Mathf.Clamp (flow, 0, maxSpeed);
+				decayTimer -= Time.deltaTime;
+				if (decayTimer < 0) {
+					if (flow > 0) {
+						flow -= decay * Time.deltaTime;
+						if (flow < 0) {
+							flow = 0;
+						}
+					} else if (flow < 0) {
+						flow += decay * Time.deltaTime;
+						if (flow > 0) {
+							flow = 0;
+						}
+					}
+				}
 			}
 		}
 
@@ -235,14 +256,19 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void SetCursorAlignment(){
 		float alignment = Vector2.Angle (cursorDir, curSpline.GetDirection (progress));
 		flow = Mathf.Clamp (flow, -maxSpeed, maxSpeed);
+
 		accuracy = (90 - alignment) / 90;
 		if ((accuracy < 0.5f && accuracy > -0.5f) || Input.GetButton("Button2")) {
-			if (accuracy < 0) {
-				flow -= decay * Time.deltaTime;
-			} else {
-				flow += decay * Time.deltaTime;
+			if (accuracy < 0 && flow > 0) {
+				flow -= decay * (1f + accuracy) * Time.deltaTime;
+				flow = Mathf.Clamp (flow, 0, maxSpeed);
+			} else if(accuracy > 0 && flow < 0){
+				flow += decay * (1f - accuracy) * Time.deltaTime;
+				flow = Mathf.Clamp (flow, -maxSpeed, 0);
 			}
 		}
+
+		StopAngleDiff = Mathf.Lerp (20, 50, Mathf.Abs(flow));
 
 		if (accuracy < 0) {
 			goingForward = false;
@@ -472,11 +498,15 @@ public class PlayerBehaviour: MonoBehaviour {
 //		adding this value to flow
 //		MAKE FLOW NON REVERSIBLE. ADJUST LINE ACCURACY WITH FLOW TO MAKE PLAYER NOT STOP AT INTERSECTIONS
 //		NEGOTIATE FLOW CANCELLING OUT CURRENT SPEED
+		accuracyCoefficient = Mathf.Pow(Mathf.Abs(accuracy), 3);
+		flow += Mathf.Sign(accuracy) * accuracyCoefficient * acceleration * Time.deltaTime;
+		curSpeed =  speed * Mathf.Sign (accuracy) * accuracyCoefficient;
+		if ((curSpeed > 0 && flow < 0) || (curSpeed < 0 && flow > 0)) {
+			curSpeed = 0;
+		}
+		progress += ((flow + boost + curSpeed)/curSpline.distance) * Time.deltaTime;
 
-		flow += Mathf.Sign(accuracy) * Mathf.Pow(Mathf.Abs(accuracy), 3) * acceleration * Time.deltaTime;
-
-		progress += ((flow)/curSpline.distance) * Time.deltaTime;
-
+		boost = Mathf.Lerp (boost, 0, Time.deltaTime * 2);
 		//set player position to a point along the curve
 
 		if (curPoint == curSpline.Selected) {
@@ -521,7 +551,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				curPoint = curSpline.Selected;
 
 			}
-				
+
 			curPoint.proximity = 1;
 			curPoint.GetComponent<Rigidbody> ().AddForce (cursorDir * flow * 5);
 
@@ -532,7 +562,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if (PointArrivedAt != curPoint) {
 				lastPoint = PointArrivedAt;
 			}
-
+				
 		 	state = PlayerState.Switching;
 		}
 	}
@@ -615,7 +645,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 			}
 				
-			if (angleToSpline <= StopAngleDiff) {
+			if (angleToSpline <= StopAngleDiff && (Input.GetButtonDown("Button1") || Mathf.Abs(flow) > 1)) {
 				bool isEntering = false;
 				SetPlayerAtStart (closestSpline, pointDest);
 				if (curSpline != null && curSpline != closestSpline) {
@@ -676,9 +706,17 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void CursorInput (){
 
+		Vector3 lastCursorDir = cursorDir;
 		if (controllerConnected) {
 
-			cursorDir = new Vector3(-Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
+
+			cursorDir = new Vector3(Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
+			if (cursorDir.magnitude < 0.1f) {
+				cursorDir = Vector3.Lerp(lastCursorDir, lastCursorDir.normalized/10f, Time.deltaTime * 5);
+			}
+
+	
+//			cursorDir = Vector3.RotateTowards (lastCursorDir, cursorDir, 0.1f, cursorRotateSpeed * Time.deltaTime);
 			sprite.transform.up = cursorDir;
 			//free movement: transform.position = transform.position + new Vector3 (-Input.GetAxis ("Joy X") / 10, Input.GetAxis ("Joy Y") / 10, 0);
 			//angle to joystick position
@@ -695,7 +733,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //			}else{
 //				cursorDir = (mousePos - transform.position);
 //			}
-			sprite.transform.RotateAround (transform.position, transform.forward, -Input.GetAxis("Horizontal") * cursorRotateSpeed * Time.deltaTime);
+			sprite.transform.RotateAround (transform.position, transform.forward, -Input.GetAxis("Horizontal") * cursorRotateSpeed /10 * Time.deltaTime);
 			cursorDir = sprite.transform.up;
 		}
 			
@@ -705,9 +743,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		}
 
-		if(curPoint.HasSplines() && curSpline != null){
-			cursorDir.z = curSpline.GetDirection (progress).z * Mathf.Sign(accuracy);
-		}
+
+//		if(curPoint.HasSplines() && curSpline != null){
+//			cursorDir.z = curSpline.GetDirection (progress).z * Mathf.Sign(accuracy);
+//		}
 
 
 
@@ -741,14 +780,17 @@ public class PlayerBehaviour: MonoBehaviour {
 		ParticleSystem.EmissionModule e = ps.emission;	
 
 		float Absflow = Mathf.Abs (flow);
-		if (state == PlayerState.Flying) {
 
+		if (state == PlayerState.Flying) {
+			e.rateOverTimeMultiplier = Mathf.Lerp(0, 50, Mathf.Abs(flow));
 //			t.time = Absflow;
 			//do shit with particle systems for flying
 		} else {
 //			t.time = Mathf.Lerp(t.time, 0, Time.deltaTime);
-			if ((accuracy < 0 && flow > 0) || accuracy > 0 && flow < 0) {
-				e.rateOverTimeMultiplier = Mathf.Abs (flow) * 100;
+			if (state != PlayerState.Switching && (accuracy < 0 && flow > 0) || accuracy > 0 && flow < 0) {
+				e.rateOverTimeMultiplier = Mathf.Lerp(0, 50, Mathf.Abs(flow) + 0.1f);
+			} else {
+				e.rateOverTimeMultiplier = Mathf.Lerp (e.rateOverTimeMultiplier, 0, Time.deltaTime * 5);
 			}
 		}
 

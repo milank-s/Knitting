@@ -40,10 +40,10 @@ public static class PointManager{
 	}
 		
 	public static void ResetPoints(){
-		CameraDolly.leftBound = Services.PlayerBehaviour.curPoint.Pos.x;
-		CameraDolly.topBound = Services.PlayerBehaviour.curPoint.Pos.y;
-		CameraDolly.rightBound = CameraDolly.leftBound;
-		CameraDolly.bottomBound = CameraDolly.topBound;
+//		CameraDolly.leftBound = Services.PlayerBehaviour.curPoint.Pos.x;
+//		CameraDolly.topBound = Services.PlayerBehaviour.curPoint.Pos.y;
+//		CameraDolly.rightBound = CameraDolly.leftBound;
+//		CameraDolly.bottomBound = CameraDolly.topBound;
 
 		for(int i = _pointsHit.Count-1; i >= 0; i--) {
 			_pointsHit [i].hit = false;
