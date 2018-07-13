@@ -204,8 +204,6 @@ public class Point : MonoBehaviour
 		PutOnCooldown ();
 
 //		continuity = Mathf.Clamp(continuity + 0.01f, 0, 1);
-		GameObject fx = Instantiate (activatedSprite, transform.position, Quaternion.identity);
-		fx.transform.parent = transform;
 
 		if (GetComponentInParent<PointCloud>() != null) {
 			PointCloud p = GetComponentInParent<PointCloud> ();
@@ -216,7 +214,8 @@ public class Point : MonoBehaviour
 	}
 
 	public void OnPointExit(){
-
+		GameObject fx = Instantiate (activatedSprite, transform.position, Quaternion.identity);
+		fx.transform.parent = transform;
 	}
 
 

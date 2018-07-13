@@ -54,7 +54,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float PointDrawDistance;
 	public float connectTimeCoefficient;
 	public float cursorRotateSpeed = 1;
-
+	private List<Point> traversedPoints;
 
 	public AudioSource AccelerationSound;
 	public AudioSource BrakingSound;
@@ -66,7 +66,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public float boost;
 
-	private bool traversing;
+
 	public bool goingForward = true;
 	private bool controllerConnected = false;
 	public float connectTime;
@@ -88,13 +88,14 @@ public class PlayerBehaviour: MonoBehaviour {
 	bool canFly;
 
 	void Awake(){
-		
+		traversedPoints = new List<Point> ();
+		traversedPoints.Add (curPoint);
 		curPoint.proximity = 1;
 		state = PlayerState.Switching;
 		sounds = GetComponent<PlayerSounds> ();
 		l = GetComponent<LineRenderer> ();
 		t = GetComponentInChildren<TrailRenderer> ();
-		traversing = false;
+
 		inventory = new List<Point>();
 		ps = GetComponent<ParticleSystem> ();
 		newPointList = new List<Transform> ();
@@ -198,7 +199,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						curDrawDistance = 0;
 						curSpline.OnSplineExit ();
 						curPoint.OnPointExit ();
-						boost += boostAmount;
+						boost = boostAmount;
 						flow += flowAmount;
 						return;
 					}
@@ -210,12 +211,13 @@ public class PlayerBehaviour: MonoBehaviour {
 			if (canTraverse && !Input.GetButton ("Button2")) {
 
 				curPoint.OnPointExit ();
-				if (!goingForward) {
-					boost -= boostAmount;
-					flow -= flowAmount;
-				} else {
-					boost += boostAmount;
-					flow += flowAmount;
+				if (Mathf.Abs (flow) <= 1) {
+					if (!goingForward) {
+						boost -= boostAmount;
+					} else {
+					
+						boost = boostAmount;
+					}
 				}
 				state = PlayerState.Traversing;
 				decayTimer = 0.25f;
@@ -243,6 +245,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (state != PlayerState.Animating && curPoint.HasSplines () && curSpline != null) {
 			transform.position = curSpline.GetPoint (progress); 
+			if (traversedPoints.Count >= 2 && Mathf.Abs (flow) <= 0) {
+				StartCoroutine (Unwind());
+			}
 		}
 
 
@@ -259,12 +264,14 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		accuracy = (90 - alignment) / 90;
 		if ((accuracy < 0.5f && accuracy > -0.5f) || Input.GetButton("Button2")) {
-			if (accuracy < 0 && flow > 0) {
-				flow -= decay * (1f + accuracy) * Time.deltaTime;
-				flow = Mathf.Clamp (flow, 0, maxSpeed);
-			} else if(accuracy > 0 && flow < 0){
-				flow += decay * (1f - accuracy) * Time.deltaTime;
-				flow = Mathf.Clamp (flow, -maxSpeed, 0);
+			if (flow > 0) {
+				flow -= decay * (1f - accuracy) * Time.deltaTime;
+				if (flow < 0)
+					flow = 0;
+			} else if(flow < 0){
+				flow += decay * (1f + accuracy) * Time.deltaTime;
+				if (flow > 0)
+					flow = 0;
 			}
 		}
 
@@ -362,6 +369,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				newPointList [index].GetComponentInChildren<SpriteRenderer> ().sprite = null;
 			}
 
+			traversedPoints.Add (curP);
+
 			s = spp.s;
 			curP = spp.p;
 //			curP.transform.parent = s.transform;
@@ -377,9 +386,12 @@ public class PlayerBehaviour: MonoBehaviour {
 		SplinePointPair	sp = SplineUtil.ConnectPoints (s, curP, p);
 		curP.GetComponent<SpringJoint> ().connectedBody = p.rb;
 		curSpline = sp.s;
+
+		lastPoint = p;
 		curPoint = p;
 		s.Selected = curP;
 		progress = 1;
+
 		Vector3 pos = transform.position;
 
 		float distance = Vector3.Distance (transform.position, p.Pos);
@@ -499,7 +511,9 @@ public class PlayerBehaviour: MonoBehaviour {
 //		MAKE FLOW NON REVERSIBLE. ADJUST LINE ACCURACY WITH FLOW TO MAKE PLAYER NOT STOP AT INTERSECTIONS
 //		NEGOTIATE FLOW CANCELLING OUT CURRENT SPEED
 		accuracyCoefficient = Mathf.Pow(Mathf.Abs(accuracy), 3);
-		flow += Mathf.Sign(accuracy) * accuracyCoefficient * acceleration * Time.deltaTime;
+		if (accuracy < -0.5f || accuracy > 0.5f) {
+			flow += Mathf.Sign (accuracy) * accuracyCoefficient * acceleration * Time.deltaTime;
+		}
 		curSpeed =  speed * Mathf.Sign (accuracy) * accuracyCoefficient;
 		if ((curSpeed > 0 && flow < 0) || (curSpeed < 0 && flow > 0)) {
 			curSpeed = 0;
@@ -526,6 +540,58 @@ public class PlayerBehaviour: MonoBehaviour {
 		GetComponent<Rigidbody> ().velocity = curSpline.GetDirection (progress) * flow;
 
 //		transform.Rotate (0, 0, flow*5);
+	}
+
+	public IEnumerator Unwind(){
+
+		float t = 0;
+		bool moving = true;
+		int pIndex = traversedPoints.Count -1;
+
+
+		Point nextPoint =  traversedPoints [pIndex];
+
+		if (state == PlayerState.Switching) {
+			pIndex--;
+		}	
+
+		//add case for stopping in middle of line
+		//figure out why flow is always non-zero on line.
+		state = PlayerState.Animating;
+
+		for(int i = pIndex; i >= 0; i--) {
+
+			curPoint = nextPoint;
+			nextPoint = traversedPoints [i];
+			curSpline = curPoint.GetConnectingSpline (nextPoint);
+			SetPlayerAtStart (curSpline, nextPoint);
+			moving = true;
+
+			while(moving){
+				t += Time.deltaTime;
+
+				if (goingForward) {
+					progress += Time.deltaTime * t / curSpline.distance;
+				} else {
+					progress -= Time.deltaTime * t / curSpline.distance;
+				}
+
+				transform.position = curSpline.GetPoint (progress); 
+
+				if (progress > 1 || progress < 0) {
+					moving = false;
+				}
+				yield return null;
+			}
+
+
+		}
+
+		curPoint = nextPoint;
+		traversedPoints.Clear ();
+		traversedPoints.Add (curPoint);
+		state = PlayerState.Switching;
+
 	}
 
 	void CheckProgress(){
@@ -560,10 +626,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 			if (PointArrivedAt != curPoint) {
+				traversedPoints.Add (curPoint);
 				lastPoint = PointArrivedAt;
 			}
 				
-		 	state = PlayerState.Switching;
+	
+			state = PlayerState.Switching;
 		}
 	}
 		
@@ -689,6 +757,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				p.GetComponent<SpringJoint> ().connectedBody = inventory [inventory.Count - 1].GetComponent<Rigidbody> ();
 			} else {
 				p.GetComponent<SpringJoint> ().connectedBody = GetComponent<Rigidbody> ();
+
 			}
 			inventory.Add (p);
 			p.transform.parent = transform;
@@ -812,10 +881,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	}
 		
-
-	public bool GetTraversing(){
-		return traversing;
-	}
 
 	public Vector3 GetCursorDir(){
 		return cursorDir;

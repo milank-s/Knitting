@@ -657,8 +657,10 @@ public class Spline : MonoBehaviour
 			newIndex = SplinePoints.Count;
 			SplinePoints.Insert (newIndex, p);
 
-			p.AddPoint (SplinePoints [newIndex - 1]);
-			SplinePoints [newIndex - 1].AddPoint (p);
+			p.AddPoint (SplinePoints [newIndex-1]);
+			SplinePoints [newIndex-1].AddPoint (p);
+//			p.AddPoint(curPoint);
+//			curPoint.AddPoint (p);
 		}
 			
 
@@ -849,6 +851,7 @@ public class Spline : MonoBehaviour
 
 			int adjustedIndex;
 
+			//ADJUST INDEX FOR LOOPING AROUND SPLINE WITH DISTANCE-FROM-PLAYER CALCULATIONS
 			if (closed) {
 				int dist1 = Mathf.Abs(index - indexOfPlayerPos);
 				int dist2;
@@ -869,14 +872,15 @@ public class Spline : MonoBehaviour
 				adjustedIndex = Mathf.Abs(indexOfPlayerPos - index);
 			}
 
-			distanceFromPlayer = (float)adjustedIndex / (float)curveFidelity;
-			
 
+
+			distanceFromPlayer = (float)adjustedIndex / (float)curveFidelity;
 			invertedDistance = 1f - Mathf.Clamp01 (Mathf.Abs (distanceFromPlayer)/2);
+
 			float flow = Mathf.Abs(Services.PlayerBehaviour.flow);
 
 			float phase = index;
-			float newFrequency = flow * 10 + 10;
+			float newFrequency = flow * 5 + 5;
 //			newFrequency *= -Mathf.Sign (Services.PlayerBehaviour.accuracy);
 
 			float distortion = Mathf.Lerp (0, Mathf.Pow (1 - Mathf.Abs (Services.PlayerBehaviour.accuracy), 3), flow/3)/5f;
@@ -916,12 +920,12 @@ public class Spline : MonoBehaviour
 				line.SetColor (Color.Lerp (SplinePoints [i].color, SplinePoints [SplinePoints.Count - 1].color, t), index);
 //				line.SetWidth (Mathf.Lerp ((SplinePoints [i].NeighbourCount () - 1) + 1, (SplinePoints [SplinePoints.Count - 1].NeighbourCount () - 1) + 1, t), index);
 			}
-			line.SetWidth (1f, index);
+//			line.SetWidth (1f, index);
 
 			if (isPlayerOn) {
 				if (index < line.GetSegmentNumber ()) {
-					SplinePoints [i + 1].color = Color.Lerp (SplinePoints [i + 1].color, Color.white, Mathf.Pow (invertedDistance, 2));
-					line.SetWidth (Mathf.Lerp (1, 1, Mathf.Pow (invertedDistance, 10)), index);
+//					SplinePoints [i + 1].color = Color.Lerp (SplinePoints [i + 1].color, Color.white, Mathf.Pow (invertedDistance, 2));
+//					line.SetWidth (Mathf.Lerp (1, 1, Mathf.Pow (invertedDistance, 10)), index);
 					line.SetColor (Color.Lerp (line.GetColor(index), Color.white, Mathf.Pow (invertedDistance, 2)), index);
 				}
 			}
