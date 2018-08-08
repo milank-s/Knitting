@@ -541,6 +541,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					drawnPoint = curPoint;
 					curPoint = newPoint;
 					curSpline.Selected = drawnPoint;
+					traversedPoints.Add(drawnPoint);
 				  curSpline.OnSplineEnter (true, drawnPoint, curPoint, false);
 				// } else {
 				// 	CreateJoint (newPointList [newPointList.Count - 1].GetComponent<Rigidbody> ());
