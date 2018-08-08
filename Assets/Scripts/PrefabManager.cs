@@ -15,7 +15,7 @@ public class PrefabManager : MonoBehaviour {
 
 
 	void Start(){
-
+		Cursor.lockState = CursorLockMode.Locked;
 		Services.Prefabs = this;
 		LoadResources ();
 	}

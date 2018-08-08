@@ -3,6 +3,7 @@ using System.Collections;
 
 public class DrawLineToTarget : MonoBehaviour {
 	public Transform target;
+
 	private LineRenderer l;
 	// Use this for initialization
 	void Start () {

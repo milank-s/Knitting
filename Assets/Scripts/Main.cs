@@ -7,8 +7,9 @@ public class Main : MonoBehaviour {
 	public GameObject Cursor;
 	public GameObject Player;
 	public GameObject StartPoint;
-	void Awake () {
 
+	void Awake () {
+		
 		Services.Player = Player;
 		Services.PlayerBehaviour = Player.GetComponent<PlayerBehaviour>();
 		Services.StartPoint = StartPoint.GetComponent<Point>();

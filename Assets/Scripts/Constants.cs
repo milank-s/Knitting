@@ -6,7 +6,11 @@ public class Constants : MonoBehaviour {
 
 	public PlayerBehaviour playerVals;
 
+	LineRenderer l;
+
+	public TextMesh accuracyReadout;
 	public TextMesh accuracy;
+	public TextMesh cursorOnPoint;
 	public TextMesh negativeAccuracy;
 	public TextMesh speed;
 	public TextMesh horizontal;
@@ -17,11 +21,24 @@ public class Constants : MonoBehaviour {
 	public TextMesh[] onPoint;
 	public TextMesh[] xButton;
 	public TextMesh canFly;
+	public TextMesh reset;
 
 	Color gray = new Color(0.1f, 0.1f, 0.1f);
 
+	void Start(){
+		l = playerVals.cursor.GetComponent<LineRenderer>();
+	}
+
 	void Update () {
-		speed.text = Mathf.Abs(playerVals.flow).ToString();
+		
+		accuracyReadout.text = Mathf.Abs (playerVals.accuracy).ToString("F1");
+
+		if (playerVals.state != PlayerState.Animating) {
+			speed.text = Mathf.Abs (playerVals.flow).ToString ("F2");
+		} else {
+			speed.text = (-Mathf.Abs (playerVals.flow)).ToString ("F2");
+		}
+
 		if (Mathf.Abs(playerVals.cursorDir.x) > 0.5f) {
 			horizontal.color = Color.white;
 		}else {
@@ -66,6 +83,12 @@ public class Constants : MonoBehaviour {
 			canFly.color = gray;
 		}
 			
+		if (playerVals.flow == 0) {
+			reset.color = Color.white;
+		} else {
+		
+			reset.color = gray;
+		}
 
 		if ((playerVals.accuracy < 0.5f && playerVals.accuracy > -0.5f)) {
 			drag.color = Color.white;
@@ -85,5 +108,17 @@ public class Constants : MonoBehaviour {
 			negativeAccuracy.color = gray;
 		}
 		boost.color = Color.Lerp (gray, Color.white, playerVals.boost);
+
+		Point p = SplineUtil.RaycastFromCamera(playerVals.transform.position, 20f);
+		if (p != null && playerVals.state == PlayerState.Switching && !playerVals.curPoint.isConnectedTo(p)) {
+			l.positionCount = 2;
+			l.SetPosition (0, p.Pos);
+			l.SetPosition (1, Services.Player.transform.position);
+			cursorOnPoint.color = Color.white;
+		} else {
+			cursorOnPoint.color = gray;
+			l.positionCount = 0;
+		}
+
 	}
 }

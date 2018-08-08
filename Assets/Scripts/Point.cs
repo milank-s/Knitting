@@ -13,7 +13,7 @@ public class Point : MonoBehaviour
 	}
 
 	public static float hitColorLerp;
-	public bool isFound = false;
+	public bool visited = false;
 
 	public static int pointCount = 0;
 	public Rigidbody rb;
@@ -52,7 +52,7 @@ public class Point : MonoBehaviour
 	FadeSprite activationSprite;
 
 	void Awake(){
-
+		color = Color.black;
 		Point.pointCount++;
 		activationSprite = GetComponentInChildren<FadeSprite> ();
 		timeOffset = Point.pointCount;
@@ -100,11 +100,11 @@ public class Point : MonoBehaviour
 //			activationSprite.time = Mathf.Lerp (activationSprite.time, 0, Time.deltaTime * 2);
 //		}
 
-		c = (Mathf.Sin ((Time.time + timeOffset) * 5))/5 + 0.1f;
+		c = (Mathf.Sin ((Time.time + timeOffset) * 5))/5 + 0.5f;
 		c = Mathf.Pow (c, 1);
 
-		if (!isFound) {
-			SR.color = Color.white;
+		if (!visited) {
+//			SR.color = Color.white;
 			c = 0;
 		} else {
 
@@ -160,8 +160,8 @@ public class Point : MonoBehaviour
 			_neighbours.Add (p);
 		}
 			
-		if (!isFound) {
-			isFound = true;
+		if (!visited) {
+			visited = true;
 			PointManager._connectedPoints.Add (this);
 		}
 	
@@ -231,6 +231,13 @@ public class Point : MonoBehaviour
 		return null;
 	}
 
+	public bool isConnectedTo(Point p){
+		if (_neighbours.Contains (p)) {
+			return true;
+		}
+		return false;
+	}
+
 	public bool IsAdjacent(Point n){
 		return _neighbours.Contains (n);
 	}
@@ -248,6 +255,10 @@ public class Point : MonoBehaviour
 	}
 
 	public void PutOnCooldown(){
+
+		if (!visited) {
+			visited = true;
+		}
 
 		if (!hit) {
 			PointManager.AddPointHit (this);

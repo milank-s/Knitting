@@ -18,10 +18,10 @@ public class PointCloud : MonoBehaviour {
 
 	public string GetWord (){
 		wordIndex++;
-		return words[(wordIndex) % (words.Length)]; 
+		return words[(wordIndex-1) % (words.Length)]; 
 	}
 
-	public void Start(){
+	public void Awake(){
 		wordIndex = 0;
 		words = text.text.Split (new char[] { ' ' });
 		UpdateContinuity (PointContinuity);

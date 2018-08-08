@@ -9,7 +9,7 @@ using UnityEngine.Audio;
 
 public class Spline : MonoBehaviour
 {
-	
+
 	public static List<Spline> Splines = new List<Spline> ();
 	[HideInInspector]
 	public List<Point> SplinePoints;
@@ -23,7 +23,7 @@ public class Spline : MonoBehaviour
 	public LineRenderer l2;
 
 	public static Spline Select;
-
+	bool reversed;
 	public int curveFidelity = 10;
 	public float drawSpeed = 6;
 	public float distance = 0;
@@ -33,6 +33,7 @@ public class Spline : MonoBehaviour
 	public int LoopIndex;
 	public bool locked = false;
 	public bool isDrawing = true;
+	public bool draw;
 
 	private float colorDecay;
 	float distanceFromPlayer;
@@ -40,6 +41,7 @@ public class Spline : MonoBehaviour
 
 	private int lowHitPoint = int.MaxValue;
 	private int highHitPoint = -int.MaxValue;
+	private float playerProgress;
 
 	public bool isPlayerOn = false;
 
@@ -82,9 +84,9 @@ public class Spline : MonoBehaviour
 
 	public void OnSplineExit ()
 	{
-
+		draw = false;
 		isPlayerOn = false;
-		CleanUpLines ();
+
 		if (curSound != null) {
 			StopCoroutine (curSound);
 			StartCoroutine (FadeNote (sound));
@@ -94,16 +96,14 @@ public class Spline : MonoBehaviour
 
 	public void OnSplineEnter (bool enter, Point p1, Point p2, bool forceDraw = false)
 	{
-		isPlayerOn = true;
-
-		bool draw = false;
+		draw = false;
 
 		int i = SplinePoints.IndexOf (p1);
 		int j = SplinePoints.IndexOf (p2);
 
 		if (forceDraw) {
 			draw = true;
-		} 
+		}
 
 
 		if (i < lowHitPoint) {
@@ -128,13 +128,17 @@ public class Spline : MonoBehaviour
 			int indexdiff = j - i;
 
 			if (indexdiff == -1 || indexdiff > 1) {
+				playerProgress = 0;
 //				StartCoroutine (DrawMeshOverTime (i, j, true));
+				reversed = true;
 
 			} else {
+				playerProgress = 1;
 //				StartCoroutine (DrawMeshOverTime (i, j));
+				reversed = false;
 			}
 		}
-			
+
 		CalculateDistance ();
 
 //		if (enter) {
@@ -144,6 +148,9 @@ public class Spline : MonoBehaviour
 		}
 
 		PlayAttack (p1, p2);
+
+		isPlayerOn = true;
+
 //		}
 	}
 
@@ -210,10 +217,10 @@ public class Spline : MonoBehaviour
 		}
 
 		while (true) {
-			
+
 //			float progressToSin = Mathf.Sin (Services.PlayerBehaviour.progress * Mathf.PI);
 			ManageSound (false, 1);
-		
+
 			yield return null;
 		}
 
@@ -229,7 +236,7 @@ public class Spline : MonoBehaviour
 			t += Time.deltaTime/1;
 			yield return null;
 		}
-			
+
 		Destroy (toDelete);
 	}
 
@@ -249,28 +256,32 @@ public class Spline : MonoBehaviour
 		} else {
 			SplinePoints = new List<Point> ();
 		}
-			
+
 		SplinePoints = new List<Point> ();
 
 		Select = this;
 		Splines.Add (this);
 
+
 		line = new VectorLine (name, line.points3, 1, LineType.Continuous, Vectrosity.Joins.Weld);
+		line.color = Color.black;
 		line.smoothWidth = true;
 		line.smoothColor = true;
 		line.points3 = new List<Vector3> ();
 		line.textureScale = 0.1f;
-	
+
 	}
 
 	void Update (){
 
 		if (SplinePoints.Count > 0) {
 
-			if (!isDrawing) {
-					DrawMesh ();
-				if (isPlayerOn) {
+			DrawMesh (reversed);
+			line.Draw3D();
 
+			if (isPlayerOn) {
+//				DrawMesh (reversed);
+//				line.Draw3D();
 //					drawTimer -= Time.deltaTime;
 //
 //					if (drawTimer < 0) {
@@ -278,11 +289,11 @@ public class Spline : MonoBehaviour
 //						float time = UnityEngine.Random.Range (3f, 5f);
 //						VectorLine l = VectorLine.SetLine3D (Color.gray, time, line.points3.ToArray ());
 //						l = line;
-//					
+//
 //						StartCoroutine (FadeLine (l, time));
 //					}
-				}
-			} 
+
+			}
 		}
 
 //		if(Select==null)
@@ -302,7 +313,7 @@ public class Spline : MonoBehaviour
 //				Vector3 A = CameraControler.MainCamera.WorldToScreenPoint (SplinePoints [i].Pos);
 //				Vector3 B = CameraControler.MainCamera.WorldToScreenPoint (SplinePoints [i + 1].Pos);
 //
-//				Vector3 D = A + Vector3.Project (C - A, B - A);	
+//				Vector3 D = A + Vector3.Project (C - A, B - A);
 //				Vector3 Va = D - A;
 //				Vector3 Vb = D - B;
 //
@@ -321,7 +332,7 @@ public class Spline : MonoBehaviour
 //				Vector3 A = CameraControler.MainCamera.WorldToScreenPoint (SplinePoints [0].Pos);
 //				Vector3 B = CameraControler.MainCamera.WorldToScreenPoint (SplinePoints [SplinePoints.Count - 1].Pos);
 //
-//				Vector3 D = A + Vector3.Project (C - A, B - A);	
+//				Vector3 D = A + Vector3.Project (C - A, B - A);
 //				Vector3 Va = D - A;
 //				Vector3 Vb = D - B;
 //
@@ -359,12 +370,6 @@ public class Spline : MonoBehaviour
 		}
 	}
 
-	void CleanUpLines ()
-	{
-//		l2.positionCount = 0;
-	}
-
-
 	#region
 
 	//HELPER FUNCTIONS
@@ -398,7 +403,7 @@ public class Spline : MonoBehaviour
 
 	public Vector3 GetPointAtIndex (int i, float t)
 	{
-		 
+
 		//ADD SUPPORT FOR BACKWARDS/FORWARDS
 		//IF FORWARDS, INCREMENT, IF BACKWARDS, DECREMENT ?
 
@@ -438,7 +443,7 @@ public class Spline : MonoBehaviour
 //			&& SplinePoints [Count - 1]._neighbours.Contains (SplinePoints [LoopIndex])
 			if (closed) {
 				j = 0;
-			} else { 
+			} else {
 				j = i;
 			}
 		}
@@ -464,10 +469,10 @@ public class Spline : MonoBehaviour
 
 	public Vector3 GetPoint (float t)
 	{
-		
+
 		int i = SplinePoints.IndexOf (Selected);
 		return GetPointAtIndex (i, t);
-	
+
 	}
 
 
@@ -486,7 +491,7 @@ public class Spline : MonoBehaviour
 
 	public Vector3 GetVelocityAtIndex (int i, float t)
 	{
-		
+
 		int Count = SplinePoints.Count;
 
 		int j = i - 1;
@@ -519,7 +524,7 @@ public class Spline : MonoBehaviour
 			//			&& SplinePoints [Count - 1]._neighbours.Contains (SplinePoints [LoopIndex])
 			if (closed) {
 				j = 0;
-			} else { 
+			} else {
 				j = i;
 			}
 		}
@@ -576,7 +581,7 @@ public class Spline : MonoBehaviour
 	{
 
 		return GetVelocityAtIndex (GetPointIndex (p), 0.1f);
-	
+
 	}
 
 	public Vector3 GetReversedInitVelocity (Point p)
@@ -634,12 +639,12 @@ public class Spline : MonoBehaviour
 		}
 
 		p.AddSpline (this);
-			
+
 		int newIndex = 0;
-	
+
 
 		if (SplinePoints.Count == 0) {
-			
+
 			SplinePoints.Add (p);
 
 		} else if (SplinePoints.Count >= 1 && curPoint == StartPoint ()) {
@@ -662,9 +667,6 @@ public class Spline : MonoBehaviour
 //			p.AddPoint(curPoint);
 //			curPoint.AddPoint (p);
 		}
-			
-
-		DrawMesh ();
 	}
 
 	public void DrawVelocities (float t, float x)
@@ -691,7 +693,7 @@ public class Spline : MonoBehaviour
 		} else {
 			t = 1;
 		}
-			
+
 
 		for (int k = 0; k < steps; k++) {
 
@@ -713,7 +715,7 @@ public class Spline : MonoBehaviour
 //				length = Mathf.Sin ((t * Mathf.PI / 2) + Mathf.PI / 2);
 				length = 1 - t;
 			}
-				
+
 //			length = Mathf.Pow (length, 2);
 			length *= 2;
 
@@ -727,7 +729,7 @@ public class Spline : MonoBehaviour
 
 	IEnumerator DrawVelocities ()
 	{
-		
+
 		l2.positionCount = 3;
 
 		float step = 0;
@@ -743,7 +745,7 @@ public class Spline : MonoBehaviour
 //		int index = 0;
 
 //		while (t <= 1){
-//			
+//
 //			index = (int)(t * curveFidelity);
 //			step = ((float)curveFidelity * t)/ (float)curveFidelity;
 //
@@ -751,7 +753,7 @@ public class Spline : MonoBehaviour
 //				if(l.positionCount < curveFidelity * 3){
 //					l2.positionCount = l2.positionCount + 3;
 //				}
-//					
+//
 //				l2.SetPosition (l2.positionCount - 1, GetPoint (step));
 //				l2.SetPosition (l2.positionCount - 2, GetPoint (step) + GetVelocity (step));
 //				l2.SetPosition (l2.positionCount - 3, GetPoint (step));
@@ -761,7 +763,7 @@ public class Spline : MonoBehaviour
 //			t += Time.deltaTime * drawSpeed;
 //			yield return null;
 //		}
-			
+
 
 		l2.SetPosition (0, GetPointAtIndex (0, 0));
 
@@ -823,29 +825,41 @@ public class Spline : MonoBehaviour
 	}
 
 
-	void DrawMesh (){
+	void DrawMesh (bool reversed = false){
 
-		for (int i = lowHitPoint; i < highHitPoint - (closed ? -1 : 0); i++) {
-			for (int k = 0; k < curveFidelity; k++) {
+		if (reversed) {
+			for (int i = highHitPoint - (closed ? -2 : -1); i >= lowHitPoint; i--) {
+				for (int k = curveFidelity - 1; k >= 0; k--) {
 
-				int index = (i * curveFidelity) + k;
-				float t = (float)k / (float)(curveFidelity);
+					int index = (i * curveFidelity) + k;
+					float t = (float)k / (float)(curveFidelity);
 
+					DrawLine (i, index, t);
 
-				DrawLine (i, index, t);
+				}
+			}
+		} else {
+			for (int i = lowHitPoint; i < highHitPoint - (closed ? -1 : 0); i++) {
+				for (int k = 0; k < curveFidelity; k++) {
+
+					int index = (i * curveFidelity) + k;
+					float t = (float)k / (float)(curveFidelity);
+
+					DrawLine (i, index, t);
+				}
 			}
 		}
 
-		line.Draw3D();
-
 	}
 
-		
+
 	void DrawLine(int i, int index, float t){
 
 		int indexOfPlayerPos = GetPlayerLineSegment ();
 
 		Vector3 v = GetPointAtIndex (i, t);
+
+		float stepSize = (1.0f / (float)curveFidelity);
 
 		if (isPlayerOn) {
 
@@ -911,27 +925,50 @@ public class Spline : MonoBehaviour
 			line.points3 [index] = v;
 		}
 
-
+			//CHECK ITS IN RANGE
 		if (index < line.GetSegmentNumber ()) {
-			if (i < SplinePoints.Count - 1) {
-				line.SetColor (Color.Lerp (SplinePoints [i].color, SplinePoints [i + 1].color, t), index);
-//				line.SetWidth (Mathf.Lerp ((SplinePoints [i].NeighbourCount () - 1) + 1, (SplinePoints [i + 1].NeighbourCount () - 1) + 1, t), index);
-			} else if (closed) {
-				line.SetColor (Color.Lerp (SplinePoints [i].color, SplinePoints [SplinePoints.Count - 1].color, t), index);
-//				line.SetWidth (Mathf.Lerp ((SplinePoints [i].NeighbourCount () - 1) + 1, (SplinePoints [SplinePoints.Count - 1].NeighbourCount () - 1) + 1, t), index);
-			}
-//			line.SetWidth (1f, index);
 
-			if (isPlayerOn) {
-				if (index < line.GetSegmentNumber ()) {
+			//CHECK ITS NOT THE LAST POINT
+
 //					SplinePoints [i + 1].color = Color.Lerp (SplinePoints [i + 1].color, Color.white, Mathf.Pow (invertedDistance, 2));
 //					line.SetWidth (Mathf.Lerp (1, 1, Mathf.Pow (invertedDistance, 10)), index);
-					line.SetColor (Color.Lerp (line.GetColor(index), Color.white, Mathf.Pow (invertedDistance, 2)), index);
+				if (draw && (indexOfPlayerPos > (i) * curveFidelity) && (indexOfPlayerPos < (i + 1) * curveFidelity)) {
+
+					if ((reversed && Services.PlayerBehaviour.progress < playerProgress) || (!reversed && Services.PlayerBehaviour.progress > playerProgress)) {
+						playerProgress = t;
+					}
+
+
+					float difference = (Services.PlayerBehaviour.progress - t) * (float)curveFidelity;
+
+
+					if (reversed) {
+						line.SetColor (Color.Lerp (Color.black, Color.white, -difference), index);
+					} else {
+						line.SetColor (Color.Lerp (Color.black, Color.white, difference), index);
+					}
+
+						//do coloring a certain way
+				} else {
+					if (i < SplinePoints.Count - 1) {
+
+
+						line.SetColor (Color.Lerp (SplinePoints [i].color, SplinePoints [i + 1].color, t), index);
+					//				line.SetWidth (Mathf.Lerp ((SplinePoints [i].NeighbourCount () - 1) + 1, (SplinePoints [i + 1].NeighbourCount () - 1) + 1, t), index);
+
+					} else if (closed) {
+
+					//IF IT IS THE LAST POINT, ONLY DRAW THE CONNECTION IF ITS A LOOP
+
+						line.SetColor (Color.Lerp (SplinePoints [i].color, SplinePoints [SplinePoints.Count - 1].color, t), index);
+					//				line.SetWidth (Mathf.Lerp ((SplinePoints [i].NeighbourCount () - 1) + 1, (SplinePoints [SplinePoints.Count - 1].NeighbourCount () - 1) + 1, t), index);
 				}
+				//			line.SetWidth (1f, index);
+
 			}
 		}
 	}
-		
+
 	//IO FUNCTIONS
 	public void Save ()
 	{
@@ -941,18 +978,18 @@ public class Spline : MonoBehaviour
 		XmlWriterSettings settings = new XmlWriterSettings ();
 		settings.Indent = true;
 		settings.IndentChars = "    ";
-		settings.NewLineChars = "\n"; 
-		
-		
-			
+		settings.NewLineChars = "\n";
+
+
+
 		XmlWriter output = XmlWriter.Create (FileName, settings);
 		output.WriteStartElement ("Spline");
-			
+
 
 		output.WriteStartElement ("SplinePoints");
 		for (int i = 0; i < SplinePoints.Count; i++) {
 			output.WriteStartElement ("Point");
-		
+
 			output.WriteAttributeString ("PositionX", SplinePoints [i].Pos.x.ToString ());
 			output.WriteAttributeString ("PositionY", SplinePoints [i].Pos.y.ToString ());
 			output.WriteAttributeString ("PositionZ", SplinePoints [i].Pos.z.ToString ());
@@ -963,12 +1000,12 @@ public class Spline : MonoBehaviour
 		}
 		output.WriteEndElement ();
 		output.Flush ();
-		
+
 		output.WriteStartElement ("Closed");
 		output.WriteAttributeString ("bool", closed.ToString ());
 		output.WriteEndElement ();
 		output.Flush ();
-		
+
 		output.WriteStartElement ("MaxVerticesCurve");
 		output.WriteAttributeString ("int", curveFidelity.ToString ());
 		output.WriteEndElement ();
@@ -977,7 +1014,7 @@ public class Spline : MonoBehaviour
 
 		output.WriteEndElement ();
 		output.Flush ();
-		
+
 		output.Close ();
 	}
 
@@ -986,23 +1023,23 @@ public class Spline : MonoBehaviour
 		GameObject goSpline = GameObject.Instantiate (SplinePrefab)as GameObject;
 		goSpline.name = name.Replace (Spline.SavePath, "");
 		goSpline.name = goSpline.name.Remove (goSpline.name.Length - 4, 4);
-		
+
 		Spline spline = goSpline.GetComponent<Spline> ();
-		
+
 		XmlDocument input = new XmlDocument ();
 		input.Load (name);
 
 		bool.TryParse (input.DocumentElement.ChildNodes [2].Attributes [0].Value, out spline.closed);
 		int.TryParse (input.DocumentElement.ChildNodes [3].Attributes [0].Value, out spline.curveFidelity);
-		
+
 		XmlNodeList points = input.DocumentElement.ChildNodes [0].ChildNodes;
 		foreach (XmlNode point in points) {
 			Vector3 pos = new Vector3 ();
 			float.TryParse (point.Attributes [0].Value, out pos.x);
 			float.TryParse (point.Attributes [1].Value, out pos.y);
 			float.TryParse (point.Attributes [2].Value, out pos.z);
-			
-			
+
+
 			float tension;
 			float bias;
 			float continuity;
@@ -1025,14 +1062,14 @@ public class Spline : MonoBehaviour
 		//			minDistance=float.MaxValue;
 		//			for(int i=0;i<SplinePoints.Count-1;i++)
 		//			{
-		//				
+		//
 		//				Vector3 A=CameraControler.MainCamera.WorldToScreenPoint(SplinePoints[i].Pos);
 		//				Vector3 B=CameraControler.MainCamera.WorldToScreenPoint(SplinePoints[i+1].Pos);
-		//				
-		//				Vector3 D=A+Vector3.Project(C-A,B-A);	
+		//
+		//				Vector3 D=A+Vector3.Project(C-A,B-A);
 		//				Vector3 Va=D-A;
 		//				Vector3 Vb=D-B;
-		//					
+		//
 		//				if((Mathf.Sign(Va.x)!=Mathf.Sign(Vb.x)||Va.x==0&&Vb.x==0)&&
 		//					(Mathf.Sign(Va.y)!=Mathf.Sign(Vb.y)||Va.y==0&&Vb.y==0)&&
 		//					(Mathf.Sign(Va.z)!=Mathf.Sign(Vb.z)||Va.z==0&&Vb.z==0)&&
@@ -1044,16 +1081,16 @@ public class Spline : MonoBehaviour
 		//					flag=false;
 		//				}
 		//			}
-		//			
+		//
 		//			if(closed)
 		//			{
 		//				Vector3 A=CameraControler.MainCamera.WorldToScreenPoint(SplinePoints[0].Pos);
 		//				Vector3 B=CameraControler.MainCamera.WorldToScreenPoint(SplinePoints[SplinePoints.Count-1].Pos);
-		//				
-		//				Vector3 D=A+Vector3.Project(C-A,B-A);	
+		//
+		//				Vector3 D=A+Vector3.Project(C-A,B-A);
 		//				Vector3 Va=D-A;
 		//				Vector3 Vb=D-B;
-		//					
+		//
 		//				if((Mathf.Sign(Va.x)!=Mathf.Sign(Vb.x)||Va.x==0&&Vb.x==0)&&
 		//					(Mathf.Sign(Va.y)!=Mathf.Sign(Vb.y)||Va.y==0&&Vb.y==0)&&
 		//					(Mathf.Sign(Va.z)!=Mathf.Sign(Vb.z)||Va.z==0&&Vb.z==0)&&
@@ -1065,7 +1102,7 @@ public class Spline : MonoBehaviour
 		//					flag=false;
 		//				}
 		//			}
-		//			
+		//
 		//			if(flag)
 		//			{
 		//				return;
@@ -1076,7 +1113,7 @@ public class Spline : MonoBehaviour
 		//			point.transform.position=curentPos;
 		//			SplinePoints.Insert(minI+1,point);
 		//			}
-		//			
+		//
 	}
 
 	#endregion

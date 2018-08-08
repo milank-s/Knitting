@@ -66,13 +66,13 @@ public class SplineUtil : MonoBehaviour {
 					} else {
 
 						newSpline = CreateSpline (p1, p2);
-					}	
+					}
 				} else {
 
 					newSpline = CreateSpline (p1, p2);
 				}
 				//EDGE CASE
-				//Creating endpoint when you're on startpoint 
+				//Creating endpoint when you're on startpoint
 				//make it so that the start/midpoint get shifted down one index, insert at startpoin
 			}
 		// ??? AHAHAHAHAHA
@@ -82,7 +82,7 @@ public class SplineUtil : MonoBehaviour {
 
 		return result;
 	}
-		
+
 
 	static public Point RaycastDownToPoint(Vector3 pos, float distance, float zOffset){
 		Ray ray = new Ray (pos  - (Vector3.forward * zOffset), Vector3.forward);
@@ -95,7 +95,7 @@ public class SplineUtil : MonoBehaviour {
 
 				return hitPoint;
 
-			} 
+			}
 		}
 		return null;
 	}
@@ -112,7 +112,7 @@ public class SplineUtil : MonoBehaviour {
 
 				return hitPoint;
 
-			} 
+			}
 		}
 		return null;
 	}
