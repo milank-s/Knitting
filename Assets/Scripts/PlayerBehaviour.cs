@@ -264,6 +264,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			curSpline = SplineUtil.CreateSpline(drawnPoint, curPoint);
 			curDrawDistance = 0;
 		  curSpline.OnSplineEnter(true, drawnPoint, curPoint, false);
+			curPoint.GetComponent<Collider>().enabled = false;
 			boost = boostAmount;
 			flow += flowAmount;
 			return true;
@@ -536,8 +537,14 @@ public class PlayerBehaviour: MonoBehaviour {
 
 					curDrawDistance = 0;
 				// if (newPointList.Count == 0) {
-				  Point newPoint = SplineUtil.CreatePoint(transform.position);
-					curSpline.AddPoint(curPoint, newPoint);
+
+					Point newPoint;
+					newPoint = SplineUtil.CreatePoint(transform.position);
+					curPoint.GetComponent<Collider>().enabled = true;
+					newPoint.GetComponent<Collider>().enabled = false;
+					SplinePointPair spp = SplineUtil.ConnectPoints(curSpline, curPoint, newPoint);
+					lastPoint = drawnPoint;
+					curSpline = spp.s;
 					drawnPoint = curPoint;
 					curPoint = newPoint;
 					curSpline.Selected = drawnPoint;
@@ -546,6 +553,27 @@ public class PlayerBehaviour: MonoBehaviour {
 				// } else {
 				// 	CreateJoint (newPointList [newPointList.Count - 1].GetComponent<Rigidbody> ());
 				// }
+			}else{
+					//Something is going on when you connect to the spline you're already drawing.
+					//the new spline created on the first ConnectPoint is a new spline, then something weird is happening to it
+					//almost 100% sure the SELECTED point is wrong on the new splines
+
+				Point overPoint = SplineUtil.RaycastDownToPoint(transform.position, 10f, 5f);
+				if(overPoint != null && overPoint != drawnPoint && overPoint != curPoint && overPoint != lastPoint){
+					curSpline.SplinePoints.Remove(curPoint);
+					drawnPoint._neighbours.Remove(curPoint);
+					lastPoint = drawnPoint;
+					SplinePointPair spp = SplineUtil.ConnectPoints(curSpline, drawnPoint, overPoint);
+					curSpline = spp.s;
+					drawnPoint = spp.p;
+					traversedPoints.Add(drawnPoint);
+
+					SplinePointPair sppp = SplineUtil.ConnectPoints(curSpline, drawnPoint, curPoint);
+					curSpline = sppp.s;
+					curSpline.Selected = drawnPoint;
+					curSpline.OnSplineEnter (true, drawnPoint, curPoint, false);
+					//make new point for curPoint using above code
+				}
 			}
 		}
 	}
@@ -666,6 +694,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				transform.position = curSpline.GetPoint (progress);
 
 				if (progress > 1 || progress < 0) {
+					transform.position = curSpline.GetPoint (Mathf.Clamp01(progress));
 					moving = false;
 				}
 				yield return null;
@@ -679,7 +708,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversedPoints.Clear ();
 		traversedPoints.Add (curPoint);
 		state = PlayerState.Switching;
-
 	}
 
 	void CheckProgress(){
