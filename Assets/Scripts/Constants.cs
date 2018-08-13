@@ -30,7 +30,7 @@ public class Constants : MonoBehaviour {
 	}
 
 	void Update () {
-		
+
 		accuracyReadout.text = Mathf.Abs (playerVals.accuracy).ToString("F1");
 
 		if (playerVals.state != PlayerState.Animating) {
@@ -57,7 +57,7 @@ public class Constants : MonoBehaviour {
 			}
 		} else {
 			for (int i = 0; i < onPoint.Length; i++) {
-				onPoint [i].color = Color.Lerp (onPoint [i].color, gray, Time.deltaTime);
+				onPoint [i].color = Color.Lerp (onPoint [i].color, gray, Time.deltaTime * 3);
 			}
 		}
 
@@ -73,7 +73,7 @@ public class Constants : MonoBehaviour {
 			}
 		} else {
 			for (int i = 0; i < xButton.Length; i++) {
-				xButton [i].color = Color.Lerp (xButton [i].color, gray, Time.deltaTime);
+				xButton [i].color = Color.Lerp (xButton [i].color, gray, Time.deltaTime * 3);
 			}
 		}
 
@@ -82,11 +82,11 @@ public class Constants : MonoBehaviour {
 		} else {
 			canFly.color = gray;
 		}
-			
+
 		if (playerVals.flow == 0) {
 			reset.color = Color.white;
 		} else {
-		
+
 			reset.color = gray;
 		}
 

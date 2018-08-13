@@ -276,10 +276,11 @@ public class Spline : MonoBehaviour
 
 		if (SplinePoints.Count > 0) {
 
-			DrawMesh (reversed);
-			line.Draw3D();
+
 
 			if (isPlayerOn) {
+				DrawMesh (reversed);
+				line.Draw3D();
 //				DrawMesh (reversed);
 //				line.Draw3D();
 //					drawTimer -= Time.deltaTime;
@@ -358,16 +359,6 @@ public class Spline : MonoBehaviour
 //			point.transform.position = curentPos;
 //			AddPoint(point);
 //		}
-	}
-
-	IEnumerator FadeLine (VectorLine l, float time)
-	{
-		float t = time;
-		while (t > 0) {
-			l.color = Color.Lerp (Color.black, l.color, t / time);
-			t -= Time.deltaTime;
-			yield return null;
-		}
 	}
 
 	#region

@@ -2,8 +2,19 @@
 using System.Collections;
 using System.Collections.Generic;
 
+public enum PointTypes{normal, fly, boost, leaf, end, straight, biased, tension}
+//fly points enable flying
+//boost add additional boostAmount. tension = ?
+//leaves cannot be connected to
+//end points force new spline creation
+//straight continuity = 0;
+//biased bias = ?
+
 public class Point : MonoBehaviour
 {
+
+	public PointTypes pointType = PointTypes.normal;
+
 	public Vector3 Pos
 	{
 		get
@@ -33,11 +44,11 @@ public class Point : MonoBehaviour
 	public Color color;
 	public float timeOffset;
 	public float proximity = 0;
-	public bool locked = false; 
+	public bool locked = false;
 
 	public static Point Select;
 	private float cooldown;
-	private SpriteRenderer SR;
+	private TextMesh SR;
 	private List<GameObject> _directionalSprites;
 	public float c = 0;
 	public bool hit = false;
@@ -70,7 +81,7 @@ public class Point : MonoBehaviour
 		_neighbours = new List<Point> ();
 
 		cooldown = (((float)Point.pointCount) % boostCooldown)/3f;
-		SR = GetComponent<SpriteRenderer> ();
+		SR = GetComponent<TextMesh> ();
 
 
 //		l = GetComponent<LineRenderer> ();
@@ -86,7 +97,7 @@ public class Point : MonoBehaviour
 //		Vector3 curentScreenPoint=new Vector3(Input.mousePosition.x,Input.mousePosition.y,screenPoint.z);
 //		Vector3 curentPos=CameraControler.MainCamera.ScreenToWorldPoint(curentScreenPoint);
 //		transform.position=curentPos;
-//		
+//
 //	}
 
 
@@ -133,11 +144,11 @@ public class Point : MonoBehaviour
 	}
 
 	public void SetDirectionalArrows(){
-		int index = 0; 
+		int index = 0;
 
 		foreach (Spline s in _connectedSplines) {
 			foreach (Point p in _neighbours) {
-				
+
 				if (!p._connectedSplines.Contains (s)) {
 					//do nothing if the point is in another spline
 				} else {
@@ -159,17 +170,17 @@ public class Point : MonoBehaviour
 		if (!_neighbours.Contains (p)) {
 			_neighbours.Add (p);
 		}
-			
+
 		if (!visited) {
 			visited = true;
 			PointManager._connectedPoints.Add (this);
 		}
-	
+
 	}
 
 
 	public void ResetCooldown(){
-		
+
 	}
 
 	public void SetPosAndVelocity(GameObject g, float t, Spline s, Point p){

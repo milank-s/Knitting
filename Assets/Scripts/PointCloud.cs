@@ -18,15 +18,15 @@ public class PointCloud : MonoBehaviour {
 
 	public string GetWord (){
 		wordIndex++;
-		return words[(wordIndex-1) % (words.Length)]; 
+		return words[(wordIndex-1) % (words.Length)];
 	}
 
 	public void Awake(){
 		wordIndex = 0;
 		words = text.text.Split (new char[] { ' ' });
-		UpdateContinuity (PointContinuity);
+		// UpdateContinuity (PointContinuity);
 	}
-		
+
 	void UpdateContinuity(float t){
 		foreach(Point p in GetComponentsInChildren<Point>()){
 			p.continuity = PointContinuity;

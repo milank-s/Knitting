@@ -224,7 +224,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	bool CanLeavePoint(){
 
-			if (creationInterval <= 0 && !joystickLocked) {
+			if (!joystickLocked) {
 
 				pointDest = null;
 				pointDest = SplineUtil.RaycastFromCamera(cursorPos, 20f);
@@ -244,7 +244,6 @@ public class PlayerBehaviour: MonoBehaviour {
 					curSpline = spp.s;
 					pointDest = spp.p;
 					connectTime = 1;
-					creationInterval = creationCD;
 				  return true;
 
 				}
@@ -253,7 +252,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	bool TryToFly(){
-		if (flow > flyingSpeedThreshold) {
+		if (Mathf.Abs(flow) > flyingSpeedThreshold) {
 
 			state = PlayerState.Flying;
 			curSpline.OnSplineExit ();
@@ -266,7 +265,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		  curSpline.OnSplineEnter(true, drawnPoint, curPoint, false);
 			curPoint.GetComponent<Collider>().enabled = false;
 			boost = boostAmount;
-			flow += flowAmount;
+			flow = Mathf.Abs(flow);
 			return true;
 		}
 		return false;
@@ -319,7 +318,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		float flowMult = 1;
 
 
-			if (curPoint == curSpline.Selected) {
+			if (drawnPoint== curSpline.Selected) {
 				goingForward = false;
 			} else {
 				goingForward = true;
@@ -327,7 +326,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			while (moving) {
 				t += Time.deltaTime;
-				if(Mathf.Abs(flow) > 0){
+				if(Mathf.Abs(flow) > 1){
 					flowMult = Mathf.Abs(flow);
 				}
 
@@ -347,9 +346,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			curSpline.draw = false;
 
-		//delete drawnPoint
-		curPoint._neighbours.Remove(drawnPoint);
-		curSpline.SplinePoints.Remove(drawnPoint);
 
 // 		while(index < newPointList.Count -1){
 //
@@ -509,10 +505,11 @@ public class PlayerBehaviour: MonoBehaviour {
 				LeavePoint();
 				return;
 			}else{
-				if(pointDest == curPoint){
-					StartCoroutine (ReturnToLastPoint ());
-					return;
-				}
+				// if(pointDest == curPoint){
+					// ???????????????????????
+				// 	StartCoroutine (ReturnToLastPoint ());
+				// 	return;
+				// }
 			}
 
 			// if(RaycastHitObj == curPoint){
@@ -520,21 +517,27 @@ public class PlayerBehaviour: MonoBehaviour {
 			// }else{
 			// StartCoroutine(FlyIntoNewPoint(RaycastHitObj));
 			// }
+		}else{
+			if(CanLeavePoint()){
+				LeavePoint();
+				return;
+			}
 		}
 
-		 if (Mathf.Abs(flow) < 0) {
+		 if (flow < 0) {
 //			CreateJoint (newPointList[newPointList.Count-1].GetComponent<Rigidbody>());
-			StartCoroutine (ReturnToLastPoint ());
+			// StartCoroutine (ReturnToLastPoint ());
+			StartCoroutine(Unwind());
 
 		} else {
 			inertia = cursorDir * flow;
-			flow -= Time.deltaTime / 10;
+			flow -= Time.deltaTime / 2f;
 			transform.position += inertia * Time.deltaTime;
 			curPoint.transform.position = transform.position;
 			curDrawDistance = Vector3.Distance (drawnPoint.Pos, curPoint.Pos);
-
-			if (curDrawDistance >= PointDrawDistance) {
-
+			creationInterval -= Time.deltaTime;
+			if (creationInterval < 0 && curDrawDistance > PointDrawDistance) {
+					creationInterval = creationCD;
 					curDrawDistance = 0;
 				// if (newPointList.Count == 0) {
 
@@ -558,22 +561,22 @@ public class PlayerBehaviour: MonoBehaviour {
 					//the new spline created on the first ConnectPoint is a new spline, then something weird is happening to it
 					//almost 100% sure the SELECTED point is wrong on the new splines
 
-				Point overPoint = SplineUtil.RaycastDownToPoint(transform.position, 10f, 5f);
-				if(overPoint != null && overPoint != drawnPoint && overPoint != curPoint && overPoint != lastPoint){
-					curSpline.SplinePoints.Remove(curPoint);
-					drawnPoint._neighbours.Remove(curPoint);
-					lastPoint = drawnPoint;
-					SplinePointPair spp = SplineUtil.ConnectPoints(curSpline, drawnPoint, overPoint);
-					curSpline = spp.s;
-					drawnPoint = spp.p;
-					traversedPoints.Add(drawnPoint);
-
-					SplinePointPair sppp = SplineUtil.ConnectPoints(curSpline, drawnPoint, curPoint);
-					curSpline = sppp.s;
-					curSpline.Selected = drawnPoint;
-					curSpline.OnSplineEnter (true, drawnPoint, curPoint, false);
+				// Point overPoint = SplineUtil.RaycastDownToPoint(transform.position, 10f, 5f);
+				// if(overPoint != null && overPoint != drawnPoint && overPoint != curPoint && overPoint != lastPoint){
+				// 	curSpline.SplinePoints.Remove(curPoint);
+				// 	drawnPoint._neighbours.Remove(curPoint);
+				// 	lastPoint = drawnPoint;
+				// 	SplinePointPair spp = SplineUtil.ConnectPoints(curSpline, drawnPoint, overPoint);
+				// 	curSpline = spp.s;
+				// 	drawnPoint = spp.p;
+				// 	traversedPoints.Add(drawnPoint);
+				//
+				// 	SplinePointPair sppp = SplineUtil.ConnectPoints(curSpline, drawnPoint, curPoint);
+				// 	curSpline = sppp.s;
+				// 	curSpline.Selected = drawnPoint;
+				// 	curSpline.OnSplineEnter (true, drawnPoint, curPoint, false);
 					//make new point for curPoint using above code
-				}
+				// }
 			}
 		}
 	}
@@ -704,6 +707,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		flow = 0;
+		lastPoint = curPoint;
 		curPoint = nextPoint;
 		traversedPoints.Clear ();
 		traversedPoints.Add (curPoint);
@@ -902,6 +906,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //			}
 		if (cursorDir.magnitude <= 0.01f){
 		  joystickLocked = true;
+			cursorDir = Vector3.zero;
 		}
 
 			cursorDir = Vector3.Lerp (lastCursorDir, cursorDir, (cursorRotateSpeed/(((Mathf.Abs(flow) * 10) + 1)) * Time.deltaTime));
@@ -995,7 +1000,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (curSpline != null) {
 //			curSpline.DrawLineSegmentVelocity (progress, Mathf.Sign (accuracy), goingForward ? 0 : 1);\
-			curSpline.l.material.mainTextureOffset -= Vector2.right * Mathf.Sign (accuracy) * flow * curSpline.l.material.mainTextureScale.x * 2 * Time.deltaTime;
+			// curSpline.l.material.mainTextureOffset -= Vector2.right * Mathf.Sign (accuracy) * flow * curSpline.l.material.mainTextureScale.x * 2 * Time.deltaTime;
 //			l.SetPosition(0, transform.position);
 //			l.SetPosition(1, transform.position + (curSpline.GetDirection(progress) * Mathf.Sign(accuracy))/2);
 //			l.SetPosition(1, transform.position + cursorDir/2);

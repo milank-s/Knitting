@@ -6,6 +6,7 @@ public class CycleSprites: MonoBehaviour {
 
 	public float delay;
 	public float fadeSpeed;
+  private float timer;
 
 	public bool createGrid;
 	public float xDist, yDist, zDist;
@@ -41,7 +42,11 @@ public class CycleSprites: MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-
+		timer -= Time.deltaTime;
+		if(timer <= 0){
+			Spawn();
+			timer = delay;
+		}
 	}
 
 	public virtual void Spawn (){
@@ -54,11 +59,13 @@ public class CycleSprites: MonoBehaviour {
 		GameObject newObject = new GameObject();
 		newObject.transform.position = newObjectPos;
 		newObject.transform.rotation = Quaternion.Euler (rotation);
+		newObject.transform.Rotate(0, 0, Random.Range(0, 361));
 		newObject.transform.parent = transform;
+		newObject.transform.localScale *= Random.Range(1f, 3f);
 		if (newObject.GetComponent<SpriteRenderer> () == null) {
 			newObject.AddComponent<SpriteRenderer>();
 		}
-		newObject.AddComponent <FadeSprite>().time = fadeSpeed;
+		newObject.AddComponent <FadeImage>().time = fadeSpeed;
 
 		SpriteRenderer r = newObject.GetComponent<SpriteRenderer> ();
 		if (sprites.Count == 0) {
@@ -67,7 +74,7 @@ public class CycleSprites: MonoBehaviour {
 		Sprite s = sprites [Random.Range (0, sprites.Count)];
 		r.sprite = s;
 		r.sortingOrder = index;
-		newObject.transform.position += (transform.up * r.bounds.size.y)/2;
+		// newObject.transform.position += (transform.up * r.bounds.size.y)/2;
 		//		newObject.transform.localScale /= r.bounds.size.y/xDist;
 		sprites.Remove (s);
 		children.Add (newObject);

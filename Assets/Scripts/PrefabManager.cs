@@ -12,7 +12,7 @@ public class PrefabManager : MonoBehaviour {
 	public GameObject joint;
 	public Sprite[] symbols;
 	public Texture2D[] lines;
-
+	public Sprite[] pointSprites;
 
 	void Start(){
 		Cursor.lockState = CursorLockMode.Locked;

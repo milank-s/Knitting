@@ -17,7 +17,6 @@ public class SplineUtil : MonoBehaviour {
 		//		newPoint.GetComponent<SpringJoint> ().connectedBody = newPoint.transform.GetChild(0).GetComponent<Rigidbody> ();
 		//		newPoint.GetComponent<SpringJoint> ().connectedAnchor = newPoint.transform.GetChild (0).transform.localPosition;
 
-		newPoint.GetComponent<SpriteRenderer> ().enabled = true;
 		return newPoint;
 	}
 
