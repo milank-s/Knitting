@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Constants : MonoBehaviour {
 
@@ -8,20 +9,20 @@ public class Constants : MonoBehaviour {
 
 	LineRenderer l;
 
-	public TextMesh accuracyReadout;
-	public TextMesh accuracy;
-	public TextMesh cursorOnPoint;
-	public TextMesh negativeAccuracy;
-	public TextMesh speed;
-	public TextMesh horizontal;
-	public TextMesh vertical;
-	public TextMesh boost;
-	public TextMesh flow;
-	public TextMesh drag;
-	public TextMesh[] onPoint;
-	public TextMesh[] xButton;
-	public TextMesh canFly;
-	public TextMesh reset;
+	public Text accuracyReadout;
+	public Text accuracy;
+	public Text cursorOnPoint;
+	public Text negativeAccuracy;
+	public Text speed;
+	public Text horizontal;
+	public Text vertical;
+	public Text boost;
+	public Text flow;
+	public Text drag;
+	public Text[] onPoint;
+	public Text[] xButton;
+	public Text canFly;
+	public Text reset;
 
 	Color gray = new Color(0.1f, 0.1f, 0.1f);
 
@@ -31,26 +32,31 @@ public class Constants : MonoBehaviour {
 
 	void Update () {
 
+		//ACCURACY METER
 		accuracyReadout.text = Mathf.Abs (playerVals.accuracy).ToString("F1");
 
+		//FLOW METER
 		if (playerVals.state != PlayerState.Animating) {
 			speed.text = Mathf.Abs (playerVals.flow).ToString ("F2");
 		} else {
 			speed.text = (-Mathf.Abs (playerVals.flow)).ToString ("F2");
 		}
 
+		//HORIZONTAL AXIS
 		if (Mathf.Abs(playerVals.cursorDir.x) > 0.5f) {
 			horizontal.color = Color.white;
 		}else {
 			horizontal.color = gray;
 		}
 
+		//VERTICAL AXIS
 		if (Mathf.Abs(playerVals.cursorDir.y) > 0.5f) {
 			vertical.color = Color.white;
 		} else {
 			vertical.color = gray;
 		}
 
+		//PLAYER OVER POINT
 		if(playerVals.state == PlayerState.Switching){
 			for (int i = 0; i < onPoint.Length; i++) {
 				onPoint[i].color = Color.white;
@@ -77,13 +83,13 @@ public class Constants : MonoBehaviour {
 			}
 		}
 
-		if (playerVals.flow >= 1) {
+		if (Mathf.Abs(playerVals.flow) >= 1) {
 			canFly.color = Color.white;
 		} else {
 			canFly.color = gray;
 		}
 
-		if (playerVals.flow == 0) {
+		if (playerVals.state == PlayerState.Animating) {
 			reset.color = Color.white;
 		} else {
 
