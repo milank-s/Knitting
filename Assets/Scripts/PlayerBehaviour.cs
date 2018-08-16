@@ -203,11 +203,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		accuracy = (90 - alignment) / 90;
 		if ((accuracy < 0.5f && accuracy > -0.5f) || joystickLocked) {
 			if (flow > 0) {
-				flow -= decay * (1f - accuracy) * Time.deltaTime;
+				flow -= decay * (2f - accuracy) * Time.deltaTime;
 				if (flow < 0)
 					flow = 0;
 			} else if(flow < 0){
-				flow += decay * (1f + accuracy) * Time.deltaTime;
+				flow += decay * (2f + accuracy) * Time.deltaTime;
 				if (flow > 0)
 					flow = 0;
 			}

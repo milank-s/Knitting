@@ -9,20 +9,20 @@ public class Constants : MonoBehaviour {
 
 	LineRenderer l;
 
-	public Text accuracyReadout;
-	public Text accuracy;
-	public Text cursorOnPoint;
-	public Text negativeAccuracy;
-	public Text speed;
-	public Text horizontal;
-	public Text vertical;
-	public Text boost;
-	public Text flow;
-	public Text drag;
-	public Text[] onPoint;
-	public Text[] xButton;
-	public Text canFly;
-	public Text reset;
+	public TextMesh accuracyReadout;
+	public TextMesh accuracyChar;
+	public TextMesh flowChar;
+	public TextMesh flowReadout;
+
+	public SpriteRenderer switching;
+	public SpriteRenderer traversing;
+	public SpriteRenderer flying;
+	public SpriteRenderer cursorOnPoint;
+	public SpriteRenderer playerAxis;
+	public SpriteRenderer buttonPress;
+	public SpriteRenderer canFly;
+	public SpriteRenderer reset;
+	public SpriteRenderer overPoint;
 
 	Color gray = new Color(0.1f, 0.1f, 0.1f);
 
@@ -37,92 +37,73 @@ public class Constants : MonoBehaviour {
 
 		//FLOW METER
 		if (playerVals.state != PlayerState.Animating) {
-			speed.text = Mathf.Abs (playerVals.flow).ToString ("F2");
+			flowReadout.text = Mathf.Abs (playerVals.flow).ToString ("F2");
 		} else {
-			speed.text = (-Mathf.Abs (playerVals.flow)).ToString ("F2");
+			flowReadout.text = (-Mathf.Abs (playerVals.flow)).ToString ("F2");
 		}
 
-		//HORIZONTAL AXIS
-		if (Mathf.Abs(playerVals.cursorDir.x) > 0.5f) {
-			horizontal.color = Color.white;
-		}else {
-			horizontal.color = gray;
-		}
-
-		//VERTICAL AXIS
-		if (Mathf.Abs(playerVals.cursorDir.y) > 0.5f) {
-			vertical.color = Color.white;
-		} else {
-			vertical.color = gray;
-		}
+		//AXIS
+		playerAxis.transform.eulerAngles = Vector3.Lerp(new Vector3(0, 0, 0), new Vector3(0, 0, 180), (playerVals.accuracy + 1f)/2f);
 
 		//PLAYER OVER POINT
 		if(playerVals.state == PlayerState.Switching){
-			for (int i = 0; i < onPoint.Length; i++) {
-				onPoint[i].color = Color.white;
+			if(Mathf.Abs(playerVals.flow) > 1){
+				canFly.color = Color.white;
+			}else{
+				canFly.color = gray;
 			}
+			switching.color = Color.white;
 		} else {
-			for (int i = 0; i < onPoint.Length; i++) {
-				onPoint [i].color = Color.Lerp (onPoint [i].color, gray, Time.deltaTime * 3);
-			}
+			switching.color = gray;
 		}
 
-		if (playerVals.flow >= 0) {
-			canFly.color = Color.white;
+		if(playerVals.state == PlayerState.Traversing){
+			traversing.color = Color.white;
+			overPoint.enabled = true;
 		} else {
-			canFly.color = gray;
+			traversing.color = gray;
+			overPoint.enabled = false;
 		}
 
-		if (Input.GetButton ("Button1")) {
-			for (int i = 0; i < xButton.Length; i++) {
-				xButton[i].color = Color.white;
-			}
+		if (Input.GetButtonDown ("Button1")) {
+			buttonPress.color = Color.white;
 		} else {
-			for (int i = 0; i < xButton.Length; i++) {
-				xButton [i].color = Color.Lerp (xButton [i].color, gray, Time.deltaTime * 3);
-			}
-		}
-
-		if (Mathf.Abs(playerVals.flow) >= 1) {
-			canFly.color = Color.white;
-		} else {
-			canFly.color = gray;
+				buttonPress.color = Color.Lerp (buttonPress.color, gray, Time.deltaTime * 3);
 		}
 
 		if (playerVals.state == PlayerState.Animating) {
-			reset.color = Color.white;
+			// reset.color = Color.white;
 		} else {
-
-			reset.color = gray;
+			// reset.color = gray;
 		}
 
 		if ((playerVals.accuracy < 0.5f && playerVals.accuracy > -0.5f)) {
-			drag.color = Color.white;
-			flow.color = gray;
-			accuracy.color = gray;
-			negativeAccuracy.color = Color.white;
+			accuracyChar.text = "≠";
+			flowChar.text = "✴-";
 		} else if (playerVals.state == PlayerState.Switching) {
-			flow.color = gray;
-			accuracy.color = gray;
-			negativeAccuracy.color = gray;
-			drag.color = Color.white;
+			flowChar.text = "✴-";
 
 		} else if (((playerVals.flow > 0 && playerVals.curSpeed > 0) || (playerVals.flow < 0 && playerVals.curSpeed < 0))) {
-			accuracy.color = Color.white;
-			flow.color = Color.white;
-			drag.color = gray;
-			negativeAccuracy.color = gray;
+			accuracyChar.text = "≈";
+			flowChar.text = "✴+";
 		}
-		boost.color = Color.Lerp (gray, Color.white, playerVals.boost);
 
-		Point p = SplineUtil.RaycastFromCamera(playerVals.transform.position, 20f);
-		if (p != null && playerVals.state == PlayerState.Switching && !playerVals.curPoint.isConnectedTo(p)) {
+		Point p = SplineUtil.RaycastFromCamera(playerVals.cursor.transform.position, 20f);
+		if (p != null && (playerVals.state == PlayerState.Switching || playerVals.state == PlayerState.Flying)) {
+			if(!playerVals.curPoint.isConnectedTo(p)){
 			l.positionCount = 2;
 			l.SetPosition (0, p.Pos);
 			l.SetPosition (1, Services.Player.transform.position);
-			cursorOnPoint.color = Color.white;
+			cursorOnPoint.enabled = true;
+			traversing.color = gray;
+		 }else{
+			 overPoint.enabled = true;
+			 cursorOnPoint.enabled = false;
+ 			 l.positionCount = 0;
+			traversing.color = Color.white;
+		 }
 		} else {
-			cursorOnPoint.color = gray;
+			cursorOnPoint.enabled = false;
 			l.positionCount = 0;
 		}
 
