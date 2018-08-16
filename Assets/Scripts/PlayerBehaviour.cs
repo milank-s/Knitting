@@ -201,17 +201,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		flow = Mathf.Clamp (flow, -maxSpeed, maxSpeed);
 
 		accuracy = (90 - alignment) / 90;
-		if ((accuracy < 0.5f && accuracy > -0.5f) || joystickLocked) {
-			if (flow > 0) {
-				flow -= decay * (2f - accuracy) * Time.deltaTime;
-				if (flow < 0)
-					flow = 0;
-			} else if(flow < 0){
-				flow += decay * (2f + accuracy) * Time.deltaTime;
-				if (flow > 0)
-					flow = 0;
-			}
-		}
 
 		StopAngleDiff = Mathf.Lerp (20, 50, Mathf.Abs(flow));
 
@@ -599,12 +588,35 @@ public class PlayerBehaviour: MonoBehaviour {
 //		NEGOTIATE FLOW CANCELLING OUT CURRENT SPEED
 		accuracyCoefficient = Mathf.Pow(Mathf.Abs(accuracy), 3);
 		if (accuracy < -0.5f || accuracy > 0.5f) {
+			if (flow > 0 && accuracy < 0) {
+				flow += decay *  accuracy * Time.deltaTime;
+				if (flow < 0)
+					flow = 0;
+			}else if(flow < 0 && accuracy > 0){
+				flow += decay *  accuracy * Time.deltaTime;
+				if (flow > 0)
+					flow = 0;
+			}else{
 			flow += Mathf.Sign (accuracy) * accuracyCoefficient * acceleration * Time.deltaTime;
 		}
-		curSpeed =  speed * Mathf.Sign (accuracy) * accuracyCoefficient;
-		if ((curSpeed > 0 && flow < 0) || (curSpeed < 0 && flow > 0)) {
-			curSpeed = 0;
+	}
+		// curSpeed =  speed * Mathf.Sign (accuracy) * accuracyCoefficient;
+		// if ((curSpeed > 0 && flow < 0) || (curSpeed < 0 && flow > 0)) {
+		// 	curSpeed = 0;
+		// }
+
+		if ((accuracy < 0.5f && accuracy > -0.5f) || joystickLocked) {
+			if (flow > 0) {
+				flow -= decay * (2f - accuracy) * Time.deltaTime;
+				if (flow < 0)
+					flow = 0;
+			} else if(flow < 0){
+				flow += decay * (2f + accuracy) * Time.deltaTime;
+				if (flow > 0)
+					flow = 0;
+			}
 		}
+
 		progress += ((flow + boost + curSpeed)/curSpline.distance) * Time.deltaTime;
 
 		boost = Mathf.Lerp (boost, 0, Time.deltaTime * 2);

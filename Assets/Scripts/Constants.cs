@@ -21,18 +21,29 @@ public class Constants : MonoBehaviour {
 	public SpriteRenderer playerAxis;
 	public SpriteRenderer buttonPress;
 	public SpriteRenderer canFly;
-	public SpriteRenderer reset;
+	public Renderer reset;
 	public SpriteRenderer overPoint;
 
 	Color gray = new Color(0.1f, 0.1f, 0.1f);
+	Color white = new Color(1,1,1);
+
+	private List<SpriteRenderer> UISymbols;
+
 
 	void Start(){
 		l = playerVals.cursor.GetComponent<LineRenderer>();
+		UISymbols = new List<SpriteRenderer>();
+		UISymbols.Add(switching);
+		UISymbols.Add(traversing);
+		UISymbols.Add(flying);
+		UISymbols.Add(cursorOnPoint);
+		UISymbols.Add(buttonPress);
+		UISymbols.Add(canFly);
+		UISymbols.Add(overPoint);
 	}
 
 	void Update () {
 
-		//ACCURACY METER
 		accuracyReadout.text = Mathf.Abs (playerVals.accuracy).ToString("F1");
 
 		//FLOW METER
@@ -43,38 +54,49 @@ public class Constants : MonoBehaviour {
 		}
 
 		//AXIS
-		playerAxis.transform.eulerAngles = Vector3.Lerp(new Vector3(0, 0, 0), new Vector3(0, 0, 180), (playerVals.accuracy + 1f)/2f);
+		playerAxis.transform.eulerAngles = Vector3.Lerp(new Vector3(0, 0, 90), new Vector3(0, 0, 270), (playerVals.accuracy + 1f)/2f);
+		//ACCURACY METER
+		if(playerVals.state == PlayerState.Animating){
+			reset.enabled = true;
+			foreach(SpriteRenderer s in UISymbols){
+				s.color = Color.Lerp(s.color, gray, Time.deltaTime);
+			}
+		}else{
 
+			reset.enabled = false;
 		//PLAYER OVER POINT
 		if(playerVals.state == PlayerState.Switching){
+			playerAxis.color = Color.Lerp (playerAxis.color, gray, Time.deltaTime * 3);
 			if(Mathf.Abs(playerVals.flow) > 1){
-				canFly.color = Color.white;
+				canFly.color = white;
 			}else{
-				canFly.color = gray;
+				canFly.color = Color.Lerp (canFly.color, gray, Time.deltaTime * 3);
 			}
-			switching.color = Color.white;
+			switching.color = white;
 		} else {
-			switching.color = gray;
+			playerAxis.color = white;
+			switching.color = Color.Lerp (switching.color, gray, Time.deltaTime * 3);
 		}
 
 		if(playerVals.state == PlayerState.Traversing){
-			traversing.color = Color.white;
-			overPoint.enabled = true;
+			traversing.color = white;
 		} else {
-			traversing.color = gray;
-			overPoint.enabled = false;
+			traversing.color = Color.Lerp (traversing.color, gray, Time.deltaTime * 3);
 		}
 
 		if (Input.GetButtonDown ("Button1")) {
+			buttonPress.enabled = true;
 			buttonPress.color = Color.white;
 		} else {
 				buttonPress.color = Color.Lerp (buttonPress.color, gray, Time.deltaTime * 3);
 		}
 
-		if (playerVals.state == PlayerState.Animating) {
-			// reset.color = Color.white;
-		} else {
-			// reset.color = gray;
+		if(playerVals.state == PlayerState.Flying){
+			playerAxis.enabled = false;
+			canFly.color = white;
+			flying.color = Color.Lerp (flying.color, gray, Time.deltaTime * 3);
+		}else{
+			flying.color = white;
 		}
 
 		if ((playerVals.accuracy < 0.5f && playerVals.accuracy > -0.5f)) {
@@ -83,29 +105,32 @@ public class Constants : MonoBehaviour {
 		} else if (playerVals.state == PlayerState.Switching) {
 			flowChar.text = "✴-";
 
-		} else if (((playerVals.flow > 0 && playerVals.curSpeed > 0) || (playerVals.flow < 0 && playerVals.curSpeed < 0))) {
+		} else if ((playerVals.accuracy > 0 && playerVals.flow > 0) || (playerVals.accuracy < 0 && playerVals.flow < 0)) {
 			accuracyChar.text = "≈";
 			flowChar.text = "✴+";
+		}else if((playerVals.accuracy < 0 && playerVals.flow > 0) || (playerVals.accuracy > 0 && playerVals.flow < 0)){
+			accuracyChar.text = "≠";
+			flowChar.text = "✴-";
 		}
 
 		Point p = SplineUtil.RaycastFromCamera(playerVals.cursor.transform.position, 20f);
-		if (p != null && (playerVals.state == PlayerState.Switching || playerVals.state == PlayerState.Flying)) {
+		if (p != null && (playerVals.state == PlayerState.Switching || playerVals.state == PlayerState.Flying) && p != playerVals.curPoint) {
+			overPoint.color = white;
+
 			if(!playerVals.curPoint.isConnectedTo(p)){
 			l.positionCount = 2;
 			l.SetPosition (0, p.Pos);
 			l.SetPosition (1, Services.Player.transform.position);
-			cursorOnPoint.enabled = true;
-			traversing.color = gray;
+			cursorOnPoint.color = white;
 		 }else{
-			 overPoint.enabled = true;
-			 cursorOnPoint.enabled = false;
- 			 l.positionCount = 0;
-			traversing.color = Color.white;
+			 cursorOnPoint.color = Color.Lerp (cursorOnPoint.color, gray, Time.deltaTime * 3);
+			 l.positionCount = 0;
 		 }
 		} else {
-			cursorOnPoint.enabled = false;
+			overPoint.color = Color.Lerp (overPoint.color, gray, Time.deltaTime * 3);
+			cursorOnPoint.color = Color.Lerp (cursorOnPoint.color, gray, Time.deltaTime * 3);
 			l.positionCount = 0;
 		}
-
+	}
 	}
 }
