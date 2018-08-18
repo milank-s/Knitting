@@ -24,7 +24,7 @@ public class Constants : MonoBehaviour {
 	public Renderer reset;
 	public SpriteRenderer overPoint;
 
-	Color gray = new Color(0.1f, 0.1f, 0.1f);
+	Color gray = new Color(0.12f, 0.12f, 0.12f);
 	Color white = new Color(1,1,1);
 
 	private List<SpriteRenderer> UISymbols;
@@ -40,6 +40,10 @@ public class Constants : MonoBehaviour {
 		UISymbols.Add(buttonPress);
 		UISymbols.Add(canFly);
 		UISymbols.Add(overPoint);
+	}
+
+	void Reveal(){
+
 	}
 
 	void Update () {
@@ -58,8 +62,9 @@ public class Constants : MonoBehaviour {
 		//ACCURACY METER
 		if(playerVals.state == PlayerState.Animating){
 			reset.enabled = true;
+
 			foreach(SpriteRenderer s in UISymbols){
-				s.color = Color.Lerp(s.color, gray, Time.deltaTime);
+				s.color = Color.Lerp(s.color, gray, Time.deltaTime * 5);
 			}
 		}else{
 
@@ -81,7 +86,7 @@ public class Constants : MonoBehaviour {
 		if(playerVals.state == PlayerState.Traversing){
 			traversing.color = white;
 		} else {
-			traversing.color = Color.Lerp (traversing.color, gray, Time.deltaTime * 3);
+			traversing.color = Color.Lerp (traversing.color, gray, Time.deltaTime * 10);
 		}
 
 		if (Input.GetButtonDown ("Button1")) {
