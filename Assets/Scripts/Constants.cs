@@ -40,6 +40,7 @@ public class Constants : MonoBehaviour {
 		UISymbols.Add(buttonPress);
 		UISymbols.Add(canFly);
 		UISymbols.Add(overPoint);
+		UISymbols.Add(playerAxis);
 	}
 
 	void Reveal(){
@@ -48,12 +49,14 @@ public class Constants : MonoBehaviour {
 
 	void Update () {
 
-		accuracyReadout.text = Mathf.Abs (playerVals.accuracy).ToString("F1");
+
 
 		//FLOW METER
 		if (playerVals.state != PlayerState.Animating) {
 			flowReadout.text = Mathf.Abs (playerVals.flow).ToString ("F2");
 		} else {
+			flowChar.text = "✴--";
+			accuracyChar.gameObject.SetActive(false);
 			flowReadout.text = (-Mathf.Abs (playerVals.flow)).ToString ("F2");
 		}
 
@@ -62,6 +65,8 @@ public class Constants : MonoBehaviour {
 		//ACCURACY METER
 		if(playerVals.state == PlayerState.Animating){
 			reset.enabled = true;
+			accuracyChar.text = "";
+			accuracyReadout.text = "";
 
 			foreach(SpriteRenderer s in UISymbols){
 				s.color = Color.Lerp(s.color, gray, Time.deltaTime * 5);
@@ -69,9 +74,31 @@ public class Constants : MonoBehaviour {
 		}else{
 
 			reset.enabled = false;
+
+			accuracyReadout.text = Mathf.Abs (playerVals.accuracy).ToString("F1");
+
+			if ((playerVals.accuracy < 0.5f && playerVals.accuracy > -0.5f)) {
+				accuracyChar.text = "≠";
+				flowChar.text = "✴-";
+			} else if (playerVals.state == PlayerState.Switching) {
+				flowChar.text = "✴-";
+			} else if ((playerVals.accuracy > 0 && playerVals.flow > 0) || (playerVals.accuracy < 0 && playerVals.flow < 0)) {
+				accuracyChar.text = "≈";
+				flowChar.text = "✴+";
+			}else if((playerVals.accuracy < 0 && playerVals.flow > 0) || (playerVals.accuracy > 0 && playerVals.flow < 0)){
+				accuracyChar.text = "≠";
+				flowChar.text = "✴-";
+			}
+
 		//PLAYER OVER POINT
+		if(Mathf.Abs(playerVals.flow) < 1){
+			flowReadout.text = "";
+			flowChar.text = "";
+		}
+
 		if(playerVals.state == PlayerState.Switching){
-			playerAxis.color = Color.Lerp (playerAxis.color, gray, Time.deltaTime * 3);
+			accuracyReadout.text = "-.-";
+
 			if(Mathf.Abs(playerVals.flow) > 1){
 				canFly.color = white;
 			}else{
@@ -79,12 +106,19 @@ public class Constants : MonoBehaviour {
 			}
 			switching.color = white;
 		} else {
-			playerAxis.color = white;
 			switching.color = Color.Lerp (switching.color, gray, Time.deltaTime * 3);
 		}
 
 		if(playerVals.state == PlayerState.Traversing){
+			playerAxis.color = Color.Lerp (playerAxis.color, gray, Time.deltaTime * 3);
+			if(playerVals.goingForward){
+				traversing.transform.localScale = new Vector3(1, 0.2f + playerVals.progress/1.5f, 1);
+			}else{
+				traversing.transform.localScale = new Vector3(1, 1.2f - playerVals.progress/1.5f, 1);
+			}
+			accuracyChar.gameObject.SetActive(true);
 			traversing.color = white;
+			playerAxis.color = white;
 		} else {
 			traversing.color = Color.Lerp (traversing.color, gray, Time.deltaTime * 10);
 		}
@@ -97,25 +131,11 @@ public class Constants : MonoBehaviour {
 		}
 
 		if(playerVals.state == PlayerState.Flying){
-			playerAxis.enabled = false;
+			playerAxis.color = gray;
 			canFly.color = white;
 			flying.color = Color.Lerp (flying.color, gray, Time.deltaTime * 3);
 		}else{
 			flying.color = white;
-		}
-
-		if ((playerVals.accuracy < 0.5f && playerVals.accuracy > -0.5f)) {
-			accuracyChar.text = "≠";
-			flowChar.text = "✴-";
-		} else if (playerVals.state == PlayerState.Switching) {
-			flowChar.text = "✴-";
-
-		} else if ((playerVals.accuracy > 0 && playerVals.flow > 0) || (playerVals.accuracy < 0 && playerVals.flow < 0)) {
-			accuracyChar.text = "≈";
-			flowChar.text = "✴+";
-		}else if((playerVals.accuracy < 0 && playerVals.flow > 0) || (playerVals.accuracy > 0 && playerVals.flow < 0)){
-			accuracyChar.text = "≠";
-			flowChar.text = "✴-";
 		}
 
 		Point p = SplineUtil.RaycastFromCamera(playerVals.cursor.transform.position, 20f);
@@ -136,6 +156,7 @@ public class Constants : MonoBehaviour {
 			cursorOnPoint.color = Color.Lerp (cursorOnPoint.color, gray, Time.deltaTime * 3);
 			l.positionCount = 0;
 		}
+
 	}
 	}
 }
