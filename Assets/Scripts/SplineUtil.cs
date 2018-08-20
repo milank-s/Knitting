@@ -9,9 +9,8 @@ public class SplineUtil : MonoBehaviour {
 		Point newPoint = Instantiate(Services.Prefabs.point, Vector3.zero, Quaternion.identity).GetComponent<Point>();
 
 		newPoint.transform.position = pos;
+		newPoint.originalPos = pos;
 		newPoint.GetComponent<Collider> ().enabled = true;
-		newPoint.GetComponent<Rigidbody> ().velocity = Vector3.zero;
-		newPoint.GetComponent<SpringJoint> ().connectedAnchor = newPoint.Pos;
 		//		newPoint.transform.GetChild (0).position = newPoint.transform.position;
 
 		//		newPoint.GetComponent<SpringJoint> ().connectedBody = newPoint.transform.GetChild(0).GetComponent<Rigidbody> ();

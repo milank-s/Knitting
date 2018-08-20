@@ -23,6 +23,7 @@ public class Point : MonoBehaviour
 		}
 	}
 
+
 	public static float hitColorLerp;
 	public bool visited = false;
 
@@ -32,7 +33,11 @@ public class Point : MonoBehaviour
 	public float tension;
 	public float bias;
 	public float continuity;
+	public bool isKinematic;
 
+	public float damping = 600f;
+	public float stiffness = 100f;
+	public float mass = 50f;
 	public float boostCooldown;
 
 	public GameObject activatedSprite;
@@ -59,10 +64,21 @@ public class Point : MonoBehaviour
 			return this==Select;
 		}
 	}
+	private Vector3 _velocity;
+	public Vector3 velocity
+	{
+		set
+		{
+			_velocity = value;
+		}
+	}
 
+	public Vector3 originalPos;
 	FadeSprite activationSprite;
 
 	void Awake(){
+		stiffness = 20;
+		damping = 100;
 		color = Color.black;
 		Point.pointCount++;
 		activationSprite = GetComponentInChildren<FadeSprite> ();
@@ -83,6 +99,7 @@ public class Point : MonoBehaviour
 		cooldown = (((float)Point.pointCount) % boostCooldown)/3f;
 		SR = GetComponent<TextMesh> ();
 
+		originalPos = transform.position;
 
 //		l = GetComponent<LineRenderer> ();
 		c = 0;
@@ -110,8 +127,12 @@ public class Point : MonoBehaviour
 //		} else {
 //			activationSprite.time = Mathf.Lerp (activationSprite.time, 0, Time.deltaTime * 2);
 //		}
+		if(!isKinematic){
+			Movement();
+		}
 
-		c = (Mathf.Sin ((Time.time + timeOffset) * 5))/5 + 0.5f;
+		c = (Mathf.Sin ((Time.time + timeOffset) * 5)/2 + 0.6f)/10f;
+
 		c = Mathf.Pow (c, 1);
 
 		if (!visited) {
@@ -137,9 +158,23 @@ public class Point : MonoBehaviour
 //		}
 	}
 
+	void Movement(){
+		Vector3 stretch = transform.position - originalPos;
+		Vector3 force = -stiffness * stretch - damping * _velocity;
+		Vector3 acceleration = force / mass;
+
+		_velocity += acceleration * Time.deltaTime;
+
+
+
+		transform.position += _velocity * Time.deltaTime;
+	}
+
 	public void AddSpline(Spline s){
 		if (!_connectedSplines.Contains (s)) {
 			_connectedSplines.Add (s);
+		}else{
+			Debug.Log("trying to add a spline twice. DONT DO THAT");
 		}
 	}
 
@@ -169,6 +204,8 @@ public class Point : MonoBehaviour
 	public void AddPoint(Point p){
 		if (!_neighbours.Contains (p)) {
 			_neighbours.Add (p);
+		}else{
+			Debug.Log("trying to add a point twice. DONT DO THAT");
 		}
 
 		if (!visited) {

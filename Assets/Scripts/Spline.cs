@@ -10,17 +10,15 @@ using UnityEngine.Audio;
 public class Spline : MonoBehaviour
 {
 
+
 	public static List<Spline> Splines = new List<Spline> ();
-	[HideInInspector]
+
 	public List<Point> SplinePoints;
 
 	public Point Selected;
 
-	public VectorLine line;
-
 	[HideInInspector]
-	public LineRenderer l;
-	public LineRenderer l2;
+	public VectorLine line;
 
 	public static Spline Select;
 	bool reversed;
@@ -272,7 +270,12 @@ public class Spline : MonoBehaviour
 
 	}
 
-	void Update (){
+	public void Draw(){
+		DrawMesh (reversed);
+		line.Draw3D();
+	}
+
+	void OldUpdate (){
 
 		if (SplinePoints.Count > 0) {
 
@@ -597,7 +600,6 @@ public class Spline : MonoBehaviour
 	public void DestroySpline (Point toDelete, Point toAnchor)
 	{
 		Destroy (this);
-		Destroy (l);
 	}
 
 	public void CalculateDistance ()
@@ -662,18 +664,18 @@ public class Spline : MonoBehaviour
 
 	public void DrawVelocities (float t, float x)
 	{
-		l2.positionCount = 3;
-		int step = (int)(t * curveFidelity);
-		t = (float)step / (float)curveFidelity;
-		l2.SetPosition (l2.positionCount - 1, GetPoint (t));
-		l2.SetPosition (l2.positionCount - 2, GetPoint (t) + (GetDirection (t) * x));
-		l2.SetPosition (l2.positionCount - 3, GetPoint (t));
+		// l2.positionCount = 3;
+		// int step = (int)(t * curveFidelity);
+		// t = (float)step / (float)curveFidelity;
+		// l2.SetPosition (l2.positionCount - 1, GetPoint (t));
+		// l2.SetPosition (l2.positionCount - 2, GetPoint (t) + (GetDirection (t) * x));
+		// l2.SetPosition (l2.positionCount - 3, GetPoint (t));
 	}
 
 	public void DrawLineSegmentVelocity (float t, float x, float startVal)
 	{
 
-		l2.positionCount = 3;
+		// l2.positionCount = 3;
 
 		float difference = Mathf.Abs (1 - Mathf.Abs (startVal - t));
 		int steps = (int)(difference * (float)curveFidelity);
@@ -691,9 +693,9 @@ public class Spline : MonoBehaviour
 //			t = (float)k / steps;
 //			t = Mathf.Abs (startVal - t);
 
-			if (l2.positionCount <= k * 3) {
-				l2.positionCount = l2.positionCount + 3;
-			}
+			// if (l2.positionCount <= k * 3) {
+			// 	l2.positionCount = l2.positionCount + 3;
+			// }
 
 			float length;
 
@@ -710,26 +712,26 @@ public class Spline : MonoBehaviour
 //			length = Mathf.Pow (length, 2);
 			length *= 2;
 
-			l2.SetPosition (l2.positionCount - 1, GetPoint (t));
-			l2.SetPosition (l2.positionCount - 2, GetPoint (t) + GetDirection (t) * x * length);
-			l2.SetPosition (l2.positionCount - 3, GetPoint (t));
+			// l2.SetPosition (l2.positionCount - 1, GetPoint (t));
+			// l2.SetPosition (l2.positionCount - 2, GetPoint (t) + GetDirection (t) * x * length);
+			// l2.SetPosition (l2.positionCount - 3, GetPoint (t));
 
 		}
 
 	}
 
-	IEnumerator DrawVelocities ()
-	{
+	// IEnumerator DrawVelocities ()
+	// {
 
-		l2.positionCount = 3;
-
-		float step = 0;
-		int Count = SplinePoints.Count;
-
-
-		l2.SetPosition (l2.positionCount - 1, GetPointAtIndex (0, step));
-		l2.SetPosition (l2.positionCount - 2, GetPointAtIndex (0, step) + GetVelocityAtIndex (0, step));
-		l2.SetPosition (l2.positionCount - 3, GetPointAtIndex (0, step));
+		// l2.positionCount = 3;
+		//
+		// float step = 0;
+		// int Count = SplinePoints.Count;
+		//
+		//
+		// l2.SetPosition (l2.positionCount - 1, GetPointAtIndex (0, step));
+		// l2.SetPosition (l2.positionCount - 2, GetPointAtIndex (0, step) + GetVelocityAtIndex (0, step));
+		// l2.SetPosition (l2.positionCount - 3, GetPointAtIndex (0, step));
 
 //		float t = 1/curveFidelity;
 //		int lastIndex = 0;
@@ -756,31 +758,31 @@ public class Spline : MonoBehaviour
 //		}
 
 
-		l2.SetPosition (0, GetPointAtIndex (0, 0));
+		// l2.SetPosition (0, GetPointAtIndex (0, 0));
 
-		for (int i = 0; i < Count - 1; i++) {
-			for (int k = 0; k < curveFidelity; k++) {
+		// for (int i = 0; i < Count - 1; i++) {
+		// 	for (int k = 0; k < curveFidelity; k++) {
+		//
+		// 		int index = (i * curveFidelity) + k;
+		// 		float t = (float)k / (float)(curveFidelity - 1);
+		//
+		// 		step = ((float)curveFidelity * t) / (float)curveFidelity;
+		//
+		// 		Vector3 v = GetPointAtIndex (i, t);
 
-				int index = (i * curveFidelity) + k;
-				float t = (float)k / (float)(curveFidelity - 1);
+				// if (l2.positionCount <= Count * curveFidelity * 3) {
+				// 	l2.positionCount = l2.positionCount + 3;
+				// }
+				//
+				// l2.SetPosition (l2.positionCount - 1, GetPointAtIndex (i, step));
+				// l2.SetPosition (l2.positionCount - 2, GetPointAtIndex (i, step) + GetVelocityAtIndex (i, step));
+				// l2.SetPosition (l2.positionCount - 3, GetPointAtIndex (i, step));
 
-				step = ((float)curveFidelity * t) / (float)curveFidelity;
-
-				Vector3 v = GetPointAtIndex (i, t);
-
-				if (l2.positionCount <= Count * curveFidelity * 3) {
-					l2.positionCount = l2.positionCount + 3;
-				}
-
-				l2.SetPosition (l2.positionCount - 1, GetPointAtIndex (i, step));
-				l2.SetPosition (l2.positionCount - 2, GetPointAtIndex (i, step) + GetVelocityAtIndex (i, step));
-				l2.SetPosition (l2.positionCount - 3, GetPointAtIndex (i, step));
-
-				yield return null;
-			}
-		}
-
-	}
+				// yield return null;
+	// 		}
+	// 	}
+	//
+	// }
 
 	public void DrawMeshOverTime (int p1, int p2, bool reversed = false){
 
@@ -923,40 +925,59 @@ public class Spline : MonoBehaviour
 
 //					SplinePoints [i + 1].color = Color.Lerp (SplinePoints [i + 1].color, Color.white, Mathf.Pow (invertedDistance, 2));
 //					line.SetWidth (Mathf.Lerp (1, 1, Mathf.Pow (invertedDistance, 10)), index);
-				if (draw && (indexOfPlayerPos > (i) * curveFidelity) && (indexOfPlayerPos < (i + 1) * curveFidelity)) {
-
+			if(((indexOfPlayerPos > (i) * curveFidelity) && (indexOfPlayerPos < (i + 1) * curveFidelity)) && isPlayerOn){
+				if (draw) {
 					if ((reversed && Services.PlayerBehaviour.progress < playerProgress) || (!reversed && Services.PlayerBehaviour.progress > playerProgress)) {
 						playerProgress = t;
 					}
 
-
 					float difference = (Services.PlayerBehaviour.progress - t) * (float)curveFidelity;
-
 
 					if (reversed) {
 						line.SetColor (Color.Lerp (Color.black, Color.white, -difference), index);
 					} else {
 						line.SetColor (Color.Lerp (Color.black, Color.white, difference), index);
 					}
+				}else{
+						line.SetColor (Color.white, index);
+					}
+				}else{
+						float lerpVal;
+						Color c;
+						if(i < SplinePoints.Count - 1){
+								c = Color.Lerp (SplinePoints [i].color, SplinePoints [i + 1].color, t);
+								lerpVal = SplinePoints[i].proximity + t * (SplinePoints[i+1].proximity - SplinePoints[i].proximity);
+						}else{
+							if(closed){
+								c = Color.Lerp (SplinePoints [i].color, StartPoint().color, t);
+								lerpVal = SplinePoints[i].proximity + t * (StartPoint().proximity - SplinePoints[i].proximity);
+							}else{
+								c = SplinePoints [i].color;
+								lerpVal = SplinePoints[i].proximity;
+							}
+						}
 
+						float difference = (lerpVal);
+						line.SetColor (Color.Lerp (c, Color.white, difference), index);
+					}
 						//do coloring a certain way
-				} else {
-					if (i < SplinePoints.Count - 1) {
+				// } else {
+				// 	if (i < SplinePoints.Count - 1) {
+				// 		//
+				// 		line.SetColor (Color.Lerp(new Color(0.1f, 0.1f, 0.1f), Color.white, SplinePoints [i].proximity), index);
+				// 	//				line.SetWidth (Mathf.Lerp ((SplinePoints [i].NeighbourCount () - 1) + 1, (SplinePoints [i + 1].NeighbourCount () - 1) + 1, t), index);
+				//
+				// 	} else if (closed) {
+				//
+				// 	//IF IT IS THE LAST POINT, ONLY DRAW THE CONNECTION IF ITS A LOOP
+				//
+				// 		// line.SetColor (Color.Lerp (SplinePoints [i].color, SplinePoints [SplinePoints.Count - 1].color, t), index);
+				// 		line.SetColor (Color.Lerp (new Color(0.1f, 0.1f, 0.1f), Color.white, SplinePoints [i-1].proximity), index);
+				// 	//				line.SetWidth (Mathf.Lerp ((SplinePoints [i].NeighbourCount () - 1) + 1, (SplinePoints [SplinePoints.Count - 1].NeighbourCount () - 1) + 1, t), index);
+				// }
+				// //			line.SetWidth (1f, index);
 
-
-						line.SetColor (Color.Lerp (SplinePoints [i].color, SplinePoints [i + 1].color, t), index);
-					//				line.SetWidth (Mathf.Lerp ((SplinePoints [i].NeighbourCount () - 1) + 1, (SplinePoints [i + 1].NeighbourCount () - 1) + 1, t), index);
-
-					} else if (closed) {
-
-					//IF IT IS THE LAST POINT, ONLY DRAW THE CONNECTION IF ITS A LOOP
-
-						line.SetColor (Color.Lerp (SplinePoints [i].color, SplinePoints [SplinePoints.Count - 1].color, t), index);
-					//				line.SetWidth (Mathf.Lerp ((SplinePoints [i].NeighbourCount () - 1) + 1, (SplinePoints [SplinePoints.Count - 1].NeighbourCount () - 1) + 1, t), index);
-				}
-				//			line.SetWidth (1f, index);
-
-			}
+			// }
 		}
 	}
 

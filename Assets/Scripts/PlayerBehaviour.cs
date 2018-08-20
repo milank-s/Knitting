@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 
 public enum PlayerState{Traversing, Switching, Flying, Animating};
 
@@ -139,7 +139,21 @@ public class PlayerBehaviour: MonoBehaviour {
 		CursorInput();
 		Effects ();
 
+		if(pointDest != null){
+		List<Spline> splinesToUpdate = new List<Spline>();
+		splinesToUpdate = curPoint._connectedSplines.Union(pointDest._connectedSplines).ToList();
+
+			foreach(Spline s in splinesToUpdate){
+				s.Draw();
+			}
+		}else{
+		foreach(Spline s in curPoint._connectedSplines){
+			s.Draw();
+		}
+	}
+
 		creationInterval-= Time.deltaTime;
+
 
 
 		if (state == PlayerState.Traversing && curSpline != null) {
@@ -246,7 +260,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			state = PlayerState.Flying;
 			curSpline.OnSplineExit ();
 			curPoint.OnPointExit ();
-
+			curPoint.proximity = 0;
 			drawnPoint = curPoint;
 			curPoint = SplineUtil.CreatePoint(transform.position);
 			curSpline = SplineUtil.CreateSpline(drawnPoint, curPoint);
@@ -491,6 +505,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (!joystickLocked && Input.GetButtonDown ("Button1")) {
 
 			if(CanLeavePoint()){
+				curPoint.GetComponent<Collider>().enabled = true;
+				curPoint.velocity = cursorDir * Mathf.Abs(flow);
+				curPoint.isKinematic = false;
 				LeavePoint();
 				return;
 			}else{
@@ -508,6 +525,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			// }
 		}else{
 			if(CanLeavePoint()){
+				curPoint.GetComponent<Collider>().enabled = true;
+				curPoint.velocity = cursorDir * Mathf.Abs(flow);
+				curPoint.isKinematic = false;
 				LeavePoint();
 				return;
 			}
@@ -523,17 +543,23 @@ public class PlayerBehaviour: MonoBehaviour {
 			flow -= Time.deltaTime / 2f;
 			transform.position += inertia * Time.deltaTime;
 			curPoint.transform.position = transform.position;
+			curPoint.originalPos = transform.position;
 			curDrawDistance = Vector3.Distance (drawnPoint.Pos, curPoint.Pos);
 			creationInterval -= Time.deltaTime;
 			if (creationInterval < 0 && curDrawDistance > PointDrawDistance) {
 					creationInterval = creationCD;
 					curDrawDistance = 0;
 				// if (newPointList.Count == 0) {
-
+					curPoint.velocity = Mathf.Abs(flow) * cursorDir;
 					Point newPoint;
 					newPoint = SplineUtil.CreatePoint(transform.position);
 					curPoint.GetComponent<Collider>().enabled = true;
+					curPoint.velocity = cursorDir * Mathf.Abs(flow);
+					curPoint.isKinematic = false;
+					curPoint.proximity = 0;
 					newPoint.GetComponent<Collider>().enabled = false;
+					newPoint.isKinematic = true;
+					newPoint.proximity = 1;
 					SplinePointPair spp = SplineUtil.ConnectPoints(curSpline, curPoint, newPoint);
 					lastPoint = drawnPoint;
 					curSpline = spp.s;
@@ -617,6 +643,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 		}
 
+
 		progress += ((flow + boost + curSpeed)/curSpline.distance) * Time.deltaTime;
 
 		boost = Mathf.Lerp (boost, 0, Time.deltaTime * 2);
@@ -624,10 +651,12 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (curPoint == curSpline.Selected) {
 			curPoint.proximity = 1 - progress;
+			pointDest.proximity = progress;
+
 			if (curSpline.closed && curSpline.SplinePoints.IndexOf(curPoint) >= curSpline.SplinePoints.Count-1) {
 				curSpline.SplinePoints [curSpline.LoopIndex].proximity = progress;
 			} else {
-
+				// ??? what the fuck am I looking at
 				curSpline.SplinePoints [Mathf.Clamp(curSpline.GetPointIndex(curSpline.Selected)+1, 0, curSpline.SplinePoints.Count-1)].proximity = progress;
 			}
 
@@ -732,7 +761,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 			Point PointArrivedAt = curPoint;
-
+			curPoint.proximity = 0;
 			if (progress > 1) {
 
 				progress = 1;
@@ -751,7 +780,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 			curPoint.proximity = 1;
-			curPoint.GetComponent<Rigidbody> ().AddForce (cursorDir * flow * 5);
+			curPoint.velocity = cursorDir * Mathf.Abs(flow);
 
 //			if (curPoint.IsOffCooldown ()) {
 				curPoint.OnPointEnter ();
@@ -997,8 +1026,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			//do shit with particle systems for flying
 		} else {
 //			t.time = Mathf.Lerp(t.time, 0, Time.deltaTime);
-			if (state != PlayerState.Switching && (accuracy < 0 && flow > 0) || accuracy > 0 && flow < 0) {
-				e.rateOverTimeMultiplier = Mathf.Lerp(0, 50, Mathf.Abs(flow) + 0.1f);
+// (accuracy < 0 && flow > 0) || accuracy > 0 && flow <
+			if (state != PlayerState.Switching) {
+				e.rateOverTimeMultiplier = (1 - Mathf.Abs(accuracy)) * Mathf.Abs(flow) * 25;
 			} else {
 				e.rateOverTimeMultiplier = Mathf.Lerp (e.rateOverTimeMultiplier, 0, Time.deltaTime * 5);
 			}
