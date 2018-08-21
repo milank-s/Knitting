@@ -77,8 +77,8 @@ public class Point : MonoBehaviour
 	FadeSprite activationSprite;
 
 	void Awake(){
-		stiffness = 20;
-		damping = 100;
+		stiffness = 1600;
+		damping = 500;
 		color = Color.black;
 		Point.pointCount++;
 		activationSprite = GetComponentInChildren<FadeSprite> ();

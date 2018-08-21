@@ -178,7 +178,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if (CanPlayerMove ()) {
 				canTraverse = true;
 			} else {
-				if(Input.GetButtonDown ("Button1")){
+				if(Input.GetButtonUp ("Button1")){
 					canTraverse = CanLeavePoint();
 					if (!canTraverse){
 						if(TryToFly()){
@@ -643,8 +643,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 		}
 
-
-		progress += ((flow + boost + curSpeed)/curSpline.distance) * Time.deltaTime;
+		float adjustedAccuracy = goingForward ? Mathf.Clamp01(accuracy) : -Mathf.Clamp(accuracy, -1, 0);
+		progress += ((flow * adjustedAccuracy + boost + curSpeed)/curSpline.distance) * Time.deltaTime;
 
 		boost = Mathf.Lerp (boost, 0, Time.deltaTime * 2);
 		//set player position to a point along the curve
@@ -874,7 +874,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 			}
 // && (Input.GetButtonDown("Button1")
-			if (angleToSpline <= StopAngleDiff && ((Input.GetButtonDown ("Button1") && !joystickLocked)|| Mathf.Abs(flow) > 1)) {
+			if (angleToSpline <= StopAngleDiff && (Input.GetButtonUp ("Button1") || Mathf.Abs(flow) > 1) && !joystickLocked && !Input.GetButton("Button1")) {
 				bool isEntering = false;
 
 				if (curSpline != null && curSpline != closestSpline) {
@@ -945,9 +945,11 @@ public class PlayerBehaviour: MonoBehaviour {
 //			if (cursorDir.magnitude < 0.1f) {
 //				cursorDir = lastCursorDir.normalized/10f;
 //			}
-		if (cursorDir.magnitude <= 0.01f){
+		if (cursorDir.magnitude <= 0.1f){
 		  joystickLocked = true;
 			cursorDir = Vector3.zero;
+		}else{
+			joystickLocked = false;
 		}
 
 			cursorDir = Vector3.Lerp (lastCursorDir, cursorDir, (cursorRotateSpeed/(((Mathf.Abs(flow) * 10) + 1)) * Time.deltaTime));
