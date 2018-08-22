@@ -123,7 +123,7 @@ public class Constants : MonoBehaviour {
 			traversing.color = Color.Lerp (traversing.color, gray, Time.deltaTime * 10);
 		}
 
-		if (Input.GetButtonDown ("Button1")) {
+		if (Input.GetButton ("Button1")) {
 			buttonPress.enabled = true;
 			buttonPress.color = Color.white;
 		} else {

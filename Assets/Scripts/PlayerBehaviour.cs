@@ -175,11 +175,11 @@ public class PlayerBehaviour: MonoBehaviour {
 			transform.position = curPoint.Pos;
 			bool canTraverse = false;
 
-			if (CanPlayerMove ()) {
+			if (CanLeavePoint ()) {
 				canTraverse = true;
 			} else {
 				if(Input.GetButtonUp ("Button1")){
-					canTraverse = CanLeavePoint();
+					canTraverse = CanCreatePoint();
 					if (!canTraverse){
 						if(TryToFly()){
 							return;
@@ -225,7 +225,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 	}
 
-	bool CanLeavePoint(){
+	bool CanCreatePoint(){
 
 			if (!joystickLocked) {
 
@@ -233,7 +233,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				pointDest = SplineUtil.RaycastFromCamera(cursorPos, 20f);
 
 				if (pointDest != null && pointDest != curPoint) {
-
+					if(pointDest.pointType != PointTypes.leaf || (pointDest.pointType == PointTypes.leaf && pointDest.NeighbourCount() == 0) && curPoint.pointType != PointTypes.leaf){
 					SplinePointPair spp = SplineUtil.ConnectPoints (curSpline, curPoint, pointDest);
 
 					bool isEntering = false;
@@ -251,11 +251,12 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				}
 			}
+		}
 		return false;
 	}
 
 	bool TryToFly(){
-		if (Mathf.Abs(flow) > flyingSpeedThreshold) {
+		if (Mathf.Abs(flow) > flyingSpeedThreshold && curPoint.pointType == PointTypes.fly) {
 
 			state = PlayerState.Flying;
 			curSpline.OnSplineExit ();
@@ -275,15 +276,20 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	void LeavePoint(){
-		curPoint.OnPointExit ();
-		if (Mathf.Abs (flow) <= 1) {
-			if (!goingForward) {
-				boost -= boostAmount;
-			} else {
 
-				boost = boostAmount;
-			}
+		if (!goingForward) {
+			if(curPoint.IsOffCooldown()){
+			flow -= flowAmount;
 		}
+			boost = -boostAmount;
+		} else {
+			if(curPoint.IsOffCooldown()){
+			flow += flowAmount;
+		}
+			boost = boostAmount;
+		}
+
+		curPoint.OnPointExit ();
 
 		state = PlayerState.Traversing;
 		decayTimer = 0.5f;
@@ -504,7 +510,7 @@ public class PlayerBehaviour: MonoBehaviour {
 // && RaycastHitObj != null && RaycastHitObj != curPoint)
 		if (!joystickLocked && Input.GetButtonDown ("Button1")) {
 
-			if(CanLeavePoint()){
+			if(CanCreatePoint()){
 				curPoint.GetComponent<Collider>().enabled = true;
 				curPoint.velocity = cursorDir * Mathf.Abs(flow);
 				curPoint.isKinematic = false;
@@ -524,7 +530,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			// StartCoroutine(FlyIntoNewPoint(RaycastHitObj));
 			// }
 		}else{
-			if(CanLeavePoint()){
+			if(CanCreatePoint()){
 				curPoint.GetComponent<Collider>().enabled = true;
 				curPoint.velocity = cursorDir * Mathf.Abs(flow);
 				curPoint.isKinematic = false;
@@ -623,6 +629,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				if (flow > 0)
 					flow = 0;
 			}else{
+				//
 			flow += Mathf.Sign (accuracy) * accuracyCoefficient * acceleration * Time.deltaTime;
 		}
 	}
@@ -834,7 +841,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	//DONT CONFUSE FLYING WITH
 
 
-	public bool CanPlayerMove(){
+	public bool CanLeavePoint(){
 
 		angleToSpline = Mathf.Infinity;
 

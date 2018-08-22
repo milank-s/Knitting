@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public enum PointTypes{normal, fly, boost, leaf, end, straight, biased, tension}
+public enum PointTypes{fly, boost, leaf, straight, biased, tension, normal}
 //fly points enable flying
 //boost add additional boostAmount. tension = ?
 //leaves cannot be connected to
@@ -53,7 +53,7 @@ public class Point : MonoBehaviour
 
 	public static Point Select;
 	private float cooldown;
-	private TextMesh SR;
+	private SpriteRenderer SR;
 	private List<GameObject> _directionalSprites;
 	public float c = 0;
 	public bool hit = false;
@@ -77,6 +77,7 @@ public class Point : MonoBehaviour
 	FadeSprite activationSprite;
 
 	void Awake(){
+
 		stiffness = 1600;
 		damping = 500;
 		color = Color.black;
@@ -97,7 +98,7 @@ public class Point : MonoBehaviour
 		_neighbours = new List<Point> ();
 
 		cooldown = (((float)Point.pointCount) % boostCooldown)/3f;
-		SR = GetComponent<TextMesh> ();
+		SR = GetComponent<SpriteRenderer> ();
 
 		originalPos = transform.position;
 
@@ -119,6 +120,42 @@ public class Point : MonoBehaviour
 
 
 	//HELPER FUNCTIONS
+
+	public void Start(){
+
+		switch(pointType){
+
+			case PointTypes.fly:
+				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.fly];
+			break;
+
+			case PointTypes.boost:
+				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.boost];
+			break;
+
+			case PointTypes.leaf:
+				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.leaf];
+			break;
+
+			case PointTypes.straight:
+				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.straight];
+				tension = 1;
+			break;
+
+			case PointTypes.biased:
+				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.biased];
+				bias = 1;
+			break;
+
+			case PointTypes.tension:
+				tension = -1;
+				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.tension];
+			break;
+
+			default:
+			break;
+		}
+	}
 
 	public void Update(){
 
@@ -146,7 +183,7 @@ public class Point : MonoBehaviour
 //			} else {
 				color = Color.Lerp (color, new Color (c, c, c), Time.deltaTime * 5);
 //				SR.color = Color.Lerp (SR.color, Color.black, Time.deltaTime * 5);
-				SR.color = color;
+				SR.color = color * 10;
 //			}
 		}
 
@@ -249,7 +286,6 @@ public class Point : MonoBehaviour
 	}
 
 	public void OnPointEnter(){
-		PutOnCooldown ();
 
 //		continuity = Mathf.Clamp(continuity + 0.01f, 0, 1);
 
@@ -262,6 +298,7 @@ public class Point : MonoBehaviour
 	}
 
 	public void OnPointExit(){
+		PutOnCooldown ();
 		GameObject fx = Instantiate (activatedSprite, transform.position, Quaternion.identity);
 		fx.transform.parent = transform;
 	}
