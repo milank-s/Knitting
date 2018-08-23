@@ -196,7 +196,14 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		if (state != PlayerState.Animating && curPoint.HasSplines () && curSpline != null) {
-			transform.position = curSpline.GetPoint (progress);
+			if(state == PlayerState.Switching){
+				transform.position = curPoint.Pos;
+			}
+
+			if(state == PlayerState.Traversing){
+				transform.position = curSpline.GetPoint(progress);
+			}
+
 			if (traversedPoints.Count >= 2 && Mathf.Abs (flow) <= 0) {
 				StartCoroutine (Unwind());
 			}
@@ -235,6 +242,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				if (pointDest != null && pointDest != curPoint) {
 					if(pointDest.pointType != PointTypes.leaf || (pointDest.pointType == PointTypes.leaf && pointDest.NeighbourCount() == 0) && curPoint.pointType != PointTypes.leaf){
 					SplinePointPair spp = SplineUtil.ConnectPoints (curSpline, curPoint, pointDest);
+					//Adding points multiple times to each other is happening HERE
+					//Could restrict points to never try and add their immediate neighbours?
 
 					bool isEntering = false;
 
@@ -506,31 +515,29 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		// Make drawing points while you skate.
 		//should solve the problems of jumping across new points on the same spline.
-//		RaycastHitObj.GetComponent<Point> ().isPlaced
-// && RaycastHitObj != null && RaycastHitObj != curPoint)
-		if (!joystickLocked && Input.GetButtonDown ("Button1")) {
 
-			if(CanCreatePoint()){
-				curPoint.GetComponent<Collider>().enabled = true;
-				curPoint.velocity = cursorDir * Mathf.Abs(flow);
-				curPoint.isKinematic = false;
-				LeavePoint();
-				return;
-			}else{
-				// if(pointDest == curPoint){
-					// ???????????????????????
-				// 	StartCoroutine (ReturnToLastPoint ());
-				// 	return;
-				// }
+		Point overPoint = SplineUtil.RaycastDownToPoint(cursorPos, 10f, 5f);
+		if(overPoint != null && overPoint != curPoint){
+			if(Vector3.Distance (curPoint.Pos, drawnPoint.Pos) < 0.25f){
+				curSpline.SplinePoints.Remove(curPoint);
+				drawnPoint._neighbours.Remove(curPoint);
+				Destroy(curPoint.gameObject);
+				curPoint = drawnPoint;
+				curSpline.Selected = drawnPoint;
+				// SplinePointPair spp = SplineUtil.ConnectPoints(curSpline, drawnPoint, overPoint);
+				// curSpline = spp.s;
+				// drawnPoint = spp.p;
+				// traversedPoints.Add(drawnPoint);
+				//
+				// SplinePointPair sppp = SplineUtil.ConnectPoints(curSpline, drawnPoint, curPoint);
+				// curSpline = sppp.s;
+				// curSpline.Selected = drawnPoint;
+				// curSpline.OnSplineEnter (true, drawnPoint, curPoint, false);
 			}
 
-			// if(RaycastHitObj == curPoint){
-			// 	StartCoroutine (ReturnToLastPoint ());
-			// }else{
-			// StartCoroutine(FlyIntoNewPoint(RaycastHitObj));
-			// }
-		}else{
 			if(CanCreatePoint()){
+				//remove current point from curspline and connect drawnPoint to pointDest on current spline
+
 				curPoint.GetComponent<Collider>().enabled = true;
 				curPoint.velocity = cursorDir * Mathf.Abs(flow);
 				curPoint.isKinematic = false;
@@ -538,6 +545,12 @@ public class PlayerBehaviour: MonoBehaviour {
 				return;
 			}
 		}
+
+			// if(RaycastHitObj == curPoint){
+			// 	StartCoroutine (ReturnToLastPoint ());
+			// }else{
+			// StartCoroutine(FlyIntoNewPoint(RaycastHitObj));
+			// }
 
 		 if (flow < 0) {
 //			CreateJoint (newPointList[newPointList.Count-1].GetComponent<Rigidbody>());

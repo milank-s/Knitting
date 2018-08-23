@@ -14,7 +14,8 @@ public class FadeTextOnPoint: MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		alpha -= Time.deltaTime;
-		GetComponent<TextMesh> ().color = new Color (1, 1, 1, alpha);
+		Color c = GetComponent<TextMesh> ().color;
+		GetComponent<TextMesh> ().color = new Color (c.r, c.g, c.b, alpha);
 		if (alpha <= 0) {
 			Destroy (gameObject);
 		}
