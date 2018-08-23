@@ -225,11 +225,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		StopAngleDiff = Mathf.Lerp (20, 50, Mathf.Abs(flow));
 
-		if (accuracy < 0) {
-			goingForward = false;
-		} else {
-			goingForward = true;
-		}
+		// if (accuracy < 0) {
+		// 	goingForward = false;
+		// } else {
+		// 	goingForward = true;
+		// }
 	}
 
 	bool CanCreatePoint(){
@@ -244,6 +244,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					SplinePointPair spp = SplineUtil.ConnectPoints (curSpline, curPoint, pointDest);
 					//Adding points multiple times to each other is happening HERE
 					//Could restrict points to never try and add their immediate neighbours?
+
 
 					bool isEntering = false;
 
