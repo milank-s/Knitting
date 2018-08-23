@@ -652,7 +652,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		// 	curSpeed = 0;
 		// }
 
-		if ((accuracy < 0.5f && accuracy > -0.5f) || joystickLocked) {
+		if ((accuracy < 0.5f && accuracy > -0.5f) || joystickLocked || Input.GetButton("Button1")) {
 			if (flow > 0) {
 				flow -= decay * (2f - accuracy) * Time.deltaTime;
 				if (flow < 0)
@@ -665,7 +665,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		float adjustedAccuracy = goingForward ? Mathf.Clamp01(accuracy) : -Mathf.Clamp(accuracy, -1, 0);
-		progress += ((flow * adjustedAccuracy + boost + curSpeed)/curSpline.distance) * Time.deltaTime;
+		progress += ((flow * (adjustedAccuracy + 0.1f) + boost + curSpeed)/curSpline.distance) * Time.deltaTime;
 
 		boost = Mathf.Lerp (boost, 0, Time.deltaTime * 2);
 		//set player position to a point along the curve
