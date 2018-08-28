@@ -47,7 +47,7 @@ public class SplineInspector : Editor {
 			Undo.RecordObject(spline, "Move Point");
 			EditorUtility.SetDirty(spline);
 			spline.SplinePoints [selectedIndex].transform.position = point;
-		}	
+		}
 	}
 
 	private void OnSceneGUI () {
@@ -55,7 +55,7 @@ public class SplineInspector : Editor {
 		Handles.color = Color.white;
 
 		SplineManager s = target as SplineManager;
-		
+
 		foreach (Spline spline in s.splines) {
 
 
@@ -63,7 +63,7 @@ public class SplineInspector : Editor {
 			//			Vector3 p1 = ShowPoint(i);
 			//			Vector3 p2 = ShowPoint(i + 1);
 			//			Vector3 p3 = ShowPoint(i + 2);
-			//			
+			//
 			//			Handles.color = Color.gray;
 			//			Handles.DrawLine(p0, p1);
 			//			Handles.DrawLine(p2, p3);
@@ -77,11 +77,9 @@ public class SplineInspector : Editor {
 
 			for (int i = 0; i < Count - (spline.closed ? 0 : 1); i++) {
 				for (int k = 0; k < spline.curveFidelity; k++) {
-
 					float t = (float)k / (float)(spline.curveFidelity - 1);
 
 					Vector3 v = spline.GetPointAtIndex (i, t);
-
 
 					Handles.DrawLine (lastPosition, v);
 
@@ -117,7 +115,7 @@ public class SplineInspector : Editor {
 //				float t = (float)k / (float)(stepsPerCurve-1);
 //
 //				Vector3 v= spline.GetPointAtIndex(i, t);
-//			
+//
 //				Handles.DrawLine(v, v + spline.GetVelocityAtIndex(i, t).normalized/5);
 //			}
 //		}

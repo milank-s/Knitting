@@ -14,40 +14,18 @@ public class PointDebugger : Editor {
 		Handles.color = Color.green;
 		DrawSelectedPoint (point);
 
-		Handles.color = Color.red;
-
+		Handles.color = Color.blue;
 
 
 		foreach (Point p in point._neighbours) {
 			DrawSelectedPoint (p);
 		}
 		int m = 0;
+
 		foreach (Spline spline in point._connectedSplines) {
 
-			 
-			switch (m) {
-			case 0:
-				Handles.color = Color.blue;
-				break;
 
-			case 1:
-				Handles.color = Color.yellow;
-				break;
-
-			case 2:
-				Handles.color = Color.magenta;
-				break;
-
-			case 3:
-				Handles.color = Color.green;
-
-				break;
-
-			default:
-				Handles.color = Color.cyan;
-				break;
-			}
-
+		Handles.color = Color.white;
 
 			int Count = spline.SplinePoints.Count;
 			Vector3 lastPosition = spline.GetPointAtIndex (0, 0);
@@ -66,7 +44,7 @@ public class PointDebugger : Editor {
 			}
 
 //			Handles.color = Color.yellow;
-		
+
 
 //			for (int i = 0; i < Count - (spline.closed?0:1); i++){
 //				for (int k = 0; k < spline.curveFidelity ; k++){
@@ -79,13 +57,12 @@ public class PointDebugger : Editor {
 //				}
 //			}
 
-			m++;
 
 		}
 	}
 
 	private void DrawSelectedPoint(Point p) {
-		Handles.DrawSolidDisc (p.Pos, -Vector3.forward, 0.1f); 
+		Handles.DrawSolidDisc (p.Pos, -Vector3.forward, 0.05f);
 	}
 
 	private Vector3 ShowPoint (int index) {

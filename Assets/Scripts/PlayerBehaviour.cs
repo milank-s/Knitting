@@ -787,8 +787,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				progress = 1;
 
-				if (curSpline.Selected == curSpline.EndPoint() && curSpline.closed) {
-					curPoint = curSpline.StartPoint();
+				if (curSpline.Selected == curSpline.EndPoint && curSpline.closed) {
+					curPoint = curSpline.StartPoint;
 				} else {
 					curPoint = curSpline.SplinePoints [curSpline.GetPointIndex(curSpline.Selected) + 1];
 				}

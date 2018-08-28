@@ -8,5 +8,5 @@ public class SplineManager : MonoBehaviour{
 	public Spline[] splines;
 
 
-
+	
 }

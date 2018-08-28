@@ -40,11 +40,11 @@ public class SplineUtil : MonoBehaviour {
 
 			} else {
 
-				if (p1 == s.StartPoint () || p1 == s.EndPoint ()) {
+				if (p1 == s.StartPoint || p1 == s.EndPoint) {
 
 					newSpline = s;
 
-					if (p2 == s.StartPoint () || p2 == s.EndPoint ()) {
+					if (p2 == s.StartPoint || p2 == s.EndPoint) {
 
 						s.closed = true;
 						s.LoopIndex = s.SplinePoints.IndexOf (p2);
@@ -59,7 +59,7 @@ public class SplineUtil : MonoBehaviour {
 					} else if (!s.SplinePoints.Contains (p2)) {
 
 						s.AddPoint (p1, p2);
-						s.name = s.StartPoint ().name + "—" + s.EndPoint ().name;
+						s.name = s.StartPoint.name + "—" + s.EndPoint.name;
 
 					} else {
 

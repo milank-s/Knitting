@@ -6,7 +6,8 @@ using System.IO;
 using System;
 using Vectrosity;
 using UnityEngine.Audio;
-
+using System.Linq;
+// [ExecuteInEditMode]
 public class Spline : MonoBehaviour
 {
 
@@ -67,6 +68,18 @@ public class Spline : MonoBehaviour
 	public int CurveCount {
 		get {
 			return (SplinePoints.Count - 1) / 3;
+		}
+	}
+
+	public Point EndPoint{
+		get {
+			return SplinePoints[SplinePoints.Count - 1];
+		}
+	}
+
+	public Point StartPoint{
+		get {
+			return SplinePoints[0];
 		}
 	}
 
@@ -244,18 +257,29 @@ public class Spline : MonoBehaviour
 		Splines.Remove (this);
 	}
 
+	public void SetupSpline(){
+
+		if (SplinePoints.Count > 0) {
+			List<Point> copyPoints = new List<Point>(SplinePoints);
+			SplinePoints.Clear();
+			foreach (Point p in copyPoints) {
+				AddPoint (null, p);
+			}
+
+			if(closed){
+				AddPoint (null, EndPoint);
+			}
+		}
+	}
+
 	void Awake ()
 	{
 
 		if (SplinePoints.Count > 0) {
-			foreach (Point p in SplinePoints) {
-				AddPoint (null, p);
-			}
+
 		} else {
 			SplinePoints = new List<Point> ();
 		}
-
-		SplinePoints = new List<Point> ();
 
 		Select = this;
 		Splines.Add (this);
@@ -366,20 +390,6 @@ public class Spline : MonoBehaviour
 
 	#region
 
-	//HELPER FUNCTIONS
-
-	public Point StartPoint ()
-	{
-		return SplinePoints [0];
-	}
-
-
-	public Point EndPoint ()
-	{
-		return SplinePoints [SplinePoints.Count - 1];
-
-	}
-
 	public bool IsPointConnectedTo (Point p)
 	{
 		return SplinePoints.Contains (p);
@@ -410,7 +420,7 @@ public class Spline : MonoBehaviour
 		int j = i - 1;
 
 		if (j < 0) {
-//			&& StartPoint ()._neighbours.Contains (SplinePoints [LoopIndex])
+//			&& StartPoint._neighbours.Contains (SplinePoints [LoopIndex])
 			if (closed) {
 				j = Count - 1;
 			} else {
@@ -491,7 +501,7 @@ public class Spline : MonoBehaviour
 		int j = i - 1;
 
 		if (j < 0) {
-			//			&& StartPoint ()._neighbours.Contains (SplinePoints [LoopIndex])
+			//			&& StartPoint._neighbours.Contains (SplinePoints [LoopIndex])
 			if (closed) {
 				j = Count - 1;
 			} else {
@@ -627,36 +637,37 @@ public class Spline : MonoBehaviour
 
 	public void AddPoint (Point curPoint, Point p)
 	{
-		if (SplinePoints.Contains (p)) {
-			return;
+
+		if(SplinePoints.Contains(p)){
+			Debug.Log("ADDING EXISTING POINT BACK TO SPLINE. WRONG");
 		}
 
 		p.AddSpline (this);
 
 		int newIndex = 0;
-
-
 		if (SplinePoints.Count == 0) {
 
 			SplinePoints.Add (p);
 
-		} else if (SplinePoints.Count >= 1 && curPoint == StartPoint ()) {
+		} else if (SplinePoints.Count >= 1 && curPoint == StartPoint) {
+
+
 			SplinePoints.Insert (0, p);
 			p.AddPoint (SplinePoints [1]);
 			SplinePoints [1].AddPoint (p);
 			highHitPoint++;
 
-			if (closed) {
-				p.AddPoint (SplinePoints [SplinePoints.Count - 1]);
-				SplinePoints [SplinePoints.Count - 1].AddPoint (p);
-			}
+		} else if(p == StartPoint || p == EndPoint && closed){
+				StartPoint.AddPoint (EndPoint);
+				EndPoint.AddPoint(StartPoint);
+		}else{
 
-		} else {
 			newIndex = SplinePoints.Count;
 			SplinePoints.Insert (newIndex, p);
 
 			p.AddPoint (SplinePoints [newIndex-1]);
 			SplinePoints [newIndex-1].AddPoint (p);
+
 //			p.AddPoint(curPoint);
 //			curPoint.AddPoint (p);
 		}
@@ -817,11 +828,10 @@ public class Spline : MonoBehaviour
 		isDrawing = false;
 	}
 
-
 	void DrawMesh (bool reversed = false){
 
 		if (reversed) {
-			for (int i = highHitPoint - (closed ? -2 : -1); i >= lowHitPoint; i--) {
+			for (int i = highHitPoint + (closed ? 0 : 1); i >= lowHitPoint; i--) {
 				for (int k = curveFidelity - 1; k >= 0; k--) {
 
 					int index = (i * curveFidelity) + k;
@@ -832,7 +842,7 @@ public class Spline : MonoBehaviour
 				}
 			}
 		} else {
-			for (int i = lowHitPoint; i < highHitPoint - (closed ? -1 : 0); i++) {
+			for (int i = lowHitPoint; i < highHitPoint + (closed ? 0: 1); i++) {
 				for (int k = 0; k < curveFidelity; k++) {
 
 					int index = (i * curveFidelity) + k;
@@ -949,8 +959,8 @@ public class Spline : MonoBehaviour
 								lerpVal = SplinePoints[i].proximity + t * (SplinePoints[i+1].proximity - SplinePoints[i].proximity);
 						}else{
 							if(closed){
-								c = Color.Lerp (SplinePoints [i].color, StartPoint().color, t);
-								lerpVal = SplinePoints[i].proximity + t * (StartPoint().proximity - SplinePoints[i].proximity);
+								c = Color.Lerp (SplinePoints [i].color, StartPoint.color, t);
+								lerpVal = SplinePoints[i].proximity + t * (StartPoint.proximity - SplinePoints[i].proximity);
 							}else{
 								c = SplinePoints [i].color;
 								lerpVal = SplinePoints[i].proximity;

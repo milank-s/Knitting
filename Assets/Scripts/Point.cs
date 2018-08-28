@@ -87,15 +87,13 @@ public class Point : MonoBehaviour
 		gameObject.name = "v" + Point.pointCount;
 		_directionalSprites = new List<GameObject> ();
 		rb = GetComponent<Rigidbody> ();
+
 		if (_neighbours.Count == 0) {
 			_neighbours = new List<Point> ();
 		}
 		if (_connectedSplines.Count == 0) {
 			_connectedSplines = new List<Spline> ();
 		}
-
-		_connectedSplines =  new List<Spline> ();
-		_neighbours = new List<Point> ();
 
 		cooldown = (((float)Point.pointCount) % boostCooldown)/3f;
 		SR = GetComponent<SpriteRenderer> ();
