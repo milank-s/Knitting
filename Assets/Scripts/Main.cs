@@ -11,7 +11,6 @@ public class Main : MonoBehaviour {
 	public Image PauseScreen;
 
 	void Awake () {
-
 		Services.Player = Player;
 		Services.PlayerBehaviour = Player.GetComponent<PlayerBehaviour>();
 		Services.StartPoint = StartPoint.GetComponent<Point>();

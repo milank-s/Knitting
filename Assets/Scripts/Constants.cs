@@ -14,15 +14,15 @@ public class Constants : MonoBehaviour {
 	public TextMesh flowChar;
 	public TextMesh flowReadout;
 
+	public Transform cursor;
 	public SpriteRenderer switching;
 	public SpriteRenderer traversing;
 	public SpriteRenderer flying;
-	public SpriteRenderer cursorOnPoint;
-	public SpriteRenderer playerAxis;
+	public LineRenderer cursorOnPoint;
+	public LineRenderer playerAxis;
 	public SpriteRenderer buttonPress;
 	public SpriteRenderer canFly;
 	public Renderer reset;
-	public SpriteRenderer overPoint;
 
 	Color gray = new Color(0.12f, 0.12f, 0.12f);
 	Color white = new Color(1,1,1);
@@ -34,20 +34,18 @@ public class Constants : MonoBehaviour {
 		l = playerVals.cursor.GetComponent<LineRenderer>();
 		UISymbols = new List<SpriteRenderer>();
 		UISymbols.Add(switching);
-		UISymbols.Add(traversing);
+		// UISymbols.Add(traversing);
 		UISymbols.Add(flying);
-		UISymbols.Add(cursorOnPoint);
 		UISymbols.Add(buttonPress);
 		UISymbols.Add(canFly);
-		UISymbols.Add(overPoint);
-		UISymbols.Add(playerAxis);
+		// UISymbols.Add(playerAxis);
 	}
 
 	void Reveal(){
 
 	}
 
-	void Update () {
+	void LateUpdate () {
 
 
 
@@ -61,7 +59,7 @@ public class Constants : MonoBehaviour {
 		}
 
 		//AXIS
-		playerAxis.transform.eulerAngles = Vector3.Lerp(new Vector3(0, 0, 90), new Vector3(0, 0, 270), (playerVals.accuracy + 1f)/2f);
+		// playerAxis.transform.eulerAngles = Vector3.Lerp(new Vector3(0, 0, 90), new Vector3(0, 0, 270), (playerVals.accuracy + 1f)/2f);
 		//ACCURACY METER
 		if(playerVals.state == PlayerState.Animating){
 			reset.enabled = true;
@@ -72,7 +70,8 @@ public class Constants : MonoBehaviour {
 				s.color = Color.Lerp(s.color, gray, Time.deltaTime * 5);
 			}
 		}else{
-
+			// playerAxis.SetPosition(0, playerVals.transform.position);
+			// playerAxis.SetPosition(1, playerVals.cursorPos);
 			reset.enabled = false;
 
 			accuracyReadout.text = Mathf.Abs (playerVals.accuracy).ToString("F1");
@@ -106,11 +105,11 @@ public class Constants : MonoBehaviour {
 			}
 			switching.color = white;
 		} else {
-			switching.color = Color.Lerp (switching.color, gray, Time.deltaTime * 3);
+			switching.color = gray;
 		}
 
 		if(playerVals.state == PlayerState.Traversing){
-			playerAxis.color = Color.Lerp (playerAxis.color, gray, Time.deltaTime * 3);
+			// playerAxis.color = Color.Lerp (playerAxis.color, gray, Time.deltaTime * 3);
 			if(playerVals.goingForward){
 				traversing.transform.localScale = new Vector3(1, 0.2f + playerVals.progress/1.5f, 1);
 			}else{
@@ -118,7 +117,7 @@ public class Constants : MonoBehaviour {
 			}
 			accuracyChar.gameObject.SetActive(true);
 			traversing.color = white;
-			playerAxis.color = white;
+			// playerAxis.color = white;
 		} else {
 			traversing.color = Color.Lerp (traversing.color, gray, Time.deltaTime * 10);
 		}
@@ -127,33 +126,36 @@ public class Constants : MonoBehaviour {
 			buttonPress.enabled = true;
 			buttonPress.color = Color.white;
 		} else {
-				buttonPress.color = Color.Lerp (buttonPress.color, gray, Time.deltaTime * 3);
+			buttonPress.color = Color.Lerp (buttonPress.color, gray, Time.deltaTime * 3);
 		}
 
 		if(playerVals.state == PlayerState.Flying){
-			playerAxis.color = gray;
-			canFly.color = white;
-			flying.color = Color.Lerp (flying.color, gray, Time.deltaTime * 3);
-		}else{
+			// playerAxis.color = gray;
 			flying.color = white;
+		}else{
+			flying.color = Color.Lerp (flying.color, gray, Time.deltaTime * 3);
 		}
 
 		Point p = SplineUtil.RaycastFromCamera(playerVals.cursor.transform.position, 20f);
 		if (p != null && (playerVals.state == PlayerState.Switching || playerVals.state == PlayerState.Flying) && p != playerVals.curPoint) {
-			overPoint.color = white;
 
 			if(!playerVals.curPoint.isConnectedTo(p)){
 			l.positionCount = 2;
+			cursorOnPoint.positionCount = 2;
 			l.SetPosition (0, p.Pos);
 			l.SetPosition (1, Services.Player.transform.position);
-			cursorOnPoint.color = white;
+			cursorOnPoint.SetPosition (0, p.Pos);
+			cursorOnPoint.SetPosition (1, playerVals.cursorPos);
+			buttonPress.transform.position = p.Pos;
 		 }else{
-			 cursorOnPoint.color = Color.Lerp (cursorOnPoint.color, gray, Time.deltaTime * 3);
+			 buttonPress.transform.position = cursor.position;
+			 cursorOnPoint.positionCount = 0;
 			 l.positionCount = 0;
 		 }
 		} else {
-			overPoint.color = Color.Lerp (overPoint.color, gray, Time.deltaTime * 3);
-			cursorOnPoint.color = Color.Lerp (cursorOnPoint.color, gray, Time.deltaTime * 3);
+			buttonPress.transform.position = cursor.position;
+			cursorOnPoint.positionCount = 0;
+
 			l.positionCount = 0;
 		}
 

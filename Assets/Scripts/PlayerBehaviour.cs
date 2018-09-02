@@ -8,7 +8,6 @@ public enum PlayerState{Traversing, Switching, Flying, Animating};
 
 public class PlayerBehaviour: MonoBehaviour {
 
-
 	[Header("Current Spline")]
 	public Spline curSpline;
 
@@ -92,6 +91,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public bool joystickLocked;
 
 	void Awake(){
+		Cursor.lockState = CursorLockMode.Locked;
 		pointDest = null;
 		traversedPoints = new List<Point> ();
 		traversedPoints.Add (curPoint);
@@ -173,26 +173,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}else if(state == PlayerState.Switching) {
 
 			transform.position = curPoint.Pos;
-			bool canTraverse = false;
-
-			if (CanLeavePoint ()) {
-				canTraverse = true;
-			} else {
-				if(Input.GetButtonUp ("Button1")){
-					canTraverse = CanCreatePoint();
-					if (!canTraverse){
-						if(TryToFly()){
-							return;
-					 }
-					}
-				}
-		  }
-
-			if(canTraverse){
-				LeavePoint();
-			}else{
-				StayOnPoint();
-			}
+			PlayerOnPoint();
 		}
 
 		if (state != PlayerState.Animating && curPoint.HasSplines () && curSpline != null) {
@@ -215,6 +196,30 @@ public class PlayerBehaviour: MonoBehaviour {
 			controllerConnected = true;
 		}
 		#endregion
+	}
+
+	public void PlayerOnPoint(){
+		bool canTraverse = false;
+
+		if (CanLeavePoint ()) {
+			canTraverse = true;
+		} else {
+			if(Input.GetButtonUp ("Button1")){
+				canTraverse = CanCreatePoint();
+				if (!canTraverse){
+					if(TryToFly()){
+						return;
+				 }
+				}
+			}
+		}
+
+		if(canTraverse){
+			LeavePoint();
+		}else{
+			//Staying on a point is too punishing.
+			StayOnPoint();
+		}
 	}
 
 	public void SetCursorAlignment(){
@@ -289,12 +294,12 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (!goingForward) {
 			if(curPoint.IsOffCooldown()){
-			flow -= flowAmount;
+			// flow -= flowAmount;
 		}
 			boost = -boostAmount;
 		} else {
 			if(curPoint.IsOffCooldown()){
-			flow += flowAmount;
+			// flow += flowAmount;
 		}
 			boost = boostAmount;
 		}
@@ -313,7 +318,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void StayOnPoint(){
 		decayTimer -= Time.deltaTime;
-		if (decayTimer < 0) {
+		if (decayTimer < 0 && Input.GetButton("Button1")) {
 			if (flow > 0) {
 				flow -= decay * Time.deltaTime;
 				if (flow < 0) {
@@ -632,7 +637,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //		adding this value to flow
 //		MAKE FLOW NON REVERSIBLE. ADJUST LINE ACCURACY WITH FLOW TO MAKE PLAYER NOT STOP AT INTERSECTIONS
 //		NEGOTIATE FLOW CANCELLING OUT CURRENT SPEED
-		accuracyCoefficient = Mathf.Pow(Mathf.Abs(accuracy), 3);
+		accuracyCoefficient = Mathf.Pow(Mathf.Abs(accuracy), 2);
 		if (accuracy < -0.5f || accuracy > 0.5f) {
 			if (flow > 0 && accuracy < 0) {
 				flow += decay *  accuracy * Time.deltaTime;
@@ -652,7 +657,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		// 	curSpeed = 0;
 		// }
 
-		if ((accuracy < 0.5f && accuracy > -0.5f) || joystickLocked || Input.GetButton("Button1")) {
+		if ((accuracy < 0.5f && accuracy > -0.5f) || joystickLocked) {
+
 			if (flow > 0) {
 				flow -= decay * (2f - accuracy) * Time.deltaTime;
 				if (flow < 0)
@@ -665,9 +671,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		float adjustedAccuracy = goingForward ? Mathf.Clamp01(accuracy) : -Mathf.Clamp(accuracy, -1, 0);
-		progress += ((flow * (adjustedAccuracy + 0.1f) + boost + curSpeed)/curSpline.distance) * Time.deltaTime;
+		// (adjustedAccuracy + 0.1f)
+		progress += ((flow + boost + curSpeed)/curSpline.distance) * Time.deltaTime;
 
-		boost = Mathf.Lerp (boost, 0, Time.deltaTime * 2);
+		boost = Mathf.Lerp (boost, 0, Time.deltaTime);
 		//set player position to a point along the curve
 
 		if (curPoint == curSpline.Selected) {
@@ -814,6 +821,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 			state = PlayerState.Switching;
+			PlayerOnPoint();
+
 		}
 	}
 

@@ -50,8 +50,7 @@ public class SplineTurtle : MonoBehaviour {
 	Spline curSpline;
 	Point curPoint;
 
-	void Start () {
-
+	public void Generate(){
 		if (Randomize) {
 
 			initialAngleMax = Random.Range(-90, 45);
@@ -77,7 +76,7 @@ public class SplineTurtle : MonoBehaviour {
 
 			LockAngle = Random.Range (0f, 100f) > 50 ? true : false;
 			alternateAngle = Random.Range (0f, 100f) > 50 ? true : false;
-		
+
 
 
 			PivotAroundCenter = Random.Range (0f, 100f) > 50 ? true : false;
@@ -88,7 +87,6 @@ public class SplineTurtle : MonoBehaviour {
 		StartCoroutine(InitializeSpline ());
 
 	}
-
 	IEnumerator Draw(){
 		for(int i = 2; i < maxPoints; i++) {
 
@@ -114,7 +112,7 @@ public class SplineTurtle : MonoBehaviour {
 
 		if (maxCrawlers < 100) {
 			for (int i = 0; i < initialAmount; i++) {
-				SpawnTurtle ().transform.Rotate (0, 0, transform.eulerAngles.z + Random.Range (initialAngleMin, initialAngleMax) * i);	
+				SpawnTurtle ().transform.Rotate (0, 0, transform.eulerAngles.z + Random.Range (initialAngleMin, initialAngleMax) * i);
 
 			}
 			yield return new WaitForSeconds (0.1f);
@@ -126,7 +124,7 @@ public class SplineTurtle : MonoBehaviour {
 
 		parent = new GameObject ();
 		parent.name = parentName;
-			
+
 		mxAngle = maxAngle;
 		mAngle = minAngle;
 		mxDist = maxDist;
@@ -169,7 +167,7 @@ public class SplineTurtle : MonoBehaviour {
 
 			yield return new WaitForSeconds (0.1f);
 		}
-			
+
 
 		StartCoroutine (Draw ());
 	}
@@ -192,7 +190,7 @@ public class SplineTurtle : MonoBehaviour {
 	}
 
 	public void NewPoint(){
-		
+
 		if (Random.Range (0f, 100f) < branchFactor) {
 			if (maxTotalPoints < 100) {
 				SpawnTurtle ();

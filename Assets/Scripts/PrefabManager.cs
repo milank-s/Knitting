@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class PrefabManager : MonoBehaviour {
 
 	public GameObject soundEffectObject;
@@ -15,7 +16,6 @@ public class PrefabManager : MonoBehaviour {
 	public Sprite[] pointSprites;
 
 	void Start(){
-		Cursor.lockState = CursorLockMode.Locked;
 		Services.Prefabs = this;
 		LoadResources ();
 	}

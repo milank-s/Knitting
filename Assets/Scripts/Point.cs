@@ -243,11 +243,6 @@ public class Point : MonoBehaviour
 			Debug.Log("trying to add a point twice. DONT DO THAT");
 		}
 
-		if (!visited) {
-			visited = true;
-			PointManager._connectedPoints.Add (this);
-		}
-
 	}
 
 
@@ -341,6 +336,7 @@ public class Point : MonoBehaviour
 
 		if (!visited) {
 			visited = true;
+			PointManager._connectedPoints.Add (this);
 		}
 
 		if (!hit) {
