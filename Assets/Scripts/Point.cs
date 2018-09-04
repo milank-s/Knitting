@@ -28,7 +28,6 @@ public class Point : MonoBehaviour
 	public bool visited = false;
 
 	public static int pointCount = 0;
-	public Rigidbody rb;
 	public string text;
 	public float tension;
 	public float bias;
@@ -86,7 +85,6 @@ public class Point : MonoBehaviour
 		timeOffset = Point.pointCount;
 		gameObject.name = "v" + Point.pointCount;
 		_directionalSprites = new List<GameObject> ();
-		rb = GetComponent<Rigidbody> ();
 
 		if (_neighbours.Count == 0) {
 			_neighbours = new List<Point> ();
@@ -100,7 +98,6 @@ public class Point : MonoBehaviour
 
 		originalPos = transform.position;
 
-//		l = GetComponent<LineRenderer> ();
 		c = 0;
 	}
 //	void OnMouseDown()
@@ -162,19 +159,19 @@ public class Point : MonoBehaviour
 //		} else {
 //			activationSprite.time = Mathf.Lerp (activationSprite.time, 0, Time.deltaTime * 2);
 //		}
-		if(!isKinematic){
-			Movement();
-		}
 
-		c = (Mathf.Sin ((Time.time + timeOffset) * 5)/2 + 0.6f)/10f;
+		c = (Mathf.Sin (Time.time + timeOffset)/2 + 0.6f)/10f + proximity;
 
 		c = Mathf.Pow (c, 1);
 
 		if (!visited) {
 //			SR.color = Color.white;
-			c = 0;
+			c = 1;
 		} else {
 
+			if(!isKinematic){
+				Movement();
+			}
 //			if (hit) {
 //				color = Color.Lerp (color, Color.white, Time.deltaTime * 5);
 //				SR.color = color;
@@ -282,18 +279,20 @@ public class Point : MonoBehaviour
 
 //		continuity = Mathf.Clamp(continuity + 0.01f, 0, 1);
 
-		if (GetComponentInParent<PointCloud>() != null) {
+		if (!visited && GetComponentInParent<PointCloud>() != null) {
 			PointCloud p = GetComponentInParent<PointCloud> ();
 			GameObject newText = (GameObject)Instantiate (Services.Prefabs.spawnedText, transform.position - Vector3.forward/2f + Vector3.up/8f, Quaternion.identity);
 			newText.GetComponent<TextMesh>().text = p.GetWord ();
+			newText.GetComponent<FadeTextOnPoint>().p = this;
 			newText.transform.parent = transform;
 		}
+
+		PutOnCooldown ();
+		// GameObject fx = Instantiate (activatedSprite, transform.position, Quaternion.identity);
+		// fx.transform.parent = transform;
 	}
 
 	public void OnPointExit(){
-		PutOnCooldown ();
-		GameObject fx = Instantiate (activatedSprite, transform.position, Quaternion.identity);
-		fx.transform.parent = transform;
 	}
 
 

@@ -127,7 +127,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void Update () {
 
-		canFly = PointManager.PointsHit ();
 		connectTime -= Time.deltaTime / connectTimeCoefficient;
 		Point.hitColorLerp = connectTime;
 
@@ -141,14 +140,26 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if(pointDest != null){
 		List<Spline> splinesToUpdate = new List<Spline>();
-		splinesToUpdate = curPoint._connectedSplines.Union(pointDest._connectedSplines).ToList();
+		// splinesToUpdate = curPoint._connectedSplines.Union(pointDest._connectedSplines).ToList();
 
-			foreach(Spline s in splinesToUpdate){
-				s.Draw();
+			// foreach(Spline s in splinesToUpdate){
+			// 	Debug.Log(s.gameObject.name);
+			// 	s.Draw();
+			// }
+
+			foreach(Spline s in curPoint._connectedSplines){
+				s.DrawSegment(s.SplinePoints.IndexOf(curPoint));
+				splinesToUpdate.Add(s);
+			}
+			foreach(Spline s in pointDest._connectedSplines){
+				if(s != curSpline || !splinesToUpdate.Contains(s)){
+					s.DrawSegment(s.SplinePoints.IndexOf(pointDest));
+					splinesToUpdate.Add(s);
+				}
 			}
 		}else{
 		foreach(Spline s in curPoint._connectedSplines){
-			s.Draw();
+			s.DrawSegment(s.SplinePoints.IndexOf(curPoint));
 		}
 	}
 
@@ -440,10 +451,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			//IS THIS REALLY THE ONLY CASE I CONNECT SPRINGJOINTS
 			//WHY IS CONNECTING SPRING JOINTS THIS WAY BETTER THAN JUST LEAVING THEM UNCONNECTED
-			if (curP != curPoint) {
-				curP.GetComponent<SpringJoint> ().autoConfigureConnectedAnchor = true;
-				curP.GetComponent<SpringJoint> ().connectedBody = nextp.rb;
-			}
+			// if (curP != curPoint) {
+			// 	curP.GetComponent<SpringJoint> ().autoConfigureConnectedAnchor = true;
+			// 	curP.GetComponent<SpringJoint> ().connectedBody = nextp.rb;
+			// }
 
 			if (newPointList [index].GetComponentInChildren<SpriteRenderer>()) {
 				newPointList [index].GetComponentInChildren<SpriteRenderer> ().sprite = null;
@@ -464,7 +475,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		//must be an error with closed/looping splines getting created and fucking up
 
 		SplinePointPair	sp = SplineUtil.ConnectPoints (curSpline, drawnPoint, p);
-	  drawnPoint.GetComponent<SpringJoint> ().connectedBody = p.rb;
+	  // drawnPoint.GetComponent<SpringJoint> ().connectedBody = p.rb;
 		curSpline = sp.s;
 
 		lastPoint = p;

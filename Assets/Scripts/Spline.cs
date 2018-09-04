@@ -856,6 +856,18 @@ public class Spline : MonoBehaviour
 
 	}
 
+	public void DrawSegment(int pointIndex){
+			for (int i = Mathf.Clamp(pointIndex - 2, 0, SplinePoints.Count); i < Mathf.Clamp(pointIndex + 2, 0, SplinePoints.Count - (closed ? 0 : 1)); i++) {
+				for (int k = 0; k < curveFidelity; k++) {
+
+					int index = (i * curveFidelity) + k;
+					float t = (float)k / (float)(curveFidelity);
+
+					DrawLine (i, index, t);
+				}
+			}
+			line.Draw3D();
+		}
 
 	void DrawLine(int i, int index, float t){
 
