@@ -24,6 +24,12 @@ public class Constants : MonoBehaviour {
 	public SpriteRenderer canFly;
 	public Renderer reset;
 
+	public Sprite flyingSprite;
+	public Sprite connectSprite;
+	public Sprite buttonPressSprite;
+	public Sprite brakeSprite;
+
+
 	Color gray = new Color(0.12f, 0.12f, 0.12f);
 	Color white = new Color(1,1,1);
 
@@ -110,16 +116,16 @@ public class Constants : MonoBehaviour {
 
 		if(playerVals.state == PlayerState.Traversing){
 			// playerAxis.color = Color.Lerp (playerAxis.color, gray, Time.deltaTime * 3);
-			if(playerVals.goingForward){
-				traversing.transform.localScale = new Vector3(1, 0.2f + playerVals.progress/1.5f, 1);
-			}else{
-				traversing.transform.localScale = new Vector3(1, 1.2f - playerVals.progress/1.5f, 1);
-			}
+			// if(playerVals.goingForward){
+			// 	traversing.transform.localScale = new Vector3(1, 0.2f + playerVals.progress/1.5f, 1);
+			// }else{
+			// 	traversing.transform.localScale = new Vector3(1, 1.2f - playerVals.progress/1.5f, 1);
+			// }
 			accuracyChar.gameObject.SetActive(true);
-			traversing.color = white;
+			// traversing.color = white;
 			// playerAxis.color = white;
 		} else {
-			traversing.color = Color.Lerp (traversing.color, gray, Time.deltaTime * 10);
+			// traversing.color = Color.Lerp (traversing.color, gray, Time.deltaTime * 10);
 		}
 
 		if (Input.GetButton ("Button1")) {
@@ -136,28 +142,28 @@ public class Constants : MonoBehaviour {
 			flying.color = Color.Lerp (flying.color, gray, Time.deltaTime * 3);
 		}
 
-		Point p = SplineUtil.RaycastFromCamera(playerVals.cursor.transform.position, 20f);
-		if (p != null && (playerVals.state == PlayerState.Switching || playerVals.state == PlayerState.Flying) && p != playerVals.curPoint) {
-
-			if(!playerVals.curPoint.isConnectedTo(p)){
-			l.positionCount = 2;
-			cursorOnPoint.positionCount = 2;
-			l.SetPosition (0, p.Pos);
-			l.SetPosition (1, Services.Player.transform.position);
-			cursorOnPoint.SetPosition (0, p.Pos);
-			cursorOnPoint.SetPosition (1, playerVals.cursorPos);
-			buttonPress.transform.position = p.Pos;
-		 }else{
-			 buttonPress.transform.position = cursor.position;
-			 cursorOnPoint.positionCount = 0;
-			 l.positionCount = 0;
-		 }
-		} else {
-			buttonPress.transform.position = cursor.position;
-			cursorOnPoint.positionCount = 0;
-
-			l.positionCount = 0;
-		}
+		// Point p = SplineUtil.RaycastFromCamera(playerVals.cursor.transform.position, 20f);
+		// if (p != null && (playerVals.state == PlayerState.Switching || playerVals.state == PlayerState.Flying) && p != playerVals.curPoint) {
+		//
+		// 	if(!playerVals.curPoint.isConnectedTo(p)){
+		// 	l.positionCount = 2;
+		// 	cursorOnPoint.positionCount = 2;
+		// 	l.SetPosition (0, p.Pos);
+		// 	l.SetPosition (1, Services.Player.transform.position);
+		// 	cursorOnPoint.SetPosition (0, p.Pos);
+		// 	cursorOnPoint.SetPosition (1, playerVals.cursorPos);
+		// 	buttonPress.transform.position = p.Pos;
+		//  }else{
+		// 	 buttonPress.transform.position = cursor.position;
+		// 	 cursorOnPoint.positionCount = 0;
+		// 	 l.positionCount = 0;
+		//  }
+		// } else {
+		// 	buttonPress.transform.position = cursor.position;
+		// 	cursorOnPoint.positionCount = 0;
+		//
+		// 	l.positionCount = 0;
+		// }
 
 	}
 	}

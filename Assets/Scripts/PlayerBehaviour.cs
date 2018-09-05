@@ -73,7 +73,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float connectTime;
 
 	public Vector3 cursorPos, cursorDir;
-	private LineRenderer l;
 	private List<Point> inventory;
 	public Point lastPoint;
 
@@ -89,6 +88,16 @@ public class PlayerBehaviour: MonoBehaviour {
 	bool canFly;
 
 	public bool joystickLocked;
+
+	SpriteRenderer cursorSprite;
+	public Sprite canFlySprite;
+	public Sprite canMoveSprite;
+	public Sprite canConnectSprite;
+	public Sprite brakeSprite;
+	public Sprite traverseSprite;
+
+	LineRenderer l;
+	public LineRenderer cursorOnPoint;
 
 	void Awake(){
 		Cursor.lockState = CursorLockMode.Locked;
@@ -122,6 +131,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	void Start(){
+		cursorSprite = Services.Cursor.GetComponent<SpriteRenderer>();
 		curPoint.OnPointEnter ();
 	}
 
@@ -181,6 +191,14 @@ public class PlayerBehaviour: MonoBehaviour {
 			PlayerMovement ();
 			CheckProgress ();
 
+			if(Mathf.Abs(flow) < 1){
+			cursorSprite.sprite = traverseSprite;
+		 }else if (Mathf.Abs(flow) < 2){
+			 cursorSprite.sprite = canMoveSprite;
+		 }else{
+			 cursorSprite.sprite = canFlySprite;
+		 }
+
 		}else if(state == PlayerState.Switching) {
 
 			transform.position = curPoint.Pos;
@@ -213,17 +231,37 @@ public class PlayerBehaviour: MonoBehaviour {
 		bool canTraverse = false;
 
 		if (CanLeavePoint ()) {
-			canTraverse = true;
+			l.positionCount = 0;
+			cursorOnPoint.positionCount = 0;
+			cursorSprite.sprite = brakeSprite;
+			if(Input.GetButtonUp ("Button1") || (Mathf.Abs(flow) > 1 && !joystickLocked && !Input.GetButton("Button1"))){
+				canTraverse = true;
+				LeaveSpline();
+		 }else{
+			 canTraverse = false;
+			 cursorSprite.sprite = canMoveSprite;
+		 }
 		} else {
-			if(Input.GetButtonUp ("Button1")){
-				canTraverse = CanCreatePoint();
-				if (!canTraverse){
-					if(TryToFly()){
-						return;
+				if(CanCreatePoint()){
+					if(Input.GetButtonUp("Button1")){
+						canTraverse = true;
+						CreatePoint();
+					}else{
+						canTraverse = false;
+						cursorSprite.sprite = canConnectSprite;
+					}
+				}else if(TryToFly()){
+						cursorSprite.sprite = canFlySprite;
+						if(Input.GetButtonUp("Button1")){
+							Fly();
+							return;
+						}
+				 }else{
+					 l.positionCount = 0;
+					 cursorOnPoint.positionCount = 0;
+					 cursorSprite.sprite = brakeSprite;
 				 }
-				}
 			}
-		}
 
 		if(canTraverse){
 			LeavePoint();
@@ -257,48 +295,64 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if (pointDest != null && pointDest != curPoint) {
 					if(pointDest.pointType != PointTypes.leaf || (pointDest.pointType == PointTypes.leaf && pointDest.NeighbourCount() == 0) && curPoint.pointType != PointTypes.leaf){
-					SplinePointPair spp = SplineUtil.ConnectPoints (curSpline, curPoint, pointDest);
-					//Adding points multiple times to each other is happening HERE
-					//Could restrict points to never try and add their immediate neighbours?
+					l.positionCount = 2;
+					cursorOnPoint.positionCount = 2;
+					l.SetPosition (0, pointDest.Pos);
+					l.SetPosition (1, Services.Player.transform.position);
+					cursorOnPoint.SetPosition (0, pointDest.Pos);
+					cursorOnPoint.SetPosition (1, cursorPos);
 
-
-					bool isEntering = false;
-
-					if (curSpline != null && curSpline != spp.s) {
-						isEntering = true;
-						curSpline.OnSplineExit ();
-					}
-
-
-					curSpline = spp.s;
-					pointDest = spp.p;
-					connectTime = 1;
 				  return true;
-
 				}
 			}
+		}
+
+		return false;
+	}
+	void CreatePoint(){
+		SplinePointPair spp = SplineUtil.ConnectPoints (curSpline, curPoint, pointDest);
+		//Adding points multiple times to each other is happening HERE
+		//Could restrict points to never try and add their immediate neighbours?
+		l.positionCount = 0;
+		cursorOnPoint.positionCount = 0;
+
+		bool isEntering = false;
+
+		if (curSpline != null && curSpline != spp.s) {
+			isEntering = true;
+			curSpline.OnSplineExit ();
+		}
+
+
+		curSpline = spp.s;
+		pointDest = spp.p;
+		connectTime = 1;
+	}
+
+	bool TryToFly(){
+		if (Mathf.Abs(flow) > flyingSpeedThreshold && curPoint.pointType == PointTypes.fly){
+			l.positionCount = 2;
+			l.SetPosition (0, cursorPos);
+			l.SetPosition (1, Services.Player.transform.position);
+			return true;
 		}
 		return false;
 	}
 
-	bool TryToFly(){
-		if (Mathf.Abs(flow) > flyingSpeedThreshold && curPoint.pointType == PointTypes.fly) {
-
-			state = PlayerState.Flying;
-			curSpline.OnSplineExit ();
-			curPoint.OnPointExit ();
-			curPoint.proximity = 0;
-			drawnPoint = curPoint;
-			curPoint = SplineUtil.CreatePoint(transform.position);
-			curSpline = SplineUtil.CreateSpline(drawnPoint, curPoint);
-			curDrawDistance = 0;
-		  curSpline.OnSplineEnter(true, drawnPoint, curPoint, false);
-			curPoint.GetComponent<Collider>().enabled = false;
-			boost = boostAmount;
-			flow = Mathf.Abs(flow);
-			return true;
-		}
-		return false;
+	void Fly(){
+		l.positionCount = 0;
+		state = PlayerState.Flying;
+		curSpline.OnSplineExit ();
+		curPoint.OnPointExit ();
+		curPoint.proximity = 0;
+		drawnPoint = curPoint;
+		curPoint = SplineUtil.CreatePoint(transform.position);
+		curSpline = SplineUtil.CreateSpline(drawnPoint, curPoint);
+		curDrawDistance = 0;
+		curSpline.OnSplineEnter(true, drawnPoint, curPoint, false);
+		curPoint.GetComponent<Collider>().enabled = false;
+		boost = boostAmount;
+		flow = Mathf.Abs(flow);
 	}
 
 	void LeavePoint(){
@@ -306,7 +360,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (!goingForward) {
 			if(curPoint.IsOffCooldown()){
 			// flow -= flowAmount;
-		}
+			}
 			boost = -boostAmount;
 		} else {
 			if(curPoint.IsOffCooldown()){
@@ -322,7 +376,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		//this is making it impossible to get off points that are widows. wtf.
 		SetPlayerAtStart (curSpline, pointDest);
 		curSpline.OnSplineEnter (true, curPoint, pointDest, false);
-
 		SetCursorAlignment ();
 		PlayerMovement ();
 	}
@@ -554,7 +607,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if(CanCreatePoint()){
 				//remove current point from curspline and connect drawnPoint to pointDest on current spline
-
+				CreatePoint();
 				curPoint.GetComponent<Collider>().enabled = true;
 				curPoint.velocity = cursorDir * Mathf.Abs(flow);
 				curPoint.isKinematic = false;
@@ -874,6 +927,22 @@ public class PlayerBehaviour: MonoBehaviour {
 	//MAKE SURE THAT YOU CAN STILL PLACE POINTS WHILE NOT FLYING OFF THE EDGE
 	//DONT CONFUSE FLYING WITH
 
+	void LeaveSpline(){
+		bool isEntering = false;
+
+		if (curSpline != null) {
+			curSpline.OnSplineExit ();
+			isEntering = true;
+		} else if(curSpline == null){
+			isEntering = true;
+		}
+
+//				if (lastPoint != pointDest) {
+//					curSpline.OnSplineEnter (isEntering, curPoint, pointDest);
+//					connectTime = 1;
+//				}
+		connectTime = 1;
+	}
 
 	public bool CanLeavePoint(){
 
@@ -914,25 +983,14 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 				}
 			}
+
+			curSpline = closestSpline;
+
 // && (Input.GetButtonDown("Button1")
-			if (angleToSpline <= StopAngleDiff && (Input.GetButtonUp ("Button1") || Mathf.Abs(flow) > 1) && !joystickLocked && !Input.GetButton("Button1")) {
-				bool isEntering = false;
-
-				if (curSpline != null && curSpline != closestSpline) {
-					curSpline.OnSplineExit ();
-					isEntering = true;
-				} else if(curSpline == null){
-					isEntering = true;
-				}
-
-				curSpline = closestSpline;
-//				if (lastPoint != pointDest) {
-//					curSpline.OnSplineEnter (isEntering, curPoint, pointDest);
-//					connectTime = 1;
-//				}
-
-				connectTime = 1;
+			if (angleToSpline <= StopAngleDiff) {
 				return true;
+			}else{
+				return false;
 			}
 		}
 		return false;
