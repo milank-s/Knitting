@@ -231,15 +231,15 @@ public class PlayerBehaviour: MonoBehaviour {
 		bool canTraverse = false;
 
 		if (CanLeavePoint ()) {
-			l.positionCount = 0;
-			cursorOnPoint.positionCount = 0;
-			cursorSprite.sprite = brakeSprite;
+
 			if(Input.GetButtonUp ("Button1") || (Mathf.Abs(flow) > 1 && !joystickLocked && !Input.GetButton("Button1"))){
 				canTraverse = true;
 				LeaveSpline();
 		 }else{
 			 canTraverse = false;
-			 cursorSprite.sprite = canMoveSprite;
+			 cursorSprite.sprite = traverseSprite;
+			 l.positionCount = 0;
+ 			cursorOnPoint.positionCount = 0;
 		 }
 		} else {
 				if(CanCreatePoint()){
@@ -247,6 +247,12 @@ public class PlayerBehaviour: MonoBehaviour {
 						canTraverse = true;
 						CreatePoint();
 					}else{
+						l.positionCount = 2;
+		  			cursorOnPoint.positionCount = 2;
+						l.SetPosition (0, pointDest.Pos);
+						l.SetPosition (1, Services.Player.transform.position);
+						cursorOnPoint.SetPosition (0, pointDest.Pos);
+						cursorOnPoint.SetPosition (1, cursorPos);
 						canTraverse = false;
 						cursorSprite.sprite = canConnectSprite;
 					}
@@ -257,9 +263,9 @@ public class PlayerBehaviour: MonoBehaviour {
 							return;
 						}
 				 }else{
-					 l.positionCount = 0;
-					 cursorOnPoint.positionCount = 0;
-					 cursorSprite.sprite = brakeSprite;
+					l.positionCount = 0;
+		 			cursorOnPoint.positionCount = 0;
+		 			cursorSprite.sprite = brakeSprite;
 				 }
 			}
 
@@ -295,13 +301,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if (pointDest != null && pointDest != curPoint) {
 					if(pointDest.pointType != PointTypes.leaf || (pointDest.pointType == PointTypes.leaf && pointDest.NeighbourCount() == 0) && curPoint.pointType != PointTypes.leaf){
-					l.positionCount = 2;
-					cursorOnPoint.positionCount = 2;
-					l.SetPosition (0, pointDest.Pos);
-					l.SetPosition (1, Services.Player.transform.position);
-					cursorOnPoint.SetPosition (0, pointDest.Pos);
-					cursorOnPoint.SetPosition (1, cursorPos);
-
 				  return true;
 				}
 			}
@@ -983,11 +982,11 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 				}
 			}
-
-			curSpline = closestSpline;
+			//this is causing bugs
 
 // && (Input.GetButtonDown("Button1")
 			if (angleToSpline <= StopAngleDiff) {
+				curSpline = closestSpline;
 				return true;
 			}else{
 				return false;
