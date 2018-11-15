@@ -71,7 +71,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	private bool controllerConnected = false;
 	public float connectTime;
 
-	public Vector3 cursorPos, cursorDir;
+	public Vector3 cursorPos;
+	public Vector2 cursorDir;
 	private List<Point> inventory;
 	public Point lastPoint;
 
@@ -1081,7 +1082,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //				cursorDir = (mousePos - transform.position);
 //			}
 		  joystickLocked = false;
-			cursorDir += new Vector3(Input.GetAxis ("Mouse X"), Input.GetAxis ("Mouse Y"), 0);
+			cursorDir += new Vector2(Input.GetAxis ("Mouse X"), Input.GetAxis ("Mouse Y"));
 			if (cursorDir.magnitude > 1) {
 				cursorDir.Normalize ();
 			}
@@ -1103,7 +1104,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		// screenPos = new Vector3(screenPos.x, screenPos.y, Camera.main.nearClipPlane + 10f);
 		// cursorPos = Camera.main.ViewportToWorldPoint(screenPos);
 		float screenWidth = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, Camera.main.nearClipPlane + 1.5f)).y - transform.position.y;
-		cursorPos = transform.position + (cursorDir * screenWidth);
+		cursorPos = transform.position + ((Vector3)cursorDir * screenWidth);
 		cursor.transform.position = cursorPos;
 
 	}

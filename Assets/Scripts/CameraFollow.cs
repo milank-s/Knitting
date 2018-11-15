@@ -137,6 +137,7 @@ public class CameraFollow : MonoBehaviour {
 				float frustrumHeight = Mathf.Lerp (cam.fieldOfView, CameraDolly.FOVForHeightAndDistance (height, target.position.z - transform.position.z) + 20, Time.deltaTime * 5);
 				cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, desiredFOV, Time.deltaTime);
 
+
 				Vector3 targetPos = Vector3.Lerp(new Vector3 (xPos, yPos, target.position.z + offset.z), target.position + offset, 0.5f);
 
 

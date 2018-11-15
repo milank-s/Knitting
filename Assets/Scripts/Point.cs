@@ -9,7 +9,6 @@ public enum PointTypes{normal, fly, boost, leaf, straight}
 //end points force new spline creation
 //straight continuity = 0;
 //biased bias = ?
-
 public class Point : MonoBehaviour
 {
 
@@ -40,6 +39,7 @@ public class Point : MonoBehaviour
 
 	public bool hasPointcloud;
 	public float desiredFOV;
+
 	public GameObject activatedSprite;
 	public GameObject directionalSprite;
 

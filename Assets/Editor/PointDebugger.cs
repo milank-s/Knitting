@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 
 [CustomEditor( typeof( Point ) )]
+[CanEditMultipleObjects]
 public class PointDebugger : Editor {
 
 

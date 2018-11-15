@@ -567,7 +567,8 @@ public class Spline : MonoBehaviour
 
 	public Vector3 GetDirection (float t)
 	{
-		return GetVelocity (t).normalized;
+		Vector2 noZ = GetVelocity (t);
+		return new Vector2 (noZ.x, noZ.y).normalized;
 	}
 
 	public int GetPointIndex (Point point)
