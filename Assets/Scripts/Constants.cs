@@ -9,20 +9,20 @@ public class Constants : MonoBehaviour {
 
 	LineRenderer l;
 
-	public TextMesh accuracyReadout;
-	public TextMesh accuracyChar;
-	public TextMesh flowChar;
-	public TextMesh flowReadout;
+	public Text accuracyReadout;
+	public Text accuracyChar;
+	public Text flowChar;
+	public Text flowReadout;
 
 	public Transform cursor;
-	public SpriteRenderer switching;
-	public SpriteRenderer traversing;
-	public SpriteRenderer flying;
+	public Image switching;
+	public Image traversing;
+	public Image flying;
 	public LineRenderer cursorOnPoint;
 	public LineRenderer playerAxis;
-	public SpriteRenderer buttonPress;
-	public SpriteRenderer canFly;
-	public Renderer reset;
+	public Image buttonPress;
+	public Image canFly;
+	public Text reset;
 
 	public Sprite flyingSprite;
 	public Sprite connectSprite;
@@ -33,12 +33,12 @@ public class Constants : MonoBehaviour {
 	Color gray = new Color(0.12f, 0.12f, 0.12f);
 	Color white = new Color(1,1,1);
 
-	private List<SpriteRenderer> UISymbols;
+	private List<Image> UISymbols;
 
 
 	void Start(){
 		l = playerVals.cursor.GetComponent<LineRenderer>();
-		UISymbols = new List<SpriteRenderer>();
+		UISymbols = new List<Image>();
 		UISymbols.Add(switching);
 		// UISymbols.Add(traversing);
 		UISymbols.Add(flying);
@@ -53,14 +53,14 @@ public class Constants : MonoBehaviour {
 
 	void LateUpdate () {
 
-
+		transform.position = playerVals.transform.position;
 
 		//FLOW METER
 		if (playerVals.state != PlayerState.Animating) {
 			flowReadout.text = Mathf.Abs (playerVals.flow).ToString ("F2");
 		} else {
-			flowChar.text = "✴--";
-			accuracyChar.gameObject.SetActive(false);
+			flowChar.text = "--";
+			// accuracyChar.gameObject.SetActive(false);
 			flowReadout.text = (-Mathf.Abs (playerVals.flow)).ToString ("F2");
 		}
 
@@ -72,7 +72,7 @@ public class Constants : MonoBehaviour {
 			accuracyChar.text = "";
 			accuracyReadout.text = "";
 
-			foreach(SpriteRenderer s in UISymbols){
+			foreach(Image s in UISymbols){
 				s.color = Color.Lerp(s.color, gray, Time.deltaTime * 5);
 			}
 		}else{
@@ -84,21 +84,21 @@ public class Constants : MonoBehaviour {
 
 			if ((playerVals.accuracy < 0.5f && playerVals.accuracy > -0.5f)) {
 				accuracyChar.text = "≠";
-				flowChar.text = "✴-";
+				flowChar.text = "-";
 			} else if (playerVals.state == PlayerState.Switching) {
-				flowChar.text = "✴-";
+				flowChar.text = "-";
 			} else if ((playerVals.accuracy > 0 && playerVals.flow > 0) || (playerVals.accuracy < 0 && playerVals.flow < 0)) {
 				accuracyChar.text = "≈";
-				flowChar.text = "✴+";
+				flowChar.text = "+";
 			}else if((playerVals.accuracy < 0 && playerVals.flow > 0) || (playerVals.accuracy > 0 && playerVals.flow < 0)){
 				accuracyChar.text = "≠";
-				flowChar.text = "✴-";
+				flowChar.text = "-";
 			}
 
 		//PLAYER OVER POINT
 		if(Mathf.Abs(playerVals.flow) < 1){
-			flowReadout.text = "";
-			flowChar.text = "";
+			// flowReadout.text = "";
+			// flowChar.text = "";
 		}
 
 		if(playerVals.state == PlayerState.Switching){
@@ -121,7 +121,7 @@ public class Constants : MonoBehaviour {
 			// }else{
 			// 	traversing.transform.localScale = new Vector3(1, 1.2f - playerVals.progress/1.5f, 1);
 			// }
-			accuracyChar.gameObject.SetActive(true);
+			// accuracyChar.gameObject.SetActive(true);
 			// traversing.color = white;
 			// playerAxis.color = white;
 		} else {

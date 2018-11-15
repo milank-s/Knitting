@@ -7,8 +7,8 @@ public class SoundBank : MonoBehaviour {
 
 	public AudioMixer master;
 
-	public List<AudioClip> Loops;
-	public List<AudioClip> Attacks;
+	public List<AudioClip> hits;
+	public List<AudioClip> sustains;
 
 	float distance;
 	float speed;

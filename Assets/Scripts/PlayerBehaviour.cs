@@ -56,10 +56,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float connectTimeCoefficient;
 	public float cursorRotateSpeed = 1;
 	private List<Point> traversedPoints;
-
-	public AudioSource AccelerationSound;
-	public AudioSource BrakingSound;
-
+	private PlayerSounds sounds;
+	private AudioSource sound;
+	public AudioSource brakingSound;
 	//components I want to access
 	private TrailRenderer t;
 
@@ -81,15 +80,15 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	private ParticleSystem ps;
 	private float creationInterval = 0.2f;
-	private PlayerSounds sounds;
 
 	float angleToSpline = Mathf.Infinity;
 	private List<Transform> newPointList;
 	bool canFly;
 
+	public bool usingJoystick;
 	public bool joystickLocked;
 
-	SpriteRenderer cursorSprite;
+	Image cursorSprite;
 	public Sprite canFlySprite;
 	public Sprite canMoveSprite;
 	public Sprite canConnectSprite;
@@ -100,6 +99,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public LineRenderer cursorOnPoint;
 
 	void Awake(){
+		sound = GetComponent<AudioSource>();
 		Cursor.lockState = CursorLockMode.Locked;
 		pointDest = null;
 		traversedPoints = new List<Point> ();
@@ -131,7 +131,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	void Start(){
-		cursorSprite = Services.Cursor.GetComponent<SpriteRenderer>();
+		cursorSprite = Services.Cursor.GetComponent<Image>();
 		curPoint.OnPointEnter ();
 	}
 
@@ -175,20 +175,20 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		creationInterval-= Time.deltaTime;
 
-
-
-		if (state == PlayerState.Traversing && curSpline != null) {
-
-			SetCursorAlignment ();
-		}
-
 		if (state == PlayerState.Flying) {
 			FreeMovement ();
 			return;
 		}
 
 		if (state == PlayerState.Traversing) {
+			if(curSpline != null){
+			SetCursorAlignment ();
+
+			}
+
+
 			PlayerMovement ();
+			ManageSound();
 			CheckProgress ();
 
 			if(Mathf.Abs(flow) < 1){
@@ -246,11 +246,12 @@ public class PlayerBehaviour: MonoBehaviour {
 					if(Input.GetButtonUp("Button1")){
 						canTraverse = true;
 						CreatePoint();
+						PlayAttack(curPoint, pointDest);
 					}else{
 						l.positionCount = 2;
 		  			cursorOnPoint.positionCount = 2;
 						l.SetPosition (0, pointDest.Pos);
-						l.SetPosition (1, Services.Player.transform.position);
+						l.SetPosition (1, transform.position);
 						cursorOnPoint.SetPosition (0, pointDest.Pos);
 						cursorOnPoint.SetPosition (1, cursorPos);
 						canTraverse = false;
@@ -332,7 +333,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (Mathf.Abs(flow) > flyingSpeedThreshold && curPoint.pointType == PointTypes.fly){
 			l.positionCount = 2;
 			l.SetPosition (0, cursorPos);
-			l.SetPosition (1, Services.Player.transform.position);
+			l.SetPosition (1, transform.position);
 			return true;
 		}
 		return false;
@@ -356,24 +357,27 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void LeavePoint(){
 
+		curPoint.OnPointExit ();
+		state = PlayerState.Traversing;
+		decayTimer = 0.5f;
+		//this is making it impossible to get off points that are widows. wtf.
+		SetPlayerAtStart (curSpline, pointDest);
+
 		if (!goingForward) {
+			flow = -Mathf.Abs (flow);
 			if(curPoint.IsOffCooldown()){
 			// flow -= flowAmount;
 			}
 			boost = -boostAmount;
 		} else {
+			flow = Mathf.Abs (flow);
 			if(curPoint.IsOffCooldown()){
 			// flow += flowAmount;
 		}
 			boost = boostAmount;
 		}
 
-		curPoint.OnPointExit ();
 
-		state = PlayerState.Traversing;
-		decayTimer = 0.5f;
-		//this is making it impossible to get off points that are widows. wtf.
-		SetPlayerAtStart (curSpline, pointDest);
 		curSpline.OnSplineEnter (true, curPoint, pointDest, false);
 		SetCursorAlignment ();
 		PlayerMovement ();
@@ -723,11 +727,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		if ((accuracy < 0.5f && accuracy > -0.5f) || joystickLocked) {
 
 			if (flow > 0) {
-				flow -= decay * (2f - accuracy) * Time.deltaTime;
+				// flow -= decay * (2f - accuracy) * Time.deltaTime;
 				if (flow < 0)
 					flow = 0;
 			} else if(flow < 0){
-				flow += decay * (2f + accuracy) * Time.deltaTime;
+				// flow += decay * (2f + accuracy) * Time.deltaTime;
 				if (flow > 0)
 					flow = 0;
 			}
@@ -896,13 +900,11 @@ public class PlayerBehaviour: MonoBehaviour {
 			s.Selected = p2;
 			goingForward = false;
 			progress = 1 - Mathf.Epsilon;
-			flow = -Mathf.Abs (flow);
 
 		} else {
 			progress = 0 + Mathf.Epsilon;
 			goingForward = true;
 			s.Selected = curPoint;
-			flow = Mathf.Abs (flow);
 		}
 
 	}
@@ -967,7 +969,10 @@ public class PlayerBehaviour: MonoBehaviour {
 						if ((indexDifference > 1 || indexDifference < -1) && !s.closed) {
 
 						} else {
+							//if flow > 1, use init velocity of new spline instead of cursor direction
+
 							if (indexDifference == -1 || indexDifference > 1) {
+
 								curAngle = s.CompareAngleAtPoint (cursorDir, p, true);
 							} else {
 								curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
@@ -1040,6 +1045,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			// DO TURNING SPEED HERE
 
 			cursorDir = new Vector3(Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
+			if(usingJoystick){
+				cursorDir = Quaternion.Euler(0,0,90) * cursorDir;
+			}
 //			if (cursorDir.magnitude < 0.1f) {
 //				cursorDir = lastCursorDir.normalized/10f;
 //			}
@@ -1079,7 +1087,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (cursorDir.magnitude > 1) {
 			cursorDir.Normalize ();
-
 		}
 
 
@@ -1087,10 +1094,13 @@ public class PlayerBehaviour: MonoBehaviour {
 //			cursorDir.z = curSpline.GetDirection (progress).z * Mathf.Sign(accuracy);
 //		}
 
-
-
-		cursorPos = transform.position + cursorDir * cursorDistance;
+		// Vector3 screenPos = ((cursorDir/4f) + (Vector3.one/2f));
+		// screenPos = new Vector3(screenPos.x, screenPos.y, Camera.main.nearClipPlane + 10f);
+		// cursorPos = Camera.main.ViewportToWorldPoint(screenPos);
+		float screenWidth = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, Camera.main.nearClipPlane + 1.5f)).y - transform.position.y;
+		cursorPos = transform.position + (cursorDir * screenWidth);
 		cursor.transform.position = cursorPos;
+
 	}
 
 
@@ -1134,12 +1144,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 		}
 
-//		if (canFly) {
-//			t.time = 2f;
-//		} else {
-//			t.time = 0.25f;
-//		}
-
 		if (curSpline != null) {
 //			curSpline.DrawLineSegmentVelocity (progress, Mathf.Sign (accuracy), goingForward ? 0 : 1);\
 			// curSpline.l.material.mainTextureOffset -= Vector2.right * Mathf.Sign (accuracy) * flow * curSpline.l.material.mainTextureScale.x * 2 * Time.deltaTime;
@@ -1152,6 +1156,60 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	}
 
+	public void PlayAttack (Point point1, Point point2)
+	{
+
+//		do some angle shit or normalize it??
+		float segmentDistance = Vector3.Distance (point1.Pos, point2.Pos);
+		Vector3 linearDirection = point2.Pos - point1.Pos;
+		linearDirection = new Vector2(linearDirection.x, linearDirection.y).normalized;
+		float dot = Vector2.Dot (linearDirection, Vector2.up);
+
+		int index = (int)(((dot/2f) + 0.5f) * (sounds.hits.Length - 1));
+		GameObject newSound = Instantiate(Services.Prefabs.soundEffectObject, transform.position, Quaternion.identity);
+		newSound.GetComponent<AudioSource>().clip = sounds.hits[index];
+		newSound.GetComponent<AudioSource>().Play();
+		newSound.GetComponent<PlaySound>().enabled = true;
+		Debug.Log("spawnedSound");
+	}
+
+	public void ManageSound ()
+	{
+		switch(state){
+//		Services.PlayerBehaviour.flow / (Services.PlayerBehaviour.maxSpeed/2))
+	  case PlayerState.Traversing:
+		brakingSound.volume = accuracyCoefficient;
+		sound.volume = Mathf.Clamp01(Mathf.Abs(flow)/2) * Mathf.Abs(accuracyCoefficient);
+		float dot = Vector2.Dot(curSpline.GetDirection (progress), pointDest.Pos - curPoint.Pos);
+		float curFreqGain;
+
+		Services.Sounds.master.GetFloat ("CenterFreq", out curFreqGain);
+		float lerpAmount = goingForward ? progress : 1 - progress;
+
+		Services.Sounds.master.SetFloat("CenterFreq", Mathf.Lerp(curFreqGain, ((dot/2f + 0.5f) + Mathf.Clamp01(1f/Mathf.Pow(curSpline.distance, 5))) * (16000f / curFreqGain), lerpAmount));
+		break;
+
+		case PlayerState.Flying:
+		brakingSound.volume = Mathf.Lerp(brakingSound.volume, 0, Time.deltaTime * 5);
+		sound.volume = Mathf.Lerp(sound.volume, Mathf.Clamp01(Mathf.Abs(flow)), Time.deltaTime * 5);
+		break;
+
+		case PlayerState.Switching:
+		brakingSound.volume = Mathf.Lerp(brakingSound.volume, 0, Time.deltaTime * 5);
+		break;
+
+		case PlayerState.Animating:
+		brakingSound.volume = Mathf.Lerp(brakingSound.volume, 1, Time.deltaTime);
+		break;
+	}
+		//centering freq on note freq will just boost the fundamental. can shift this value to highlight diff harmonics
+		//graph functions
+		//normalize values before multiplying by freq
+		//use note to freq script
+
+//		pitch = dot product between the current tangent of the spline and the linear distance between points
+		Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(flow)/2 + 1f);
+	}
 
 	public Vector3 GetCursorDir(){
 		return cursorDir;

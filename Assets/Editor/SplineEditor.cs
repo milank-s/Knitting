@@ -15,6 +15,7 @@ public class SplineEditor : Editor {
         if(GUILayout.Button("Build Spline"))
         {
             myScript.SetupSpline();
+            Undo.RecordObject(myScript, "built spline");
         }
     }
 

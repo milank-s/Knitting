@@ -83,7 +83,6 @@ public class Point : MonoBehaviour
 		Point.pointCount++;
 		activationSprite = GetComponentInChildren<FadeSprite> ();
 		timeOffset = Point.pointCount;
-		gameObject.name = "v" + Point.pointCount;
 		_directionalSprites = new List<GameObject> ();
 
 		if (_neighbours.Count == 0) {

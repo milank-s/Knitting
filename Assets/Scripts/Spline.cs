@@ -98,10 +98,10 @@ public class Spline : MonoBehaviour
 		draw = false;
 		isPlayerOn = false;
 
-		if (curSound != null) {
-			StopCoroutine (curSound);
-			StartCoroutine (FadeNote (sound));
-		}
+		// if (curSound != null) {
+		// 	StopCoroutine (curSound);
+		// 	StartCoroutine (FadeNote (sound));
+		// }
 
 	}
 
@@ -153,12 +153,12 @@ public class Spline : MonoBehaviour
 		CalculateDistance ();
 
 //		if (enter) {
-		if (curSound != null && sound != null) {
-			StopCoroutine (curSound);
-			StartCoroutine (FadeNote (sound));
-		}
+		// if (curSound != null && sound != null) {
+		// 	StopCoroutine (curSound);
+		// 	StartCoroutine (FadeNote (sound));
+		// }
 
-		PlayAttack (p1, p2);
+		// PlayAttack (p1, p2);
 
 		isPlayerOn = true;
 
@@ -174,7 +174,7 @@ public class Spline : MonoBehaviour
 		linearDirection = new Vector2(linearDirection.x, linearDirection.y).normalized;
 		float dot = Vector2.Dot (linearDirection, Vector2.up);
 
-		int index = (int)(((dot/2f) + 0.5f) * (Services.Sounds.Loops.Count-1));
+		int index = (int)(((dot/2f) + 0.5f) * (Services.Sounds.sustains.Count-1));
 
 		curSound = StartCoroutine (PlaySustain (index));
 
@@ -211,7 +211,7 @@ public class Spline : MonoBehaviour
 	{
 
 //		AudioClip soundEffect = Services.Sounds.Loops [(int)((1 - Mathf.Clamp01 ((segmentDistance) / 10 * 2.5f)) * (Services.Sounds.Loops.Count - 1))];
-		AudioClip soundEffect = Services.Sounds.Loops[index];
+		AudioClip soundEffect = Services.Sounds.sustains[index];
 
 		sound = Services.Prefabs.CreateSoundEffect (soundEffect, Selected.Pos);
 		sound.clip = soundEffect;
@@ -584,7 +584,7 @@ public class Spline : MonoBehaviour
 	public Vector3 GetInitVelocity (Point p)
 	{
 
-		return GetVelocityAtIndex (GetPointIndex (p), 0.1f);
+		return GetVelocityAtIndex (GetPointIndex (p), 0.01f);
 
 	}
 
@@ -593,7 +593,7 @@ public class Spline : MonoBehaviour
 
 		//JUST WHAT SHOULD BE GOING ON HERE
 
-		return -GetVelocityAtIndex (GetPointIndex (p), 0.9f);
+		return -GetVelocityAtIndex (GetPointIndex (p), 0.99f);
 	}
 
 	public float CompareAngleAtPoint (Vector3 direction, Point p, bool reversed = false)

@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class PlayerSounds : MonoBehaviour {
 
-	public AudioClip[] pointSounds;
+	public AudioClip[] hits;
+	public AudioClip[] sustains;
+
 	public AudioClip background;
-	public AudioClip braking;
-	public AudioClip accelerating;
+	public AudioClip braking; // use for dissonance
+	public AudioClip accelerating; //use for resonance
 }
