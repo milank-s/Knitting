@@ -10,6 +10,7 @@ public class PointCloud : MonoBehaviour {
 	public SpriteRenderer image;
 	public TextMesh title;
 	public bool isOn;
+	public float desiredFOV;
 	private float fade;
 
 	public TextAsset text;
@@ -23,7 +24,14 @@ public class PointCloud : MonoBehaviour {
 
 	public void Awake(){
 		wordIndex = 0;
-		words = text.text.Split (new char[] { ' ' });
+		if(text != null){
+			words = text.text.Split (new char[] { ' ' });
+		}
+
+		foreach(Point p in GetComponentsInChildren<Point>()){
+			p.desiredFOV = desiredFOV;
+			p.hasPointcloud = true;
+		}
 		// UpdateContinuity (PointContinuity);
 	}
 
@@ -43,7 +51,7 @@ public class PointCloud : MonoBehaviour {
 		}
 	}
 
-	public void Update(){
+	public void OldUpdate(){
 		UpdateState ();
 
 		if (isOn) {

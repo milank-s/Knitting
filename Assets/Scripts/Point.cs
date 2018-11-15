@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public enum PointTypes{fly, boost, leaf, straight, biased, tension, normal}
+public enum PointTypes{normal, fly, boost, leaf, straight}
 //fly points enable flying
 //boost add additional boostAmount. tension = ?
 //leaves cannot be connected to
@@ -23,7 +23,6 @@ public class Point : MonoBehaviour
 		}
 	}
 
-
 	public static float hitColorLerp;
 	public bool visited = false;
 
@@ -39,6 +38,8 @@ public class Point : MonoBehaviour
 	public float mass = 50f;
 	public float boostCooldown;
 
+	public bool hasPointcloud;
+	public float desiredFOV;
 	public GameObject activatedSprite;
 	public GameObject directionalSprite;
 
@@ -49,6 +50,7 @@ public class Point : MonoBehaviour
 	public float timeOffset;
 	public float proximity = 0;
 	public bool locked = false;
+	public float lockAmount;
 
 	public static Point Select;
 	private float cooldown;
@@ -74,6 +76,7 @@ public class Point : MonoBehaviour
 
 	public Vector3 originalPos;
 	FadeSprite activationSprite;
+
 
 	void Awake(){
 
@@ -136,18 +139,13 @@ public class Point : MonoBehaviour
 				tension = 1;
 			break;
 
-			case PointTypes.biased:
-				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.biased];
-				bias = 1;
-			break;
-
-			case PointTypes.tension:
-				tension = -1;
-				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.tension];
-			break;
 
 			default:
 			break;
+		}
+
+		if(locked){
+			SR.sprite = Services.Prefabs.pointSprites[1];
 		}
 	}
 
@@ -162,6 +160,14 @@ public class Point : MonoBehaviour
 		c = (Mathf.Sin (Time.time + timeOffset)/2 + 0.6f)/10f + proximity;
 
 		c = Mathf.Pow (c, 1);
+
+		if(locked){
+			if(PointManager._pointsHit.Count <= lockAmount){
+				SR.sprite = Services.Prefabs.pointSprites[1];
+			}else{
+				SR.sprite = Services.Prefabs.pointSprites[0];
+			}
+		}
 
 		if (!visited) {
 //			SR.color = Color.white;
@@ -262,6 +268,15 @@ public class Point : MonoBehaviour
 
 	}
 
+	public bool isUnlocked(){
+		 if(!locked || PointManager._pointsHit.Count >= lockAmount){
+			locked = false;
+			return true;
+		}else{
+			return false;
+		}
+	}
+
 	public float NeighbourCount(){
 		return _connectedSplines.Count;
 	}
@@ -278,10 +293,10 @@ public class Point : MonoBehaviour
 
 //		continuity = Mathf.Clamp(continuity + 0.01f, 0, 1);
 
-		if (!visited && GetComponentInParent<PointCloud>() != null) {
-			PointCloud p = GetComponentInParent<PointCloud> ();
+		if (!visited) {
+
 			GameObject newText = (GameObject)Instantiate (Services.Prefabs.spawnedText, transform.position - Vector3.forward/2f + Vector3.up/8f, Quaternion.identity);
-			newText.GetComponent<TextMesh>().text = p.GetWord ();
+			newText.GetComponent<TextMesh>().text = text;
 			newText.GetComponent<FadeTextOnPoint>().p = this;
 			newText.transform.parent = transform;
 		}

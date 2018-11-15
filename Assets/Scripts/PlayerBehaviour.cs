@@ -300,7 +300,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				pointDest = null;
 				pointDest = SplineUtil.RaycastFromCamera(cursorPos, 20f);
 
-				if (pointDest != null && pointDest != curPoint) {
+				if (pointDest != null && pointDest != curPoint && pointDest.isUnlocked()) {
 					if(pointDest.pointType != PointTypes.leaf || (pointDest.pointType == PointTypes.leaf && pointDest.NeighbourCount() == 0) && curPoint.pointType != PointTypes.leaf){
 				  return true;
 				}
@@ -760,7 +760,11 @@ public class PlayerBehaviour: MonoBehaviour {
 			curSpline.Selected.proximity = 1 - progress;
 		}
 
-		GetComponent<Rigidbody> ().velocity = curSpline.GetDirection (progress) * flow;
+		if(curPoint.hasPointcloud && pointDest.hasPointcloud){
+			CameraFollow.desiredFOV = Mathf.Lerp(curPoint.desiredFOV, pointDest.desiredFOV, curPoint.proximity);
+		}
+
+		// GetComponent<Rigidbody> ().velocity = curSpline.GetDirection (progress) * flow;
 
 //		transform.Rotate (0, 0, flow*5);
 	}
@@ -990,7 +994,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			//this is causing bugs
 
 // && (Input.GetButtonDown("Button1")
-			if (angleToSpline <= StopAngleDiff) {
+			if (angleToSpline <= StopAngleDiff && pointDest.isUnlocked()) {
+
 				curSpline = closestSpline;
 				return true;
 			}else{
