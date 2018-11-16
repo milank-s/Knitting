@@ -308,7 +308,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if (!joystickLocked) {
 
 				pointDest = null;
-				pointDest = SplineUtil.RaycastFromCamera(cursorPos, 20f);
+				pointDest = SplineUtil.RaycastFromCamera(cursorPos, 1f);
 
 				if (pointDest != null && pointDest != curPoint && pointDest.isUnlocked()) {
 					if(pointDest.pointType != PointTypes.leaf || (pointDest.pointType == PointTypes.leaf && pointDest.NeighbourCount() == 0) && curPoint.pointType != PointTypes.leaf){
@@ -599,7 +599,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		// Make drawing points while you skate.
 		//should solve the problems of jumping across new points on the same spline.
 
-		Point overPoint = SplineUtil.RaycastDownToPoint(cursorPos, 10f, 5f);
+		Point overPoint = SplineUtil.RaycastDownToPoint(cursorPos, 2f, 1f);
 		if(overPoint != null && overPoint != curPoint){
 			if(Vector3.Distance (curPoint.Pos, drawnPoint.Pos) < 0.25f){
 				curSpline.SplinePoints.Remove(curPoint);
@@ -866,6 +866,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (progress > 1 || progress < 0) {
 
+// THIS IS KINDA SHITTY. DO IT BETTER
+			accuracy = 1;
 
 			Point PointArrivedAt = curPoint;
 			curPoint.proximity = 0;
