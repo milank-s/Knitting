@@ -69,10 +69,15 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public bool goingForward = true;
 	private bool controllerConnected = false;
-	public float connectTime;
 
+	[HideInInspector]
+	public float connectTime = 1;
+
+	[HideInInspector]
 	public Vector3 cursorPos;
+
 	public Vector2 cursorDir;
+
 	private List<Point> inventory;
 	public Point lastPoint;
 
@@ -138,12 +143,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void Update () {
 
-		connectTime -= Time.deltaTime / connectTimeCoefficient;
 		Point.hitColorLerp = connectTime;
 
-		if (connectTime < 0 && PointManager._pointsHit.Count > 0) {
+		if (connectTime <= 0 && PointManager._pointsHit.Count > 0) {
 			PointManager.ResetPoints ();
-			connectTime = 0;
+			connectTime = 1;
 		}
 
 		CursorInput();
@@ -233,7 +237,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (CanLeavePoint ()) {
 
-			if(Input.GetButtonUp ("Button1") || (Mathf.Abs(flow) > 1 && !joystickLocked && !Input.GetButton("Button1"))){
+			if(Input.GetButtonUp ("Button1") || (Mathf.Abs(flow) > 2 && !joystickLocked && !Input.GetButton("Button1"))){
 				canTraverse = true;
 				LeaveSpline();
 		 }else{
@@ -274,6 +278,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		if(canTraverse){
 			LeavePoint();
 		}else{
+			if(pointDest != null && pointDest.locked && pointDest.lockAmount > PointManager._pointsHit.Count){
+				cursorSprite.GetComponentInChildren<Text>().text = pointDest.lockAmount + "x";
+			}else{
+				cursorSprite.GetComponentInChildren<Text>().text = "";
+			}
 			//Staying on a point is too punishing.
 			StayOnPoint();
 		}
@@ -705,6 +714,8 @@ public class PlayerBehaviour: MonoBehaviour {
 //		adding this value to flow
 //		MAKE FLOW NON REVERSIBLE. ADJUST LINE ACCURACY WITH FLOW TO MAKE PLAYER NOT STOP AT INTERSECTIONS
 //		NEGOTIATE FLOW CANCELLING OUT CURRENT SPEED
+		connectTime -= Time.deltaTime * connectTimeCoefficient;
+
 		accuracyCoefficient = Mathf.Pow(Mathf.Abs(accuracy), 2);
 		if (accuracy < -0.5f || accuracy > 0.5f) {
 			if (flow > 0 && accuracy < 0) {
@@ -759,10 +770,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		} else {
 			curPoint.proximity = progress;
 			curSpline.Selected.proximity = 1 - progress;
-		}
-
-		if(curPoint.hasPointcloud && pointDest.hasPointcloud){
-			CameraFollow.desiredFOV = Mathf.Lerp(curPoint.desiredFOV, pointDest.desiredFOV, curPoint.proximity);
 		}
 
 		// GetComponent<Rigidbody> ().velocity = curSpline.GetDirection (progress) * flow;
@@ -1106,6 +1113,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		float screenWidth = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, Camera.main.nearClipPlane + 1.5f)).y - transform.position.y;
 		cursorPos = transform.position + ((Vector3)cursorDir * screenWidth);
 		cursor.transform.position = cursorPos;
+		cursor.transform.rotation = Quaternion.Euler(0, 0, (float)(Mathf.Atan2(-cursorDir.x, cursorDir.y) / Mathf.PI) * 180f);
 
 	}
 

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 
 [CustomEditor( typeof( Spline ) )]
+[CanEditMultipleObjects]
 public class SplineEditor : Editor {
 
 	    // draw lines between a chosen game object

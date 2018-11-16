@@ -157,35 +157,29 @@ public class Point : MonoBehaviour
 //			activationSprite.time = Mathf.Lerp (activationSprite.time, 0, Time.deltaTime * 2);
 //		}
 
-		c = (Mathf.Sin (Time.time + timeOffset)/2 + 0.6f)/10f + proximity;
+		c = (Mathf.Sin (3 * (Time.time + timeOffset))/2 + 0.6f) + proximity;
 
 		c = Mathf.Pow (c, 1);
 
-		if(locked){
-			if(PointManager._pointsHit.Count <= lockAmount){
+			if(locked && PointManager._pointsHit.Count < lockAmount){
 				SR.sprite = Services.Prefabs.pointSprites[1];
 			}else{
 				SR.sprite = Services.Prefabs.pointSprites[0];
 			}
-		}
 
-		if (!visited) {
-//			SR.color = Color.white;
-			c = 1;
-		} else {
+
+
 
 			if(!isKinematic){
 				Movement();
 			}
-//			if (hit) {
-//				color = Color.Lerp (color, Color.white, Time.deltaTime * 5);
-//				SR.color = color;
-//			} else {
-				color = Color.Lerp (color, new Color (c, c, c), Time.deltaTime * 5);
-//				SR.color = Color.Lerp (SR.color, Color.black, Time.deltaTime * 5);
-				SR.color = color * 10;
-//			}
-		}
+			if (hit) {
+				color = Color.Lerp (SR.color, Color.white * 2, Time.deltaTime * 5);
+				SR.color = color;
+			} else {
+				SR.color = Color.Lerp (SR.color, new Color (c, c, c), Time.deltaTime * 5);
+			}
+
 
 //		l.SetPosition (0, transform.position);
 //		l.SetPosition (1, GetComponent<SpringJoint>().connectedBody.transform.position);

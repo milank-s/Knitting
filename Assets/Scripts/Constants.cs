@@ -15,6 +15,7 @@ public class Constants : MonoBehaviour {
 	public Text flowReadout;
 
 	public Transform cursor;
+	public Image cursorImage;
 	public Image switching;
 	public Image traversing;
 	public Image flying;
@@ -44,6 +45,7 @@ public class Constants : MonoBehaviour {
 		UISymbols.Add(flying);
 		UISymbols.Add(buttonPress);
 		UISymbols.Add(canFly);
+		UISymbols.Add(cursorImage);
 		// UISymbols.Add(playerAxis);
 	}
 
@@ -57,11 +59,13 @@ public class Constants : MonoBehaviour {
 
 		//FLOW METER
 		if (playerVals.state != PlayerState.Animating) {
-			flowReadout.text = Mathf.Abs (playerVals.flow).ToString ("F2");
+			// flowReadout.text = Mathf.Abs (playerVals.flow).ToString ("F2");
+			flowReadout.text = PointManager._pointsHit.Count.ToString();
 		} else {
-			flowChar.text = "--";
+			flowChar.text = "";
 			// accuracyChar.gameObject.SetActive(false);
-			flowReadout.text = (-Mathf.Abs (playerVals.flow)).ToString ("F2");
+			// flowReadout.text = (-Mathf.Abs (playerVals.flow)).ToString ("F2");
+			flowReadout.text = "";
 		}
 
 		//AXIS
@@ -78,21 +82,22 @@ public class Constants : MonoBehaviour {
 		}else{
 			// playerAxis.SetPosition(0, playerVals.transform.position);
 			// playerAxis.SetPosition(1, playerVals.cursorPos);
+			cursorImage.color = Color.Lerp(cursorImage.color, Color.white, Time.deltaTime);
 			reset.enabled = false;
 
 			accuracyReadout.text = Mathf.Abs (playerVals.accuracy).ToString("F1");
 
-			if ((playerVals.accuracy < 0.5f && playerVals.accuracy > -0.5f)) {
-				accuracyChar.text = "≠";
-				flowChar.text = "-";
-			} else if (playerVals.state == PlayerState.Switching) {
-				flowChar.text = "-";
-			} else if ((playerVals.accuracy > 0 && playerVals.flow > 0) || (playerVals.accuracy < 0 && playerVals.flow < 0)) {
+			// if ((playerVals.accuracy < 0.5f && playerVals.accuracy > -0.5f)) {
+			// 	accuracyChar.text = "≠";
+			// 	flowChar.text = "-";
+			// } else if (playerVals.state == PlayerState.Switching) {
+			// 	flowChar.text = "-";
+			if ((playerVals.accuracy > 0 && playerVals.flow > 0) || (playerVals.accuracy < 0 && playerVals.flow < 0)) {
 				accuracyChar.text = "≈";
-				flowChar.text = "+";
+				// flowChar.text = "+";
 			}else if((playerVals.accuracy < 0 && playerVals.flow > 0) || (playerVals.accuracy > 0 && playerVals.flow < 0)){
 				accuracyChar.text = "≠";
-				flowChar.text = "-";
+				// flowChar.text = "-";
 			}
 
 		//PLAYER OVER POINT
@@ -103,6 +108,7 @@ public class Constants : MonoBehaviour {
 
 		if(playerVals.state == PlayerState.Switching){
 			accuracyReadout.text = "-.-";
+			accuracyChar.text = "";
 
 			if(Mathf.Abs(playerVals.flow) > 1){
 				canFly.color = white;

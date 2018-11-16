@@ -26,12 +26,6 @@ public class CameraFollow : MonoBehaviour {
 
 //		transform.position = Vector3.SmoothDamp (transform.position, target.position + offset, ref velocity, speed);
 
-
-			if (Services.PlayerBehaviour.state == PlayerState.Flying || Services.PlayerBehaviour.state == PlayerState.Animating) {
-					transform.position = Vector3.SmoothDamp (transform.position, target.position + offset, ref velocity, speed);
-
-			} else{
-
 				float height;
 				float yPos;
 				float xPos;
@@ -134,15 +128,17 @@ public class CameraFollow : MonoBehaviour {
 				yPos = Mathf.Lerp (bottomBound, topBound, 0.5f);
 				xPos = Mathf.Lerp (leftBound, rightBound, 0.5f);
 
-				float frustrumHeight = Mathf.Lerp (cam.fieldOfView, CameraDolly.FOVForHeightAndDistance (height, target.position.z - transform.position.z) + 20, Time.deltaTime * 5);
-				cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, desiredFOV, Time.deltaTime);
+				if(target.GetComponent<PlayerBehaviour>().state != PlayerState.Animating){
+					cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, desiredFOV, Time.deltaTime);
+					transform.position = Vector3.SmoothDamp (transform.position, target.position + offset, ref velocity, speed);
+				}else{
+					cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, CameraDolly.FOVForHeightAndDistance (height, -transform.position.z) + 20, Time.deltaTime * 5);
+					transform.position = Vector3.SmoothDamp (transform.position, Vector3.down + offset, ref velocity, 1);
+				}
 
 
-				Vector3 targetPos = Vector3.Lerp(new Vector3 (xPos, yPos, target.position.z + offset.z), target.position + offset, 0.5f);
 
-
-				transform.position = Vector3.SmoothDamp (transform.position, target.position + offset, ref velocity, speed);
-			}
+				// Vector3 targetPos = Vector3.Lerp(new Vector3 (xPos, yPos, target.position.z + offset.z), target.position + offset, 0.5f);
 
 //		GetComponent<Camera>().orthographicSize = 10 + Mathf.Abs(target.GetComponent<PlayerTraversal> ().GetFlow());
 	}
