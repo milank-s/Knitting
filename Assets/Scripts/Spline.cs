@@ -18,9 +18,6 @@ public class Spline : MonoBehaviour
 
 	public Point Selected;
 
-	public bool useFOV;
-	public float desiredFOV = 40;
-
 	[HideInInspector]
 	public VectorLine line;
 
@@ -111,10 +108,6 @@ public class Spline : MonoBehaviour
 	public void OnSplineEnter (bool enter, Point p1, Point p2, bool forceDraw = false)
 	{
 		draw = false;
-
-		if(useFOV){
-			CameraFollow.desiredFOV = desiredFOV;
-		}
 
 		int i = SplinePoints.IndexOf (p1);
 		int j = SplinePoints.IndexOf (p2);

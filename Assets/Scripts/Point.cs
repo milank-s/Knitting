@@ -38,7 +38,7 @@ public class Point : MonoBehaviour
 	public float boostCooldown;
 
 	public bool hasPointcloud;
-	public float desiredFOV;
+	public PointCloud pointCloud;
 
 	public GameObject activatedSprite;
 	public GameObject directionalSprite;
@@ -289,10 +289,12 @@ public class Point : MonoBehaviour
 
 		if (!visited) {
 
+			if(hasPointcloud && pointCloud.text != null){
 			GameObject newText = (GameObject)Instantiate (Services.Prefabs.spawnedText, transform.position - Vector3.forward/2f + Vector3.up/8f, Quaternion.identity);
-			newText.GetComponent<TextMesh>().text = text;
+			newText.GetComponent<TextMesh>().text = pointCloud.GetWord();
 			newText.GetComponent<FadeTextOnPoint>().p = this;
 			newText.transform.parent = transform;
+			}
 		}
 
 		PutOnCooldown ();

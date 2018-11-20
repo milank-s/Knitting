@@ -235,9 +235,10 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void PlayerOnPoint(){
 		bool canTraverse = false;
 
-		if (CanLeavePoint ()) {
+			if (CanLeavePoint ()) {
 
 			if(Input.GetButtonUp ("Button1") || (Mathf.Abs(flow) > 2 && !joystickLocked && !Input.GetButton("Button1"))){
+				Debug.Log("going to " + pointDest.gameObject.name);
 				canTraverse = true;
 				LeaveSpline();
 		 }else{
@@ -374,7 +375,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		SetPlayerAtStart (curSpline, pointDest);
 
 		if (!goingForward) {
-			flow = -Mathf.Abs (flow);
+			//UNIDIRECTIONAL MOVEMENT
+			flow = Mathf.Abs (flow);
 			if(curPoint.IsOffCooldown()){
 			// flow -= flowAmount;
 			}
@@ -772,6 +774,11 @@ public class PlayerBehaviour: MonoBehaviour {
 			curSpline.Selected.proximity = 1 - progress;
 		}
 
+		if(pointDest != null && pointDest.hasPointcloud){
+			CameraFollow.desiredFOV = Mathf.Lerp(CameraFollow.desiredFOV, pointDest.pointCloud.desiredFOV, pointDest.proximity);
+		}
+
+
 		// GetComponent<Rigidbody> ().velocity = curSpline.GetDirection (progress) * flow;
 
 //		transform.Rotate (0, 0, flow*5);
@@ -862,7 +869,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		state = PlayerState.Switching;
 	}
 
-	void CheckProgress(){
+		void CheckProgress(){
 
 		if (progress > 1 || progress < 0) {
 
@@ -974,24 +981,28 @@ public class PlayerBehaviour: MonoBehaviour {
 				foreach (Point p in curPoint.GetNeighbours()) {
 
 					if (!p._connectedSplines.Contains (s)) {
+						float curAngle = Mathf.Infinity;
 						//do nothing if the point is in another spline
 					} else {
 
 						float curAngle = Mathf.Infinity;
 
 						int indexDifference = s.SplinePoints.IndexOf (p) - s.SplinePoints.IndexOf (curPoint);
-						if ((indexDifference > 1 || indexDifference < -1) && !s.closed) {
 
-						} else {
-							//if flow > 1, use init velocity of new spline instead of cursor direction
-
+							//make sure that you're not making an illegal move
+							bool looping = false;
+							if((p == s.StartPoint && curPoint == s.EndPoint) || (p == s.EndPoint && curPoint == s.StartPoint)){
+								looping = true;
+							}
+						if(((indexDifference > 1 || indexDifference < -1) && !s.closed) || ((indexDifference > 1 || indexDifference < 1) && !looping)){
+								//this kind of movement should be illegal
+						}else{
 							if (indexDifference == -1 || indexDifference > 1) {
 
 								curAngle = s.CompareAngleAtPoint (cursorDir, p, true);
 							} else {
 								curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
 							}
-						}
 
 						if (curAngle < angleToSpline) {
 							angleToSpline = curAngle;
@@ -1001,12 +1012,14 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 				}
 			}
+		}
 			//this is causing bugs
 
 // && (Input.GetButtonDown("Button1")
 			if (angleToSpline <= StopAngleDiff && pointDest.isUnlocked()) {
 
 				curSpline = closestSpline;
+				Debug.Log("going to " + pointDest + " on " + curSpline);
 				return true;
 			}else{
 				return false;

@@ -10,7 +10,7 @@ public class PointCloud : MonoBehaviour {
 	public SpriteRenderer image;
 	public TextMesh title;
 	public bool isOn;
-	public float desiredFOV;
+	public float desiredFOV = 30;
 	private float fade;
 
 	public TextAsset text;
@@ -29,8 +29,8 @@ public class PointCloud : MonoBehaviour {
 		}
 
 		foreach(Point p in GetComponentsInChildren<Point>()){
-			p.desiredFOV = desiredFOV;
 			p.hasPointcloud = true;
+			p.pointCloud = this;
 		}
 		// UpdateContinuity (PointContinuity);
 	}
