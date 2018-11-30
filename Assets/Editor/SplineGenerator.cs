@@ -12,6 +12,7 @@ public class SplineGenerator : Editor {
 			if(GUILayout.Button("Generate Spline"))
 			{
 					myScript.Generate();
+					Undo.RecordObject(myScript, "generated");
 			}
 	}
 }

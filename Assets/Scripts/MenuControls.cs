@@ -11,6 +11,7 @@ public class MenuControls : MonoBehaviour {
 	bool loadingScene = false;
 
 	void Start(){
+		Cursor.visible = false;
 		Cursor.lockState = CursorLockMode.Locked;
 	}
 	// Update is called once per frame

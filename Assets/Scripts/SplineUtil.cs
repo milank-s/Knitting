@@ -5,16 +5,12 @@ using UnityEngine;
 public class SplineUtil : MonoBehaviour {
 
 	static public Point CreatePoint(Vector3 pos){
-
-		Point newPoint = Instantiate(Services.Prefabs.point, Vector3.zero, Quaternion.identity).GetComponent<Point>();
+		GameObject p = Instantiate(Services.Prefabs.point as GameObject) as GameObject;
+		Point newPoint = p.GetComponent<Point>();
 
 		newPoint.transform.position = pos;
 		newPoint.originalPos = pos;
 		newPoint.GetComponent<Collider> ().enabled = true;
-		//		newPoint.transform.GetChild (0).position = newPoint.transform.position;
-
-		//		newPoint.GetComponent<SpringJoint> ().connectedBody = newPoint.transform.GetChild(0).GetComponent<Rigidbody> ();
-		//		newPoint.GetComponent<SpringJoint> ().connectedAnchor = newPoint.transform.GetChild (0).transform.localPosition;
 
 		return newPoint;
 	}

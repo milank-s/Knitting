@@ -3,6 +3,7 @@ using System.Collections;
 
 public class CameraFollow : MonoBehaviour {
 	public float speed;
+	public Camera uiCam;
 	public Transform target;
 	private Vector3 velocity = Vector2.zero;
 	public Vector3 offset;
@@ -16,6 +17,7 @@ public class CameraFollow : MonoBehaviour {
 		CameraDolly.topBound = float.NegativeInfinity;
 		CameraDolly.bottomBound = float.PositiveInfinity;
 		desiredFOV = cam.fieldOfView;
+		Cursor.visible = false;
 	}
 
 	// Update is called once per frame
@@ -136,7 +138,7 @@ public class CameraFollow : MonoBehaviour {
 					transform.position = Vector3.SmoothDamp (transform.position, Vector3.down + offset, ref velocity, 1);
 				}
 
-
+				uiCam.fieldOfView = cam.fieldOfView;
 
 				// Vector3 targetPos = Vector3.Lerp(new Vector3 (xPos, yPos, target.position.z + offset.z), target.position + offset, 0.5f);
 

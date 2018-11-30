@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class SplineTurtle : MonoBehaviour {
 
-	public static float maxTotalPoints = 0;
-	public static float maxCrawlers = 0;
+	public static float maxTotalPoints = 1;
+	public static float maxCrawlers = 1;
 
 	public string parentName;
 
@@ -121,7 +122,6 @@ public class SplineTurtle : MonoBehaviour {
 
 	IEnumerator InitializeSpline(){
 
-
 		parent = new GameObject ();
 		parent.name = parentName;
 
@@ -131,14 +131,14 @@ public class SplineTurtle : MonoBehaviour {
 		mDist = minDist;
 
 
-		if (SplineUtil.RaycastDownToPoint (transform.position, Mathf.Infinity, 1000f) != null) {
+		if (Raycast && SplineUtil.RaycastDownToPoint (transform.position, Mathf.Infinity, 1000f) != null) {
 			curPoint = SplineUtil.RaycastDownToPoint (transform.position, Mathf.Infinity, 1000f);
 			if (curPoint.HasSplines ()) {
 				curSpline = curPoint._connectedSplines [0];
 			} else {
 				Step ();
 
-				Point secondPoint = SplineUtil.CreatePoint (transform.position);
+				Point secondPoint = SpawnPointPrefab.CreatePoint (transform.position);
 
 				if (createSplines) {
 					curSpline = SplineUtil.CreateSpline (curPoint, secondPoint);
@@ -150,14 +150,14 @@ public class SplineTurtle : MonoBehaviour {
 			NewPoint ();
 		} else {
 
-			curPoint = SplineUtil.CreatePoint (transform.position);
+			curPoint = SpawnPointPrefab.CreatePoint (transform.position);
 			curPoint.transform.parent = parent.transform;
 
 			yield return new WaitForSeconds (0.1f);
 
 			Step ();
 
-			Point secondPoint = SplineUtil.CreatePoint (transform.position);
+			Point secondPoint = SpawnPointPrefab.CreatePoint (transform.position);
 
 			if (createSplines) {
 				curSpline = SplineUtil.CreateSpline (curPoint, secondPoint);
@@ -186,6 +186,7 @@ public class SplineTurtle : MonoBehaviour {
 			newTurtleScript.minDist = minDist;
 		}
 		maxCrawlers++;
+		// newTurtleScript.Generate();
 		return newTurtle;
 	}
 
@@ -204,10 +205,10 @@ public class SplineTurtle : MonoBehaviour {
 		if (Raycast) {
 			newPoint = SplineUtil.RaycastDownToPoint (transform.position, Mathf.Infinity, 1000f);
 			if (newPoint == null) {
-				newPoint = SplineUtil.CreatePoint (transform.position);
+				newPoint = SpawnPointPrefab.CreatePoint (transform.position);
 			}
 		} else {
-			newPoint = SplineUtil.CreatePoint (transform.position);
+			newPoint = SpawnPointPrefab.CreatePoint (transform.position);
 		}
 
 		if (createSplines) {

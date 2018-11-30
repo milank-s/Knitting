@@ -87,6 +87,7 @@ public class Spline : MonoBehaviour
 	private float drawTimer = 0;
 	private float pitch;
 	private float frequency;
+	private float phase;
 	private float volume;
 	private AudioSource sound;
 	private Coroutine curSound;
@@ -910,20 +911,21 @@ public class Spline : MonoBehaviour
 
 			float flow = Mathf.Abs(Services.PlayerBehaviour.flow);
 
-			float phase = index;
-			float newFrequency = flow * 5 + 5;
+			// phase = index;
+			float newFrequency = Mathf.Abs(Services.PlayerBehaviour.accuracy * 10);
 //			newFrequency *= -Mathf.Sign (Services.PlayerBehaviour.accuracy);
 
 			float distortion = Mathf.Lerp (0, Mathf.Pow (1 - Mathf.Abs (Services.PlayerBehaviour.accuracy), 3), flow/3)/5f;
 
-			float amplitude = Mathf.Clamp01(Services.PlayerBehaviour.connectTime) / 20 + 0.001f;
+			float amplitude = Mathf.Clamp01(flow)/10;
 
-			float curr = (Time.time * frequency + phase) % (2.0f * Mathf.PI);
-			float next = (Time.time * newFrequency) % (2.0f * Mathf.PI);
-			phase = curr - next;
-			frequency = newFrequency;
+			NewFrequency(newFrequency);
+			// float curr = (Time.time * frequency + phase) % (2.0f * Mathf.PI);
+			// float next = (Time.time * newFrequency) % (2.0f * Mathf.PI);
+			// phase = curr - next;
+			// frequency = newFrequency;
 
-			float offset = Mathf.Sin (Time.time * frequency + phase);
+			float offset = Mathf.Sin (Time.time * frequency + phase + index);
 
 			offset *= amplitude;
 
@@ -932,7 +934,7 @@ public class Spline : MonoBehaviour
 
 			direction = new Vector3 (-direction.y, direction.x, direction.z);
 
-			v += (direction * offset * Mathf.Clamp01(distanceFromPlayer)/2) + (direction * UnityEngine.Random.Range (-distortion, distortion) * invertedDistance);
+			v += (direction * offset * Mathf.Pow(Mathf.Clamp01(distanceFromPlayer), 2)) + (direction * UnityEngine.Random.Range (-distortion, distortion) * invertedDistance);
 
 		}
 
@@ -950,7 +952,7 @@ public class Spline : MonoBehaviour
 //					SplinePoints [i + 1].color = Color.Lerp (SplinePoints [i + 1].color, Color.white, Mathf.Pow (invertedDistance, 2));
 //					line.SetWidth (Mathf.Lerp (1, 1, Mathf.Pow (invertedDistance, 10)), index);
 			if(((indexOfPlayerPos > (i) * curveFidelity) && (indexOfPlayerPos < (i + 1) * curveFidelity)) && isPlayerOn){
-				if (draw) {
+				// if (draw) {
 					if ((reversed && Services.PlayerBehaviour.progress < playerProgress) || (!reversed && Services.PlayerBehaviour.progress > playerProgress)) {
 						playerProgress = t;
 					}
@@ -962,9 +964,9 @@ public class Spline : MonoBehaviour
 					} else {
 						line.SetColor (Color.Lerp (Color.black, Color.white, difference), index);
 					}
-				}else{
-						line.SetColor (Color.white, index);
-					}
+				// }else{
+				// 		line.SetColor (Color.white, index);
+				// 	}
 				}else{
 						float lerpVal;
 						Color c;
@@ -1003,6 +1005,13 @@ public class Spline : MonoBehaviour
 
 			// }
 		}
+	}
+
+	void NewFrequency(float newFrequency){
+		float curr = (Time.time * frequency + phase) % (2.0f * Mathf.PI);
+		float next = (Time.time * (newFrequency*2)) % (2.0f * Mathf.PI);
+		phase = curr - next;
+		frequency = newFrequency*2;
 	}
 
 	//IO FUNCTIONS

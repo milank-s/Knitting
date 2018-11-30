@@ -31,7 +31,7 @@ public class Constants : MonoBehaviour {
 	public Sprite brakeSprite;
 
 
-	Color gray = new Color(0.12f, 0.12f, 0.12f);
+	Color gray = new Color(0.5f, 0.5f, 0.5f, 0.1f);
 	Color white = new Color(1,1,1);
 
 	private List<Image> UISymbols;
@@ -53,18 +53,18 @@ public class Constants : MonoBehaviour {
 
 	}
 
-	void LateUpdate () {
+	void Update () {
 
-		transform.position = playerVals.transform.position;
+		transform.position = Vector3.Lerp(transform.position, playerVals.transform.position, Time.deltaTime * 8);
 
 		//FLOW METER
 		if (playerVals.state != PlayerState.Animating) {
-			// flowReadout.text = Mathf.Abs (playerVals.flow).ToString ("F2");
-			flowReadout.text = PointManager._pointsHit.Count.ToString();
+			accuracyReadout.text = Mathf.Abs (playerVals.flow).ToString ("F2");
+			flowReadout.text = PointManager._pointsHit.Count.ToString() + "•";
 		} else {
 			flowChar.text = "";
 			// accuracyChar.gameObject.SetActive(false);
-			// flowReadout.text = (-Mathf.Abs (playerVals.flow)).ToString ("F2");
+			accuracyReadout.text = (-Mathf.Abs (playerVals.flow)).ToString ("F2");
 			flowReadout.text = "";
 		}
 
@@ -85,7 +85,7 @@ public class Constants : MonoBehaviour {
 			cursorImage.color = Color.Lerp(cursorImage.color, Color.white, Time.deltaTime);
 			reset.enabled = false;
 
-			accuracyReadout.text = Mathf.Abs (playerVals.accuracy).ToString("F1");
+			// accuracyReadout.text = Mathf.Abs (playerVals.accuracy).ToString("F1");
 
 			// if ((playerVals.accuracy < 0.5f && playerVals.accuracy > -0.5f)) {
 			// 	accuracyChar.text = "≠";
@@ -93,10 +93,10 @@ public class Constants : MonoBehaviour {
 			// } else if (playerVals.state == PlayerState.Switching) {
 			// 	flowChar.text = "-";
 			if ((playerVals.accuracy > 0 && playerVals.flow > 0) || (playerVals.accuracy < 0 && playerVals.flow < 0)) {
-				accuracyChar.text = "≈";
+				// accuracyChar.text = "≈";
 				// flowChar.text = "+";
 			}else if((playerVals.accuracy < 0 && playerVals.flow > 0) || (playerVals.accuracy > 0 && playerVals.flow < 0)){
-				accuracyChar.text = "≠";
+				// accuracyChar.text = "≠";
 				// flowChar.text = "-";
 			}
 
@@ -107,15 +107,16 @@ public class Constants : MonoBehaviour {
 		}
 
 		if(playerVals.state == PlayerState.Switching){
-			accuracyReadout.text = "-.-";
-			accuracyChar.text = "";
+			// accuracyReadout.text = "-.-";
+			// accuracyChar.text = "";
 
 			if(Mathf.Abs(playerVals.flow) > 1){
 				canFly.color = white;
 			}else{
 				canFly.color = Color.Lerp (canFly.color, gray, Time.deltaTime * 3);
 			}
-			switching.color = white;
+
+			switching.color = Color.Lerp(gray, white, Mathf.Clamp01(playerVals.decayTimer * 2));
 		} else {
 			switching.color = gray;
 		}
@@ -148,7 +149,7 @@ public class Constants : MonoBehaviour {
 			flying.color = Color.Lerp (flying.color, gray, Time.deltaTime * 3);
 		}
 
-		// Point p = SplineUtil.RaycastFromCamera(playerVals.cursor.transform.position, 20f);
+		// Point p = SplineUtil.RaycastFromCamera(playerVals.`cursor`.transform.position, 20f);
 		// if (p != null && (playerVals.state == PlayerState.Switching || playerVals.state == PlayerState.Flying) && p != playerVals.curPoint) {
 		//
 		// 	if(!playerVals.curPoint.isConnectedTo(p)){

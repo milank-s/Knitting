@@ -75,13 +75,13 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	[HideInInspector]
 	public Vector3 cursorPos;
-
 	public Vector2 cursorDir;
 
 	private List<Point> inventory;
 	public Point lastPoint;
 
-	float decayTimer;
+	[HideInInspector]
+	public float decayTimer;
 	private float curDrawDistance = 0.1f;
 
 	private ParticleSystem ps;
@@ -100,6 +100,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public Sprite canConnectSprite;
 	public Sprite brakeSprite;
 	public Sprite traverseSprite;
+	public Transform pointInfo;
 
 	LineRenderer l;
 	public LineRenderer cursorOnPoint;
@@ -176,7 +177,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		foreach(Spline s in curPoint._connectedSplines){
 			s.DrawSegment(s.SplinePoints.IndexOf(curPoint));
 		}
-	}
+		}
 
 		creationInterval-= Time.deltaTime;
 
@@ -193,7 +194,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 			PlayerMovement ();
-			ManageSound();
+			// ManageSound();
 			CheckProgress ();
 
 			if(Mathf.Abs(flow) < 1){
@@ -220,7 +221,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 			if (traversedPoints.Count >= 2 && Mathf.Abs (flow) <= 0) {
-				StartCoroutine (Unwind());
+				// StartCoroutine (Unwind());
 			}
 		}
 
@@ -237,8 +238,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if (CanLeavePoint ()) {
 
-			if(Input.GetButtonUp ("Button1") || (Mathf.Abs(flow) > 2 && !joystickLocked && !Input.GetButton("Button1"))){
-				Debug.Log("going to " + pointDest.gameObject.name);
+			if(Input.GetButtonUp ("Button1") || (Mathf.Abs(flow) > 1 && !joystickLocked && !Input.GetButton("Button1"))){
+
 				canTraverse = true;
 				LeaveSpline();
 		 }else{
@@ -252,7 +253,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					if(Input.GetButtonUp("Button1")){
 						canTraverse = true;
 						CreatePoint();
-						PlayAttack(curPoint, pointDest);
+						// PlayAttack(curPoint, pointDest);
 					}else{
 						l.positionCount = 2;
 		  			cursorOnPoint.positionCount = 2;
@@ -277,12 +278,14 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 		if(canTraverse){
+			pointInfo.GetComponent<Text>().text = "";
 			LeavePoint();
 		}else{
-			if(pointDest != null && pointDest.locked && pointDest.lockAmount > PointManager._pointsHit.Count){
-				cursorSprite.GetComponentInChildren<Text>().text = pointDest.lockAmount + "x";
+			if(pointDest != null && pointDest.lockAmount > 0){
+				pointInfo.GetComponent<Text>().text = pointDest.lockAmount + "•";
+				pointInfo.position = pointDest.Pos + Vector3.right/5f;
 			}else{
-				cursorSprite.GetComponentInChildren<Text>().text = "";
+				pointInfo.GetComponent<Text>().text = "";
 			}
 			//Staying on a point is too punishing.
 			StayOnPoint();
@@ -311,7 +314,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				pointDest = null;
 				pointDest = SplineUtil.RaycastFromCamera(cursorPos, 1f);
 
-				if (pointDest != null && pointDest != curPoint && pointDest.isUnlocked()) {
+				if (pointDest != null && pointDest != curPoint && pointDest.isUnlocked() && !pointDest.isConnectedTo(curPoint)) {
 					if(pointDest.pointType != PointTypes.leaf || (pointDest.pointType == PointTypes.leaf && pointDest.NeighbourCount() == 0) && curPoint.pointType != PointTypes.leaf){
 				  return true;
 				}
@@ -370,23 +373,27 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		curPoint.OnPointExit ();
 		state = PlayerState.Traversing;
-		decayTimer = 0.5f;
+		decayTimer = 1f;
 		//this is making it impossible to get off points that are widows. wtf.
 		SetPlayerAtStart (curSpline, pointDest);
 
 		if (!goingForward) {
 			//UNIDIRECTIONAL MOVEMENT
-			flow = Mathf.Abs (flow);
+			flow = -Mathf.Abs (flow);
 			if(curPoint.IsOffCooldown()){
 			// flow -= flowAmount;
 			}
-			boost = -boostAmount;
+			if(Mathf.Abs(flow) < 1){
+				boost = -boostAmount;
+			}
 		} else {
 			flow = Mathf.Abs (flow);
 			if(curPoint.IsOffCooldown()){
 			// flow += flowAmount;
-		}
-			boost = boostAmount;
+			}
+			if(Mathf.Abs(flow) < 1){
+				boost = boostAmount;
+			}
 		}
 
 
@@ -397,7 +404,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void StayOnPoint(){
 		decayTimer -= Time.deltaTime;
-		if (decayTimer < 0 && Input.GetButton("Button1")) {
+		if (decayTimer < 0) {
 			if (flow > 0) {
 				flow -= decay * Time.deltaTime;
 				if (flow < 0) {
@@ -415,7 +422,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	public IEnumerator ReturnToLastPoint(){
 
 		state = PlayerState.Animating;
-		Debug.Log("returning to last Point");
 		float t = 0;
 		bool moving = true;
 		float flowMult = 1;
@@ -603,6 +609,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		Point overPoint = SplineUtil.RaycastDownToPoint(cursorPos, 2f, 1f);
 		if(overPoint != null && overPoint != curPoint){
+			//Getting a null ref here for some ungodly reason
 			if(Vector3.Distance (curPoint.Pos, drawnPoint.Pos) < 0.25f){
 				curSpline.SplinePoints.Remove(curPoint);
 				drawnPoint._neighbours.Remove(curPoint);
@@ -644,7 +651,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		} else {
 			inertia = cursorDir * flow;
-			flow -= Time.deltaTime / 2f;
+			flow -= Time.deltaTime * decay;
 			transform.position += inertia * Time.deltaTime;
 			curPoint.transform.position = transform.position;
 			curPoint.originalPos = transform.position;
@@ -751,11 +758,11 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 		}
 
-		float adjustedAccuracy = goingForward ? Mathf.Clamp01(accuracy) : -Mathf.Clamp(accuracy, -1, 0);
+		float adjustedAccuracy = goingForward ? Mathf.Clamp(accuracy, 0.5f, 1f) : -Mathf.Clamp(accuracy, -1, -0.5f);
 		// (adjustedAccuracy + 0.1f)
-		progress += ((flow + boost + curSpeed)/curSpline.distance) * Time.deltaTime;
+		progress += ((flow + boost + (speed * Mathf.Sign(flow)))/curSpline.distance) * adjustedAccuracy * Time.deltaTime;
 
-		boost = Mathf.Lerp (boost, 0, Time.deltaTime);
+		boost = Mathf.Lerp (boost, 0, Time.deltaTime * 3f);
 		//set player position to a point along the curve
 
 		if (curPoint == curSpline.Selected) {
@@ -994,7 +1001,7 @@ public class PlayerBehaviour: MonoBehaviour {
 							if((p == s.StartPoint && curPoint == s.EndPoint) || (p == s.EndPoint && curPoint == s.StartPoint)){
 								looping = true;
 							}
-						if(((indexDifference > 1 || indexDifference < -1) && !s.closed) || ((indexDifference > 1 || indexDifference < 1) && !looping)){
+						if(((indexDifference > 1 || indexDifference < -1) && !s.closed) || ((indexDifference > 1 || indexDifference < -1) && !looping)){
 								//this kind of movement should be illegal
 						}else{
 							if (indexDifference == -1 || indexDifference > 1) {
@@ -1019,7 +1026,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if (angleToSpline <= StopAngleDiff && pointDest.isUnlocked()) {
 
 				curSpline = closestSpline;
-				Debug.Log("going to " + pointDest + " on " + curSpline);
+
 				return true;
 			}else{
 				return false;
@@ -1199,7 +1206,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		newSound.GetComponent<AudioSource>().clip = sounds.hits[index];
 		newSound.GetComponent<AudioSource>().Play();
 		newSound.GetComponent<PlaySound>().enabled = true;
-		Debug.Log("spawnedSound");
+
 	}
 
 	public void ManageSound ()

@@ -15,8 +15,7 @@ public class PrefabManager : MonoBehaviour {
 	public Texture2D[] lines;
 	public Sprite[] pointSprites;
 
-	void Start(){
-		Services.Prefabs = this;
+	void Awake(){
 		LoadResources ();
 	}
 
