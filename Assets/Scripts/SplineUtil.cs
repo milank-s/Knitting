@@ -31,7 +31,7 @@ public class SplineUtil : MonoBehaviour {
 		}
 
 		//ALL CASES WHERE THE CLICKED ON/CREATED POINTS ARE ADDED TO CURRENT SPLINE
-		if (s == null || s.SplinePoints.Count > 100 ||  s.closed || s.locked) {
+		if (s == null || s.SplinePoints.Count > 100 ||  s.closed) {
 				newSpline = CreateSpline (p1, p2);
 
 			} else {
@@ -43,7 +43,6 @@ public class SplineUtil : MonoBehaviour {
 					if (p2 == s.StartPoint || p2 == s.EndPoint) {
 
 						s.closed = true;
-						s.LoopIndex = s.SplinePoints.IndexOf (p2);
 
 						p1.AddPoint (p2);
 						p2.AddPoint (p1);

@@ -31,7 +31,7 @@ public class Constants : MonoBehaviour {
 	public Sprite brakeSprite;
 
 
-	Color gray = new Color(0.5f, 0.5f, 0.5f, 0.1f);
+	Color gray = new Color(0.1f, 0.1f, 0.1f, 0f);
 	Color white = new Color(1,1,1);
 
 	private List<Image> UISymbols;
@@ -55,7 +55,7 @@ public class Constants : MonoBehaviour {
 
 	void Update () {
 
-		transform.position = Vector3.Lerp(transform.position, playerVals.transform.position, Time.deltaTime * 8);
+		transform.position = Vector3.Lerp(transform.position, playerVals.transform.position, Time.deltaTime * 10);
 
 		//FLOW METER
 		if (playerVals.state != PlayerState.Animating) {
@@ -76,9 +76,6 @@ public class Constants : MonoBehaviour {
 			accuracyChar.text = "";
 			accuracyReadout.text = "";
 
-			foreach(Image s in UISymbols){
-				s.color = Color.Lerp(s.color, gray, Time.deltaTime * 5);
-			}
 		}else{
 			// playerAxis.SetPosition(0, playerVals.transform.position);
 			// playerAxis.SetPosition(1, playerVals.cursorPos);
@@ -117,8 +114,14 @@ public class Constants : MonoBehaviour {
 			}
 
 			switching.color = Color.Lerp(gray, white, Mathf.Clamp01(playerVals.decayTimer * 2));
+			if(Mathf.Clamp01(playerVals.decayTimer * 2) == 0){
+				switching.enabled = false;
+			}else{
+			switching.enabled = true;
+		}
 		} else {
 			switching.color = gray;
+			switching.enabled = false;
 		}
 
 		if(playerVals.state == PlayerState.Traversing){
@@ -145,7 +148,9 @@ public class Constants : MonoBehaviour {
 		if(playerVals.state == PlayerState.Flying){
 			// playerAxis.color = gray;
 			flying.color = white;
+			flying.enabled = true;
 		}else{
+			flying.enabled = false;
 			flying.color = Color.Lerp (flying.color, gray, Time.deltaTime * 3);
 		}
 

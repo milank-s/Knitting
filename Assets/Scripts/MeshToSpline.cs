@@ -31,9 +31,5 @@ public class MeshToSpline : MonoBehaviour {
 			curPoint = spp.p;
 		}
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
 }

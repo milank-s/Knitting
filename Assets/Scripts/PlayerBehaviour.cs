@@ -174,9 +174,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 			}
 		}else{
-		foreach(Spline s in curPoint._connectedSplines){
-			s.DrawSegment(s.SplinePoints.IndexOf(curPoint));
-		}
+			foreach(Spline s in curPoint._connectedSplines){
+				s.DrawSegment(s.SplinePoints.IndexOf(curPoint));
+			}
 		}
 
 		creationInterval-= Time.deltaTime;
@@ -238,7 +238,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if (CanLeavePoint ()) {
 
-			if(Input.GetButtonUp ("Button1") || (Mathf.Abs(flow) > 1 && !joystickLocked && !Input.GetButton("Button1"))){
+			if(Input.GetButton ("Button1")){
 
 				canTraverse = true;
 				LeaveSpline();
@@ -250,7 +250,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		 }
 		} else {
 				if(CanCreatePoint()){
-					if(Input.GetButtonUp("Button1")){
+					if(Input.GetButtonDown("Button1")){
 						canTraverse = true;
 						CreatePoint();
 						// PlayAttack(curPoint, pointDest);
@@ -354,6 +354,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	void Fly(){
+		pointDest = null;
 		l.positionCount = 0;
 		state = PlayerState.Flying;
 		curSpline.OnSplineExit ();
@@ -737,7 +738,9 @@ public class PlayerBehaviour: MonoBehaviour {
 					flow = 0;
 			}else{
 				//
-			flow += Mathf.Sign (accuracy) * accuracyCoefficient * acceleration * Time.deltaTime;
+			if(Mathf.Abs(flow) < curSpline.distance){
+				flow += Mathf.Sign (accuracy) * accuracyCoefficient * acceleration * Time.deltaTime;
+			}
 		}
 	}
 		// curSpeed =  speed * Mathf.Sign (accuracy) * accuracyCoefficient;
@@ -769,12 +772,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			curPoint.proximity = 1 - progress;
 			pointDest.proximity = progress;
 
-			if (curSpline.closed && curSpline.SplinePoints.IndexOf(curPoint) >= curSpline.SplinePoints.Count-1) {
-				curSpline.SplinePoints [curSpline.LoopIndex].proximity = progress;
-			} else {
-				// ??? what the fuck am I looking at
-				curSpline.SplinePoints [Mathf.Clamp(curSpline.GetPointIndex(curSpline.Selected)+1, 0, curSpline.SplinePoints.Count-1)].proximity = progress;
-			}
+			// if (curSpline.closed && curSpline.SplinePoints.IndexOf(curPoint) >= curSpline.SplinePoints.Count-1) {
+			// 	curSpline.endPoint.proximity = 1 - progress;
+			// }
 
 		} else {
 			curPoint.proximity = progress;
@@ -1132,7 +1132,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		// Vector3 screenPos = ((cursorDir/4f) + (Vector3.one/2f));
 		// screenPos = new Vector3(screenPos.x, screenPos.y, Camera.main.nearClipPlane + 10f);
 		// cursorPos = Camera.main.ViewportToWorldPoint(screenPos);
-		float screenWidth = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, Camera.main.nearClipPlane + 1.5f)).y - transform.position.y;
+		float screenWidth = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, Camera.main.nearClipPlane + 1f)).y - transform.position.y;
 		cursorPos = transform.position + ((Vector3)cursorDir * screenWidth);
 		cursor.transform.position = cursorPos;
 		cursor.transform.rotation = Quaternion.Euler(0, 0, (float)(Mathf.Atan2(-cursorDir.x, cursorDir.y) / Mathf.PI) * 180f);

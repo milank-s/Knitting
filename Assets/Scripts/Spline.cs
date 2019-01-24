@@ -16,33 +16,39 @@ public class Spline : MonoBehaviour
 
 	public List<Point> SplinePoints;
 
+
+	[HideInInspector]
 	public Point Selected;
 
 	[HideInInspector]
 	public VectorLine line;
 
 	public static Spline Select;
-	bool reversed;
-	public int curveFidelity = 10;
-	public float drawSpeed = 6;
-	public float distance = 0;
-	public float segmentDistance = 0;
-	public Vector2 linearDirection;
+	[Space(15)]
 	public bool closed = false;
-	public int LoopIndex;
-	public bool locked = false;
-	public bool isDrawing = true;
-	public bool draw;
+	[Space(5)]
+	public int curveFidelity = 10;
+	[Space(20)]
 
+	[HideInInspector]
+	public bool isPlayerOn = false;
+	[HideInInspector]
+	public bool draw = true;
+	[HideInInspector]
+	public float distance = 0;
+	[HideInInspector]
+	public float segmentDistance = 0;
+	[HideInInspector]
+	public Vector2 linearDirection;
+
+	private bool reversed;
 	private float colorDecay;
-	float distanceFromPlayer;
-	float invertedDistance;
+	private float distanceFromPlayer;
+	private float invertedDistance;
 
 	private int lowHitPoint = int.MaxValue;
 	private int highHitPoint = -int.MaxValue;
 	private float playerProgress;
-
-	public bool isPlayerOn = false;
 
 	public bool isSelect {
 		get {
@@ -800,7 +806,7 @@ public class Spline : MonoBehaviour
 
 	public void DrawMeshOverTime (int p1, int p2, bool reversed = false){
 
-		isDrawing = true;
+		// isDrawing = true;
 
 		int start;
 		if (reversed) {
@@ -828,7 +834,7 @@ public class Spline : MonoBehaviour
 				}
 			}
 		}
-		isDrawing = false;
+		// isDrawing = false;
 	}
 
 	void DrawMesh (bool reversed = false){
@@ -917,7 +923,7 @@ public class Spline : MonoBehaviour
 
 			float distortion = Mathf.Lerp (0, Mathf.Pow (1 - Mathf.Abs (Services.PlayerBehaviour.accuracy), 3), flow/3)/5f;
 
-			float amplitude = Mathf.Clamp01(flow)/10;
+			float amplitude = Mathf.Clamp01(flow)/100;
 
 			NewFrequency(newFrequency);
 			// float curr = (Time.time * frequency + phase) % (2.0f * Mathf.PI);
