@@ -38,7 +38,7 @@ public class Constants : MonoBehaviour {
 
 
 	void Start(){
-		l = playerVals.cursor.GetComponent<LineRenderer>();
+		l = Services.Cursor.GetComponent<LineRenderer>();
 		UISymbols = new List<Image>();
 		UISymbols.Add(switching);
 		// UISymbols.Add(traversing);
@@ -59,7 +59,7 @@ public class Constants : MonoBehaviour {
 
 		//FLOW METER
 		if (playerVals.state != PlayerState.Animating) {
-			accuracyReadout.text = Mathf.Abs (playerVals.flow).ToString ("F2");
+			accuracyReadout.text = Mathf.Abs (playerVals.flow * 10).ToString ("F2");
 			flowReadout.text = PointManager._pointsHit.Count.ToString() + "•";
 		} else {
 			flowChar.text = "";
@@ -113,11 +113,11 @@ public class Constants : MonoBehaviour {
 				canFly.color = Color.Lerp (canFly.color, gray, Time.deltaTime * 3);
 			}
 
-			switching.color = Color.Lerp(gray, white, Mathf.Clamp01(playerVals.decayTimer * 2));
-			if(Mathf.Clamp01(playerVals.decayTimer * 2) == 0){
-				switching.enabled = false;
+			switching.color = Color.Lerp(gray, white, Mathf.Clamp01(playerVals.connectTime * 2));
+			if(Mathf.Clamp01(playerVals.connectTime) == 0){
+				// switching.enabled = false;
 			}else{
-			switching.enabled = true;
+			// switching.enabled = true;
 		}
 		} else {
 			switching.color = gray;

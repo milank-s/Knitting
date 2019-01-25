@@ -7,12 +7,13 @@ public class PrefabManager : MonoBehaviour {
 
 	public GameObject soundEffectObject;
 	public GameObject spawnedText;
+	public GameObject circleEffect;
 	public GameObject point;
 	public GameObject spline;
 	public GameObject splineTurtle;
 	public GameObject joint;
 	public Sprite[] symbols;
-	public Texture2D[] lines;
+	public Material[] lines;
 	public Sprite[] pointSprites;
 
 	void Awake(){
@@ -27,6 +28,6 @@ public class PrefabManager : MonoBehaviour {
 
 	public void LoadResources(){
 		symbols = Resources.LoadAll<Sprite> ("Symbols");
-		lines = Resources.LoadAll <Texture2D>("Lines");
+		lines = Resources.LoadAll <Material>("Lines");
 	}
 }

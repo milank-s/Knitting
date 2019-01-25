@@ -4,18 +4,27 @@ using UnityEngine;
 
 public class PointCloud : MonoBehaviour {
 
-	public float PointContinuity;
-	public float PointAmount;
 	public List<Point> _points;
-	public SpriteRenderer image;
-	public TextMesh title;
-	public bool isOn;
-	public float desiredFOV = 30;
-	private float fade;
+	[Space(10)]
+	[Header("Point Physics")]
+	public bool isKinematic;
+	public float damping = 600f;
+	public float stiffness = 100f;
+	public float mass = 50f;
+	[Space(10)]
 
+	[Header("Visuals")]
+	public TextMesh title;
+	public SpriteRenderer image;
+	public float desiredFOV = 30;
 	public TextAsset text;
+	[Space(10)]
+
+	[HideInInspector]
+	public bool isOn;
 	private string[] words;
 	private int wordIndex;
+	private float fade;
 
 	public string GetWord (){
 		wordIndex++;
@@ -31,41 +40,18 @@ public class PointCloud : MonoBehaviour {
 		foreach(Point p in GetComponentsInChildren<Point>()){
 			p.hasPointcloud = true;
 			p.pointCloud = this;
-		}
-		// UpdateContinuity (PointContinuity);
-	}
-
-	void UpdateContinuity(float t){
-		foreach(Point p in GetComponentsInChildren<Point>()){
-			p.continuity = PointContinuity;
+			p.isKinematic = isKinematic;
 		}
 	}
 
-	public void UpdateState(){
-		isOn = false;
-
-		foreach (Point p in _points) {
-			if (p == Services.PlayerBehaviour.curPoint) {
-				isOn = true;
-			}
-		}
-	}
-
-	public void OldUpdate(){
-		UpdateState ();
+	public void UpdateVisuals(){
 
 		if (isOn) {
 			fade = Mathf.Clamp01(fade + Time.deltaTime);
 		} else {
 			fade = Mathf.Clamp01(fade - Time.deltaTime);
 		}
-
-
 		image.color = new Color (1, 1, 1, fade);
 		title.color = image.color;
-	}
-
-	void UpdatePointCount(){
-		PointAmount = GetComponentsInChildren<Point> ().Length;
 	}
 }

@@ -12,52 +12,60 @@ public enum PointTypes{normal, fly, boost, leaf, straight}
 public class Point : MonoBehaviour
 {
 
-	public PointTypes pointType = PointTypes.normal;
+	#region
 
-	public Vector3 Pos
-	{
-		get
-		{
-			return transform.position;
-		}
-	}
-
-	public static float hitColorLerp;
 	public bool visited = false;
-
-	public static int pointCount = 0;
-	public string text;
-	public float tension;
-	public float bias;
-	public float continuity;
-	public bool isKinematic;
-
-	public float damping = 600f;
-	public float stiffness = 100f;
-	public float mass = 50f;
-	public float boostCooldown;
-
-	public bool hasPointcloud;
-	public PointCloud pointCloud;
-
-	public GameObject activatedSprite;
-	public GameObject directionalSprite;
+	public PointTypes pointType = PointTypes.normal;
+	[Space(10)]
 
 	public List<Point> _neighbours;
 	public List<Spline> _connectedSplines;
 
-	public Color color;
-	public float timeOffset;
-	public float proximity = 0;
-	public bool locked = false;
-	public float lockAmount;
+	public static float hitColorLerp;
+	public static int pointCount = 0;
 
-	public static Point Select;
-	private float cooldown;
-	private SpriteRenderer SR;
-	private List<GameObject> _directionalSprites;
-	public float c = 0;
+	[Space(10)]
+	[Header("Curve")]
+	public float tension;
+	public float bias;
+	public float continuity;
+	[Space(10)]
+
+	[HideInInspector]
+	public bool isKinematic;
+	public static float damping = 600f;
+	public static float stiffness = 100f;
+	public static float mass = 50f;
+	[HideInInspector]
+	public Vector3 originalPos;
+	[Space(10)]
+
+	[HideInInspector]
+	public string text;
+	[HideInInspector]
+	public PointCloud pointCloud;
+	[HideInInspector]
+	public bool hasPointcloud;
+	[Space(10)]
+
+	[Header("Interaction")]
 	public bool hit = false;
+	public float lockAmount;
+	private float cooldown;
+	[HideInInspector]
+	public float timeOffset;
+	[HideInInspector]
+	public float proximity = 0;
+	[HideInInspector]
+	public bool locked = false;
+	[HideInInspector]
+	public Color color;
+	[HideInInspector]
+	public float c = 0;
+	public static Point Select;
+	private FadeSprite activationSprite;
+	private SpriteRenderer SR;
+
 	public bool isSelect
 	{
 		get
@@ -66,6 +74,7 @@ public class Point : MonoBehaviour
 		}
 	}
 	private Vector3 _velocity;
+
 	public Vector3 velocity
 	{
 		set
@@ -74,49 +83,36 @@ public class Point : MonoBehaviour
 		}
 	}
 
-	public Vector3 originalPos;
-	FadeSprite activationSprite;
-
+	public Vector3 Pos
+	{
+		get
+		{
+			return transform.position;
+		}
+	}
+	#endregion
 
 	void Awake(){
-
 		stiffness = 1600;
 		damping = 500;
 		color = Color.black;
 		Point.pointCount++;
 		activationSprite = GetComponentInChildren<FadeSprite> ();
 		timeOffset = Point.pointCount;
-		_directionalSprites = new List<GameObject> ();
 
 		if (_neighbours.Count == 0) {
 			_neighbours = new List<Point> ();
 		}
+
 		if (_connectedSplines.Count == 0) {
 			_connectedSplines = new List<Spline> ();
 		}
 
-		cooldown = (((float)Point.pointCount) % boostCooldown)/3f;
-		SR = GetComponent<SpriteRenderer> ();
-
-		originalPos = transform.position;
-
 		c = 0;
+		cooldown = 0;
+		SR = GetComponent<SpriteRenderer> ();
+		originalPos = transform.position;
 	}
-//	void OnMouseDown()
-//	{
-//		Select=this;
-//		screenPoint=CameraControler.MainCamera.WorldToScreenPoint(transform.position);
-//	}
-//	void OnMouseDrag()
-//	{
-//		Vector3 curentScreenPoint=new Vector3(Input.mousePosition.x,Input.mousePosition.y,screenPoint.z);
-//		Vector3 curentPos=CameraControler.MainCamera.ScreenToWorldPoint(curentScreenPoint);
-//		transform.position=curentPos;
-//
-//	}
-
-
-	//HELPER FUNCTIONS
 
 	public void Start(){
 
@@ -139,7 +135,6 @@ public class Point : MonoBehaviour
 				tension = 1;
 			break;
 
-
 			default:
 			break;
 		}
@@ -151,42 +146,12 @@ public class Point : MonoBehaviour
 
 	public void Update(){
 
-//		if (hit) {
-//			activationSprite.time = Mathf.Lerp (activationSprite.time, 1, Time.deltaTime * 5);
-//		} else {
-//			activationSprite.time = Mathf.Lerp (activationSprite.time, 0, Time.deltaTime * 2);
-//		}
-
-		c = (Mathf.Sin (3 * (Time.time + timeOffset))/2 + 0.6f) + proximity;
-
-		c = Mathf.Pow (c, 1);
-
-			if(locked && PointManager._pointsHit.Count < lockAmount){
-				SR.sprite = Services.Prefabs.pointSprites[1];
-			}else{
-				SR.sprite = Services.Prefabs.pointSprites[0];
-			}
-
-
-
+			SetSprite();
+			SetColor();
 
 			if(!isKinematic){
 				Movement();
 			}
-			if (hit) {
-				color = Color.Lerp (SR.color, Color.white * 2, Time.deltaTime * 5);
-				SR.color = color;
-			} else {
-				SR.color = Color.Lerp (SR.color, new Color (c, c, c), Time.deltaTime * 5);
-			}
-
-
-//		l.SetPosition (0, transform.position);
-//		l.SetPosition (1, GetComponent<SpringJoint>().connectedBody.transform.position);
-
-//		if (_neighbours.Count > 2) {
-//			SetDirectionalArrows ();
-//		}
 	}
 
 	void Movement(){
@@ -195,9 +160,6 @@ public class Point : MonoBehaviour
 		Vector3 acceleration = force / mass;
 
 		_velocity += acceleration * Time.deltaTime;
-
-
-
 		transform.position += _velocity * Time.deltaTime;
 	}
 
@@ -206,29 +168,6 @@ public class Point : MonoBehaviour
 			_connectedSplines.Add (s);
 		}else{
 			Debug.Log("trying to add a spline twice. DONT DO THAT");
-		}
-	}
-
-	public void SetDirectionalArrows(){
-		int index = 0;
-
-		foreach (Spline s in _connectedSplines) {
-			foreach (Point p in _neighbours) {
-
-				if (!p._connectedSplines.Contains (s)) {
-					//do nothing if the point is in another spline
-				} else {
-					if (index > _directionalSprites.Count - 1) {
-						GameObject newSprite = (GameObject)Instantiate (directionalSprite, Vector3.zero, Quaternion.identity);
-						newSprite.transform.parent = transform;
-						_directionalSprites.Add (newSprite);
-					}
-					SetPosAndVelocity (_directionalSprites [index], 0, s, p);
-					float cc = c + Mathf.Clamp01 (cooldown);
-					_directionalSprites[index].GetComponent<SpriteRenderer>().color =  new Color (cc,cc,cc);
-					index++;
-				}
-			}
 		}
 	}
 
@@ -241,24 +180,7 @@ public class Point : MonoBehaviour
 
 	}
 
-
 	public void ResetCooldown(){
-
-	}
-
-	public void SetPosAndVelocity(GameObject g, float t, Spline s, Point p){
-		int indexdiff = s.SplinePoints.IndexOf (p) - s.SplinePoints.IndexOf (this);
-		int index = 0;
-
-		if (indexdiff == -1 || indexdiff > 1) {
-			index = s.SplinePoints.IndexOf (p);
-			t = 1 - t;
-			g.transform.up = -s.GetVelocityAtIndex (index, t);
-		} else {
-			index = s.SplinePoints.IndexOf (this);
-			g.transform.up = s.GetVelocityAtIndex (index, t);
-		}
-		g.transform.position = s.GetPointAtIndex (index, t);
 
 	}
 
@@ -279,18 +201,15 @@ public class Point : MonoBehaviour
 		_connectedSplines.Remove (s);
 	}
 
-	public void RemoveNode(Point p){
+	public void RemovePoint(Point p){
 		_neighbours.Remove (p);
 	}
 
 	public void OnPointEnter(){
-
-//		continuity = Mathf.Clamp(continuity + 0.01f, 0, 1);
-
 		if (!visited) {
 
 			if(hasPointcloud && pointCloud.text != null){
-			GameObject newText = (GameObject)Instantiate (Services.Prefabs.spawnedText, transform.position - Vector3.forward/2f + Vector3.up/8f, Quaternion.identity);
+			GameObject newText = (GameObject)Instantiate (Services.Prefabs.spawnedText, transform.position - Vector3.forward/5f + Vector3.up/10f, Quaternion.identity);
 			newText.GetComponent<TextMesh>().text = pointCloud.GetWord();
 			newText.GetComponent<FadeTextOnPoint>().p = this;
 			newText.transform.parent = transform;
@@ -298,13 +217,11 @@ public class Point : MonoBehaviour
 		}
 
 		PutOnCooldown ();
-		// GameObject fx = Instantiate (activatedSprite, transform.position, Quaternion.identity);
-		// fx.transform.parent = transform;
 	}
 
 	public void OnPointExit(){
-	}
 
+	}
 
 	public bool HasSplines(){
 		return _connectedSplines.Count > 0 ? true : false;
@@ -316,13 +233,6 @@ public class Point : MonoBehaviour
 				return s;
 		}
 		return null;
-	}
-
-	public bool isConnectedTo(Point p){
-		if (_neighbours.Contains (p)) {
-			return true;
-		}
-		return false;
 	}
 
 	public bool IsAdjacent(Point n){
@@ -351,6 +261,8 @@ public class Point : MonoBehaviour
 		if (!hit) {
 			PointManager.AddPointHit (this);
 			hit = true;
+			GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
+			fx.transform.parent = transform;
 		}
 
 	}
@@ -359,19 +271,47 @@ public class Point : MonoBehaviour
 		return _neighbours;
 	}
 
-	public void DestroySplines(){
-		foreach (Spline s in _connectedSplines) {
-//			s.GetVert1 ().RemoveNode (s.GetVert2 ());
-//			s.GetVert2 ().RemoveNode (s.GetVert1 ());
-//			s.GetVert1 ().RemoveSpline (e);
-//			s.GetVert2 ().RemoveSpline (e);
-			Destroy (s.gameObject);
-			Destroy (this);
+	void SetColor(){
+
+		c = (Mathf.Sin (3 * (Time.time + timeOffset))/2 + 0.6f) + proximity;
+		c = Mathf.Pow (c, 1);
+
+		if (hit) {
+			color = Color.Lerp (SR.color, Color.white * 2, Time.deltaTime * 5);
+			SR.color = color;
+		} else {
+			SR.color = Color.Lerp (SR.color, new Color (c, c, c), Time.deltaTime * 5);
 		}
-		//		foreach (Spline s in _connectedSplines) {
-		//			s.GetComponent<SplineDecorator>().DestroySpline (this);
-		//		}
 	}
 
+	void SetSprite(){
+		if(locked && PointManager._pointsHit.Count < lockAmount){
+			SR.sprite = Services.Prefabs.pointSprites[1];
+		}else{
+			SR.sprite = Services.Prefabs.pointSprites[0];
+		}
+	}
 
+	// public void SetDirectionalArrows(){
+	// 	int index = 0;
+	//
+	// 	foreach (Spline s in _connectedSplines) {
+	// 		foreach (Point p in _neighbours) {
+	//
+	// 			if (!p._connectedSplines.Contains (s)) {
+	// 				//do nothing if the point is in another spline
+	// 			} else {
+	// 				if (index > _directionalSprites.Count - 1) {
+	// 					GameObject newSprite = (GameObject)Instantiate (directionalSprite, Vector3.zero, Quaternion.identity);
+	// 					newSprite.transform.parent = transform;
+	// 					_directionalSprites.Add (newSprite);
+	// 				}
+	// 				SetPosAndVelocity (_directionalSprites [index], 0, s, p);
+	// 				float cc = c + Mathf.Clamp01 (cooldown);
+	// 				_directionalSprites[index].GetComponent<SpriteRenderer>().color =  new Color (cc,cc,cc);
+	// 				index++;
+	// 			}
+	// 		}
+	// 	}
+	// }
 }
