@@ -7,6 +7,5 @@ public class SplineManager : MonoBehaviour{
 	[SerializeField]
 	public Spline[] splines;
 
-
-	
+		
 }

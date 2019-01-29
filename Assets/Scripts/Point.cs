@@ -177,7 +177,6 @@ public class Point : MonoBehaviour
 		}else{
 			Debug.Log("trying to add a point twice. DONT DO THAT");
 		}
-
 	}
 
 	public void ResetCooldown(){

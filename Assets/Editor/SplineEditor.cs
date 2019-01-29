@@ -13,7 +13,7 @@ public class SplineEditor : Editor {
         DrawDefaultInspector();
 
         Spline myScript = (Spline)target;
-        if(GUILayout.Button("Build Spline"))
+        if(GUILayout.Button("Make Spline from points"))
         {
             myScript.SetupSpline();
             Undo.RecordObject(myScript, "built spline");
@@ -32,7 +32,7 @@ public class SplineEditor : Editor {
 					Vector3 curPos = Vector3.zero;
 					for (int i = 0; i < t.SplinePoints.Count - (t.closed ? 0 : 1); i++) {
 		 		 			for (int k = 0; k < t.curveFidelity; k++) {
-
+                
 								float j = (float)k / (float)(t.curveFidelity);
 								curPos = t.GetPointAtIndex (i, j);
 

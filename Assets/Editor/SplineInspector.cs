@@ -20,24 +20,28 @@ public class SplineInspector : Editor {
 	private Quaternion handleRotation;
 	private int selectedIndex = -1;
 
-//	public override void OnInspectorGUI () {
-//		spline = target as Spline;
-//		EditorGUI.BeginChangeCheck();
-//		bool loop = EditorGUILayout.Toggle("Loop", spline.closed);
-//		if (EditorGUI.EndChangeCheck()) {
-//			Undo.RecordObject(spline, "Toggle Loop");
-//			EditorUtility.SetDirty(spline);
-//			spline.closed = loop;
-//		}
-//		if (selectedIndex >= 0 && selectedIndex < spline.SplinePoints.Count) {
-//			DrawSelectedPointInspector();
-//		}
-//		if (GUILayout.Button("Add Curve")) {
-//			Undo.RecordObject(spline, "Add Curve");
-//			//spline.AddCurve();
-//			EditorUtility.SetDirty(spline);
-//		}
-//	}
+//Doesnt work because it's targeting splines
+//use this to select individual splines.
+
+	// public override void OnInspectorGUI () {
+
+	// 	spline = target as Spline;
+	// 	EditorGUI.BeginChangeCheck();
+	// 	bool loop = EditorGUILayout.Toggle("Loop", spline.closed);
+	// 	if (EditorGUI.EndChangeCheck()) {
+	// 		Undo.RecordObject(spline, "Toggle Loop");
+	// 		EditorUtility.SetDirty(spline);
+	// 		spline.closed = loop;
+	// 	}
+	// 	if (selectedIndex >= 0 && selectedIndex < spline.SplinePoints.Count) {
+	// 		DrawSelectedPointInspector();
+	// 	}
+	// 	if (GUILayout.Button("Add Curve")) {
+	// 		Undo.RecordObject(spline, "Add Curve");
+	// 		//spline.AddCurve();
+	// 		EditorUtility.SetDirty(spline);
+	// 	}
+	// }
 
 	private void DrawSelectedPointInspector() {
 		GUILayout.Label("Selected Point");
@@ -51,13 +55,17 @@ public class SplineInspector : Editor {
 	}
 
 	private void OnSceneGUI () {
-
+		//draw all the splines. NOTHING INTELLIGENT HERE
 		Handles.color = Color.white;
 
 		SplineManager s = target as SplineManager;
+		handleTransform = s.transform;
+		handleRotation = handleTransform.rotation;
+		foreach (Spline spliney in s.splines) {
 
-		foreach (Spline spline in s.splines) {
-
+			Handles.color = Color.gray;
+			Handles.Label(spliney.SplinePoints[0].Pos - Vector3.up/5 + Vector3.right/8f,
+            spliney.name);
 
 			//		for (int i = 0; i < spline.SplinePoints.Count; i ++) {
 			//			Vector3 p1 = ShowPoint(i);
@@ -72,75 +80,59 @@ public class SplineInspector : Editor {
 			//		}
 
 
-			int Count = spline.SplinePoints.Count;
-			Vector3 lastPosition = spline.GetPointAtIndex (0, 0);
+			int Count = spliney.SplinePoints.Count;
+			Vector3 lastPosition = spliney.GetPointAtIndex (0, 0);
+			for (int i = 0; i < Count - (spliney.closed ? 0 : 1); i++) {
 
-			for (int i = 0; i < Count - (spline.closed ? 0 : 1); i++) {
-				for (int k = 0; k < spline.curveFidelity; k++) {
-					float t = (float)k / (float)(spline.curveFidelity - 1);
+				if (selectedIndex >= 0 && selectedIndex < spline.SplinePoints.Count) {
+						DrawSelectedPointInspector();
+					}
 
-					Vector3 v = spline.GetPointAtIndex (i, t);
+				//Draw Point handles
 
+				Handles.color = new Color(0.2f, 0.2f, 0.2f);
+				Handles.DrawDottedLine(spliney.SplinePoints[i].Pos, spliney.SplinePoints[(i + 1) % spliney.SplinePoints.Count].Pos, 5f);
+
+
+				for (int k = 0; k < spliney.curveFidelity; k++) {
+					float t = (float)k / (float)(spliney.curveFidelity - 1);
+
+					Vector3 v = spliney.GetPointAtIndex (i, t);
+					Handles.color = Color.white;
 					Handles.DrawLine (lastPosition, v);
 
 					lastPosition = v;
+
+
+					//  v = spliney.GetPointAtIndex(i, t);
+					// Handles.DrawLine(v, v + spliney.GetVelocityAtIndex(i, t).normalized/5);
 				}
 			}
-
-//			Handles.color = Color.green;
-//
-//			Count = spline.SplinePoints.Count;
-//
-//			for (int i = 0; i < Count - (spline.closed?0:1); i++){
-//				for (int k = 0; k < stepsPerCurve ; k++){
-//
-//					float t = (float)k / (float)(stepsPerCurve-1);
-//
-//					Vector3 v= spline.GetPointAtIndex(i, t);
-//
-//					Handles.DrawLine(v, v + spline.GetVelocityAtIndex(i, t).normalized/5);
-//				}
-//			}
 		}
 	}
 
-//	private void ShowDirections () {
-//		Handles.color = Color.green;
-//
-//		int Count = spline.SplinePoints.Count;
-//
-//		for (int i = 0; i < Count - (spline.closed?0:1); i++){
-//			for (int k = 0; k < stepsPerCurve ; k++){
-//
-//				float t = (float)k / (float)(stepsPerCurve-1);
-//
-//				Vector3 v= spline.GetPointAtIndex(i, t);
-//
-//				Handles.DrawLine(v, v + spline.GetVelocityAtIndex(i, t).normalized/5);
-//			}
-//		}
-//	}
+		private Vector3 ShowPoint (int index) {
+			//All functionality for selected points
+			Handles.color = new Color(0.1f, 0.2f, 0.75f);
 
-//	private Vector3 ShowPoint (int index) {
-//		Vector3 point = handleTransform.TransformPoint(spline.GetControlPoint(index));
-//		float size = HandleUtility.GetHandleSize(point);
-//		if (index == 0) {
-//			size *= 2f;
-//		}
-//		Handles.color = modeColors[(int)spline.GetControlPointMode(index)];
-//		if (Handles.Button(point, handleRotation, size * handleSize, size * pickSize, Handles.DotCap)) {
-//			selectedIndex = index;
-//			Repaint();
-//		}
-//		if (selectedIndex == index) {
-//			EditorGUI.BeginChangeCheck();
-//			point = Handles.DoPositionHandle(point, handleRotation);
-//			if (EditorGUI.EndChangeCheck()) {
-//				Undo.RecordObject(spline, "Move Point");
-//				EditorUtility.SetDirty(spline);
-//				spline.SetControlPoint(index, handleTransform.InverseTransformPoint(point));
-//			}
-//		}
-//		return point;
-//	}
+			Vector3 point = handleTransform.TransformPoint(spline.SplinePoints[i].Pos);
+			float size = HandleUtility.GetHandleSize(point);
+			// Handles.color = modeColors[(int)spline.GetControlPointMode(index)];
+			if (Handles.Button(point, handleRotation, size * handleSize, size * pickSize, Handles.DotCap)) {
+				selectedIndex = i;
+				Repaint();
+			}
+
+			//check that the point is the one I want. Need to also get the spline
+			if (selectedIndex == i) {
+				EditorGUI.BeginChangeCheck();
+				point = Handles.DoPositionHandle(point, handleRotation);
+				if (EditorGUI.EndChangeCheck()) {
+					Undo.RecordObject(spliney, "Move Point");
+					EditorUtility.SetDirty(spliney);
+					spliney.SetPointPosition(i, handleTransform.InverseTransformPoint(point));
+				}
+			}
+		}
+
 }

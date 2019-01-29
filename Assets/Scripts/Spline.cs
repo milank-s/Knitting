@@ -7,10 +7,13 @@ using System;
 using Vectrosity;
 using UnityEngine.Audio;
 using System.Linq;
+using NaughtyAttributes;
+
 // [ExecuteInEditMode]
 public class Spline : MonoBehaviour
 {
 	public static List<Spline> Splines = new List<Spline> ();
+
 	public List<Point> SplinePoints;
 
 	[HideInInspector]
@@ -157,6 +160,10 @@ public class Spline : MonoBehaviour
 		*/
 	}
 
+	public void SetPointPosition(int index, Vector3 pos){
+		SplinePoints[index].transform.position = pos;
+	}
+
 	public void SetupSpline(){
 
 		if (SplinePoints.Count > 0) {
@@ -184,18 +191,19 @@ public class Spline : MonoBehaviour
 		Select = this;
 		Splines.Add (this);
 
-		Material newMat;
-		newMat = Services.Prefabs.lines[UnityEngine.Random.Range(0, Services.Prefabs.lines.Length)];
-		Texture tex = newMat.mainTexture;
-		float length = newMat.mainTextureScale.x;
-		float height = newMat.mainTextureScale.y;
-		line = new VectorLine (name, line.points3, height, LineType.Continuous, Vectrosity.Joins.Weld);
+		// Material newMat;
+		// newMat = Services.Prefabs.lines[UnityEngine.Random.Range(0, Services.Prefabs.lines.Length)];
+		// Texture tex = newMat.mainTexture;
+		// float length = newMat.mainTextureScale.x;
+		// float height = newMat.mainTextureScale.y;
+		line = new VectorLine (name, line.points3, 3, LineType.Continuous, Vectrosity.Joins.Weld);
 		line.color = Color.black;
 		line.smoothWidth = true;
 		line.smoothColor = true;
 		line.points3 = new List<Vector3> (SplinePoints.Count * curveFidelity);
-		line.texture = tex;
-		line.textureScale = newMat.mainTextureScale.x;
+
+		// line.texture = tex;
+		// line.textureScale = newMat.mainTextureScale.x;
 	}
 
 	void DrawLine(int i, int index, float t){
@@ -302,7 +310,7 @@ public class Spline : MonoBehaviour
 					if (i < SplinePoints.Count - 1) {
 						//
 						line.SetColor (Color.Lerp(new Color(0.1f, 0.1f, 0.1f), Color.white, SplinePoints [i].proximity), index);
-					//				line.SetWidth (Mathf.Lerp ((SplinePoints [i].NeighbourCount () - 1) + 1, (SplinePoints [i + 1].NeighbourCount () - 1) + 1, t), index);
+									// line.SetWidth (Mathf.Lerp ((SplinePoints [i].NeighbourCount () - 1) + 1, (SplinePoints [i + 1].NeighbourCount () - 1) + 1, t), index);
 
 					} else if (closed) {
 
@@ -318,72 +326,6 @@ public class Spline : MonoBehaviour
 			*/
 		}
 	}
-
-/*	Old Editor code
-		if(Select==null)
-			Select=this;
-		if(!isSelect)
-			return;
-
-		if (Input.GetMouseButtonDown (1)) {
-			Vector3 C = new Vector3 (Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
-			float minDistance = float.MaxValue;
-			int minI = 0;
-			Vector3 minD = Vector3.zero;
-			bool flag = true;
-			minDistance = float.MaxValue;
-			for (int i = 0; i < SplinePoints.Count - 1; i++) {
-
-				Vector3 A = CameraControler.MainCamera.WorldToScreenPoint (SplinePoints [i].Pos);
-				Vector3 B = CameraControler.MainCamera.WorldToScreenPoint (SplinePoints [i + 1].Pos);
-
-				Vector3 D = A + Vector3.Project (C - A, B - A);
-				Vector3 Va = D - A;
-				Vector3 Vb = D - B;
-
-				if ((Mathf.Sign (Va.x) != Mathf.Sign (Vb.x) || Va.x == 0 && Vb.x == 0) &&
-				   (Mathf.Sign (Va.y) != Mathf.Sign (Vb.y) || Va.y == 0 && Vb.y == 0) &&
-				   (Mathf.Sign (Va.z) != Mathf.Sign (Vb.z) || Va.z == 0 && Vb.z == 0) &&
-				   Vector3.Distance (D, C) < minDistance) {
-					minI = i;
-					minD = D;
-					minDistance = Vector3.Distance (D, C);
-					flag = false;
-				}
-			}
-
-			if (closed) {
-				Vector3 A = CameraControler.MainCamera.WorldToScreenPoint (SplinePoints [0].Pos);
-				Vector3 B = CameraControler.MainCamera.WorldToScreenPoint (SplinePoints [SplinePoints.Count - 1].Pos);
-
-				Vector3 D = A + Vector3.Project (C - A, B - A);
-				Vector3 Va = D - A;
-				Vector3 Vb = D - B;
-
-				if ((Mathf.Sign (Va.x) != Mathf.Sign (Vb.x) || Va.x == 0 && Vb.x == 0) &&
-				   (Mathf.Sign (Va.y) != Mathf.Sign (Vb.y) || Va.y == 0 && Vb.y == 0) &&
-				   (Mathf.Sign (Va.z) != Mathf.Sign (Vb.z) || Va.z == 0 && Vb.z == 0) &&
-				   Vector3.Distance (D, C) < minDistance) {
-					minI = SplinePoints.Count - 1;
-					minD = D;
-					minDistance = Vector3.Distance (D, C);
-					flag = false;
-				}
-			}
-
-
-			if (flag) {
-				return;
-			}
-
-			Point point = GameObject.Instantiate (Services.Prefabs.Point).GetComponent<Point>();
-			point.transform.parent = transform;
-			Vector3 curentPos = CameraControler.MainCamera.ScreenToWorldPoint (minD);
-			point.transform.position = curentPos;
-			AddPoint(point);
-		}
-	}
-	*/
 
 	public void PlayAttack (Point point1, Point point2){
 
