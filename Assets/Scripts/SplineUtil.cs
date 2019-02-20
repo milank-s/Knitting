@@ -112,7 +112,7 @@ public class SplineUtil : MonoBehaviour {
 
 		static public Spline CreateSpline (Point firstP, Point nextP){
 
-		GameObject newSpline = (GameObject)Instantiate (Services.Prefabs.spline, Vector3.zero, Quaternion.identity);
+		GameObject newSpline = (GameObject)Instantiate (Resources.Load<GameObject>("Prefabs/Spline"), Vector3.zero, Quaternion.identity);
 
 		Spline s = newSpline.GetComponent<Spline> ();
 

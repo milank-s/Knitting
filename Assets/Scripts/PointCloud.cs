@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PointCloud : MonoBehaviour {
 
+	[HideInInspector]
+	public List<Point> _pointshit;
 	public List<Point> _points;
 	[Space(10)]
 	[Header("Point Physics")]
@@ -32,6 +34,8 @@ public class PointCloud : MonoBehaviour {
 	}
 
 	public void Awake(){
+		_pointshit = new List<Point>();
+		_points = new List<Point>();
 		wordIndex = 0;
 		if(text != null){
 			words = text.text.Split (new char[] { ' ' });
@@ -41,17 +45,28 @@ public class PointCloud : MonoBehaviour {
 			p.hasPointcloud = true;
 			p.pointCloud = this;
 			p.isKinematic = isKinematic;
+			_points.Add(p);
 		}
 	}
 
-	public void UpdateVisuals(){
+	public void CheckCompleteness(){
+		if(_pointshit.Count == _points.Count){
+			isOn = true;
+		}
+	}
 
+	void Update(){
 		if (isOn) {
-			fade = Mathf.Clamp01(fade + Time.deltaTime);
+			fade = Mathf.Clamp(fade + Time.deltaTime/10, 0, 0.5f);
 		} else {
 			fade = Mathf.Clamp01(fade - Time.deltaTime);
 		}
-		image.color = new Color (1, 1, 1, fade);
-		title.color = image.color;
+
+		if(image != null){
+			image.color = new Color (1, 1, 1, fade);
+		}
+		if(title != null){
+			title.color = image.color;
+		}
 	}
 }

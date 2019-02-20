@@ -8,6 +8,20 @@ using UnityEditor;
 public class PointDebugger : Editor {
 
 
+
+	public override void OnInspectorGUI()
+	{
+			DrawDefaultInspector();
+
+			Point myScript = (Point)target;
+			if(GUILayout.Button("Clear Connections"))
+			{
+					myScript.Reset();
+					Undo.RecordObject(myScript, "reset point");
+			}
+
+	}
+
 	private void OnSceneGUI () {
 
 		Point point = target as Point;

@@ -21,6 +21,7 @@ public class Main : MonoBehaviour {
 		Services.Sounds = GetComponent<SoundBank> ();
 		StartCoroutine(FadeIn());
 	}
+
 	IEnumerator FadeIn(){
 		float t = 0;
 		yield return new WaitForSeconds(0.1f);

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public enum PointTypes{normal, fly, boost, leaf, straight}
+public enum PointTypes{normal, fly, boost}
 //fly points enable flying
 //boost add additional boostAmount. tension = ?
 //leaves cannot be connected to
@@ -126,15 +126,6 @@ public class Point : MonoBehaviour
 				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.boost];
 			break;
 
-			case PointTypes.leaf:
-				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.leaf];
-			break;
-
-			case PointTypes.straight:
-				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.straight];
-				tension = 1;
-			break;
-
 			default:
 			break;
 		}
@@ -196,6 +187,15 @@ public class Point : MonoBehaviour
 		return _connectedSplines.Count;
 	}
 
+	public void Reset(){
+		for (int i = 0; i < _connectedSplines.Count; i++){
+			RemoveSpline(_connectedSplines[i]);
+		}
+		for (int i = 0; i < _neighbours.Count; i++){
+			RemovePoint(_neighbours[i]);
+		}
+	}
+
 	public void RemoveSpline(Spline s){
 		_connectedSplines.Remove (s);
 	}
@@ -207,15 +207,27 @@ public class Point : MonoBehaviour
 	public void OnPointEnter(){
 		if (!visited) {
 
-			if(hasPointcloud && pointCloud.text != null){
-			GameObject newText = (GameObject)Instantiate (Services.Prefabs.spawnedText, transform.position - Vector3.forward/5f + Vector3.up/10f, Quaternion.identity);
-			newText.GetComponent<TextMesh>().text = pointCloud.GetWord();
-			newText.GetComponent<FadeTextOnPoint>().p = this;
-			newText.transform.parent = transform;
+			if(hasPointcloud){
+				if(pointCloud.text != null){
+					GameObject newText = (GameObject)Instantiate (Services.Prefabs.spawnedText, transform.position - Vector3.forward/5f + Vector3.up/10f, Quaternion.identity);
+					newText.GetComponent<TextMesh>().text = pointCloud.GetWord();
+					newText.GetComponent<FadeTextOnPoint>().p = this;
+					newText.transform.parent = transform;
+				}
+
+				pointCloud._pointshit.Add(this);
+				PointManager._connectedPoints.Add (this);
+				pointCloud.CheckCompleteness();
+				visited = true;
 			}
 		}
 
-		PutOnCooldown ();
+		if (!hit) {
+			PointManager.AddPointHit (this);
+			hit = true;
+			GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
+			fx.transform.parent = transform;
+		}
 	}
 
 	public void OnPointExit(){
@@ -248,22 +260,6 @@ public class Point : MonoBehaviour
 
 	public float GetCooldown(){
 		return cooldown;
-	}
-
-	public void PutOnCooldown(){
-
-		if (!visited) {
-			visited = true;
-			PointManager._connectedPoints.Add (this);
-		}
-
-		if (!hit) {
-			PointManager.AddPointHit (this);
-			hit = true;
-			GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
-			fx.transform.parent = transform;
-		}
-
 	}
 
 	public List<Point> GetNeighbours(){

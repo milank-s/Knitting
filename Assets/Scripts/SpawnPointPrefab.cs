@@ -18,7 +18,7 @@ public class SpawnPointPrefab : ScriptableObject {
 		// return newPoint;
 		// #endif
 
-		GameObject p2 =  Instantiate(Services.Prefabs.point) as GameObject;
+		GameObject p2 =  Instantiate(Resources.Load<GameObject>("Prefabs/Point")) as GameObject;
 		Point newPoint2 = p2.GetComponent<Point>();
 
 		newPoint2.transform.position = pos;

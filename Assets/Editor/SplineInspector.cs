@@ -53,7 +53,7 @@ public class SplineInspector : Editor {
 			spline.SplinePoints [selectedIndex].transform.position = point;
 		}
 	}
-
+	
 	private void OnSceneGUI () {
 		//draw all the splines. NOTHING INTELLIGENT HERE
 		Handles.color = Color.white;
@@ -111,28 +111,5 @@ public class SplineInspector : Editor {
 		}
 	}
 
-		private Vector3 ShowPoint (int index) {
-			//All functionality for selected points
-			Handles.color = new Color(0.1f, 0.2f, 0.75f);
-
-			Vector3 point = handleTransform.TransformPoint(spline.SplinePoints[i].Pos);
-			float size = HandleUtility.GetHandleSize(point);
-			// Handles.color = modeColors[(int)spline.GetControlPointMode(index)];
-			if (Handles.Button(point, handleRotation, size * handleSize, size * pickSize, Handles.DotCap)) {
-				selectedIndex = i;
-				Repaint();
-			}
-
-			//check that the point is the one I want. Need to also get the spline
-			if (selectedIndex == i) {
-				EditorGUI.BeginChangeCheck();
-				point = Handles.DoPositionHandle(point, handleRotation);
-				if (EditorGUI.EndChangeCheck()) {
-					Undo.RecordObject(spliney, "Move Point");
-					EditorUtility.SetDirty(spliney);
-					spliney.SetPointPosition(i, handleTransform.InverseTransformPoint(point));
-				}
-			}
-		}
 
 }

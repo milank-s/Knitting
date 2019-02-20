@@ -7,7 +7,6 @@ using System;
 using Vectrosity;
 using UnityEngine.Audio;
 using System.Linq;
-using NaughtyAttributes;
 
 // [ExecuteInEditMode]
 public class Spline : MonoBehaviour
@@ -25,7 +24,14 @@ public class Spline : MonoBehaviour
 	public static Spline Select;
 	[Space(15)]
 	public bool closed = false;
-	[Space(5)]
+	public bool locked = false;
+	[Space(15)]
+	public float unlockSpeed;
+
+	[HideInInspector]
+	public List<Spline> splinesToUnlock;
+
+	[Space(20)]
 	public int curveFidelity = 10;
 	[Space(20)]
 
@@ -196,7 +202,7 @@ public class Spline : MonoBehaviour
 		// Texture tex = newMat.mainTexture;
 		// float length = newMat.mainTextureScale.x;
 		// float height = newMat.mainTextureScale.y;
-		line = new VectorLine (name, line.points3, 3, LineType.Continuous, Vectrosity.Joins.Weld);
+		line = new VectorLine (name, line.points3, 2, LineType.Continuous, Vectrosity.Joins.Weld);
 		line.color = Color.black;
 		line.smoothWidth = true;
 		line.smoothColor = true;
@@ -204,6 +210,30 @@ public class Spline : MonoBehaviour
 
 		// line.texture = tex;
 		// line.textureScale = newMat.mainTextureScale.x;
+	}
+
+	public void UpdateSpline(){
+		for(int i = 0; i < splinesToUnlock.Count; i++){
+			if(Services.PlayerBehaviour.flow > splinesToUnlock[i].unlockSpeed){
+				splinesToUnlock[i].locked = false;
+				splinesToUnlock.Remove(splinesToUnlock[i]);
+			}
+		}
+	}
+
+	void Start(){
+
+		splinesToUnlock = new List<Spline>();
+
+		foreach(Point p in SplinePoints){
+			if(p._connectedSplines.Count > 1){
+				foreach(Spline s in p._connectedSplines){
+					if(s.locked && s != this && !splinesToUnlock.Contains(s)){
+						splinesToUnlock.Add(s);
+					}
+				}
+			}
+		}
 	}
 
 	void DrawLine(int i, int index, float t){
@@ -285,6 +315,9 @@ public class Spline : MonoBehaviour
 						line.SetColor (Color.black, index);
 					}
 				}else{
+					if(locked){
+						line.SetColor (Color.black, index);
+					}else{
 					//why not use Tim's code for adjustedIndex
 						float lerpVal;
 						Color c;
@@ -304,6 +337,7 @@ public class Spline : MonoBehaviour
 						float difference = (lerpVal);
 						line.SetColor (Color.Lerp (c, Color.white, difference), index);
 					}
+				}
 				/* I don't know what the fuck this is
 						do coloring a certain way
 				} else {
@@ -644,6 +678,43 @@ public class Spline : MonoBehaviour
 		}
 	}
 
+	public void RemoveEndPoint(){
+		foreach(Point p in EndPoint._neighbours){
+			p._neighbours.Remove(EndPoint);
+		}
+		foreach(Spline s in EndPoint._connectedSplines){
+			if(s != this){
+				s.SplinePoints.Remove(EndPoint);
+			}
+		}
+		GameObject g = EndPoint.gameObject;
+		SplinePoints.Remove(EndPoint);
+		DestroyImmediate(g);
+	}
+
+	public void AddNewPoint(){
+		Point newPoint;
+
+		if(SplinePoints.Count > 1){
+			newPoint = SpawnPointPrefab.CreatePoint (EndPoint.Pos + Vector3.up/5);
+			AddPoint(EndPoint, newPoint);
+			newPoint.transform.parent = transform;
+		}else{
+
+			newPoint = SpawnPointPrefab.CreatePoint (transform.position);
+			Point newPoint2 = SpawnPointPrefab.CreatePoint (transform.position + Vector3.up/5f);
+			SplinePoints.Add(newPoint);
+			SplinePoints.Add(newPoint2);
+			newPoint._neighbours.Add(newPoint2);
+			newPoint._connectedSplines.Add(this);
+			newPoint2._neighbours.Add(newPoint);
+			newPoint2._connectedSplines.Add(this);
+
+			newPoint.transform.parent = transform;
+			newPoint2.transform.parent = transform;
+		}
+	}
+
 	public void AddPoint (Point curPoint, Point p)
 	{
 
@@ -732,7 +803,7 @@ public class Spline : MonoBehaviour
 
 		if (reversed) {
 			for (int i = highHitPoint + (closed ? 0 : 1); i >= lowHitPoint; i--) {
-				for (int k = curveFidelity - 1; k >= 0; k--) {
+				for (int k = curveFidelity; k >= 0; k--) {
 
 					int index = (i * curveFidelity) + k;
 					float t = (float)k / (float)(curveFidelity);
@@ -743,7 +814,7 @@ public class Spline : MonoBehaviour
 			}
 		} else {
 			for (int i = lowHitPoint; i < highHitPoint + (closed ? 0: 1); i++) {
-				for (int k = 0; k < curveFidelity; k++) {
+				for (int k = 0; k <= curveFidelity; k++) {
 
 					int index = (i * curveFidelity) + k;
 					float t = (float)k / (float)(curveFidelity);
@@ -757,7 +828,7 @@ public class Spline : MonoBehaviour
 
 	public void DrawSpline (){
 			 for (int i = 0; i < SplinePoints.Count - (closed ? 0 : 1); i++) {
-				 for (int k = 0; k < curveFidelity; k++) {
+				 for (int k = 0; k <= curveFidelity; k++) {
 
 					 int index = (i * curveFidelity) + k;
 					 float t = (float)k / (float)(curveFidelity);
@@ -771,7 +842,7 @@ public class Spline : MonoBehaviour
 
 	public void DrawLineSegment(int pointIndex){
 			for (int i = Mathf.Clamp(pointIndex - 2, 0, SplinePoints.Count); i < Mathf.Clamp(pointIndex + 2, 0, SplinePoints.Count - (closed ? 0 : 1)); i++) {
-				for (int k = 0; k < curveFidelity; k++) {
+				for (int k = 0; k <= curveFidelity; k++) {
 
 					int index = (i * curveFidelity) + k;
 					float t = (float)k / (float)(curveFidelity);

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Vectrosity;
 
 public class CreateSpline : MonoBehaviour
 {
@@ -17,7 +16,7 @@ public class CreateSpline : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		vertices = VectorLine.BytesToVector3List (shape.bytes);
+		// vertices = VectorLine.BytesToVector3List (shape.bytes);
 		Make ();
 	}
 
@@ -29,7 +28,7 @@ public class CreateSpline : MonoBehaviour
 		curPoint = secondPoint;
 		curSpline = SplineUtil.CreateSpline (firstPoint, secondPoint);
 		for (int i = 2; i < vertices.Count; i++) {
-			
+
 			Point nextPoint = SplineUtil.CreatePoint (transform.TransformPoint (vertices [i]));
 
 			SplinePointPair spp = SplineUtil.ConnectPoints (curSpline, curPoint, nextPoint);

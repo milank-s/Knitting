@@ -80,6 +80,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	private ParticleSystem ps;
 	private LineRenderer l;
 	private Image cursorSprite;
+	private SpriteRenderer playerSprite;
+	private int noteIndex;
 	public LineRenderer cursorOnPoint;
 
 	private GameObject cursor;
@@ -89,6 +91,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public Vector2 cursorDir;
 
 	void Awake(){
+		playerSprite = GetComponentInChildren<SpriteRenderer>();
 		sound = GetComponent<AudioSource>();
 		Cursor.lockState = CursorLockMode.Locked;
 		pointDest = null;
@@ -119,6 +122,17 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		Point.hitColorLerp = connectTime;
 
+		float speedCoefficient;
+		if(state == PlayerState.Switching || state == PlayerState.Animating){
+			speedCoefficient = 0;
+		}else if (state == PlayerState.Flying){
+			speedCoefficient = curSpeed;
+		}else{
+			speedCoefficient = Mathf.Pow(accuracy, 5);
+		}
+
+		playerSprite.transform.localScale = Vector3.Lerp(playerSprite.transform.localScale, new Vector3(Mathf.Clamp(1 - (speedCoefficient * 2), 0.1f, 0.25f), Mathf.Clamp(speedCoefficient, 0.25f, 0.75f), 0.25f), Time.deltaTime * 10);
+
 		if (connectTime <= 0 && PointManager._pointsHit.Count > 0) {
 			PointManager.ResetPoints ();
 			connectTime = 1;
@@ -130,13 +144,14 @@ public class PlayerBehaviour: MonoBehaviour {
 		List<Spline> splinesToUpdate = new List<Spline>();
 		if(curSpline != null){
 			curSpline.DrawSpline();
+			curSpline.UpdateSpline();
+			ManageSound();
 			splinesToUpdate.Add(curSpline);
 		}
 
 		foreach(Spline s in curPoint._connectedSplines){
 			if(s != curSpline || !splinesToUpdate.Contains(s)){
-			// s.DrawLineSegment(s.SplinePoints.IndexOf(curPoint));
-		 	s.DrawSpline();
+		 	s.DrawLineSegment(s.SplinePoints.IndexOf(curPoint));
 			splinesToUpdate.Add(s);
 			}
 		}
@@ -161,7 +176,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			PlayerMovement ();
 			CheckProgress ();
-			// ManageSound();
 
 			if(Mathf.Abs(flow) < 1){
 			cursorSprite.sprite = traverseSprite;
@@ -172,7 +186,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		 }
 
 		}else if(state == PlayerState.Switching) {
-			curSpeed = Mathf.Lerp(curSpeed, 0, Time.deltaTime);
+			curSpeed = 0;
 			transform.position = curPoint.Pos;
 			PlayerOnPoint();
 		}
@@ -183,6 +197,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 			if(state == PlayerState.Traversing){
+
 				transform.position = curSpline.GetPoint(progress);
 			}
 
@@ -271,15 +286,14 @@ public class PlayerBehaviour: MonoBehaviour {
 				pointDest = null;
 				pointDest = SplineUtil.RaycastFromCamera(cursorPos, 1f);
 
-				if (pointDest != null && pointDest != curPoint && pointDest.isUnlocked() && !pointDest.IsAdjacent(curPoint)) {
-					if(pointDest.pointType != PointTypes.leaf || (pointDest.pointType == PointTypes.leaf && pointDest.NeighbourCount() == 0) && curPoint.pointType != PointTypes.leaf){
+				if (pointDest != null && pointDest != curPoint && !pointDest._connectedSplines.Contains(curSpline) && pointDest.isUnlocked() && !pointDest.IsAdjacent(curPoint)) {
 				  return true;
 				}
-			}
 		}
 
 		return false;
 	}
+
 	void CreatePoint(){
 		SplinePointPair spp = SplineUtil.ConnectPoints (curSpline, curPoint, pointDest);
 		//Adding points multiple times to each other is happening HERE
@@ -866,11 +880,17 @@ public class PlayerBehaviour: MonoBehaviour {
 
 //			if (curPoint.IsOffCooldown ()) {
 				curPoint.OnPointEnter ();
+				PlayAttack(PointArrivedAt, curPoint);
 //			}
 
 			if (PointArrivedAt != curPoint) {
 				traversedPoints.Add (curPoint);
 				lastPoint = PointArrivedAt;
+			}
+
+			if(PointArrivedAt.pointType == PointTypes.boost){
+				traversedPoints.Clear();
+				traversedPoints.Add(PointArrivedAt);
 			}
 
 
@@ -943,6 +963,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			foreach (Spline s in curPoint.GetSplines()) {
 
+				if(s.locked){
+
+				}else{
 
 				foreach (Point p in curPoint.GetNeighbours()) {
 
@@ -979,6 +1002,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						}
 					}
 				}
+			}
 			}
 		}
 			//this is causing bugs
@@ -1093,7 +1117,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		// Vector3 screenPos = ((cursorDir/4f) + (Vector3.one/2f));
 		// screenPos = new Vector3(screenPos.x, screenPos.y, Camera.main.nearClipPlane + 10f);
 		// cursorPos = Camera.main.ViewportToWorldPoint(screenPos);
-		float screenWidth = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, Camera.main.nearClipPlane + 1f)).y - transform.position.y;
+		float screenWidth = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, Camera.main.nearClipPlane + 1.25f)).y - transform.position.y;
 		cursorPos = transform.position + ((Vector3)cursorDir * screenWidth);
 		cursor.transform.position = cursorPos;
 		cursor.transform.rotation = Quaternion.Euler(0, 0, (float)(Mathf.Atan2(-cursorDir.x, cursorDir.y) / Mathf.PI) * 180f);
@@ -1162,9 +1186,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		linearDirection = new Vector2(linearDirection.x, linearDirection.y).normalized;
 		float dot = Vector2.Dot (linearDirection, Vector2.up);
 
-		int index = (int)(((dot/2f) + 0.5f) * (sounds.hits.Length - 1));
+		// int index = (int)(((dot/2f) + 0.5f) * (sounds.hits.Length - 1));
 		GameObject newSound = Instantiate(Services.Prefabs.soundEffectObject, transform.position, Quaternion.identity);
-		newSound.GetComponent<AudioSource>().clip = sounds.hits[index];
+		newSound.GetComponent<AudioSource>().clip = sounds.hits[0];
+		noteIndex++;
 		newSound.GetComponent<AudioSource>().Play();
 		newSound.GetComponent<PlaySound>().enabled = true;
 
@@ -1175,15 +1200,18 @@ public class PlayerBehaviour: MonoBehaviour {
 		switch(state){
 //		Services.PlayerBehaviour.flow / (Services.PlayerBehaviour.maxSpeed/2))
 	  case PlayerState.Traversing:
-		brakingSound.volume = accuracyCoefficient;
-		sound.volume = Mathf.Clamp01(Mathf.Abs(flow)/2) * Mathf.Abs(accuracyCoefficient);
+		// brakingSound.volume = 1 - accuracyCoefficient;
+		// sound.volume = Mathf.Clamp01(curSpeed/2);
+		sound.volume = 0.05f;
 		float dot = Vector2.Dot(curSpline.GetDirection (progress), pointDest.Pos - curPoint.Pos);
 		float curFreqGain;
 
 		Services.Sounds.master.GetFloat ("CenterFreq", out curFreqGain);
-		float lerpAmount = goingForward ? progress : 1 - progress;
+		float lerpAmount = Services.PlayerBehaviour.goingForward ? Services.PlayerBehaviour.progress : 1 - Services.PlayerBehaviour.progress;
 
-		Services.Sounds.master.SetFloat("CenterFreq", Mathf.Lerp(curFreqGain, ((dot/2f + 0.5f) + Mathf.Clamp01(1f/Mathf.Pow(curSpline.distance, 5))) * (16000f / curFreqGain), lerpAmount));
+		Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(Services.PlayerBehaviour.flow)/2 + 1f);
+		// Services.Sounds.master.SetFloat("CenterFreq", Mathf.Lerp(curFreqGain, ((dot/2f + 0.5f) + Mathf.Clamp01(1f/Mathf.Pow(curSpline.segmentDistance, 5))) * (16000f / curFreqGain), lerpAmount));
+
 		break;
 
 		case PlayerState.Flying:
@@ -1193,7 +1221,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		case PlayerState.Switching:
 		brakingSound.volume = Mathf.Lerp(brakingSound.volume, 0, Time.deltaTime * 5);
-
+		sound.volume = Mathf.Lerp(sound.volume, 0, Time.deltaTime * 10);
 		break;
 
 		case PlayerState.Animating:

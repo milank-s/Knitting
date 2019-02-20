@@ -85,15 +85,14 @@ public class SplineTurtle : MonoBehaviour {
 
 		}
 
-		StartCoroutine(InitializeSpline ());
+	InitializeSpline ();
 
 	}
-	IEnumerator Draw(){
+	void Draw(){
 		for(int i = 2; i < maxPoints; i++) {
 
 			Step ();
 			NewPoint ();
-			yield return new WaitForSeconds (0.05f);
 
 			if (PivotAroundCenter) {
 				transform.RotateAround (Vector3.zero, Vector3.forward, PivotSpeed);
@@ -116,14 +115,16 @@ public class SplineTurtle : MonoBehaviour {
 				SpawnTurtle ().transform.Rotate (0, 0, transform.eulerAngles.z + Random.Range (initialAngleMin, initialAngleMax) * i);
 
 			}
-			yield return new WaitForSeconds (0.1f);
 		}
+		transform.rotation = Quaternion.identity;
+		parent.transform.parent = transform;
 	}
 
-	IEnumerator InitializeSpline(){
+	void InitializeSpline(){
 
-		parent = new GameObject ();
+		parent = new GameObject();
 		parent.name = parentName;
+		parent.transform.position = transform.position;
 
 		mxAngle = maxAngle;
 		mAngle = minAngle;
@@ -153,8 +154,6 @@ public class SplineTurtle : MonoBehaviour {
 			curPoint = SpawnPointPrefab.CreatePoint (transform.position);
 			curPoint.transform.parent = parent.transform;
 
-			yield return new WaitForSeconds (0.1f);
-
 			Step ();
 
 			Point secondPoint = SpawnPointPrefab.CreatePoint (transform.position);
@@ -164,12 +163,10 @@ public class SplineTurtle : MonoBehaviour {
 			}
 			curPoint = secondPoint;
 			curPoint.transform.parent = parent.transform;
-
-			yield return new WaitForSeconds (0.1f);
 		}
 
 
-		StartCoroutine (Draw ());
+		Draw ();
 	}
 
 	public GameObject SpawnTurtle(){
