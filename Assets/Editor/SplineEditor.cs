@@ -9,6 +9,7 @@ public class SplineEditor : Editor {
   private const float directionScale = 0.5f;
   private const float handleSize = 0.075f;
   private const float pickSize = 0.02f;
+  private static GUILayoutOption miniButtonWidth = GUILayout.Width(20f);
 
   private static Color[] modeColors = {
     Color.white,
@@ -20,30 +21,95 @@ public class SplineEditor : Editor {
   private Transform handleTransform;
   private Quaternion handleRotation;
   private int selectedIndex = -1;
+  private Point PointInsert;
+
+  SerializedObject GetTarget;
+  SerializedProperty SplinePoints;
+  int ListSize;
+
 	    // draw lines between a chosen game object
 	    // and a selection of added game objects
 
+
+    public void OnEnable(){
+          GetTarget = new SerializedObject(target);
+          SplinePoints = GetTarget.FindProperty("SplinePoints"); // Find the List in our script and create a refrence of it
+      }
+
     public override void OnInspectorGUI()
     {
-        DrawDefaultInspector();
+        spline = (Spline)target;
 
-        Spline myScript = (Spline)target;
+        GetTarget.Update();
+
+        EditorGUILayout.LabelField("Points");
+        ShowList();
+        GUILayout.Space(5);
+        Undo.RecordObject(spline, "closed");
+        spline.closed = EditorGUILayout.Toggle("closed", spline.closed);
+        Undo.RecordObject(spline, "locked");
+        spline.locked = EditorGUILayout.Toggle("locked", spline.locked);
+        //add closed function;
+        //add lock button;
+
         if(GUILayout.Button("Add Point"))
         {
-            myScript.AddNewPoint();
-            Undo.RecordObject(myScript, "added point");
+            Undo.RecordObject(spline, "added point");
+            spline.AddNewPoint(spline.SplinePoints.Count);
         }
-        if(GUILayout.Button("Remove End Point"))
+
+        GUILayout.Space(5);
+
+        // GUILayout.BeginHorizontal("box");
+        // PointInsert = (Point)EditorGUILayout.ObjectField(PointInsert, typeof(Point), true);
+        // if(GUILayout.Button("Insert Point"))
+        // {
+        //   if(PointInsert != null){
+        //     Undo.RecordObject(spline, "added point");
+        //     spline.InsertPoint(PointInsert);
+        //     PointInsert = null;
+        //   }
+        // }
+        // GUILayout.EndHorizontal();
+
+
+        if(GUILayout.Button("Reverse Direction"))
         {
-            myScript.RemoveEndPoint();
-            Undo.RecordObject(myScript, "removed end");
+            Undo.RecordObject(spline, "reversed direction");
+            spline.ReverseSpline();
+
         }
-        if(GUILayout.Button("Make Spline from points"))
-        {
-            myScript.SetupSpline();
-            Undo.RecordObject(myScript, "built spline");
-        }
+
+        GetTarget.ApplyModifiedProperties();
     }
+
+
+  private void ShowList () {
+
+		    for (int i = 0; i < SplinePoints.arraySize; i++) {
+				      EditorGUILayout.BeginHorizontal();
+				      EditorGUILayout.PropertyField(SplinePoints.GetArrayElementAtIndex(i), GUIContent.none);
+				      ShowButtons(i);
+				      EditorGUILayout.EndHorizontal();
+			}
+		}
+
+	private void ShowButtons (int index) {
+		if (GUILayout.Button("v", EditorStyles.miniButtonLeft, miniButtonWidth)) {
+			   SplinePoints.MoveArrayElement(index, index + 1);
+		}
+		if (GUILayout.Button("+", EditorStyles.miniButtonMid, miniButtonWidth)) {
+        // SplinePoints.InsertArrayElementAtIndex(index);
+        spline.AddNewPoint(index + 1);
+		}
+		if (GUILayout.Button("x", EditorStyles.miniButtonRight, miniButtonWidth)) {
+      int oldSize = SplinePoints.arraySize;
+      SplinePoints.DeleteArrayElementAtIndex(index);
+      if (SplinePoints.arraySize == oldSize) {
+      SplinePoints.DeleteArrayElementAtIndex(index);
+  }
+		}
+	}
 
 	    void OnSceneGUI( )
 	    {
@@ -58,13 +124,18 @@ public class SplineEditor : Editor {
 					Vector3 pos = Vector3.zero;
 					Vector3 curPos = Vector3.zero;
 
-					for (int i = 0; i < spline.SplinePoints.Count; i++) {
+					for (int i = 0; i < spline.SplinePoints.Count - (spline.closed? 0 : 1); i++) {
 
             selectedIndex = i;
-            ShowPoint(i);
+            if(i < spline.SplinePoints.Count){
+              ShowPoint(i);
+            }
 
     				Handles.color = new Color(0.2f, 0.2f, 0.2f);
-    				Handles.DrawDottedLine(spline.SplinePoints[i].Pos, spline.SplinePoints[(i + 1) % spline.SplinePoints.Count].Pos, 5f);
+
+            if(i < spline.SplinePoints.Count || spline.closed){
+    				      Handles.DrawDottedLine(spline.SplinePoints[i].Pos, spline.SplinePoints[(i + 1) % spline.SplinePoints.Count].Pos, 5f);
+            }
 
             Handles.color = new Color(1,1,1);
 
@@ -112,8 +183,8 @@ public class SplineEditor : Editor {
   				EditorGUI.BeginChangeCheck();
   				point = Handles.DoPositionHandle(point, handleRotation);
   				if (EditorGUI.EndChangeCheck()) {
-  					Undo.RecordObject(spline, "Move Point");
   					EditorUtility.SetDirty(spline);
+            Undo.RecordObject(spline, "Move Point");
   					spline.SetPointPosition(index, point);
   				}
   			}

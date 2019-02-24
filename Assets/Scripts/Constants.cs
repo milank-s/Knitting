@@ -55,11 +55,11 @@ public class Constants : MonoBehaviour {
 
 	void Update () {
 
-		transform.position = Vector3.Lerp(transform.position, playerVals.transform.position, Time.deltaTime * 10);
+		transform.position = Vector3.Lerp(transform.position, playerVals.transform.position, Time.deltaTime * 25);
 
 		//FLOW METER
 		if (playerVals.state != PlayerState.Animating) {
-			accuracyReadout.text = Mathf.Abs (playerVals.flow * 10).ToString ("F2");
+			accuracyReadout.text = Mathf.Abs (playerVals.flow).ToString ("F2");
 			flowReadout.text = PointManager._pointsHit.Count.ToString() + "•";
 		} else {
 			flowChar.text = "";

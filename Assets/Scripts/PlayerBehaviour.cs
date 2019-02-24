@@ -348,27 +348,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		connectTime = 1f;
 		//this is making it impossible to get off points that are widows. wtf.
 		SetPlayerAtStart (curSpline, pointDest);
-
-		if (!goingForward) {
-			//UNIDIRECTIONAL MOVEMENT
-			flow = -Mathf.Abs (flow);
-			if(curPoint.IsOffCooldown()){
-			// flow -= flowAmount;
-			}
-			if(Mathf.Abs(flow) < 1){
-				boost = -boostAmount;
-			}
-		} else {
-			flow = Mathf.Abs (flow);
-			if(curPoint.IsOffCooldown()){
-			// flow += flowAmount;
-			}
-			if(Mathf.Abs(flow) < 1){
-				boost = boostAmount;
-			}
-		}
-
-
 		curSpline.OnSplineEnter (true, curPoint, pointDest, false);
 		SetCursorAlignment ();
 		PlayerMovement ();
@@ -744,7 +723,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (curPoint == curSpline.Selected) {
 			curPoint.proximity = 1 - progress;
 			pointDest.proximity = progress;
-
+			
 			// if (curSpline.closed && curSpline.SplinePoints.IndexOf(curPoint) >= curSpline.SplinePoints.Count-1) {
 			// 	curSpline.endPoint.proximity = 1 - progress;
 			// }

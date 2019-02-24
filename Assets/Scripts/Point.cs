@@ -100,17 +100,13 @@ public class Point : MonoBehaviour
 		activationSprite = GetComponentInChildren<FadeSprite> ();
 		timeOffset = Point.pointCount;
 
-		if (_neighbours.Count == 0) {
-			_neighbours = new List<Point> ();
-		}
-
-		if (_connectedSplines.Count == 0) {
-			_connectedSplines = new List<Spline> ();
-		}
+		_neighbours = new List<Point> ();
+		_connectedSplines = new List<Spline> ();
 
 		c = 0;
 		cooldown = 0;
 		SR = GetComponent<SpriteRenderer> ();
+		SR.color = color;
 		originalPos = transform.position;
 	}
 
@@ -136,8 +132,6 @@ public class Point : MonoBehaviour
 	}
 
 	public void Update(){
-
-			SetSprite();
 			SetColor();
 
 			if(!isKinematic){
@@ -232,6 +226,31 @@ public class Point : MonoBehaviour
 
 	public void OnPointExit(){
 
+		switch(pointType){
+			case PointTypes.boost:
+				// Services.PlayerBehaviour.boost += 1;
+				Services.PlayerBehaviour.flow += 0.1f;
+				Services.PlayerBehaviour.boost += Services.PlayerBehaviour.boostAmount;
+			break;
+
+			case PointTypes.fly:
+				Services.PlayerBehaviour.boost += Services.PlayerBehaviour.boostAmount;
+			break;
+
+			case PointTypes.normal:
+				Services.PlayerBehaviour.boost = Services.PlayerBehaviour.boostAmount;
+			break;
+
+		}
+
+		/*
+			if(curPoint.IsOffCooldown()){
+			// flow += flowAmount;
+			}
+			if(Mathf.Abs(flow) < 1){
+				boost = boostAmount;
+			}
+		*/
 	}
 
 	public bool HasSplines(){
@@ -268,6 +287,7 @@ public class Point : MonoBehaviour
 
 	void SetColor(){
 
+		if(visited){
 		c = (Mathf.Sin (3 * (Time.time + timeOffset))/2 + 0.6f) + proximity;
 		c = Mathf.Pow (c, 1);
 
@@ -277,6 +297,10 @@ public class Point : MonoBehaviour
 		} else {
 			SR.color = Color.Lerp (SR.color, new Color (c, c, c), Time.deltaTime * 5);
 		}
+	}else{
+		color = new Color(proximity, proximity, proximity);
+		SR.color = color;
+	}
 	}
 
 	void SetSprite(){

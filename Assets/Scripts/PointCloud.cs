@@ -57,7 +57,7 @@ public class PointCloud : MonoBehaviour {
 
 	void Update(){
 		if (isOn) {
-			fade = Mathf.Clamp(fade + Time.deltaTime/10, 0, 0.5f);
+			fade = Mathf.Clamp(fade + Time.deltaTime/10, 0, 0.1f);
 		} else {
 			fade = Mathf.Clamp01(fade - Time.deltaTime);
 		}

@@ -15,6 +15,8 @@ public class Main : MonoBehaviour {
 		Services.Player = Player;
 		Services.PlayerBehaviour = Player.GetComponent<PlayerBehaviour>();
 		Services.StartPoint = StartPoint.GetComponent<Point>();
+		Services.PlayerBehaviour.curPoint = Services.StartPoint;
+		Services.PlayerBehaviour.transform.position = Services.StartPoint.Pos;
 		Services.Cursor = Cursor;
 		PointManager._pointsHit = new List<Point> ();
 		PointManager._connectedPoints = new List<Point> ();

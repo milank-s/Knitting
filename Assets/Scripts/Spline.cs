@@ -7,12 +7,14 @@ using System;
 using Vectrosity;
 using UnityEngine.Audio;
 using System.Linq;
+using SubjectNerd.Utilities;
 
 // [ExecuteInEditMode]
 public class Spline : MonoBehaviour
 {
 	public static List<Spline> Splines = new List<Spline> ();
 
+	[Reorderable]
 	public List<Point> SplinePoints;
 
 	[HideInInspector]
@@ -171,8 +173,6 @@ public class Spline : MonoBehaviour
 	}
 
 	public void SetupSpline(){
-
-		if (SplinePoints.Count > 0) {
 			List<Point> copyPoints = new List<Point>(SplinePoints);
 			SplinePoints.Clear();
 			foreach (Point p in copyPoints) {
@@ -182,21 +182,13 @@ public class Spline : MonoBehaviour
 			if(closed){
 				AddPoint (null, EndPoint);
 			}
-		}
 	}
 
 	void Awake ()
 	{
 
-		if (SplinePoints.Count > 0) {
-
-		} else {
-			SplinePoints = new List<Point> ();
-		}
-
 		Select = this;
 		Splines.Add (this);
-
 		// Material newMat;
 		// newMat = Services.Prefabs.lines[UnityEngine.Random.Range(0, Services.Prefabs.lines.Length)];
 		// Texture tex = newMat.mainTexture;
@@ -222,6 +214,7 @@ public class Spline : MonoBehaviour
 	}
 
 	void Start(){
+		SetupSpline();
 
 		splinesToUnlock = new List<Spline>();
 
@@ -678,38 +671,41 @@ public class Spline : MonoBehaviour
 		}
 	}
 
-	public void RemoveEndPoint(){
-		foreach(Point p in EndPoint._neighbours){
-			p._neighbours.Remove(EndPoint);
-		}
-		foreach(Spline s in EndPoint._connectedSplines){
-			if(s != this){
-				s.SplinePoints.Remove(EndPoint);
+	public void InsertPoint(Point p, int index){
+		SplinePoints.Insert(index, p);
+	}
+
+	public void RemovePoint(int i){
+		foreach(Point p in SplinePoints[i]._neighbours){
+			if(p._connectedSplines.Contains(this)){
+			p._neighbours.Remove(SplinePoints[i]);
 			}
 		}
-		GameObject g = EndPoint.gameObject;
-		SplinePoints.Remove(EndPoint);
+		SplinePoints.Remove(SplinePoints[i]);
+	}
+
+	public void DeletePoint(int i){
+		GameObject g = SplinePoints[i].gameObject;
+		RemovePoint(i);
 		DestroyImmediate(g);
 	}
 
-	public void AddNewPoint(){
+	public void ReverseSpline(){
+		SplinePoints.Reverse();
+	}
+
+	public void AddNewPoint(int i){
 		Point newPoint;
 
 		if(SplinePoints.Count > 1){
-			newPoint = SpawnPointPrefab.CreatePoint (EndPoint.Pos + Vector3.up/5);
-			AddPoint(EndPoint, newPoint);
+			newPoint = SpawnPointPrefab.CreatePoint (SplinePoints[i-1].Pos + Vector3.up/5);
+			InsertPoint(newPoint, i);
 			newPoint.transform.parent = transform;
 		}else{
-
 			newPoint = SpawnPointPrefab.CreatePoint (transform.position);
 			Point newPoint2 = SpawnPointPrefab.CreatePoint (transform.position + Vector3.up/5f);
 			SplinePoints.Add(newPoint);
 			SplinePoints.Add(newPoint2);
-			newPoint._neighbours.Add(newPoint2);
-			newPoint._connectedSplines.Add(this);
-			newPoint2._neighbours.Add(newPoint);
-			newPoint2._connectedSplines.Add(this);
-
 			newPoint.transform.parent = transform;
 			newPoint2.transform.parent = transform;
 		}
