@@ -13,7 +13,7 @@ using SubjectNerd.Utilities;
 public class Spline : MonoBehaviour
 {
 	public static List<Spline> Splines = new List<Spline> ();
-
+	public static float drawSpeed = 0.01f;
 	[Reorderable]
 	public List<Point> SplinePoints;
 
@@ -52,10 +52,15 @@ public class Spline : MonoBehaviour
 	private float colorDecay;
 	private float distanceFromPlayer;
 	private float invertedDistance;
-
+	private int drawIndex;
 	private int lowHitPoint = int.MaxValue;
 	private int highHitPoint = -int.MaxValue;
-	private float playerProgress;
+
+	private float playerProgress{
+		get{return Services.PlayerBehaviour.progress;}
+	}
+
+	private float stepSize;
 
 	public bool isSelect {
 		get {
@@ -74,7 +79,6 @@ public class Spline : MonoBehaviour
 			return SplinePoints[0];
 		}
 	}
-
 	private float drawCooldown = 1f;
 	private float drawTimer = 0;
 	private float pitch;
@@ -113,7 +117,7 @@ public class Spline : MonoBehaviour
 	public void OnSplineEnter (bool enter, Point p1, Point p2, bool forceDraw = false)
 	{
 		draw = false;
-
+		drawIndex = SplinePoints.IndexOf(p1) * curveFidelity;
 		int i = SplinePoints.IndexOf (p1);
 		int j = SplinePoints.IndexOf (p2);
 
@@ -145,11 +149,9 @@ public class Spline : MonoBehaviour
 			int indexdiff = j - i;
 
 			if (indexdiff == -1 || indexdiff > 1) {
-				playerProgress = 0;
 				reversed = true;
 
 			} else {
-				playerProgress = 1;
 				reversed = false;
 			}
 		}
@@ -173,10 +175,12 @@ public class Spline : MonoBehaviour
 	}
 
 	public void SetupSpline(){
-			List<Point> copyPoints = new List<Point>(SplinePoints);
-			SplinePoints.Clear();
-			foreach (Point p in copyPoints) {
-				AddPoint (null, p);
+			for(int i = 0; i < SplinePoints.Count; i++) {
+				SplinePoints[i].AddSpline(this);
+				if(i != 0){
+					SplinePoints[i].AddPoint(SplinePoints[i-1]);
+					SplinePoints[i-1].AddPoint(SplinePoints[i]);
+				}
 			}
 
 			if(closed){
@@ -186,7 +190,7 @@ public class Spline : MonoBehaviour
 
 	void Awake ()
 	{
-
+		stepSize = (1.0f / (float)curveFidelity);
 		Select = this;
 		Splines.Add (this);
 		// Material newMat;
@@ -216,6 +220,14 @@ public class Spline : MonoBehaviour
 	void Start(){
 		SetupSpline();
 
+		for (int i = 0; i < SplinePoints.Count; i++) {
+		 for (int k = 0; k <= curveFidelity; k++) {
+				 int index = (i * curveFidelity) + k;
+				 float step = (float)k / (float)(curveFidelity);
+					SetLinePoint(GetPointAtIndex (i, step), index);
+				}
+		 }
+
 		splinesToUnlock = new List<Spline>();
 
 		foreach(Point p in SplinePoints){
@@ -229,39 +241,101 @@ public class Spline : MonoBehaviour
 		}
 	}
 
-	void DrawLine(int i, int index, float t){
+	void SetLinePoint(Vector3 v, int index){
+		if (index >= line.points3.Count) {
+			line.points3.Add (v);
+		} else {
+			line.points3 [index] = v;
+		}
+	}
 
-		int indexOfPlayerPos = GetPlayerLineSegment ();
-		Vector3 v = GetPointAtIndex (i, t);
-		float stepSize = (1.0f / (float)curveFidelity);
+	void DrawLineSegment(){
+		if(drawTimer < 0){
+			drawIndex++;
+			drawTimer = drawSpeed;
+		}else{
+			drawTimer -= Time.deltaTime;
+		}
+	}
+
+	public void DrawSpline(bool drawn, int pointIndex, int endIndex){
+
+				for (int i = pointIndex; i < endIndex ; i++) {
+				 for (int k = 0; k <= curveFidelity; k++) {
+
+					 int index = (i * curveFidelity) + k;
+					 float step = (float)k / (float)(curveFidelity);
+
+					 if(drawn){
+							DrawLine(i, index, step);
+							Vector3 v = Vector3.zero;
+							if (step < playerProgress){
+							 v = GetPointAtIndex (i, step);
+						 }else{
+							 v = GetPointAtIndex(i, playerProgress);
+						 }
+
+							if(index <= (i * curveFidelity) + (playerProgress * curveFidelity)){
+								line.SetColor (SplinePoints[pointIndex].color, index);
+							}else{
+								line.SetColor (SplinePoints[pointIndex].color + Color.white/5, index);
+							}
+					}else{
+						if(k <= (playerProgress * curveFidelity) + 2){
+							Vector3 v = Vector3.zero;
+							if (step < playerProgress){
+							 v = GetPointAtIndex (i, step);
+						 }else{
+							 v = GetPointAtIndex(i, playerProgress);
+						 }
+						 SetLinePoint(v, index);
+
+							if(index <= (i * curveFidelity) + (playerProgress * curveFidelity)){
+								line.SetColor (SplinePoints[pointIndex].color, index);
+							}
+
+						}else{
+							break;
+						}
+					}
+				 }
+			 }
+			 // line.textureOffset -= (Services.PlayerBehaviour.curSpeed / line.textureScale) * Time.deltaTime * 10;
+			 line.Draw3D();
+	 }
+
+	void DrawLine(int pointIndex, int segmentIndex, float step){
+
+		int playerIndex = GetPlayerLineSegment ();
+		Vector3 v = GetPointAtIndex (pointIndex, step);
 
 		//Add movement Effects of player is on the spline
 		if (isPlayerOn) {
 
-			int adjustedIndex;
+			int indexDiff;
 
 			//Find the shortest distance to the player in case of loop
 			if (closed) {
-				int dist1 = Mathf.Abs(index - indexOfPlayerPos);
+				int dist1 = Mathf.Abs(segmentIndex - playerIndex);
 				int dist2;
 
-				if (index < indexOfPlayerPos) {
-					dist2 = Mathf.Abs ((line.GetSegmentNumber () - indexOfPlayerPos) + index);
+				if (segmentIndex < playerIndex) {
+					dist2 = Mathf.Abs ((line.GetSegmentNumber () - playerIndex) + segmentIndex);
 				} else {
-					dist2 = Mathf.Abs ((line.GetSegmentNumber () - index) + indexOfPlayerPos);
+					dist2 = Mathf.Abs ((line.GetSegmentNumber () - segmentIndex) + playerIndex);
 				}
 
-				adjustedIndex = Mathf.Min (dist1, dist2);
+				indexDiff = Mathf.Min (dist1, dist2);
 
 			} else {
-				adjustedIndex = Mathf.Abs(indexOfPlayerPos - index);
+				indexDiff = Mathf.Abs(playerIndex - segmentIndex);
 			}
 
 			//find the distance. 1 = one curve
-			distanceFromPlayer = (float)adjustedIndex / (float)curveFidelity;
+			distanceFromPlayer = (float)indexDiff / (float)curveFidelity;
 
-			//closeness to the player. 0 = 3 curves away
-			invertedDistance = 1f - Mathf.Clamp01 (Mathf.Abs (distanceFromPlayer)/3);
+			//closeness to the player. 0 = one curve away
+			invertedDistance = 1f - Mathf.Clamp01 (Mathf.Abs (distanceFromPlayer));
 
 			float flow = Mathf.Abs(Services.PlayerBehaviour.flow);
 			float newFrequency = Mathf.Abs(Services.PlayerBehaviour.accuracy * 10);
@@ -272,86 +346,93 @@ public class Spline : MonoBehaviour
 			NewFrequency(newFrequency);
 
 			//get value for sine wave effect
-			float offset = Mathf.Sin (Time.time * frequency + phase + index * 0.5f);
+			float offset = Mathf.Sin (Time.time * frequency + phase + segmentIndex * 0.5f);
 
 			//rotate direction 90 degrees
-			Vector3 direction = GetVelocityAtIndex (i, t);
-			direction = new Vector3 (-direction.y, direction.x, direction.z);
+			Vector3 direction = GetVelocityAtIndex (pointIndex, step);
+			Vector3 distortionVector = new Vector3 (-direction.y, direction.x, direction.z);
 
 			// apply effects with distance falloff
 			//(direction * offset * Mathf.Clamp01(distanceFromPlayer))
-			v += ((direction * UnityEngine.Random.Range (-distortion, distortion) * invertedDistance)) * amplitude;
+			v += ((distortionVector * UnityEngine.Random.Range (-distortion, distortion) * invertedDistance)) * amplitude;
 		}
+
+
+			SetLinePoint(v, segmentIndex);
+
+
+
+
 
 		//because I was indexing out of vectrosity's line's points, just make sure its in there
-		if (index >= line.points3.Count) {
-			line.points3.Add (v);
-		} else {
-			line.points3 [index] = v;
-		}
 
 		//Set the color. There are weird problems with vectrosity going out of range with color values...
-		if (index < line.GetSegmentNumber ()) {
 
-			//CHECK ITS NOT THE LAST POINT
-//		SplinePoints [i + 1].color = Color.Lerp (SplinePoints [i + 1].color, Color.white, Mathf.Pow (invertedDistance, 2));
-//		line.SetWidth (Mathf.Lerp (1, 1, Mathf.Pow (invertedDistance, 10)), index);
-
-			//if the player is on the leading edge of the line keep it black (you should be using low and hi here?)
-				if(index > indexOfPlayerPos && isPlayerOn){
-
-					// if ((reversed && Services.PlayerBehaviour.progress < playerProgress) || (!reversed && Services.PlayerBehaviour.progress > playerProgress)) {
-					if(index - indexOfPlayerPos == 1){
-						float difference = 1 - ((t - Services.PlayerBehaviour.progress) * curveFidelity);
-						line.SetColor (Color.Lerp (Color.black, Color.white, difference), index);
-					}else{
-						line.SetColor (Color.black, index);
-					}
-				}else{
-					if(locked){
-						line.SetColor (Color.black, index);
-					}else{
-					//why not use Tim's code for adjustedIndex
-						float lerpVal;
-						Color c;
-						if(i < SplinePoints.Count - 1){
-								c = Color.Lerp (SplinePoints [i].color, SplinePoints [i + 1].color, t);
-								lerpVal = SplinePoints[i].proximity + t * (SplinePoints[i+1].proximity - SplinePoints[i].proximity);
-						}else{
-							if(closed){
-								c = Color.Lerp (SplinePoints [i].color, StartPoint.color, t);
-								lerpVal = SplinePoints[i].proximity + t * (StartPoint.proximity - SplinePoints[i].proximity);
-							}else{
-								c = SplinePoints [i].color;
-								lerpVal = SplinePoints[i].proximity;
-							}
-						}
-
-						float difference = (lerpVal);
-						line.SetColor (Color.Lerp (c, Color.white, difference), index);
-					}
-				}
-				/* I don't know what the fuck this is
-						do coloring a certain way
-				} else {
-					if (i < SplinePoints.Count - 1) {
-						//
-						line.SetColor (Color.Lerp(new Color(0.1f, 0.1f, 0.1f), Color.white, SplinePoints [i].proximity), index);
-									// line.SetWidth (Mathf.Lerp ((SplinePoints [i].NeighbourCount () - 1) + 1, (SplinePoints [i + 1].NeighbourCount () - 1) + 1, t), index);
-
-					} else if (closed) {
-
-					//IF IT IS THE LAST POINT, ONLY DRAW THE CONNECTION IF ITS A LOOP
-
-						// line.SetColor (Color.Lerp (SplinePoints [i].color, SplinePoints [SplinePoints.Count - 1].color, t), index);
-						line.SetColor (Color.Lerp (new Color(0.1f, 0.1f, 0.1f), Color.white, SplinePoints [i-1].proximity), index);
-					//				line.SetWidth (Mathf.Lerp ((SplinePoints [i].NeighbourCount () - 1) + 1, (SplinePoints [SplinePoints.Count - 1].NeighbourCount () - 1) + 1, t), index);
-				}
-				//			line.SetWidth (1f, index);
-
-			}
-			*/
+		if (segmentIndex < 1) {
+				line.SetColor (Color.white, segmentIndex);
 		}
+//
+// 			//CHECK ITS NOT THE LAST POINT
+// //		SplinePoints [i + 1].color = Color.Lerp (SplinePoints [i + 1].color, Color.white, Mathf.Pow (invertedDistance, 2));
+// //		line.SetWidth (Mathf.Lerp (1, 1, Mathf.Pow (invertedDistance, 10)), index);
+//
+// 			//if the player is on the leading edge of the line keep it black (you should be using low and hi here?)
+// 				if(index > playerIndex && isPlayerOn){
+//
+// 					// if ((reversed && Services.PlayerBehaviour.progress < playerProgress) || (!reversed && Services.PlayerBehaviour.progress > playerProgress)) {
+// 					if(index - playerIndex == 1){
+// 						float difference = 1 - ((t - Services.PlayerBehaviour.progress) * curveFidelity);
+// 						line.SetColor (Color.Lerp (Color.black, Color.white, difference), index);
+// 					}else{
+// 						line.SetColor (Color.black, index);
+// 					}
+//
+// 				}else{
+// 					if(locked){
+// 						line.SetColor (Color.black, index);
+// 					}else{
+// 					//why not use Tim's code for indexDiff
+// 						float lerpVal;
+// 						Color c;
+// 						if(i < SplinePoints.Count - 1){
+// 								c = Color.Lerp (SplinePoints [i].color, SplinePoints [i + 1].color, t);
+// 								lerpVal = (SplinePoints[i].proximity * curveFidelity) - (index/curveFidelity);
+// 						}else{
+// 							if(closed){
+// 								c = Color.Lerp (SplinePoints [i].color, StartPoint.color, t);
+// 								lerpVal = (SplinePoints[i].proximity * curveFidelity) - (index/curveFidelity);
+// 								// lerpVal = SplinePoints[i].proximity + t * (StartPoint.proximity - SplinePoints[i].proximity);
+// 							}else{
+// 								c = SplinePoints [i].color;
+// 								lerpVal = SplinePoints[i].proximity;
+// 							}
+// 						}
+//
+// 						float difference = (lerpVal);
+// 						line.SetColor (Color.Lerp (c, Color.white, difference), index);
+// 					}
+// 				}
+// 				/* I don't know what the fuck this is
+// 						do coloring a certain way
+// 				} else {
+// 					if (i < SplinePoints.Count - 1) {
+// 						//
+// 						line.SetColor (Color.Lerp(new Color(0.1f, 0.1f, 0.1f), Color.white, SplinePoints [i].proximity), index);
+// 									// line.SetWidth (Mathf.Lerp ((SplinePoints [i].NeighbourCount () - 1) + 1, (SplinePoints [i + 1].NeighbourCount () - 1) + 1, t), index);
+//
+// 					} else if (closed) {
+//
+// 					//IF IT IS THE LAST POINT, ONLY DRAW THE CONNECTION IF ITS A LOOP
+//
+// 						// line.SetColor (Color.Lerp (SplinePoints [i].color, SplinePoints [SplinePoints.Count - 1].color, t), index);
+// 						line.SetColor (Color.Lerp (new Color(0.1f, 0.1f, 0.1f), Color.white, SplinePoints [i-1].proximity), index);
+// 					//				line.SetWidth (Mathf.Lerp ((SplinePoints [i].NeighbourCount () - 1) + 1, (SplinePoints [SplinePoints.Count - 1].NeighbourCount () - 1) + 1, t), index);
+// 				}
+// 				//			line.SetWidth (1f, index);
+//
+// 			}
+// 			*/
+// 		}
 	}
 
 	public void PlayAttack (Point point1, Point point2){
@@ -698,7 +779,7 @@ public class Spline : MonoBehaviour
 		Point newPoint;
 
 		if(SplinePoints.Count > 1){
-			newPoint = SpawnPointPrefab.CreatePoint (SplinePoints[i-1].Pos + Vector3.up/5);
+			newPoint = SpawnPointPrefab.CreatePoint (SplinePoints[i-1].Pos + GetInitVelocity(SplinePoints[i-1]).normalized/5f);
 			InsertPoint(newPoint, i);
 			newPoint.transform.parent = transform;
 		}else{
@@ -742,11 +823,11 @@ public class Spline : MonoBehaviour
 			SplinePoints.Insert (newIndex, p);
 
 			p.AddPoint (SplinePoints [newIndex-1]);
-			SplinePoints [newIndex-1].AddPoint (p);
+			SplinePoints [newIndex - 1].AddPoint (p);
 		}
 	}
 
-	public void DrawVelocities (float t, float x)
+	public void DrawVelocity (Vector3 pos, float t, Vector3 direction)
 	{
 		// l2.positionCount = 3;
 		// int step = (int)(t * curveFidelity);
@@ -794,60 +875,6 @@ public class Spline : MonoBehaviour
 			// l2.SetPosition (l2.positionCount - 3, GetPoint (t));
 		}
 	}
-
- void DrawSection (bool reversed = false){
-
-		if (reversed) {
-			for (int i = highHitPoint + (closed ? 0 : 1); i >= lowHitPoint; i--) {
-				for (int k = curveFidelity; k >= 0; k--) {
-
-					int index = (i * curveFidelity) + k;
-					float t = (float)k / (float)(curveFidelity);
-
-					DrawLine (i, index, t);
-
-				}
-			}
-		} else {
-			for (int i = lowHitPoint; i < highHitPoint + (closed ? 0: 1); i++) {
-				for (int k = 0; k <= curveFidelity; k++) {
-
-					int index = (i * curveFidelity) + k;
-					float t = (float)k / (float)(curveFidelity);
-
-					DrawLine (i, index, t);
-				}
-			}
-		}
-
-	}
-
-	public void DrawSpline (){
-			 for (int i = 0; i < SplinePoints.Count - (closed ? 0 : 1); i++) {
-				 for (int k = 0; k <= curveFidelity; k++) {
-
-					 int index = (i * curveFidelity) + k;
-					 float t = (float)k / (float)(curveFidelity);
-
-					 DrawLine (i, index, t);
-				 }
-			 }
-			 // line.textureOffset -= (Services.PlayerBehaviour.curSpeed / line.textureScale) * Time.deltaTime * 10;
-			 line.Draw3D();
-	 }
-
-	public void DrawLineSegment(int pointIndex){
-			for (int i = Mathf.Clamp(pointIndex - 2, 0, SplinePoints.Count); i < Mathf.Clamp(pointIndex + 2, 0, SplinePoints.Count - (closed ? 0 : 1)); i++) {
-				for (int k = 0; k <= curveFidelity; k++) {
-
-					int index = (i * curveFidelity) + k;
-					float t = (float)k / (float)(curveFidelity);
-
-					DrawLine (i, index, t);
-				}
-			}
-			line.Draw3D();
-		}
 
 	void NewFrequency(float newFrequency){
 		float curr = (Time.time * frequency + phase) % (2.0f * Mathf.PI);

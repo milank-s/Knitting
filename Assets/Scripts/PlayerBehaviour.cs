@@ -12,6 +12,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	[Header("Current Spline")]
 	public Spline curSpline;
+	private Spline splineDest;
 	[Space(10)]
 
 	[Header("Points")]
@@ -141,26 +142,21 @@ public class PlayerBehaviour: MonoBehaviour {
 		CursorInput();
 		Effects ();
 
-		List<Spline> splinesToUpdate = new List<Spline>();
+
 		if(curSpline != null){
-			curSpline.DrawSpline();
 			curSpline.UpdateSpline();
 			ManageSound();
-			splinesToUpdate.Add(curSpline);
 		}
 
 		foreach(Spline s in curPoint._connectedSplines){
-			if(s != curSpline || !splinesToUpdate.Contains(s)){
-		 	s.DrawLineSegment(s.SplinePoints.IndexOf(curPoint));
-			splinesToUpdate.Add(s);
-			}
+			//should always be drawn
+		 	s.DrawSpline(true, s.SplinePoints.IndexOf(curPoint), Mathf.Clamp(s.SplinePoints.IndexOf(curPoint) + 1, 0, s.SplinePoints.Count + (s.closed ? 0 : 0)));
 		}
 
 		if(pointDest != null){
 			foreach(Spline s in pointDest._connectedSplines){
-				if(s != curSpline || !splinesToUpdate.Contains(s)){
-					s.DrawLineSegment(s.SplinePoints.IndexOf(pointDest));
-				}
+				//should draw as you're moving. This is broken
+					s.DrawSpline(false, s.SplinePoints.IndexOf(pointDest), Mathf.Clamp(s.SplinePoints.IndexOf(pointDest) + 1, 0, s.SplinePoints.Count + (s.closed ? 0 : 0)));
 			}
 		}
 
@@ -222,7 +218,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(Input.GetButton ("Button1")){
 
 				canTraverse = true;
-				LeaveSpline();
 		 }else{
 			 canTraverse = false;
 			 cursorSprite.sprite = traverseSprite;
@@ -232,8 +227,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		} else {
 				if(CanCreatePoint()){
 					if(Input.GetButtonDown("Button1")){
-						canTraverse = true;
 						CreatePoint();
+						canTraverse = true;
 						// PlayAttack(curPoint, pointDest);
 					}else{
 						l.positionCount = 2;
@@ -342,10 +337,10 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	void LeavePoint(){
-
 		curPoint.OnPointExit ();
+		connectTime = 1;
 		state = PlayerState.Traversing;
-		connectTime = 1f;
+
 		//this is making it impossible to get off points that are widows. wtf.
 		SetPlayerAtStart (curSpline, pointDest);
 		curSpline.OnSplineEnter (true, curPoint, pointDest, false);
@@ -723,7 +718,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (curPoint == curSpline.Selected) {
 			curPoint.proximity = 1 - progress;
 			pointDest.proximity = progress;
-			
+
 			// if (curSpline.closed && curSpline.SplinePoints.IndexOf(curPoint) >= curSpline.SplinePoints.Count-1) {
 			// 	curSpline.endPoint.proximity = 1 - progress;
 			// }
@@ -839,7 +834,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			curPoint.proximity = 0;
 			if (progress > 1) {
 
-				progress = 1;
+				progress = 0;
 
 				if (curSpline.Selected == curSpline.EndPoint && curSpline.closed) {
 					curPoint = curSpline.StartPoint;
@@ -914,30 +909,13 @@ public class PlayerBehaviour: MonoBehaviour {
 	//MAKE SURE THAT YOU CAN STILL PLACE POINTS WHILE NOT FLYING OFF THE EDGE
 	//DONT CONFUSE FLYING WITH
 
-	void LeaveSpline(){
-		bool isEntering = false;
-
-		if (curSpline != null) {
-			curSpline.OnSplineExit ();
-			isEntering = true;
-		} else if(curSpline == null){
-			isEntering = true;
-		}
-
-//				if (lastPoint != pointDest) {
-//					curSpline.OnSplineEnter (isEntering, curPoint, pointDest);
-//					connectTime = 1;
-//				}
-		connectTime = 1;
-	}
-
 	public bool CanLeavePoint(){
 
 		angleToSpline = Mathf.Infinity;
 
 		if (curPoint.HasSplines ()) {
 
-			Spline closestSpline = null;
+			splineDest = null;
 			pointDest = null;
 
 			foreach (Spline s in curPoint.GetSplines()) {
@@ -976,7 +954,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 						if (curAngle < angleToSpline) {
 							angleToSpline = curAngle;
-							closestSpline = s;
+							splineDest = s;
 							pointDest = p;
 						}
 					}
@@ -988,9 +966,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 // && (Input.GetButtonDown("Button1")
 			if (angleToSpline <= StopAngleDiff && pointDest.isUnlocked()) {
-
-				curSpline = closestSpline;
-
+				if(curSpline != null){
+					curSpline.OnSplineExit ();
+				}
+				curSpline = splineDest;
 				return true;
 			}else{
 				return false;

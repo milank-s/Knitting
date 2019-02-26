@@ -95,7 +95,7 @@ public class Point : MonoBehaviour
 	void Awake(){
 		stiffness = 1600;
 		damping = 500;
-		color = Color.black;
+		color = Color.white/10;
 		Point.pointCount++;
 		activationSprite = GetComponentInChildren<FadeSprite> ();
 		timeOffset = Point.pointCount;
@@ -106,7 +106,7 @@ public class Point : MonoBehaviour
 		c = 0;
 		cooldown = 0;
 		SR = GetComponent<SpriteRenderer> ();
-		SR.color = color;
+		SR.color = Color.black;
 		originalPos = transform.position;
 	}
 
@@ -199,8 +199,11 @@ public class Point : MonoBehaviour
 	}
 
 	public void OnPointEnter(){
-		if (!visited) {
+		color += Color.white/5;
+		SR.color = color;
 
+		if (!visited) {
+			visited = true;
 			if(hasPointcloud){
 				if(pointCloud.text != null){
 					GameObject newText = (GameObject)Instantiate (Services.Prefabs.spawnedText, transform.position - Vector3.forward/5f + Vector3.up/10f, Quaternion.identity);
@@ -212,7 +215,7 @@ public class Point : MonoBehaviour
 				pointCloud._pointshit.Add(this);
 				PointManager._connectedPoints.Add (this);
 				pointCloud.CheckCompleteness();
-				visited = true;
+
 			}
 		}
 
@@ -298,9 +301,9 @@ public class Point : MonoBehaviour
 			SR.color = Color.Lerp (SR.color, new Color (c, c, c), Time.deltaTime * 5);
 		}
 	}else{
-		color = new Color(proximity, proximity, proximity);
+		color = new Color(proximity, proximity, proximity)/5;
 		SR.color = color;
-	}
+		}
 	}
 
 	void SetSprite(){

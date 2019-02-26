@@ -42,15 +42,36 @@ public class SplineEditor : Editor {
 
         GetTarget.Update();
 
-        EditorGUILayout.LabelField("Points");
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Insert",GUILayout.Width(50));
+        PointInsert = (Point)EditorGUILayout.ObjectField(PointInsert, typeof(Point), true,GUILayout.Width(140));
+        if(PointInsert != null){
+          Undo.RecordObject(spline, "added point");
+          spline.InsertPoint(PointInsert, 0);
+          PointInsert = null;
+        }
+        EditorGUILayout.EndHorizontal();
+        GUILayout.Space(15);
         ShowList();
-        GUILayout.Space(5);
+        GUILayout.Space(15);
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Append", GUILayout.Width(50));
+        PointInsert = (Point)EditorGUILayout.ObjectField(PointInsert, typeof(Point), true, GUILayout.Width(140));
+        if(PointInsert != null){
+          Undo.RecordObject(spline, "added point");
+          spline.InsertPoint(PointInsert, spline.SplinePoints.Count);
+          PointInsert = null;
+        }
+        EditorGUILayout.EndHorizontal();
+
+        GUILayout.Space(15);
         Undo.RecordObject(spline, "closed");
         spline.closed = EditorGUILayout.Toggle("closed", spline.closed);
         Undo.RecordObject(spline, "locked");
         spline.locked = EditorGUILayout.Toggle("locked", spline.locked);
         //add closed function;
         //add lock button;
+        GUILayout.Space(15);
 
         if(GUILayout.Button("Add Point"))
         {
@@ -58,26 +79,20 @@ public class SplineEditor : Editor {
             spline.AddNewPoint(spline.SplinePoints.Count);
         }
 
-        GUILayout.Space(5);
-
-        // GUILayout.BeginHorizontal("box");
-        // PointInsert = (Point)EditorGUILayout.ObjectField(PointInsert, typeof(Point), true);
-        // if(GUILayout.Button("Insert Point"))
-        // {
-        //   if(PointInsert != null){
-        //     Undo.RecordObject(spline, "added point");
-        //     spline.InsertPoint(PointInsert);
-        //     PointInsert = null;
-        //   }
-        // }
-        // GUILayout.EndHorizontal();
-
 
         if(GUILayout.Button("Reverse Direction"))
         {
             Undo.RecordObject(spline, "reversed direction");
             spline.ReverseSpline();
 
+        }
+        GUILayout.Space(15);
+
+        if(selectedIndex > -1){
+          EditorGUILayout.LabelField("Selected Point");
+          spline.SplinePoints[selectedIndex].tension = EditorGUILayout.Slider("Tension", spline.SplinePoints[selectedIndex].tension, -1, 1);
+          spline.SplinePoints[selectedIndex].bias = EditorGUILayout.Slider("Bias", spline.SplinePoints[selectedIndex].bias, -1, 1);
+          spline.SplinePoints[selectedIndex].continuity = EditorGUILayout.Slider("Continuity", spline.SplinePoints[selectedIndex].continuity, -1, 1);
         }
 
         GetTarget.ApplyModifiedProperties();
@@ -88,7 +103,13 @@ public class SplineEditor : Editor {
 
 		    for (int i = 0; i < SplinePoints.arraySize; i++) {
 				      EditorGUILayout.BeginHorizontal();
-				      EditorGUILayout.PropertyField(SplinePoints.GetArrayElementAtIndex(i), GUIContent.none);
+              if(i == selectedIndex){
+                EditorGUILayout.LabelField(">>>", GUILayout.Width(50));
+                EditorGUILayout.PropertyField(SplinePoints.GetArrayElementAtIndex(i), GUIContent.none);
+              }else{
+                EditorGUILayout.PropertyField(SplinePoints.GetArrayElementAtIndex(i), GUIContent.none);
+              }
+
 				      ShowButtons(i);
 				      EditorGUILayout.EndHorizontal();
 			}
@@ -126,7 +147,6 @@ public class SplineEditor : Editor {
 
 					for (int i = 0; i < spline.SplinePoints.Count - (spline.closed? 0 : 1); i++) {
 
-            selectedIndex = i;
             if(i < spline.SplinePoints.Count){
               ShowPoint(i);
             }
@@ -177,7 +197,7 @@ public class SplineEditor : Editor {
   				Repaint();
   			}
 
-  			//check that the point is the one I want. Need to also get the spline
+  			// check that the point is the one I want. Need to also get the spline
   			if (selectedIndex == index) {
 
   				EditorGUI.BeginChangeCheck();
