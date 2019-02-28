@@ -5,7 +5,7 @@ using UnityEngine;
 public class FadeTextOnPoint: MonoBehaviour {
 
 	bool fading = false;
-	float alpha = 1;
+	public float alpha = 1;
 	TextMesh t;
 	public Point p;
 
@@ -14,9 +14,8 @@ public class FadeTextOnPoint: MonoBehaviour {
 	}
 	// Update is called once per frame
 	void Update () {
-		alpha = p.c;
-		Color c = GetComponent<TextMesh> ().color;
-		GetComponent<TextMesh> ().color = new Color (c.r, c.g, c.b, alpha);
+		t.color = new Color(alpha, alpha, alpha);
+		alpha = Mathf.Clamp01(alpha - Time.deltaTime/3);
 		// if (alpha <= 0) {
 		// 	Destroy (gameObject);
 		// }

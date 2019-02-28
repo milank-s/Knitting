@@ -736,7 +736,7 @@ public class Spline : MonoBehaviour
 		float step = (1.0f / (float)curveFidelity);
 		distance = 0;
 
-		for (int k = 0; k < curveFidelity; k++) {
+		for (int k = 0; k <= curveFidelity; k++) {
 
 			float t = (float)k / (float)(curveFidelity);
 			distance += Vector3.Distance (GetPoint (t), GetPoint (t + step));

@@ -33,7 +33,7 @@ public class PointCloud : MonoBehaviour {
 		return words[(wordIndex-1) % (words.Length)];
 	}
 
-	public void Awake(){
+	public void Start(){
 		_pointshit = new List<Point>();
 		_points = new List<Point>();
 		wordIndex = 0;
@@ -41,13 +41,14 @@ public class PointCloud : MonoBehaviour {
 			words = text.text.Split (new char[] { ' ' });
 		}
 
-		foreach(Point p in GetComponentsInChildren<Point>()){
+foreach(Spline s in GetComponentsInChildren<Spline>()){
+		foreach(Point p in s.SplinePoints){
 			p.hasPointcloud = true;
-			p.pointCloud = this;
-			p.isKinematic = isKinematic;
+			p.pointClouds.Add(this);
 			_points.Add(p);
 		}
 	}
+}
 
 	public void CheckCompleteness(){
 		if(_pointshit.Count == _points.Count){

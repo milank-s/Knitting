@@ -59,7 +59,7 @@ public class SplineEditor : Editor {
         PointInsert = (Point)EditorGUILayout.ObjectField(PointInsert, typeof(Point), true, GUILayout.Width(140));
         if(PointInsert != null){
           Undo.RecordObject(spline, "added point");
-          spline.InsertPoint(PointInsert, spline.SplinePoints.Count-1);
+          spline.InsertPoint(PointInsert, spline.SplinePoints.Count);
           PointInsert = null;
         }
         EditorGUILayout.EndHorizontal();
@@ -105,11 +105,13 @@ public class SplineEditor : Editor {
 				      EditorGUILayout.BeginHorizontal();
               if(i == selectedIndex){
                 EditorGUILayout.LabelField(">>>", GUILayout.Width(50));
-                EditorGUILayout.PropertyField(SplinePoints.GetArrayElementAtIndex(i), GUIContent.none);
               }else{
-                EditorGUILayout.PropertyField(SplinePoints.GetArrayElementAtIndex(i), GUIContent.none);
+                if (GUILayout.Button(">",  GUIStyle.none, miniButtonWidth)) {
+            			   selectedIndex = i;
+                     ShowPoint(i);
+            		}
               }
-
+              EditorGUILayout.PropertyField(SplinePoints.GetArrayElementAtIndex(i), GUIContent.none);
 				      ShowButtons(i);
 				      EditorGUILayout.EndHorizontal();
 			}
@@ -145,7 +147,7 @@ public class SplineEditor : Editor {
 					Vector3 pos = Vector3.zero;
 					Vector3 curPos = Vector3.zero;
 
-					for (int i = 0; i < spline.SplinePoints.Count - (spline.closed? 0 : 1); i++) {
+					for (int i = 0; i < spline.SplinePoints.Count - (spline.closed? 0 : 0); i++) {
 
             if(i < spline.SplinePoints.Count){
               ShowPoint(i);
@@ -153,7 +155,7 @@ public class SplineEditor : Editor {
 
     				Handles.color = new Color(0.2f, 0.2f, 0.2f);
 
-            if(i < spline.SplinePoints.Count || spline.closed){
+            if(i < spline.SplinePoints.Count - 1 || spline.closed){
     				      Handles.DrawDottedLine(spline.SplinePoints[i].Pos, spline.SplinePoints[(i + 1) % spline.SplinePoints.Count].Pos, 5f);
             }
 

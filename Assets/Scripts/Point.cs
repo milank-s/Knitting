@@ -46,7 +46,7 @@ public class Point : MonoBehaviour
 	public string text;
 	private TextMesh textMesh;
 	[HideInInspector]
-	public PointCloud pointCloud;
+	public List<PointCloud> pointClouds;
 	[HideInInspector]
 	public bool hasPointcloud;
 	[Space(10)]
@@ -96,6 +96,7 @@ public class Point : MonoBehaviour
 	#endregion
 
 	void Awake(){
+		pointClouds = new List<PointCloud>();
 		stiffness = 1600;
 		damping = 500;
 		color = Color.white/10;
@@ -206,6 +207,10 @@ public class Point : MonoBehaviour
 		color += Color.white/5;
 		SR.color = color;
 
+		if(textMesh != null){
+			textMesh.GetComponent<FadeTextOnPoint>().alpha = 1;
+		}
+
 		if (!visited) {
 			visited = true;
 
@@ -216,9 +221,11 @@ public class Point : MonoBehaviour
 			newText.transform.parent = transform;
 
 			if(hasPointcloud){
-				pointCloud._pointshit.Add(this);
+				foreach(PointCloud p in pointClouds){
+				p._pointshit.Add(this);
 				PointManager._connectedPoints.Add (this);
-				pointCloud.CheckCompleteness();
+				p.CheckCompleteness();
+			 }
 			}
 		}
 
@@ -295,13 +302,10 @@ public class Point : MonoBehaviour
 
 		if(visited){
 		// c = (Mathf.Sin (3 * (Time.time + timeOffset))/4 + 0.3f) + proximity;
-		c = proximity + 0.01f;
+		c = proximity + 0.1f;
 		c = Mathf.Pow (c, 1);
 		color = new Color(c, c, c);
 		SR.color = Color.Lerp (color, new Color (c, c, c), Time.deltaTime * 5);
-		if(textMesh != null){
-			textMesh.color = SR.color;
-		}
 	}else{
 		color = new Color(proximity, proximity, proximity)/5;
 		SR.color = color;

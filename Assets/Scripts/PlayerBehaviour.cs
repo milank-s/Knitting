@@ -167,7 +167,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (state == PlayerState.Traversing) {
 			if(curSpline != null){
-			SetCursorAlignment ();
+				SetCursorAlignment ();
+			// DrawVelocity();
 			}
 
 			PlayerMovement ();
@@ -728,9 +729,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			curSpline.Selected.proximity = 1 - progress;
 		}
 
-		if(pointDest != null && pointDest.hasPointcloud){
-			CameraFollow.desiredFOV = Mathf.Lerp(CameraFollow.desiredFOV, pointDest.pointCloud.desiredFOV, pointDest.proximity);
-		}
+		// if(pointDest != null && pointDest.hasPointcloud){
+		// 	CameraFollow.desiredFOV = Mathf.Lerp(CameraFollow.desiredFOV, pointDest.pointCloud.desiredFOV, pointDest.proximity);
+		// }
 
 
 		// GetComponent<Rigidbody> ().velocity = curSpline.GetDirection (progress) * flow;
@@ -1102,6 +1103,17 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void SetProgress(float f){
 		progress = f;
+	}
+
+	void DrawVelocity(){
+		l.positionCount = curSpline.curveFidelity * 3;
+		for(int i = 0; i <= curSpline.curveFidelity; i++){
+			float step = (float)i/(float)curSpline.curveFidelity;
+			Vector3 pos =  curSpline.GetPoint(step);
+			l.SetPosition(i, pos);
+			l.SetPosition(i + 1, pos +  curSpline.GetVelocity(step).normalized * Mathf.Clamp01(step - progress) * 0.1f);
+			l.SetPosition(i + 2, pos);
+		}
 	}
 
 	public void Effects(){
