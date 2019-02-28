@@ -18,7 +18,9 @@ public class Point : MonoBehaviour
 	public PointTypes pointType = PointTypes.normal;
 	[Space(10)]
 
+	[HideInInspector]
 	public List<Point> _neighbours;
+	[HideInInspector]
 	public List<Spline> _connectedSplines;
 
 	public static float hitColorLerp;
@@ -42,6 +44,7 @@ public class Point : MonoBehaviour
 
 	[HideInInspector]
 	public string text;
+	private TextMesh textMesh;
 	[HideInInspector]
 	public PointCloud pointCloud;
 	[HideInInspector]
@@ -112,6 +115,7 @@ public class Point : MonoBehaviour
 
 	public void Start(){
 
+		text = gameObject.name;
 		switch(pointType){
 
 			case PointTypes.fly:
@@ -204,18 +208,17 @@ public class Point : MonoBehaviour
 
 		if (!visited) {
 			visited = true;
-			if(hasPointcloud){
-				if(pointCloud.text != null){
-					GameObject newText = (GameObject)Instantiate (Services.Prefabs.spawnedText, transform.position - Vector3.forward/5f + Vector3.up/10f, Quaternion.identity);
-					newText.GetComponent<TextMesh>().text = pointCloud.GetWord();
-					newText.GetComponent<FadeTextOnPoint>().p = this;
-					newText.transform.parent = transform;
-				}
 
+			GameObject newText = (GameObject)Instantiate (Services.Prefabs.spawnedText, transform.position - Vector3.forward/5f + Vector3.up/10f, Quaternion.identity);
+			textMesh = newText.GetComponent<TextMesh>();
+			textMesh.text = text;
+			newText.GetComponent<FadeTextOnPoint>().p = this;
+			newText.transform.parent = transform;
+
+			if(hasPointcloud){
 				pointCloud._pointshit.Add(this);
 				PointManager._connectedPoints.Add (this);
 				pointCloud.CheckCompleteness();
-
 			}
 		}
 
@@ -291,14 +294,13 @@ public class Point : MonoBehaviour
 	void SetColor(){
 
 		if(visited){
-		c = (Mathf.Sin (3 * (Time.time + timeOffset))/2 + 0.6f) + proximity;
+		// c = (Mathf.Sin (3 * (Time.time + timeOffset))/4 + 0.3f) + proximity;
+		c = proximity + 0.01f;
 		c = Mathf.Pow (c, 1);
-
-		if (hit) {
-			color = Color.Lerp (SR.color, Color.white * 2, Time.deltaTime * 5);
-			SR.color = color;
-		} else {
-			SR.color = Color.Lerp (SR.color, new Color (c, c, c), Time.deltaTime * 5);
+		color = new Color(c, c, c);
+		SR.color = Color.Lerp (color, new Color (c, c, c), Time.deltaTime * 5);
+		if(textMesh != null){
+			textMesh.color = SR.color;
 		}
 	}else{
 		color = new Color(proximity, proximity, proximity)/5;

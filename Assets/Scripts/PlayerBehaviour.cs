@@ -1075,8 +1075,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		// Vector3 screenPos = ((cursorDir/4f) + (Vector3.one/2f));
 		// screenPos = new Vector3(screenPos.x, screenPos.y, Camera.main.nearClipPlane + 10f);
 		// cursorPos = Camera.main.ViewportToWorldPoint(screenPos);
-		float screenWidth = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, Camera.main.nearClipPlane + 1.25f)).y - transform.position.y;
-		cursorPos = transform.position + ((Vector3)cursorDir * screenWidth);
+		// float screenWidth = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, Camera.main.nearClipPlane)).y - transform.position.y;
+		// cursorPos = transform.position + ((Vector3)cursorDir * screenWidth);
+		cursorPos = transform.position + (Vector3)cursorDir/4f;
 		cursor.transform.position = cursorPos;
 		cursor.transform.rotation = Quaternion.Euler(0, 0, (float)(Mathf.Atan2(-cursorDir.x, cursorDir.y) / Mathf.PI) * 180f);
 

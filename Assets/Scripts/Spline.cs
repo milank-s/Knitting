@@ -198,7 +198,7 @@ public class Spline : MonoBehaviour
 		// Texture tex = newMat.mainTexture;
 		// float length = newMat.mainTextureScale.x;
 		// float height = newMat.mainTextureScale.y;
-		line = new VectorLine (name, line.points3, 2, LineType.Continuous, Vectrosity.Joins.Weld);
+		line = new VectorLine (name, line.points3, 1, LineType.Continuous, Vectrosity.Joins.Weld);
 		line.color = Color.black;
 		line.smoothWidth = true;
 		line.smoothColor = true;
@@ -292,6 +292,7 @@ public class Spline : MonoBehaviour
 
 							if(index <= (i * curveFidelity) + (playerProgress * curveFidelity)){
 								line.SetColor (SplinePoints[pointIndex].color, index);
+								 // line.SetColor (Color.white, index);
 							}
 
 						}else{

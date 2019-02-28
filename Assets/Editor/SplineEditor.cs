@@ -59,7 +59,7 @@ public class SplineEditor : Editor {
         PointInsert = (Point)EditorGUILayout.ObjectField(PointInsert, typeof(Point), true, GUILayout.Width(140));
         if(PointInsert != null){
           Undo.RecordObject(spline, "added point");
-          spline.InsertPoint(PointInsert, spline.SplinePoints.Count);
+          spline.InsertPoint(PointInsert, spline.SplinePoints.Count-1);
           PointInsert = null;
         }
         EditorGUILayout.EndHorizontal();

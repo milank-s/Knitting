@@ -32,111 +32,89 @@ public class CameraFollow : MonoBehaviour {
 				float yPos;
 				float xPos;
 
-				float topBound, leftBound, rightBound, bottomBound;
+				// float CameraDolly.topBound, CameraDolly.leftBound, CameraDolly.rightBound, CameraDolly.bottomBound;
 
-//				if (PointManager._pointsHit.Count < 4) {
-//
-//					leftBound = Services.PlayerBehaviour.curPoint.Pos.x;
-//					topBound = Services.PlayerBehaviour.curPoint.Pos.y;
-//					rightBound = leftBound;
-//					bottomBound = topBound;
-//
-//					foreach (Point p in Services.PlayerBehaviour.curSpline.SplinePoints) {
-//						if (p.Pos.y > topBound) {
-//							topBound = p.Pos.y;
-//						}
-//						if (p.Pos.y < bottomBound) {
-//							bottomBound = p.Pos.y;
-//						}
-//						if (p.Pos.x > rightBound) {
-//							rightBound = p.Pos.x;
-//						}
-//						if (p.Pos.x < leftBound) {
-//							leftBound = p.Pos.x;
-//						}
-//
-//
-//					}
-//
-//					if (target.position.x > rightBound) {
-//						rightBound = target.position.x;
-//					}
-//
-//					if (target.position.x < leftBound) {
-//						leftBound = target.position.x;
-//					}
-//
-//					if (target.position.y > topBound) {
-//						topBound = target.position.y;
-//					}
-//
-//					if (target.position.y < bottomBound) {
-//						bottomBound = target.position.y;
-//					}
-//
-//				} else {
+
+					// CameraDolly.leftBound = Services.PlayerBehaviour.transform.position.x;
+					// CameraDolly.topBound = Services.PlayerBehaviour.transform.position.y;
+					// CameraDolly.rightBound = CameraDolly.leftBound;
+					// CameraDolly.bottomBound = CameraDolly.topBound;
+				//
+					foreach (Point p in Services.PlayerBehaviour.curSpline.SplinePoints) {
+						if (p.Pos.y >= CameraDolly.topBound) {
+							CameraDolly.topBound = p.Pos.y;
+						}else{
+							CameraDolly.topBound -= Time.deltaTime * speed;
+						}
+						if (p.Pos.y <= CameraDolly.bottomBound) {
+							CameraDolly.bottomBound = p.Pos.y;
+						}else{
+							CameraDolly.bottomBound += Time.deltaTime * speed;
+						}
+						if (p.Pos.x >= CameraDolly.rightBound) {
+							CameraDolly.rightBound = p.Pos.x;
+						}else{
+							CameraDolly.rightBound -= Time.deltaTime * speed;
+						}
+						if (p.Pos.x <= CameraDolly.leftBound) {
+							CameraDolly.leftBound = p.Pos.x;
+						}else{
+							CameraDolly.leftBound += Time.deltaTime * speed;
+						}
+
+					}
 
 					if (target.position.x > CameraDolly.rightBound) {
-						rightBound = target.position.x;
-					} else {
-						rightBound = CameraDolly.rightBound;
+						CameraDolly.rightBound = target.position.x;
 					}
 
 					if (target.position.x < CameraDolly.leftBound) {
-						leftBound = target.position.x;
-					} else {
-						leftBound = CameraDolly.leftBound;
+						CameraDolly.leftBound = target.position.x;
 					}
 
 					if (target.position.y > CameraDolly.topBound) {
-						topBound = target.position.y;
-					} else {
-						topBound = CameraDolly.topBound;
+						CameraDolly.topBound = target.position.y;
 					}
 
 					if (target.position.y < CameraDolly.bottomBound) {
-						bottomBound = target.position.y;
-					} else {
-						bottomBound = CameraDolly.bottomBound;
+						CameraDolly.bottomBound = target.position.y;
 					}
 
-				// if (Services.PlayerBehaviour.cursor.transform.position.x > CameraDolly.rightBound) {
-				// 	rightBound = Services.PlayerBehaviour.cursor.transform.position.x;
+				// if (Services.Cursor.transform.position.x > CameraDolly.CameraDolly.rightBound) {
+				// 	CameraDolly.rightBound = Services.Cursor.transform.position.x;
 				// } else {
-				// 	rightBound = CameraDolly.rightBound;
+				// 	CameraDolly.rightBound = CameraDolly.CameraDolly.rightBound;
 				// }
 				//
-				// if (Services.PlayerBehaviour.cursor.transform.position.x < CameraDolly.leftBound) {
-				// 	leftBound = Services.PlayerBehaviour.cursor.transform.position.x;
+				// if (Services.Cursor.transform.position.x < CameraDolly.CameraDolly.leftBound) {
+				// 	CameraDolly.leftBound = Services.Cursor.transform.position.x;
 				// } else {
-				// 	leftBound = CameraDolly.leftBound;
+				// 	CameraDolly.leftBound = CameraDolly.CameraDolly.leftBound;
 				// }
 				//
-				// if (Services.PlayerBehaviour.cursor.transform.position.y > CameraDolly.topBound) {
-				// 	topBound = Services.PlayerBehaviour.cursor.transform.position.y;
+				// if (Services.Cursor.transform.position.y > CameraDolly.CameraDolly.topBound) {
+				// 	CameraDolly.topBound = Services.Cursor.transform.position.y;
 				// } else {
-				// 	topBound = CameraDolly.topBound;
+				// 	CameraDolly.topBound = CameraDolly.CameraDolly.topBound;
 				// }
 				//
-				// if (Services.PlayerBehaviour.cursor.transform.position.y < CameraDolly.bottomBound) {
-				// 	bottomBound = Services.PlayerBehaviour.cursor.transform.position.y;
+				// if (Services.Cursor.transform.position.y < CameraDolly.CameraDolly.bottomBound) {
+				// 	CameraDolly.bottomBound = Services.Cursor.transform.position.y;
 				// } else {
-				// 	bottomBound = CameraDolly.bottomBound;
+				// 	CameraDolly.bottomBound = CameraDolly.CameraDolly.bottomBound;
 				// }
 
-//				}
+				height = CameraDolly.topBound - CameraDolly.bottomBound;
+				yPos = Mathf.Lerp (CameraDolly.bottomBound, CameraDolly.topBound, 0.5f);
+				xPos = Mathf.Lerp (CameraDolly.leftBound, CameraDolly.rightBound, 0.5f);
 
-				height = topBound - bottomBound;
-				yPos = Mathf.Lerp (bottomBound, topBound, 0.5f);
-				xPos = Mathf.Lerp (leftBound, rightBound, 0.5f);
-
-				if(target.GetComponent<PlayerBehaviour>().state != PlayerState.Animating){
-					cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, desiredFOV, Time.deltaTime);
-					transform.position = Vector3.SmoothDamp (transform.position, target.position + offset, ref velocity, speed);
-				}else{
-					cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, CameraDolly.FOVForHeightAndDistance (height, -transform.position.z) + 20, Time.deltaTime * 5);
-					transform.position = Vector3.SmoothDamp (transform.position, Vector3.down + offset, ref velocity, 1);
-				}
+				// if(target.GetComponent<PlayerBehaviour>().state != PlayerState.Animating){
+				// 	cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, desiredFOV, Time.deltaTime * speed);
+				// 	transform.position = Vector3.SmoothDamp (transform.position, target.position + offset, ref velocity, speed);
+				// }else{
+					cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, CameraDolly.FOVForHeightAndDistance (height, -transform.position.z) + 20, Time.deltaTime * speed);
+					transform.position = Vector3.SmoothDamp (transform.position, Vector3.Lerp(Services.PlayerBehaviour.transform.position, new Vector3(xPos, yPos, 0), 0.5f) + offset, ref velocity, 0.5f);
+				// }
 
 				uiCam.fieldOfView = cam.fieldOfView;
 
