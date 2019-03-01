@@ -113,7 +113,8 @@ public class CameraFollow : MonoBehaviour {
 				// 	transform.position = Vector3.SmoothDamp (transform.position, target.position + offset, ref velocity, speed);
 				// }else{
 					cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, CameraDolly.FOVForHeightAndDistance (height, -transform.position.z) + 20, Time.deltaTime * speed);
-					transform.position = Vector3.SmoothDamp (transform.position, Vector3.Lerp(Services.PlayerBehaviour.transform.position, new Vector3(xPos, yPos, 0), 0.5f) + offset, ref velocity, 0.5f);
+					Vector3 targetPos = Vector3.SmoothDamp (transform.position, Vector3.Lerp(Services.PlayerBehaviour.transform.position, new Vector3(xPos, yPos, Services.PlayerBehaviour.transform.position.z), 0.5f), ref velocity, 0.5f);
+					transform.position = new Vector3(targetPos.x, targetPos.y, Services.PlayerBehaviour.transform.position.z + offset.z);
 				// }
 
 				uiCam.fieldOfView = cam.fieldOfView;

@@ -92,6 +92,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public Vector2 cursorDir;
 
 	void Awake(){
+		joystickLocked = true;
 		playerSprite = GetComponentInChildren<SpriteRenderer>();
 		sound = GetComponent<AudioSource>();
 		Cursor.lockState = CursorLockMode.Locked;
@@ -150,13 +151,16 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		foreach(Spline s in curPoint._connectedSplines){
 			//should always be drawn
+			if(!s.locked){
 		 	s.DrawSpline(true, s.SplinePoints.IndexOf(curPoint), Mathf.Clamp(s.SplinePoints.IndexOf(curPoint) + 1, 0, s.SplinePoints.Count + (s.closed ? 0 : 0)));
+			}
 		}
 
 		if(pointDest != null){
 			foreach(Spline s in pointDest._connectedSplines){
-				//should draw as you're moving. This is broken
+				if(!s.locked){
 					s.DrawSpline(false, s.SplinePoints.IndexOf(pointDest), Mathf.Clamp(s.SplinePoints.IndexOf(pointDest) + 1, 0, s.SplinePoints.Count + (s.closed ? 0 : 0)));
+				}
 			}
 		}
 
@@ -216,7 +220,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if (CanLeavePoint ()) {
 
-			if(Input.GetButton ("Button1")){
+			if(!Input.GetButton ("Button1") && !joystickLocked){
 
 				canTraverse = true;
 		 }else{
@@ -226,22 +230,24 @@ public class PlayerBehaviour: MonoBehaviour {
  			cursorOnPoint.positionCount = 0;
 		 }
 		} else {
-				if(CanCreatePoint()){
-					if(Input.GetButtonDown("Button1")){
-						CreatePoint();
-						canTraverse = true;
-						// PlayAttack(curPoint, pointDest);
-					}else{
-						l.positionCount = 2;
-		  			cursorOnPoint.positionCount = 2;
-						l.SetPosition (0, pointDest.Pos);
-						l.SetPosition (1, transform.position);
-						cursorOnPoint.SetPosition (0, pointDest.Pos);
-						cursorOnPoint.SetPosition (1, cursorPos);
-						canTraverse = false;
-						cursorSprite.sprite = canConnectSprite;
-					}
-				}else if(TryToFly()){
+			//NO CONNECTING FOR NOW
+				// if(CanCreatePoint()){
+				// 	if(Input.GetButtonDown("Button1")){
+				// 		CreatePoint();
+				// 		canTraverse = true;
+				// 		// PlayAttack(curPoint, pointDest);
+				// 	}else{
+				// 		l.positionCount = 2;
+		  	// 		cursorOnPoint.positionCount = 2;
+				// 		l.SetPosition (0, pointDest.Pos);
+				// 		l.SetPosition (1, transform.position);
+				// 		cursorOnPoint.SetPosition (0, pointDest.Pos);
+				// 		cursorOnPoint.SetPosition (1, cursorPos);
+				// 		canTraverse = false;
+				// 		cursorSprite.sprite = canConnectSprite;
+				// 	}
+				//}else if
+				if(TryToFly()){
 						cursorSprite.sprite = canFlySprite;
 						if(Input.GetButtonUp("Button1")){
 							Fly();
@@ -938,6 +944,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 							//make sure that you're not making an illegal move
 							bool looping = false;
+
 							if((p == s.StartPoint && curPoint == s.EndPoint) || (p == s.EndPoint && curPoint == s.StartPoint)){
 								looping = true;
 							}

@@ -211,8 +211,8 @@ public class Spline : MonoBehaviour
 	public void UpdateSpline(){
 		for(int i = 0; i < splinesToUnlock.Count; i++){
 			if(Services.PlayerBehaviour.flow > splinesToUnlock[i].unlockSpeed){
-				splinesToUnlock[i].locked = false;
-				splinesToUnlock.Remove(splinesToUnlock[i]);
+				// splinesToUnlock[i].locked = false;
+				// splinesToUnlock.Remove(splinesToUnlock[i]);
 			}
 		}
 	}
@@ -291,8 +291,8 @@ public class Spline : MonoBehaviour
 						 SetLinePoint(v, index);
 
 							if(index <= (i * curveFidelity) + (playerProgress * curveFidelity)){
-								line.SetColor (SplinePoints[pointIndex].color, index);
-								 // line.SetColor (Color.white, index);
+								// line.SetColor (SplinePoints[pointIndex].color, index);
+								 line.SetColor (Color.white, index);
 							}
 
 						}else{

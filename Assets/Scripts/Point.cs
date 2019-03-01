@@ -35,8 +35,8 @@ public class Point : MonoBehaviour
 
 	[HideInInspector]
 	public bool isKinematic;
-	public static float damping = 600f;
-	public static float stiffness = 100f;
+	public static float damping = 1000f;
+	public static float stiffness = 1000f;
 	public static float mass = 50f;
 	[HideInInspector]
 	public Vector3 originalPos;
@@ -219,14 +219,14 @@ public class Point : MonoBehaviour
 			textMesh.text = text;
 			newText.GetComponent<FadeTextOnPoint>().p = this;
 			newText.transform.parent = transform;
+		}
 
-			if(hasPointcloud){
-				foreach(PointCloud p in pointClouds){
-				p._pointshit.Add(this);
-				PointManager._connectedPoints.Add (this);
-				p.CheckCompleteness();
-			 }
-			}
+		if(hasPointcloud){
+			foreach(PointCloud p in pointClouds){
+			p._pointshit.Add(this);
+			PointManager._connectedPoints.Add (this);
+			p.CheckCompleteness();
+		 }
 		}
 
 		if (!hit) {
@@ -243,15 +243,17 @@ public class Point : MonoBehaviour
 			case PointTypes.boost:
 				// Services.PlayerBehaviour.boost += 1;
 				Services.PlayerBehaviour.flow += 0.1f;
-				Services.PlayerBehaviour.boost += Services.PlayerBehaviour.boostAmount;
+				Services.PlayerBehaviour.boost = Services.PlayerBehaviour.boostAmount;
 			break;
 
 			case PointTypes.fly:
-				Services.PlayerBehaviour.boost += Services.PlayerBehaviour.boostAmount;
+				Services.PlayerBehaviour.boost = Services.PlayerBehaviour.boostAmount;
 			break;
 
 			case PointTypes.normal:
-				Services.PlayerBehaviour.boost = Services.PlayerBehaviour.boostAmount;
+				if(!hit){
+					Services.PlayerBehaviour.boost = Services.PlayerBehaviour.boostAmount;
+				}
 			break;
 
 		}
@@ -307,7 +309,7 @@ public class Point : MonoBehaviour
 		color = new Color(c, c, c);
 		SR.color = Color.Lerp (color, new Color (c, c, c), Time.deltaTime * 5);
 	}else{
-		color = new Color(proximity, proximity, proximity)/5;
+		color = new Color(1, 1, 1, proximity);
 		SR.color = color;
 		}
 	}

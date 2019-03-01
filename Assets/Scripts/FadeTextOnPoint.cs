@@ -14,7 +14,7 @@ public class FadeTextOnPoint: MonoBehaviour {
 	}
 	// Update is called once per frame
 	void Update () {
-		t.color = new Color(alpha, alpha, alpha);
+		t.color = new Color(1,1,1, alpha);
 		alpha = Mathf.Clamp01(alpha - Time.deltaTime/3);
 		// if (alpha <= 0) {
 		// 	Destroy (gameObject);

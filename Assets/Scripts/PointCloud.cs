@@ -6,7 +6,9 @@ public class PointCloud : MonoBehaviour {
 
 	[HideInInspector]
 	public List<Point> _pointshit;
+	[HideInInspector]
 	public List<Point> _points;
+	public Spline unlock;
 	[Space(10)]
 	[Header("Point Physics")]
 	public bool isKinematic;
@@ -34,6 +36,8 @@ public class PointCloud : MonoBehaviour {
 	}
 
 	public void Start(){
+		if(unlock)
+		unlock.locked = true;
 		_pointshit = new List<Point>();
 		_points = new List<Point>();
 		wordIndex = 0;
@@ -41,7 +45,7 @@ public class PointCloud : MonoBehaviour {
 			words = text.text.Split (new char[] { ' ' });
 		}
 
-foreach(Spline s in GetComponentsInChildren<Spline>()){
+foreach(Spline s in GetComponents<Spline>()){
 		foreach(Point p in s.SplinePoints){
 			p.hasPointcloud = true;
 			p.pointClouds.Add(this);
@@ -53,6 +57,9 @@ foreach(Spline s in GetComponentsInChildren<Spline>()){
 	public void CheckCompleteness(){
 		if(_pointshit.Count == _points.Count){
 			isOn = true;
+			if(unlock != null){
+				unlock.locked = false;
+			}
 		}
 	}
 
