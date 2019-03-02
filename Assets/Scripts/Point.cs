@@ -45,7 +45,6 @@ public class Point : MonoBehaviour
 	[HideInInspector]
 	public string text;
 	private TextMesh textMesh;
-	[HideInInspector]
 	public List<PointCloud> pointClouds;
 	[HideInInspector]
 	public bool hasPointcloud;
@@ -213,20 +212,17 @@ public class Point : MonoBehaviour
 
 		if (!visited) {
 			visited = true;
-
+			if(hasPointcloud){
+				foreach(PointCloud p in pointClouds){
+				p._pointshit.Add(this);
+				p.CheckCompleteness();
+			 }
+		 	}
 			GameObject newText = (GameObject)Instantiate (Services.Prefabs.spawnedText, transform.position - Vector3.forward/5f + Vector3.up/10f, Quaternion.identity);
 			textMesh = newText.GetComponent<TextMesh>();
 			textMesh.text = text;
 			newText.GetComponent<FadeTextOnPoint>().p = this;
 			newText.transform.parent = transform;
-		}
-
-		if(hasPointcloud){
-			foreach(PointCloud p in pointClouds){
-			p._pointshit.Add(this);
-			PointManager._connectedPoints.Add (this);
-			p.CheckCompleteness();
-		 }
 		}
 
 		if (!hit) {

@@ -22,7 +22,7 @@ public static class PointManager{
 	}
 
 	public static void AddPointHit (Point p){
-		
+
 		_pointsHit.Add (p);
 
 		if (p.Pos.y > CameraDolly.topBound) {
@@ -37,8 +37,10 @@ public static class PointManager{
 		if (p.Pos.x < CameraDolly.leftBound) {
 			CameraDolly.leftBound = p.Pos.x;
 		}
+
+		_connectedPoints.Add (p);
 	}
-		
+
 	public static void ResetPoints(){
 //		CameraDolly.leftBound = Services.PlayerBehaviour.curPoint.Pos.x;
 //		CameraDolly.topBound = Services.PlayerBehaviour.curPoint.Pos.y;

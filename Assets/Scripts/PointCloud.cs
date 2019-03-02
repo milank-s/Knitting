@@ -36,8 +36,10 @@ public class PointCloud : MonoBehaviour {
 	}
 
 	public void Start(){
-		if(unlock)
-		unlock.locked = true;
+		if(unlock){
+			unlock.locked = true;
+		}
+
 		_pointshit = new List<Point>();
 		_points = new List<Point>();
 		wordIndex = 0;
@@ -55,7 +57,8 @@ foreach(Spline s in GetComponents<Spline>()){
 }
 
 	public void CheckCompleteness(){
-		if(_pointshit.Count == _points.Count){
+
+		if(_pointshit.Count >= _points.Count){
 			isOn = true;
 			if(unlock != null){
 				unlock.locked = false;

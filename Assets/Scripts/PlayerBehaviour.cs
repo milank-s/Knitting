@@ -1061,8 +1061,14 @@ public class PlayerBehaviour: MonoBehaviour {
 //			}else{
 //				cursorDir = (mousePos - transform.position);
 //			}
-		  joystickLocked = false;
+
 			cursorDir += new Vector2(Input.GetAxis ("Mouse X"), Input.GetAxis ("Mouse Y"));
+			if (cursorDir.magnitude <= 0.1f){
+			  joystickLocked = true;
+				cursorDir = Vector3.zero;
+			}else{
+				joystickLocked = false;
+			}
 			if (cursorDir.magnitude > 1) {
 				cursorDir.Normalize ();
 			}
