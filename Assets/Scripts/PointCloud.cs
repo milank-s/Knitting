@@ -26,6 +26,7 @@ public class PointCloud : MonoBehaviour {
 
 	[HideInInspector]
 	public bool isOn;
+	bool isComplete;
 	private string[] words;
 	private int wordIndex;
 	private float fade;
@@ -38,6 +39,14 @@ public class PointCloud : MonoBehaviour {
 	public void Start(){
 		if(unlock){
 			unlock.locked = true;
+		}
+
+		if(image != null){
+			image.color = new Color(0,0,0,0);
+		}
+
+		if(title != null){
+			title.color = new Color(0,0,0,0);
 		}
 
 		_pointshit = new List<Point>();
@@ -59,7 +68,7 @@ foreach(Spline s in GetComponents<Spline>()){
 	public void CheckCompleteness(){
 
 		if(_pointshit.Count >= _points.Count){
-			isOn = true;
+			isComplete = true;
 			if(unlock != null){
 				unlock.locked = false;
 			}
@@ -68,16 +77,16 @@ foreach(Spline s in GetComponents<Spline>()){
 
 	void Update(){
 		if (isOn) {
-			fade = Mathf.Clamp(fade + Time.deltaTime/10, 0, 0.1f);
+			fade = Mathf.Clamp(fade + Time.deltaTime/20, 0, 0.1f);
 		} else {
-			fade = Mathf.Clamp01(fade - Time.deltaTime);
+			fade = Mathf.Clamp01(fade - Time.deltaTime/10);
 		}
 
 		if(image != null){
 			image.color = new Color (1, 1, 1, fade);
 		}
-		if(title != null){
-			title.color = image.color;
+		if(title != null && isComplete){
+			title.color = Color.Lerp(title.color, new Color (1, 1, 1, 1), Time.deltaTime);
 		}
 	}
 }

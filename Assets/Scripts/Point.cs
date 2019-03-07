@@ -212,12 +212,6 @@ public class Point : MonoBehaviour
 
 		if (!visited) {
 			visited = true;
-			if(hasPointcloud){
-				foreach(PointCloud p in pointClouds){
-				p._pointshit.Add(this);
-				p.CheckCompleteness();
-			 }
-		 	}
 			GameObject newText = (GameObject)Instantiate (Services.Prefabs.spawnedText, transform.position - Vector3.forward/5f + Vector3.up/10f, Quaternion.identity);
 			textMesh = newText.GetComponent<TextMesh>();
 			textMesh.text = text;
@@ -225,8 +219,21 @@ public class Point : MonoBehaviour
 			newText.transform.parent = transform;
 		}
 
+		if(hasPointcloud){
+			foreach(PointCloud p in pointClouds){
+			p.isOn = true;
+			p.CheckCompleteness();
+		 }
+		}
+
 		if (!hit) {
 			PointManager.AddPointHit (this);
+			if(hasPointcloud){
+				foreach(PointCloud p in pointClouds){
+					p._pointshit.Add(this);
+					p.CheckCompleteness();
+				}
+			}
 			hit = true;
 			GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
 			fx.transform.parent = transform;
@@ -253,6 +260,7 @@ public class Point : MonoBehaviour
 			break;
 
 		}
+
 
 		/*
 			if(curPoint.IsOffCooldown()){

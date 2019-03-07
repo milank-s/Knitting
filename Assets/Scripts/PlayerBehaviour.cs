@@ -249,7 +249,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				//}else if
 				if(TryToFly()){
 						cursorSprite.sprite = canFlySprite;
-						if(Input.GetButtonUp("Button1")){
+						if(Input.GetButtonDown("Button1")){
 							Fly();
 							return;
 						}
@@ -344,6 +344,19 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	void LeavePoint(){
+		if(curPoint.hasPointcloud){
+			if(pointDest.hasPointcloud){
+				foreach(PointCloud p in curPoint.pointClouds){
+					p.isOn = false;
+					foreach(PointCloud q in pointDest.pointClouds){
+
+						if(p == q){
+							p.isOn = true;
+						}
+					}
+				}
+			}
+		}
 		curPoint.OnPointExit ();
 		connectTime = 1;
 		state = PlayerState.Traversing;
@@ -604,7 +617,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		} else {
 			inertia = cursorDir * flow;
-			flow -= Time.deltaTime * decay;
+			flow -= Time.deltaTime/10;
 			transform.position += inertia * Time.deltaTime;
 			curPoint.transform.position = transform.position;
 			curPoint.originalPos = transform.position;
