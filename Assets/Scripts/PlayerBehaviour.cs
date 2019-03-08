@@ -143,27 +143,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		CursorInput();
 		Effects ();
 
-
-		if(curSpline != null){
-			curSpline.UpdateSpline();
-			ManageSound();
-		}
-
-		foreach(Spline s in curPoint._connectedSplines){
-			//should always be drawn
-			if(!s.locked){
-		 	s.DrawSpline(true, s.SplinePoints.IndexOf(curPoint), Mathf.Clamp(s.SplinePoints.IndexOf(curPoint) + 1, 0, s.SplinePoints.Count + (s.closed ? 0 : 0)));
-			}
-		}
-
-		if(pointDest != null){
-			foreach(Spline s in pointDest._connectedSplines){
-				if(!s.locked){
-					s.DrawSpline(false, s.SplinePoints.IndexOf(pointDest), Mathf.Clamp(s.SplinePoints.IndexOf(pointDest) + 1, 0, s.SplinePoints.Count + (s.closed ? 0 : 0)));
-				}
-			}
-		}
-
 		if (state == PlayerState.Flying) {
 			FreeMovement ();
 			return;
@@ -193,6 +172,26 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		if (state != PlayerState.Animating && curPoint.HasSplines () && curSpline != null) {
+
+
+			curSpline.UpdateSpline();
+			ManageSound();
+
+			foreach(Spline s in curPoint._connectedSplines){
+				//should always be drawn
+				if(!s.locked){
+					s.DrawSpline(true, s.SplinePoints.IndexOf(curPoint), Mathf.Clamp(s.SplinePoints.IndexOf(curPoint) + 1, 0, s.SplinePoints.Count + (s.closed ? 0 : 0)));
+				}
+			}
+
+			if(pointDest != null){
+				foreach(Spline s in pointDest._connectedSplines){
+					if(!s.locked){
+						s.DrawSpline(false, s.SplinePoints.IndexOf(pointDest), Mathf.Clamp(s.SplinePoints.IndexOf(pointDest) + 1, 0, s.SplinePoints.Count + (s.closed ? 0 : 0)));
+					}
+				}
+			}
+
 			if(state == PlayerState.Switching){
 				transform.position = curPoint.Pos;
 			}

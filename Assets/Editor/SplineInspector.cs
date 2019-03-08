@@ -19,7 +19,7 @@ public class SplineInspector : Editor {
 	private Transform handleTransform;
 	private Quaternion handleRotation;
 	private int selectedIndex = -1;
-
+	SplineManager s;
 //Doesnt work because it's targeting splines
 //use this to select individual splines.
 
@@ -43,8 +43,14 @@ public class SplineInspector : Editor {
 	// 	}
 	// }
 
+	public void OnEnable(){
+		s = target as SplineManager;
+		s.splines = s.GetComponentsInChildren<Spline>();
+	}
+
 	private void DrawSelectedPointInspector() {
 		GUILayout.Label("Selected Point");
+
 		EditorGUI.BeginChangeCheck();
 		Vector3 point = EditorGUILayout.Vector3Field("Position", spline.SplinePoints[selectedIndex].Pos);
 		if (EditorGUI.EndChangeCheck()) {
@@ -53,12 +59,10 @@ public class SplineInspector : Editor {
 			spline.SplinePoints [selectedIndex].transform.position = point;
 		}
 	}
-	
+
 	private void OnSceneGUI () {
 		//draw all the splines. NOTHING INTELLIGENT HERE
 		Handles.color = Color.white;
-
-		SplineManager s = target as SplineManager;
 		handleTransform = s.transform;
 		handleRotation = handleTransform.rotation;
 		foreach (Spline spliney in s.splines) {
@@ -84,9 +88,10 @@ public class SplineInspector : Editor {
 			Vector3 lastPosition = spliney.GetPointAtIndex (0, 0);
 			for (int i = 0; i < Count - (spliney.closed ? 0 : 1); i++) {
 
-				if (selectedIndex >= 0 && selectedIndex < spline.SplinePoints.Count) {
-						DrawSelectedPointInspector();
-					}
+				GUIStyle style = new GUIStyle();
+		    style.fontSize = 12;
+		    style.normal.textColor = Color.white;
+		    Handles.Label(spliney.SplinePoints[i].Pos, spliney.SplinePoints[i].gameObject.name, style);
 
 				//Draw Point handles
 
