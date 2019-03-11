@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public enum PointTypes{normal, fly, boost}
+public enum PointTypes{normal, fly, connect, boost}
 //fly points enable flying
 //boost add additional boostAmount. tension = ?
 //leaves cannot be connected to

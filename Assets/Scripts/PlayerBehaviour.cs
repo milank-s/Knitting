@@ -130,7 +130,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}else if (state == PlayerState.Flying){
 			speedCoefficient = curSpeed;
 		}else{
-			speedCoefficient = Mathf.Pow(accuracy, 5);
+			speedCoefficient = Mathf.Clamp01(Mathf.Pow(accuracy, 5) * flow + 0.25f);
 		}
 
 		playerSprite.transform.localScale = Vector3.Lerp(playerSprite.transform.localScale, new Vector3(Mathf.Clamp(1 - (speedCoefficient * 2), 0.1f, 0.25f), Mathf.Clamp(speedCoefficient, 0.25f, 0.75f), 0.25f), Time.deltaTime * 10);
@@ -151,7 +151,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (state == PlayerState.Traversing) {
 			if(curSpline != null){
 				SetCursorAlignment ();
-			// DrawVelocity();
+				// DrawVelocity();
 			}
 
 			PlayerMovement ();
@@ -229,24 +229,23 @@ public class PlayerBehaviour: MonoBehaviour {
  			cursorOnPoint.positionCount = 0;
 		 }
 		} else {
-			//NO CONNECTING FOR NOW
-				// if(CanCreatePoint()){
-				// 	if(Input.GetButtonDown("Button1")){
-				// 		CreatePoint();
-				// 		canTraverse = true;
-				// 		// PlayAttack(curPoint, pointDest);
-				// 	}else{
-				// 		l.positionCount = 2;
-		  	// 		cursorOnPoint.positionCount = 2;
-				// 		l.SetPosition (0, pointDest.Pos);
-				// 		l.SetPosition (1, transform.position);
-				// 		cursorOnPoint.SetPosition (0, pointDest.Pos);
-				// 		cursorOnPoint.SetPosition (1, cursorPos);
-				// 		canTraverse = false;
-				// 		cursorSprite.sprite = canConnectSprite;
-				// 	}
-				//}else if
-				if(TryToFly()){
+			// NO CONNECTING FOR NOW
+				if(CanCreatePoint()){
+					if(Input.GetButtonDown("Button1")){
+						CreatePoint();
+						canTraverse = true;
+						// PlayAttack(curPoint, pointDest);
+					}else{
+						l.positionCount = 2;
+		  			cursorOnPoint.positionCount = 2;
+						l.SetPosition (0, pointDest.Pos);
+						l.SetPosition (1, transform.position);
+						cursorOnPoint.SetPosition (0, pointDest.Pos);
+						cursorOnPoint.SetPosition (1, cursorPos);
+						canTraverse = false;
+						cursorSprite.sprite = canConnectSprite;
+					}
+					}else if(TryToFly()){
 						cursorSprite.sprite = canFlySprite;
 						if(Input.GetButtonDown("Button1")){
 							Fly();
@@ -287,7 +286,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				pointDest = null;
 				pointDest = SplineUtil.RaycastFromCamera(cursorPos, 1f);
 
-				if (pointDest != null && pointDest != curPoint && !pointDest._connectedSplines.Contains(curSpline) && pointDest.isUnlocked() && !pointDest.IsAdjacent(curPoint)) {
+				if (pointDest != null && pointDest.pointType == PointTypes.connect && pointDest != curPoint && pointDest.isUnlocked() && !pointDest.IsAdjacent(curPoint)) {
 				  return true;
 				}
 		}
@@ -1131,12 +1130,22 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	void DrawVelocity(){
+		float s = 1f/(float)curSpline.curveFidelity;
 		l.positionCount = curSpline.curveFidelity * 3;
-		for(int i = 0; i <= curSpline.curveFidelity; i++){
-			float step = (float)i/(float)curSpline.curveFidelity;
+		for(int i = 0; i <= curSpline.curveFidelity * 3; i+=3){
+			int index = i/3;
+			float step = (float)index/(float)curSpline.curveFidelity;
+
 			Vector3 pos =  curSpline.GetPoint(step);
 			l.SetPosition(i, pos);
-			l.SetPosition(i + 1, pos +  curSpline.GetVelocity(step).normalized * Mathf.Clamp01(step - progress) * 0.1f);
+
+			float f = step - progress;
+
+			if(f <= s && f >= 0){
+				l.SetPosition(i + 1, pos + curSpline.GetDirection(step) * 1);
+			}else{
+				l.SetPosition(i + 1, pos);
+			}
 			l.SetPosition(i + 2, pos);
 		}
 	}
