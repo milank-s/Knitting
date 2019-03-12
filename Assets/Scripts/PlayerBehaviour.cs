@@ -231,11 +231,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		} else {
 			// NO CONNECTING FOR NOW
 				if(CanCreatePoint()){
-					if(Input.GetButtonDown("Button1")){
+					if(Input.GetButtonDown("Button1") && pointDest.pointType == PointTypes.connect){
 						CreatePoint();
 						canTraverse = true;
 						// PlayAttack(curPoint, pointDest);
-					}else{
+					}else if (pointDest.pointType == PointTypes.connect){
 						l.positionCount = 2;
 		  			cursorOnPoint.positionCount = 2;
 						l.SetPosition (0, pointDest.Pos);
@@ -286,8 +286,20 @@ public class PlayerBehaviour: MonoBehaviour {
 				pointDest = null;
 				pointDest = SplineUtil.RaycastFromCamera(cursorPos, 1f);
 
-				if (pointDest != null && pointDest.pointType == PointTypes.connect && pointDest != curPoint && pointDest.isUnlocked() && !pointDest.IsAdjacent(curPoint)) {
-				  return true;
+				bool drawnPointNull;
+				if(drawnPoint == null){
+					drawnPointNull = true;
+				}
+				if (pointDest != null && pointDest != curPoint && pointDest.isUnlocked() && !pointDest.IsAdjacent(curPoint)) {
+					if(drawnPoint != null){
+						if(drawnPoint != pointDest){
+							return true;
+					  }else{
+							return false;
+						}
+					}else{
+						return true;
+					}
 				}
 		}
 
@@ -571,36 +583,46 @@ public class PlayerBehaviour: MonoBehaviour {
 		// Make drawing points while you skate.
 		//should solve the problems of jumping across new points on the same spline.
 
-		Point overPoint = SplineUtil.RaycastDownToPoint(cursorPos, 2f, 1f);
-		if(overPoint != null && overPoint != curPoint){
+		//YOU WERE DOING TWO RAYCASTS HERE FOR NO REASON AFTER CANCREATEPOINT WAS REFACTORED
+		// Point overPoint = SplineUtil.RaycastDownToPoint(cursorPos, 2f, 1f);
+		// if(overPoint != null && overPoint != curPoint){
 			//Getting a null ref here for some ungodly reason
-			if(Vector3.Distance (curPoint.Pos, drawnPoint.Pos) < 0.25f){
+			// if(Vector3.Distance (curPoint.Pos, drawnPoint.Pos) < 0.25f){
+			// 	curSpline.SplinePoints.Remove(curPoint);
+			// 	drawnPoint._neighbours.Remove(curPoint);
+			// 	Destroy(curPoint.gameObject);
+			// 	curPoint = drawnPoint;
+			// 	curSpline.Selected = drawnPoint;
+			// 	Debug.Log("I have no idea why I'm doing this");
+			// 	// SplinePointPair spp = SplineUtil.ConnectPoints(curSpline, drawnPoint, overPoint);
+			// 	// curSpline = spp.s;
+			// 	// drawnPoint = spp.p;
+			// 	// traversedPoints.Add(drawnPoint);
+			// 	//
+			// 	// SplinePointPair sppp = SplineUtil.ConnectPoints(curSpline, drawnPoint, curPoint);
+			// 	// curSpline = sppp.s;
+			// 	// curSpline.Selected = drawnPoint;
+			// 	// curSpline.OnSplineEnter (true, drawnPoint, curPoint, false);
+			// }
+
+			if(CanCreatePoint()){
+				//remove current point from curspline and connect drawnPoint to pointDest on current spline
 				curSpline.SplinePoints.Remove(curPoint);
 				drawnPoint._neighbours.Remove(curPoint);
 				Destroy(curPoint.gameObject);
 				curPoint = drawnPoint;
 				curSpline.Selected = drawnPoint;
-				// SplinePointPair spp = SplineUtil.ConnectPoints(curSpline, drawnPoint, overPoint);
-				// curSpline = spp.s;
-				// drawnPoint = spp.p;
-				// traversedPoints.Add(drawnPoint);
-				//
-				// SplinePointPair sppp = SplineUtil.ConnectPoints(curSpline, drawnPoint, curPoint);
-				// curSpline = sppp.s;
-				// curSpline.Selected = drawnPoint;
-				// curSpline.OnSplineEnter (true, drawnPoint, curPoint, false);
-			}
+				//this is bugged if the player flies right into the point without creating any on the way
 
-			if(CanCreatePoint()){
-				//remove current point from curspline and connect drawnPoint to pointDest on current spline
 				CreatePoint();
+
 				curPoint.GetComponent<Collider>().enabled = true;
 				curPoint.velocity = cursorDir * Mathf.Abs(flow);
 				curPoint.isKinematic = false;
 				LeavePoint();
 				return;
 			}
-		}
+
 
 			// if(RaycastHitObj == curPoint){
 			// 	StartCoroutine (ReturnToLastPoint ());
@@ -617,9 +639,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			inertia = cursorDir * flow;
 			flow -= Time.deltaTime/10;
 			transform.position += inertia * Time.deltaTime;
+			curDrawDistance += Vector3.Distance (curPoint.Pos, transform.position);
 			curPoint.transform.position = transform.position;
 			curPoint.originalPos = transform.position;
-			curDrawDistance = Vector3.Distance (drawnPoint.Pos, curPoint.Pos);
 			creationInterval -= Time.deltaTime;
 			if (creationInterval < 0 && curDrawDistance > PointDrawDistance) {
 					creationInterval = creationCD;
