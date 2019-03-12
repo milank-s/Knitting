@@ -611,9 +611,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				drawnPoint._neighbours.Remove(curPoint);
 				Destroy(curPoint.gameObject);
 				curPoint = drawnPoint;
-				curSpline.Selected = drawnPoint;
 				//this is bugged if the player flies right into the point without creating any on the way
-
+				//the player is warping back to the start of the last spline for no REASON
+				
 				CreatePoint();
 
 				curPoint.GetComponent<Collider>().enabled = true;
