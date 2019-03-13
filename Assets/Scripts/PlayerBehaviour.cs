@@ -73,7 +73,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	public Sprite canConnectSprite;
 	public Sprite brakeSprite;
 	public Sprite traverseSprite;
-	public Transform pointInfo;
 	public AudioSource brakingSound;
 	private PlayerSounds sounds;
 	private AudioSource sound;
@@ -259,14 +258,14 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 		if(canTraverse){
-			pointInfo.GetComponent<Text>().text = "";
+			// pointInfo.GetComponent<Text>().text = "";
 			LeavePoint();
 		}else{
 			if(pointDest != null && pointDest.lockAmount > 0){
-				pointInfo.GetComponent<Text>().text = pointDest.lockAmount + "•";
-				pointInfo.position = pointDest.Pos + Vector3.right/5f;
+				// pointInfo.GetComponent<Text>().text = pointDest.lockAmount + "•";
+				// pointInfo.position = pointDest.Pos + Vector3.right/5f;
 			}else{
-				pointInfo.GetComponent<Text>().text = "";
+				// pointInfo.GetComponent<Text>().text = "";
 			}
 			//Staying on a point is too punishing.
 			StayOnPoint();
@@ -607,13 +606,13 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if(CanCreatePoint()){
 				//remove current point from curspline and connect drawnPoint to pointDest on current spline
-				curSpline.SplinePoints.Remove(curPoint);
-				drawnPoint._neighbours.Remove(curPoint);
-				Destroy(curPoint.gameObject);
-				curPoint = drawnPoint;
+				// curSpline.SplinePoints.Remove(curPoint);
+				// drawnPoint._neighbours.Remove(curPoint);
+				// Destroy(curPoint.gameObject);
+				// curPoint = drawnPoint;
 				//this is bugged if the player flies right into the point without creating any on the way
 				//the player is warping back to the start of the last spline for no REASON
-				
+
 				CreatePoint();
 
 				curPoint.GetComponent<Collider>().enabled = true;
