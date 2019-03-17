@@ -246,7 +246,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 					}else if(TryToFly()){
 						cursorSprite.sprite = canFlySprite;
-						if(Input.GetButtonDown("Button1")){
+						if(Input.GetButton("Button1")){
 							Fly();
 							return;
 						}
