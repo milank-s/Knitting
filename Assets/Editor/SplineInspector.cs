@@ -68,8 +68,7 @@ public class SplineInspector : Editor {
 		foreach (Spline spliney in s.splines) {
 
 			Handles.color = Color.gray;
-			Handles.Label(spliney.SplinePoints[0].Pos - Vector3.up/5 + Vector3.right/8f,
-            spliney.name);
+			// Handles.Label(spliney.SplinePoints[0].Pos - Vector3.up/5 + Vector3.right/8f,spliney.name);
 
 			//		for (int i = 0; i < spline.SplinePoints.Count; i ++) {
 			//			Vector3 p1 = ShowPoint(i);

@@ -244,23 +244,20 @@ public class Point : MonoBehaviour
 
 		switch(pointType){
 			case PointTypes.boost:
-				// Services.PlayerBehaviour.boost += 1;
+				Services.PlayerBehaviour.boost += 1;
 				Services.PlayerBehaviour.flow += 0.1f;
-				Services.PlayerBehaviour.boost = Services.PlayerBehaviour.boostAmount;
 			break;
 
 			case PointTypes.fly:
-				Services.PlayerBehaviour.boost = Services.PlayerBehaviour.boostAmount;
 			break;
 
 			case PointTypes.normal:
 				if(!hit){
-					Services.PlayerBehaviour.boost = Services.PlayerBehaviour.boostAmount;
 				}
 			break;
-
 		}
 
+		Services.PlayerBehaviour.boost += Services.PlayerBehaviour.boostAmount * Services.PlayerBehaviour.boostTimer;
 
 		/*
 			if(curPoint.IsOffCooldown()){
