@@ -99,7 +99,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversedPoints = new List<Point> ();
 		traversedPoints.Add (curPoint);
 		curPoint.proximity = 1;
-
+		connectTimeCoefficient = 1;
 		state = PlayerState.Switching;
 		sounds = GetComponent<PlayerSounds> ();
 		l = GetComponent<LineRenderer> ();
@@ -150,7 +150,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (state == PlayerState.Traversing) {
 			if(curSpline != null){
 				SetCursorAlignment ();
-				// DrawVelocity();
+				DrawVelocity();
 			}
 
 			PlayerMovement ();
@@ -1089,7 +1089,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 			cursorDir = Vector3.Lerp (lastCursorDir, cursorDir, (cursorRotateSpeed/(((Mathf.Abs(flow) * 10) + 1)) * Time.deltaTime));
-			transform.up = cursorDir;
 			//free movement: transform.position = transform.position + new Vector3 (-Input.GetAxis ("Joy X") / 10, Input.GetAxis ("Joy Y") / 10, 0);
 			//angle to joystick position
 			//zAngle = Mathf.Atan2 (Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y")) * Mathf.Rad2Deg;
@@ -1117,13 +1116,13 @@ public class PlayerBehaviour: MonoBehaviour {
 				cursorDir.Normalize ();
 			}
 			cursorDir = Vector3.Lerp (lastCursorDir, cursorDir, (cursorRotateSpeed/(Mathf.Abs(flow) + 1) * Time.deltaTime));
-			transform.up = cursorDir;
 		}
 
 
 		if (cursorDir.magnitude > 1) {
 			cursorDir.Normalize ();
 		}
+
 
 
 //		if(curPoint.HasSplines() && curSpline != null){
@@ -1138,7 +1137,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		cursorPos = transform.position + (Vector3)cursorDir/4f;
 		cursor.transform.position = cursorPos;
 		cursor.transform.rotation = Quaternion.Euler(0, 0, (float)(Mathf.Atan2(-cursorDir.x, cursorDir.y) / Mathf.PI) * 180f);
-
+		playerSprite.transform.up = cursorDir;
 	}
 
 
@@ -1163,21 +1162,27 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	void DrawVelocity(){
+		// l.positionCount = 2;
+		// Vector3 pos =  curSpline.GetPoint(progress);
+		// l.SetPosition(0, pos);
+		// l.SetPosition(1, pos + curSpline.GetDirection(progress) / 5f);
+
 		float s = 1f/(float)curSpline.curveFidelity;
 		l.positionCount = curSpline.curveFidelity * 3;
-		for(int i = 0; i <= curSpline.curveFidelity * 3; i+=3){
+		for(int i = 0; i <= curSpline.curveFidelity * 3 - 3; i +=3){
 			int index = i/3;
 			float step = (float)index/(float)curSpline.curveFidelity;
 
 			Vector3 pos =  curSpline.GetPoint(step);
 			l.SetPosition(i, pos);
 
-			float f = step - progress;
+			float f = (step - progress);
 
-			if(f <= s && f >= 0){
-				l.SetPosition(i + 1, pos + curSpline.GetDirection(step) * 1);
+			Debug.Log(curSpline.segmentDistance);
+			if(f > 0){
+				l.SetPosition(i + 1, pos + curSpline.GetDirection(step) * (1-f) * curSpeed * curSpline.segmentDistance * (1f - connectTime)/10f);
 			}else{
-				l.SetPosition(i + 1, pos);
+				l.SetPosition(i + 1, pos + curSpline.GetDirection(step) * (1 + f) * curSpeed * curSpline.segmentDistance * (1f - connectTime)/10f);
 			}
 			l.SetPosition(i + 2, pos);
 		}
@@ -1238,9 +1243,18 @@ public class PlayerBehaviour: MonoBehaviour {
 		switch(state){
 //		Services.PlayerBehaviour.flow / (Services.PlayerBehaviour.maxSpeed/2))
 	  case PlayerState.Traversing:
-		// brakingSound.volume = 1 - accuracyCoefficient;
-		// sound.volume = Mathf.Clamp01(curSpeed/2);
-		sound.volume = 0.05f;
+
+		//fade out CURPOINT proximity
+		//fade in POINTDEST proximity
+
+		//assign audio clip soundwhere. Don't have the sounds switch when pointDest/curPoint change
+		sounds.pointDestSound.volume = Mathf.Pow(pointDest.proximity, 3)/5f;
+		sounds.curPointSound.volume =  Mathf.Pow(curPoint.proximity, 3)/5f;
+
+		sounds.ambientSound.volume = Mathf.Clamp01 (curSpeed/2f);
+		sounds.brakingSound.volume =
+		0.5f - accuracyCoefficient;
+
 		float dot = Vector2.Dot(curSpline.GetDirection (progress), pointDest.Pos - curPoint.Pos);
 		float curFreqGain;
 

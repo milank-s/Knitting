@@ -64,6 +64,7 @@ public class Point : MonoBehaviour
 	public Color color;
 	[HideInInspector]
 	public float c = 0;
+	public float accretion;
 	public static Point Select;
 	private FadeSprite activationSprite;
 	private SpriteRenderer SR;
@@ -258,7 +259,7 @@ public class Point : MonoBehaviour
 		}
 
 		Services.PlayerBehaviour.boost += Services.PlayerBehaviour.boostAmount * Services.PlayerBehaviour.boostTimer;
-
+		accretion += 0.1f;
 		/*
 			if(curPoint.IsOffCooldown()){
 			// flow += flowAmount;
@@ -305,7 +306,7 @@ public class Point : MonoBehaviour
 
 		if(visited){
 		// c = (Mathf.Sin (3 * (Time.time + timeOffset))/4 + 0.3f) + proximity;
-		c = proximity + 0.1f;
+		c = proximity + Mathf.Sin(Time.time + timeOffset)/10 + 0.2f + accretion;
 		c = Mathf.Pow (c, 1);
 		color = new Color(c, c, c);
 		SR.color = Color.Lerp (color, new Color (c, c, c), Time.deltaTime * 5);
