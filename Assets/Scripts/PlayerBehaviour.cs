@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Vectrosity;
 
 public enum PlayerState{Traversing, Switching, Flying, Animating};
 
@@ -83,6 +84,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	private SpriteRenderer playerSprite;
 	private int noteIndex;
 	public LineRenderer cursorOnPoint;
+	private VectorLine velocityLine;
+	private VectorLine velocityLine2;
 
 	private GameObject cursor;
 	[HideInInspector]
@@ -117,6 +120,33 @@ public class PlayerBehaviour: MonoBehaviour {
 		cursor = Services.Cursor;
 		cursorSprite = Services.Cursor.GetComponent<Image>();
 		curPoint.OnPointEnter ();
+
+		Material newMat;
+		newMat = Services.Prefabs.lines[3];
+		Texture tex = newMat.mainTexture;
+		float length = newMat.mainTextureScale.x;
+		float height = newMat.mainTextureScale.y;
+
+		velocityLine = new VectorLine (name, new List<Vector3> (10), height, LineType.Discrete, Vectrosity.Joins.Weld);
+		velocityLine.color = Color.black;
+		velocityLine.smoothWidth = true;
+		velocityLine.smoothColor = true;
+
+		velocityLine.texture = tex;
+		velocityLine.textureScale = newMat.mainTextureScale.x;
+
+		newMat = Services.Prefabs.lines[3];
+		tex = newMat.mainTexture;
+		length = newMat.mainTextureScale.x;
+		height = newMat.mainTextureScale.y;
+
+		velocityLine2 = new VectorLine (name, new List<Vector3> (30), height, LineType.Discrete, Vectrosity.Joins.Weld);
+		velocityLine2.color =  Color.black;
+		velocityLine2.smoothWidth = true;
+		velocityLine2.smoothColor = true;
+
+		velocityLine2.texture = tex;
+		velocityLine2.textureScale = newMat.mainTextureScale.x;
 	}
 
 	void Update () {
@@ -150,7 +180,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (state == PlayerState.Traversing) {
 			if(curSpline != null){
 				SetCursorAlignment ();
-				DrawVelocity();
 			}
 
 			PlayerMovement ();
@@ -200,7 +229,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				transform.position = curSpline.GetPoint(progress);
 			}
 
-			if ((traversedPoints.Count >= 2 && Mathf.Abs (flow) <= 0) || Input.GetButton("Button2")) {
+			if (traversedPoints.Count >= 2 && Input.GetButton("Button2")) {
+				// && Mathf.Abs (flow) <= 0)
 				StartCoroutine (Unwind());
 			}
 		}
@@ -218,7 +248,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if (CanLeavePoint ()){
 
-				if((!Input.GetButton ("Button1") && !joystickLocked) || boostTimer > 1) {
+				if(((!Input.GetButton ("Button1") || boostTimer > 1) && !joystickLocked) || curPoint.pointType == PointTypes.ghost) {
 				canTraverse = true;
 		 	}else{
 			 canTraverse = false;
@@ -228,6 +258,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		 }
 		} else {
 			// NO CONNECTING FOR NOW
+				boostTimer = 0;
+
 				if(CanCreatePoint()){
 					if(Input.GetButtonUp("Button1") && pointDest.pointType == PointTypes.connect){
 						CreatePoint();
@@ -258,12 +290,12 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if(Input.GetButton("Button1")){
 			 boostTimer += Time.deltaTime * 2;
-			 l.positionCount = 2;
-			 l.SetPosition (0, Vector3.Lerp(transform.position, cursorPos, Easing.QuadEaseOut(boostTimer)));
-			 l.SetPosition (1, transform.position);
 		 }else{
 			  boostTimer = Mathf.Clamp01(boostTimer - Time.deltaTime);
 		 }
+		 l.positionCount = 2;
+		 l.SetPosition (0, Vector3.Lerp(transform.position, cursorPos, Easing.QuadEaseOut(boostTimer)));
+		 l.SetPosition (1, transform.position);
 
 		if(canTraverse){
 			// pointInfo.GetComponent<Text>().text = "";
@@ -376,6 +408,10 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 			}
 		}
+		VectorLine v = velocityLine2;
+		velocityLine2 = velocityLine;
+		velocityLine = v;
+
 		curPoint.OnPointExit ();
 		connectTime = 1;
 		state = PlayerState.Traversing;
@@ -721,25 +757,20 @@ public class PlayerBehaviour: MonoBehaviour {
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
 
 		accuracyCoefficient = Mathf.Pow(Mathf.Abs(accuracy), 2);
-		if (accuracy < -0.5f || accuracy > 0.5f) {
-			if (flow > 0 && accuracy < 0) {
-				flow += decay * accuracy * Time.deltaTime;
-				if (flow < 0)
-					flow = 0;
-			}else if(flow < 0 && accuracy > 0){
+		if (accuracy > 0.5f) {
+
+			if(flow < 0){
 				flow += decay *  accuracy * Time.deltaTime;
 				if (flow > 0)
 					flow = 0;
 			}else{
 				//
-			maxSpeed = curSpline.distance;
+			maxSpeed = curSpline.distance * 2;
 
 			if(Mathf.Abs(flow) < maxSpeed){
 			flow += Mathf.Sign (accuracy) * accuracyCoefficient * acceleration * Time.deltaTime;
 			}
-			if(flow < 0 && accuracy < 0){
-				flow = 0;
-			}
+
 		}
 	}
 		// curSpeed =  speed * Mathf.Sign (accuracy) * accuracyCoefficient;
@@ -747,20 +778,16 @@ public class PlayerBehaviour: MonoBehaviour {
 		// 	curSpeed = 0;
 		// }
 
-		if ((accuracy < 0.5f && accuracy > -0.5f) || joystickLocked) {
+		if ((accuracy < 0.5f) || joystickLocked) {
 
 			if (flow > 0) {
-				// flow -= decay * (2f - accuracy) * Time.deltaTime;
+				// flow -= decay * (0.5f - accuracy/2f) * Time.deltaTime;
 				if (flow < 0)
-					flow = 0;
-			} else if(flow < 0){
-				// flow += decay * (2f + accuracy) * Time.deltaTime;
-				if (flow > 0)
 					flow = 0;
 			}
 		}
 
-		float adjustedAccuracy = goingForward ? Mathf.Clamp(accuracy, 0.5f, 1f) : -Mathf.Clamp(accuracy, -1, -0.5f);
+		float adjustedAccuracy = goingForward ? Mathf.Clamp(accuracy, 0.1f, 1f) : -Mathf.Clamp(accuracy, -1, -0.5f);
 		// (adjustedAccuracy + 0.1f)
 		curSpeed = ((flow + boost + (speed * Mathf.Sign(flow)))/curSpline.distance) * adjustedAccuracy;
 		progress += curSpeed * Time.deltaTime;
@@ -1001,7 +1028,17 @@ public class PlayerBehaviour: MonoBehaviour {
 								curAngle = Mathf.Infinity;
 
 							} else {
-								curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
+
+								if(curPoint.pointType == PointTypes.ghost){
+									if(p.pointType == PointTypes.ghost){
+										curAngle = 0;
+									}else{
+										// curAngle = s.CompareAngleAtPoint (lastPoint.GetConnectingSpline(curPoint).GetVelocity(0.99f), curPoint);
+										curAngle = 0;
+									}
+								}else{
+									curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
+								}
 							}
 
 						if (curAngle < angleToSpline) {
@@ -1138,6 +1175,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		cursor.transform.position = cursorPos;
 		cursor.transform.rotation = Quaternion.Euler(0, 0, (float)(Mathf.Atan2(-cursorDir.x, cursorDir.y) / Mathf.PI) * 180f);
 		playerSprite.transform.up = cursorDir;
+		l.positionCount = 2;
+		// l.SetPosition(0, transform.position);
+		// l.SetPosition(1, cursorPos);
 	}
 
 
@@ -1162,30 +1202,55 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	void DrawVelocity(){
-		// l.positionCount = 2;
-		// Vector3 pos =  curSpline.GetPoint(progress);
-		// l.SetPosition(0, pos);
-		// l.SetPosition(1, pos + curSpline.GetDirection(progress) / 5f);
 
 		float s = 1f/(float)curSpline.curveFidelity;
-		l.positionCount = curSpline.curveFidelity * 3;
-		for(int i = 0; i <= curSpline.curveFidelity * 3 - 3; i +=3){
+		for(int i = 0; i < curSpline.curveFidelity * 3; i +=3){
 			int index = i/3;
 			float step = (float)index/(float)curSpline.curveFidelity;
-
-			Vector3 pos =  curSpline.GetPoint(step);
-			l.SetPosition(i, pos);
+			if(i >= velocityLine.points3.Count-1){
+				velocityLine.points3.Add(Vector3.zero);
+				velocityLine.points3.Add(Vector3.zero);
+				velocityLine.points3.Add(Vector3.zero);
+			}
+			if(i >= velocityLine2.points3.Count-1){
+				velocityLine2.points3.Add(Vector3.zero);
+				velocityLine2.points3.Add(Vector3.zero);
+				velocityLine2.points3.Add(Vector3.zero);
+			}
+			Vector3 pos =  curSpline.GetPoint(step + Mathf.Epsilon);
+			velocityLine.points3[i] = pos;
 
 			float f = (step - progress);
 
-			Debug.Log(curSpline.segmentDistance);
-			if(f > 0){
-				l.SetPosition(i + 1, pos + curSpline.GetDirection(step) * (1-f) * curSpeed * curSpline.segmentDistance * (1f - connectTime)/10f);
-			}else{
-				l.SetPosition(i + 1, pos + curSpline.GetDirection(step) * (1 + f) * curSpeed * curSpline.segmentDistance * (1f - connectTime)/10f);
+			velocityLine2.points3[i+1] = Vector3.Lerp(velocityLine2.points3[i + 1], velocityLine2.points3[i], Time.deltaTime);
+			if(f > s){
+				velocityLine.points3[i+1] = pos;
 			}
-			l.SetPosition(i + 2, pos);
+			else if(f <= s && f >= 0){
+				if(step == 0){
+					velocityLine.points3[i+1] = pos + curSpline.GetDirection(step + 0.01f) * Mathf.Pow((1-Mathf.Abs(f)), 2) * curSpeed * curSpline.distance * (s) * curSpline.curveFidelity/2;
+				}else{
+				velocityLine.points3[i+1] = pos + curSpline.GetDirection(step) * Mathf.Pow((1-Mathf.Abs(f)), 2) * curSpeed * curSpline.distance * (s - f) * curSpline.curveFidelity/2;
+				}
+			}else{
+				velocityLine.points3[i + 1] = Vector3.Lerp(velocityLine.points3[i + 1], velocityLine.points3[i], Time.deltaTime);
+			}
+			velocityLine.points3[i + 2] = pos;
 		}
+
+		velocityLine.Draw3D();
+		velocityLine2.Draw3D();
+		// velocityLine.positionCount = velocityLine.positionCount + 10;
+		// Vector3 lpos =  curSpline.GetPoint(progress);
+		// velocityLine.SetPosition(velocityLine.positionCount-11, lpos);
+		// // velocityLine.SetPosition(1, pos + curSpline.GetDirection(progress) * curSpeed * curSpline.distance);
+		// Vector3 dir = curSpline.GetDirection(progress) * (transform.position - cursorPos).magnitude;
+		// for(int i = 1; i < 10; i ++){
+		// 	Vector3 lastP = velocityLine.GetPosition(velocityLine.positionCount - 10 + i-2);
+		// 	velocityLine.SetPosition(velocityLine.positionCount - 10 + i-1, Vector3.Lerp(velocityLine.GetPosition(velocityLine.positionCount -10 + i -1), Vector3.Lerp(lastP + dir/8, lastP + (cursorPos - lastP)/5, (float)i/10), Time.deltaTime * 50));
+		// }
+		// velocityLine.SetPosition(10, Vector3.Lerp(velocityLine.GetPosition(10), cursorPos, Time.deltaTime * 50));
+
 	}
 
 	public void Effects(){
@@ -1209,6 +1274,14 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		if (curSpline != null) {
+			if(flow > 0.25f){
+				velocityLine.color = Color.Lerp(velocityLine.color, new Color(1,1,1,0.1f), Time.deltaTime);
+				velocityLine2.color = Color.Lerp(velocityLine2.color, new Color(1,1,1,0.1f), Time.deltaTime);
+				// DrawVelocity();
+			}else{
+				velocityLine.color = new Color(1,1,1,0.1f);
+				velocityLine2.color = new Color(1,1,1,0.1f);
+			}
 //			curSpline.DrawLineSegmentVelocity (progress, Mathf.Sign (accuracy), goingForward ? 0 : 1);\
 			// curSpline.l.material.mainTextureOffset -= Vector2.right * Mathf.Sign (accuracy) * flow * curSpline.l.material.mainTextureScale.x * 2 * Time.deltaTime;
 //			l.SetPosition(0, transform.position);
@@ -1240,46 +1313,49 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void ManageSound ()
 	{
-		switch(state){
-//		Services.PlayerBehaviour.flow / (Services.PlayerBehaviour.maxSpeed/2))
-	  case PlayerState.Traversing:
 
-		//fade out CURPOINT proximity
-		//fade in POINTDEST proximity
-
-		//assign audio clip soundwhere. Don't have the sounds switch when pointDest/curPoint change
-		sounds.pointDestSound.volume = Mathf.Pow(pointDest.proximity, 3)/5f;
+		// sounds.pointDestSound.volume = Mathf.Pow(pointDest.proximity, 3)/5f;
+		// pointdest is null some of the time
 		sounds.curPointSound.volume =  Mathf.Pow(curPoint.proximity, 3)/5f;
 
 		sounds.ambientSound.volume = Mathf.Clamp01 (curSpeed/2f);
 		sounds.brakingSound.volume =
 		0.5f - accuracyCoefficient;
 
-		float dot = Vector2.Dot(curSpline.GetDirection (progress), pointDest.Pos - curPoint.Pos);
-		float curFreqGain;
-
-		Services.Sounds.master.GetFloat ("CenterFreq", out curFreqGain);
-		float lerpAmount = Services.PlayerBehaviour.goingForward ? Services.PlayerBehaviour.progress : 1 - Services.PlayerBehaviour.progress;
-
-		Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(Services.PlayerBehaviour.flow)/2 + 1f);
-		// Services.Sounds.master.SetFloat("CenterFreq", Mathf.Lerp(curFreqGain, ((dot/2f + 0.5f) + Mathf.Clamp01(1f/Mathf.Pow(curSpline.segmentDistance, 5))) * (16000f / curFreqGain), lerpAmount));
-
-		break;
-
-		case PlayerState.Flying:
-		brakingSound.volume = Mathf.Lerp(brakingSound.volume, 0, Time.deltaTime * 5);
-		sound.volume = Mathf.Lerp(sound.volume, Mathf.Clamp01(Mathf.Abs(flow)), Time.deltaTime * 5);
-		break;
-
-		case PlayerState.Switching:
-		brakingSound.volume = Mathf.Lerp(brakingSound.volume, 0, Time.deltaTime * 5);
-		sound.volume = Mathf.Lerp(sound.volume, 0, Time.deltaTime * 10);
-		break;
-
-		case PlayerState.Animating:
-		brakingSound.volume = Mathf.Lerp(brakingSound.volume, 1, Time.deltaTime);
-		break;
-	}
+// 		switch(state){
+// //		Services.PlayerBehaviour.flow / (Services.PlayerBehaviour.maxSpeed/2))
+// 	  case PlayerState.Traversing:
+//
+// 		//fade out CURPOINT proximity
+// 		//fade in POINTDEST proximity
+//
+// 		//assign audio clip soundwhere. Don't have the sounds switch when pointDest/curPoint change
+//
+// 		float dot = Vector2.Dot(curSpline.GetDirection (progress), pointDest.Pos - curPoint.Pos);
+// 		float curFreqGain;
+//
+// 		Services.Sounds.master.GetFloat ("CenterFreq", out curFreqGain);
+// 		float lerpAmount = Services.PlayerBehaviour.goingForward ? Services.PlayerBehaviour.progress : 1 - Services.PlayerBehaviour.progress;
+//
+// 		Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(Services.PlayerBehaviour.flow)/2 + 1f);
+// 		// Services.Sounds.master.SetFloat("CenterFreq", Mathf.Lerp(curFreqGain, ((dot/2f + 0.5f) + Mathf.Clamp01(1f/Mathf.Pow(curSpline.segmentDistance, 5))) * (16000f / curFreqGain), lerpAmount));
+//
+// 		break;
+//
+// 		case PlayerState.Flying:
+// 		brakingSound.volume = Mathf.Lerp(brakingSound.volume, 0, Time.deltaTime * 5);
+// 		sound.volume = Mathf.Lerp(sound.volume, Mathf.Clamp01(Mathf.Abs(flow)), Time.deltaTime * 5);
+// 		break;
+//
+// 		case PlayerState.Switching:
+// 		brakingSound.volume = Mathf.Lerp(brakingSound.volume, 0, Time.deltaTime * 5);
+// 		sound.volume = Mathf.Lerp(sound.volume, 0, Time.deltaTime * 10);
+// 		break;
+//
+// 		case PlayerState.Animating:
+// 		brakingSound.volume = Mathf.Lerp(brakingSound.volume, 1, Time.deltaTime);
+// 		break;
+// 	}
 		//centering freq on note freq will just boost the fundamental. can shift this value to highlight diff harmonics
 		//graph functions
 		//normalize values before multiplying by freq

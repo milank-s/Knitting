@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public enum PointTypes{normal, fly, connect, boost}
+public enum PointTypes{normal, fly, connect, boost, ghost}
 //fly points enable flying
 //boost add additional boostAmount. tension = ?
 //leaves cannot be connected to
@@ -117,6 +117,11 @@ public class Point : MonoBehaviour
 	public void Start(){
 
 		text = gameObject.name;
+
+		if(_neighbours.Count == 2 && pointType == PointTypes.normal){
+			pointType = PointTypes.ghost;
+		}
+
 		switch(pointType){
 
 			case PointTypes.fly:
@@ -127,12 +132,18 @@ public class Point : MonoBehaviour
 				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.boost];
 			break;
 
-			default:
+			case PointTypes.connect:
+				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.boost];
 			break;
-		}
 
-		if(locked){
-			SR.sprite = Services.Prefabs.pointSprites[1];
+			case PointTypes.ghost:
+				SR.enabled = false;
+
+			break;
+
+			default:
+
+			break;
 		}
 	}
 
@@ -245,7 +256,7 @@ public class Point : MonoBehaviour
 
 		switch(pointType){
 			case PointTypes.boost:
-				Services.PlayerBehaviour.boost += 1;
+				Services.PlayerBehaviour.boost += 0.5f;
 				Services.PlayerBehaviour.flow += 0.1f;
 			break;
 
@@ -258,7 +269,7 @@ public class Point : MonoBehaviour
 			break;
 		}
 
-		Services.PlayerBehaviour.boost += Services.PlayerBehaviour.boostAmount * Services.PlayerBehaviour.boostTimer;
+		Services.PlayerBehaviour.boost += Services.PlayerBehaviour.boostAmount * Services.PlayerBehaviour.boostTimer * Services.PlayerBehaviour.accuracyCoefficient;
 		accretion += 0.1f;
 		/*
 			if(curPoint.IsOffCooldown()){
@@ -306,7 +317,9 @@ public class Point : MonoBehaviour
 
 		if(visited){
 		// c = (Mathf.Sin (3 * (Time.time + timeOffset))/4 + 0.3f) + proximity;
-		c = proximity + Mathf.Sin(Time.time + timeOffset)/10 + 0.2f + accretion;
+		c = proximity + Mathf.Sin(Time.time + timeOffset)/10 + 0.2f;
+		// ACCRETION IS SHOWING POINTS THAT IT SHOULDNT?????
+		// accretion
 		c = Mathf.Pow (c, 1);
 		color = new Color(c, c, c);
 		SR.color = Color.Lerp (color, new Color (c, c, c), Time.deltaTime * 5);

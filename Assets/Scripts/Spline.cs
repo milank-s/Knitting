@@ -206,6 +206,8 @@ public class Spline : MonoBehaviour
 
 		line.texture = tex;
 		line.textureScale = newMat.mainTextureScale.x;
+
+
 	}
 
 	public void UpdateSpline(){
@@ -218,6 +220,7 @@ public class Spline : MonoBehaviour
 	}
 
 	void Start(){
+
 		SetupSpline();
 
 		for (int i = 0; i < SplinePoints.Count; i++) {
@@ -342,8 +345,8 @@ public class Spline : MonoBehaviour
 			float newFrequency = Mathf.Abs(Services.PlayerBehaviour.accuracy * 10);
 
 			//use accuracy to show static
-			float distortion = Mathf.Lerp (0, 1, Mathf.Pow (1 - Mathf.Abs (Services.PlayerBehaviour.accuracy), 3));
-			float amplitude = Mathf.Clamp01(flow)/10;
+			float distortion = Mathf.Lerp (0, 1, Mathf.Pow (0.5f - Services.PlayerBehaviour.accuracy/2, 3));
+			float amplitude = Mathf.Clamp01(flow)/5;
 			NewFrequency(newFrequency);
 
 			//get value for sine wave effect

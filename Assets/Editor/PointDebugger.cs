@@ -23,17 +23,17 @@ public class PointDebugger : Editor {
     s.fontSize = 24;
     s.normal.textColor = Color.white;
     Handles.Label(myScript.transform.position + Vector3.right/15f, myScript.gameObject.name, s);
-		// Point point = target as Point;
-    //
-		// Handles.color = Color.green;
-		// DrawSelectedPoint (point);
-    //
-		// Handles.color = Color.blue;
-    //
-    //
-		// foreach (Point p in point._neighbours) {
-		// 	DrawSelectedPoint (p);
-		// }
+
+
+		Handles.color = Color.green;
+		DrawSelectedPoint (myScript);
+
+		Handles.color = Color.blue;
+
+
+		foreach (Point p in myScript._neighbours) {
+			DrawSelectedPoint (p);
+		}
 		// int m = 0;
     //
 		// foreach (Spline spline in point._connectedSplines) {
