@@ -25,15 +25,15 @@ public class PointDebugger : Editor {
     Handles.Label(myScript.transform.position + Vector3.right/15f, myScript.gameObject.name, s);
 
 
-		Handles.color = Color.green;
-		DrawSelectedPoint (myScript);
-
-		Handles.color = Color.blue;
-
-
-		foreach (Point p in myScript._neighbours) {
-			DrawSelectedPoint (p);
-		}
+		// Handles.color = Color.green;
+		// DrawSelectedPoint (myScript);
+		//
+		// Handles.color = Color.blue;
+		//
+		//
+		// foreach (Point p in myScript._neighbours) {
+		// 	DrawSelectedPoint (p);
+		// }
 		// int m = 0;
     //
 		// foreach (Spline spline in point._connectedSplines) {

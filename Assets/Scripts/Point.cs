@@ -44,7 +44,7 @@ public class Point : MonoBehaviour
 
 	[HideInInspector]
 	public string text;
-	private TextMesh textMesh;
+	public TextMesh textMesh;
 	public List<PointCloud> pointClouds;
 	[HideInInspector]
 	public bool hasPointcloud;
@@ -106,6 +106,11 @@ public class Point : MonoBehaviour
 
 		_neighbours = new List<Point> ();
 		_connectedSplines = new List<Spline> ();
+
+		textMesh = GetComponentInChildren<TextMesh>();
+		if(textMesh != null){
+			textMesh.GetComponent<FadeTextOnPoint>().p = this;
+		}
 
 		c = 0;
 		cooldown = 0;
@@ -220,15 +225,12 @@ public class Point : MonoBehaviour
 
 		if(textMesh != null){
 			textMesh.GetComponent<FadeTextOnPoint>().alpha = 1;
+
 		}
 
 		if (!visited) {
 			visited = true;
-			GameObject newText = (GameObject)Instantiate (Services.Prefabs.spawnedText, transform.position - Vector3.forward/5f + Vector3.up/10f, Quaternion.identity);
-			textMesh = newText.GetComponent<TextMesh>();
-			textMesh.text = text;
-			newText.GetComponent<FadeTextOnPoint>().p = this;
-			newText.transform.parent = transform;
+
 		}
 
 		if(hasPointcloud){
@@ -247,8 +249,10 @@ public class Point : MonoBehaviour
 				}
 			}
 			hit = true;
-			GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
-			fx.transform.parent = transform;
+			if(pointType != PointTypes.ghost){
+				GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
+				fx.transform.parent = transform;
+			}
 		}
 	}
 
@@ -269,7 +273,9 @@ public class Point : MonoBehaviour
 			break;
 		}
 
-		Services.PlayerBehaviour.boost += Services.PlayerBehaviour.boostAmount * Services.PlayerBehaviour.boostTimer * Services.PlayerBehaviour.accuracyCoefficient;
+		if(pointType != PointTypes.ghost){
+			Services.PlayerBehaviour.boost += Services.PlayerBehaviour.boostAmount * Services.PlayerBehaviour.boostTimer * Services.PlayerBehaviour.accuracyCoefficient;
+		}
 		accretion += 0.1f;
 		/*
 			if(curPoint.IsOffCooldown()){

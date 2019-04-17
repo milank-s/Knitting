@@ -420,7 +420,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		SetPlayerAtStart (curSpline, pointDest);
 		curSpline.OnSplineEnter (true, curPoint, pointDest, false);
 		SetCursorAlignment ();
-		PlayerMovement ();
+		// PlayerMovement ();
 	}
 
 	void StayOnPoint(){
@@ -750,7 +750,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	void PlayerMovement(){
-
+		Debug.Log(boost);
 //		adding this value to flow
 //		MAKE FLOW NON REVERSIBLE. ADJUST LINE ACCURACY WITH FLOW TO MAKE PLAYER NOT STOP AT INTERSECTIONS
 //		NEGOTIATE FLOW CANCELLING OUT CURRENT SPEED
@@ -929,11 +929,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 			curPoint.proximity = 1;
-			curPoint.velocity = cursorDir * Mathf.Abs(flow);
-
+			if(curPoint.pointType == PointTypes.ghost){
+				curPoint.velocity = cursorDir * Mathf.Abs(flow)/3;
+			}
 //			if (curPoint.IsOffCooldown ()) {
 				curPoint.OnPointEnter ();
-				PlayAttack(PreviousPoint, curPoint);
+				// PlayAttack(PreviousPoint, curPoint);
 //			}
 
 			if (PreviousPoint != curPoint) {
@@ -1314,13 +1315,35 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void ManageSound ()
 	{
 
-		// sounds.pointDestSound.volume = Mathf.Pow(pointDest.proximity, 3)/5f;
+		//
 		// pointdest is null some of the time
-		sounds.curPointSound.volume =  Mathf.Pow(curPoint.proximity, 3)/5f;
+		if(state != PlayerState.Switching){
+		// sounds.curPointSound.volume =  Mathf.Pow(curPoint.proximity, 3)/5f;
+			// sounds.pointDestSound.volume = Mathf.Sin(pointDest.proximity * Mathf.PI)
 
-		sounds.ambientSound.volume = Mathf.Clamp01 (curSpeed/2f);
-		sounds.brakingSound.volume =
-		0.5f - accuracyCoefficient;
+			float dot = Vector2.Dot(curSpline.GetDirection (progress), pointDest.Pos - curPoint.Pos);
+			float curFreqGain;
+	 //
+			Services.Sounds.master.GetFloat ("CenterFreq", out curFreqGain);
+			float lerpAmount = Services.PlayerBehaviour.goingForward ? Services.PlayerBehaviour.progress : 1 - Services.PlayerBehaviour.progress;
+			sounds.ambientSound.volume = Mathf.Lerp(sounds.ambientSound.volume, Mathf.Clamp01(curSpeed/2f)/10f, Time.deltaTime);
+			sounds.brakingSound.volume =	(0.5f - accuracy)/10;
+	 //
+			Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(Services.PlayerBehaviour.flow)/2 + 1f);
+			Services.Sounds.master.SetFloat("CenterFreq", Mathf.Lerp(curFreqGain, ((dot/2f + 0.5f) + Mathf.Clamp01(1f/Mathf.Pow(curSpline.segmentDistance, 5))) * (16000f / curFreqGain), lerpAmount));
+
+			if(pointDest.pointType != PointTypes.ghost){
+				sounds.pointDestSound.volume = Mathf.Pow(pointDest.proximity, 2)/10f;
+			}else{
+				sounds.pointDestSound.volume = 0;
+			}
+		}else{
+			sounds.pointDestSound.volume = 0;
+			sounds.ambientSound.volume = Mathf.Lerp(sounds.ambientSound.volume, 0, Time.deltaTime);
+			sounds.brakingSound.volume = 0;
+		}
+
+
 
 // 		switch(state){
 // //		Services.PlayerBehaviour.flow / (Services.PlayerBehaviour.maxSpeed/2))
@@ -1331,14 +1354,6 @@ public class PlayerBehaviour: MonoBehaviour {
 //
 // 		//assign audio clip soundwhere. Don't have the sounds switch when pointDest/curPoint change
 //
-// 		float dot = Vector2.Dot(curSpline.GetDirection (progress), pointDest.Pos - curPoint.Pos);
-// 		float curFreqGain;
-//
-// 		Services.Sounds.master.GetFloat ("CenterFreq", out curFreqGain);
-// 		float lerpAmount = Services.PlayerBehaviour.goingForward ? Services.PlayerBehaviour.progress : 1 - Services.PlayerBehaviour.progress;
-//
-// 		Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(Services.PlayerBehaviour.flow)/2 + 1f);
-// 		// Services.Sounds.master.SetFloat("CenterFreq", Mathf.Lerp(curFreqGain, ((dot/2f + 0.5f) + Mathf.Clamp01(1f/Mathf.Pow(curSpline.segmentDistance, 5))) * (16000f / curFreqGain), lerpAmount));
 //
 // 		break;
 //
