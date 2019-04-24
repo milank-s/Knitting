@@ -750,7 +750,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	void PlayerMovement(){
-		Debug.Log(boost);
 //		adding this value to flow
 //		MAKE FLOW NON REVERSIBLE. ADJUST LINE ACCURACY WITH FLOW TO MAKE PLAYER NOT STOP AT INTERSECTIONS
 //		NEGOTIATE FLOW CANCELLING OUT CURRENT SPEED
