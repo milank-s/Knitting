@@ -162,6 +162,10 @@ public class PlayerBehaviour: MonoBehaviour {
 			speedCoefficient = Mathf.Clamp01(Mathf.Pow(accuracy, 5) * flow + 0.25f);
 		}
 
+		if (joystickLocked)
+		{
+			speedCoefficient = 0;
+		}
 		playerSprite.transform.localScale = Vector3.Lerp(playerSprite.transform.localScale, new Vector3(Mathf.Clamp(1 - (speedCoefficient * 2), 0.1f, 0.25f), Mathf.Clamp(speedCoefficient, 0.25f, 0.75f), 0.25f), Time.deltaTime * 10);
 
 		if (connectTime <= 0 && PointManager._pointsHit.Count > 0) {
@@ -756,7 +760,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
 
 		accuracyCoefficient = Mathf.Pow(Mathf.Abs(accuracy), 2);
-		if (accuracy > 0.5f) {
+		if (accuracy > 0.5f && !joystickLocked) {
 
 			if(flow < 0){
 				flow += decay *  accuracy * Time.deltaTime;
@@ -788,8 +792,12 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		float adjustedAccuracy = goingForward ? Mathf.Clamp(accuracy, 0.1f, 1f) : -Mathf.Clamp(accuracy, -1, -0.5f);
 		// (adjustedAccuracy + 0.1f)
-		curSpeed = ((flow + boost + (speed * Mathf.Sign(flow)))/curSpline.distance) * adjustedAccuracy;
-		progress += curSpeed * Time.deltaTime;
+		if (!joystickLocked)
+		{
+			curSpeed = ((flow + boost + (speed * Mathf.Sign(flow))) / curSpline.distance) * adjustedAccuracy;
+			progress += curSpeed * Time.deltaTime;
+		}
+
 		boost = Mathf.Lerp (boost, 0, Time.deltaTime * 3f);
 		//set player position to a point along the curve
 

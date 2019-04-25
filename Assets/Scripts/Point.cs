@@ -321,14 +321,16 @@ public class Point : MonoBehaviour
 
 	void SetColor(){
 
-		if(visited){
+	if(visited){
 		// c = (Mathf.Sin (3 * (Time.time + timeOffset))/4 + 0.3f) + proximity;
-		c = proximity + Mathf.Sin(Time.time + timeOffset)/10 + 0.2f;
+//		c = proximity + Mathf.Sin(Time.time + timeOffset)/10 + 0.11f;
 		// ACCRETION IS SHOWING POINTS THAT IT SHOULDNT?????
+		c = proximity + 0.025f;
 		// accretion
 		c = Mathf.Pow (c, 1);
-		color = new Color(c, c, c);
-		SR.color = Color.Lerp (color, new Color (c, c, c), Time.deltaTime * 5);
+		color = new Color(c, c, c, 1);
+//		SR.color = Color.Lerp (color, new Color (1,1,1, c), Time.deltaTime * 5);
+		SR.color = color;
 	}else{
 		color = new Color(1, 1, 1, proximity);
 		SR.color = color;
