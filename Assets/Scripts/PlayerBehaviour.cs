@@ -281,7 +281,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 					}else if(TryToFly()){
 						cursorSprite.sprite = canFlySprite;
-						if(Input.GetButton("Button1")){
+						if(Input.GetButton("Button1") || boostTimer >= 1){
 							Fly();
 							return;
 						}

@@ -198,7 +198,7 @@ public class Spline : MonoBehaviour
 		Texture tex = newMat.mainTexture;
 		float length = newMat.mainTextureScale.x;
 		float height = newMat.mainTextureScale.y;
-		line = new VectorLine (name, line.points3, height, LineType.Continuous, Vectrosity.Joins.Weld);
+		line = new VectorLine (name, line.points3, 1, LineType.Continuous, Vectrosity.Joins.Weld);
 		line.color = Color.black;
 		line.smoothWidth = true;
 		line.smoothColor = true;
