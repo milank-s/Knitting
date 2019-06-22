@@ -950,7 +950,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 			if(curPoint.pointType == PointTypes.boost){
-				traversedPoints.Clear();
+//				traversedPoints.Clear();
 				traversedPoints.Add(curPoint);
 			}
 

@@ -22,7 +22,7 @@ public class PointDebugger : Editor {
     GUIStyle s = new GUIStyle();
     s.fontSize = 24;
     s.normal.textColor = Color.white;
-    Handles.Label(myScript.transform.position + Vector3.right/15f, myScript.gameObject.name, s);
+    //Handles.Label(myScript.transform.position + Vector3.right/15f, myScript.gameObject.name, s);
 
 
 		// Handles.color = Color.green;
