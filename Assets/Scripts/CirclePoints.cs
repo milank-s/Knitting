@@ -6,13 +6,16 @@ public class CirclePoints : MonoBehaviour {
 
 	PointCloud c;
 	List<Vector3> pointVectors;
-
-	void Start () {
+	private List<float> distance;
+	void Start ()
+	{
+		distance = new List<float>();
 		pointVectors = new List<Vector3> ();
 		c = GetComponent<PointCloud> ();
 		for(int i = 0; i < c._points.Count; i++){
 			Vector3 diff =  c._points[i].transform.position - transform.position;
 			pointVectors.Add(Vector3.Cross(diff, Quaternion.Euler(Vector3.up * 90) * diff));
+			distance.Add(diff.magnitude);
 		}
 	}
 	
@@ -23,7 +26,7 @@ public class CirclePoints : MonoBehaviour {
 			Vector3 dir = c._points[i].transform.position - transform.position; // get point direction relative to pivot
 //			c._points [i].transform.position = dir + transform.position; // calculate rotated point
 //			pointVectors[i] = Vector3.Cross(dir, Quaternion.Euler(Vector3.up * 90) * dir);
-			c._points [i].transform.position = (Quaternion.Euler(pointVectors[i] * 1) * dir).normalized + transform.position;
+			c._points [i].transform.position = (Quaternion.Euler(pointVectors[i] * 10) * dir).normalized * distance[i] + transform.position;
 
 //			c._points [i].transform.RotateAround (transform.position, pointVectors [i], Time.deltaTime * 100);
 		}
