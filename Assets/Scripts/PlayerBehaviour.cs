@@ -882,6 +882,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			while(moving){
 				t += Time.deltaTime;
+				t = Mathf.Clamp(t, 0f, 9f);
 				flow = t;
 				if (goingForward) {
 					progress += Time.deltaTime * t / curSpline.distance;
