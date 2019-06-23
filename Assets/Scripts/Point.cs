@@ -33,8 +33,10 @@ public class Point : MonoBehaviour
 	public float continuity;
 	[Space(10)]
 
-	[HideInInspector]
 	public bool isKinematic;
+	
+	[HideInInspector]
+	
 	public static float damping = 1000f;
 	public static float stiffness = 1000f;
 	public static float mass = 50f;
