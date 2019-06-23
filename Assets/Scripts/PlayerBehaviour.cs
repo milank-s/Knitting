@@ -30,6 +30,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float accuracyCoefficient;
 	public float flowAmount = 0.1f;
 	public float boostAmount = 0.1f;
+	public float stopTimer = 2f;
 	[Space(10)]
 
 	[Header("Cursor Control")]
@@ -293,7 +294,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 			if(Input.GetButton("Button1")){
-			 boostTimer += Time.deltaTime * 2;
+			 boostTimer += Time.deltaTime / stopTimer;
 		 }else{
 			  boostTimer = Mathf.Clamp01(boostTimer - Time.deltaTime);
 		 }

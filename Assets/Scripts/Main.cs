@@ -1,4 +1,4 @@
-	﻿using System.Collections;
+	 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,7 +21,8 @@ public class Main : MonoBehaviour {
 		PointManager._pointsHit = new List<Point> ();
 		PointManager._connectedPoints = new List<Point> ();
 		Services.Sounds = GetComponent<SoundBank> ();
-		StartCoroutine(FadeIn());
+		PauseScreen.color = new Color(0,0,0,1);
+		StartCoroutine(FadeIn()); 
 	}
 
 	IEnumerator FadeIn(){
