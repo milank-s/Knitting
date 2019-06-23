@@ -90,7 +90,7 @@ public class SplineInspector : Editor {
 				GUIStyle style = new GUIStyle();
 		    style.fontSize = 12;
 		    style.normal.textColor = Color.white;
-		    Handles.Label(spliney.SplinePoints[i].Pos, spliney.SplinePoints[i].gameObject.name, style);
+		    //Handles.Label(spliney.SplinePoints[i].Pos, spliney.SplinePoints[i].gameObject.name, style);
 
 				//Draw Point handles
 
