@@ -23,7 +23,11 @@ public class MenuControls : MonoBehaviour {
 
 	public IEnumerator LoadGame(){
 		loadingScene = true;
-		cycleScript.enabled = false;
+		if (cycleScript != null)
+		{
+			cycleScript.enabled = false;
+		}
+
 		float t = 0;
 		while (t < 1.2f){
 			mask.color = Color.Lerp(new Color (0,0,0,0), new Color (0,0,0,1), Easing.QuadEaseIn(t));

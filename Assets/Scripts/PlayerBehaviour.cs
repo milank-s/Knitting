@@ -1336,7 +1336,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			Services.Sounds.master.GetFloat ("CenterFreq", out curFreqGain);
 			float lerpAmount = Services.PlayerBehaviour.goingForward ? Services.PlayerBehaviour.progress : 1 - Services.PlayerBehaviour.progress;
 			sounds.ambientSound.volume = Mathf.Lerp(sounds.ambientSound.volume, Mathf.Clamp01(curSpeed/2f)/10f, Time.deltaTime);
-			sounds.brakingSound.volume =	(0.5f - accuracy)/10;
+			sounds.brakingSound.volume = Mathf.Pow(Mathf.Clamp01(0.5f - accuracy)/10, 2);
 	 //
 			Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(Services.PlayerBehaviour.flow)/2 + 1f);
 			Services.Sounds.master.SetFloat("CenterFreq", Mathf.Lerp(curFreqGain, ((dot/2f + 0.5f) + Mathf.Clamp01(1f/Mathf.Pow(curSpline.segmentDistance, 5))) * (16000f / curFreqGain), lerpAmount));
