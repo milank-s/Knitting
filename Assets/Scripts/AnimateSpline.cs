@@ -6,7 +6,8 @@ public class AnimateSpline : MonoBehaviour {
 
 	public float offset;
 	public float speed = 1;
-
+	public bool offsetPerPoint = false;
+	
 	[Space(15)]
 	[Header("Curve Control")]
 	[Space(10)]
@@ -39,8 +40,26 @@ public class AnimateSpline : MonoBehaviour {
 			p.tension = tensionVal.Evaluate(time) * tMultiplier;
 			p.bias = biasVal.Evaluate(time) * bMultiplier;
 			p.continuity = continuityVal.Evaluate(time) * cMultiplier;
-			p.transform.position += (transform.position - p.Pos).normalized * Time.deltaTime * Mathf.Sin(Time.time) * contraction;
-			p.originalPos = p.transform.position;
+			if (offsetPerPoint)
+			{
+				if ((transform.position - new Vector3(p.originalPos.x, p.originalPos.y, transform.position.z))
+				    .magnitude > 0.01f)
+				{
+					p.transform.position -= (transform.position - p.originalPos).normalized * Time.deltaTime *
+					                        Mathf.Sin(Time.time * speed + i * offset) * contraction;
+				}
+			}
+			else
+			{
+				if ((transform.position - new Vector3(p.originalPos.x, p.originalPos.y, transform.position.z))
+				    .magnitude > 0.01f)
+				{
+					p.transform.position -= (transform.position - p.originalPos).normalized * Time.deltaTime *
+					                        (Mathf.Sin(Time.time * speed + offset)) * contraction;
+				}
+			}
+
+			//p.originalPos = p.transform.position;
 			p.isKinematic = true;
 			p.transform.RotateAround(transform.position, transform.forward, rotation * Time.deltaTime);
 			i++;
