@@ -94,7 +94,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	[HideInInspector]
 	public Vector2 cursorDir;
 
-	void Awake(){
+	public void Setup(){
 		joystickLocked = true;
 		playerSprite = GetComponentInChildren<SpriteRenderer>();
 		sound = GetComponent<AudioSource>();
@@ -150,7 +150,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		velocityLine2.textureScale = newMat.mainTextureScale.x;
 	}
 
-	void Update () {
+	public void Step () {
 
 		Point.hitColorLerp = connectTime;
 
