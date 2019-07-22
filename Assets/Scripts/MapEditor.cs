@@ -46,11 +46,15 @@ public class MapEditor : MonoBehaviour
     private List<Image> selectors;
     private LineRenderer l;
     private Camera cam;
+
+    private Vector3 curPos;
     public enum Tool
     {
         select,
+        move,
         draw,
-        connect
+        connect,
+        
     }
 
     
@@ -143,30 +147,35 @@ public class MapEditor : MonoBehaviour
     void Update()
     {
         Cursor.visible = false;
+        Point hitPoint = null;
+        
         Vector3 curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
         Vector3 worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
             Mathf.Abs(cam.transform.position.z)));
         cursor.transform.position = curPos;
 
-        Ray r = cam.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        Point hitPoint = null;
-        if (Physics.Raycast(r.origin, r.direction, out hit))
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
-            hitPoint = hit.transform.GetComponent<Point>();
-
-            if (hitPoint != null)
+            Ray r = cam.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            
+            if (Physics.Raycast(r.origin, r.direction, out hit))
             {
-                if (Input.GetMouseButtonDown(1))
-                {
-                    RemoveSelectedPoint(hitPoint);
-                }
+                hitPoint = hit.transform.GetComponent<Point>();
 
-                
+                if (hitPoint != null)
+                {
+                    if (Input.GetMouseButtonDown(1))
+                    {
+                        RemoveSelectedPoint(hitPoint);
+                    }
+
+
+                }
             }
         }
 
-      
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (selectedPoints.Count > 0)
@@ -193,7 +202,7 @@ public class MapEditor : MonoBehaviour
                 }
                 else
                 {
-                    if (curTool != Tool.connect)
+                    if (curTool != Tool.draw)
                     {
                         l.enabled = false;
                     }
@@ -208,12 +217,12 @@ public class MapEditor : MonoBehaviour
             }
             else if (Input.GetKeyDown(KeyCode.W))
             {
-                curTool = Tool.draw;
+                curTool = Tool.move;
 
             }
-            else if (Input.GetKeyDown(KeyCode.E))
+            else if (Input.GetKeyDown(KeyCode.D))
             {
-                curTool = Tool.connect;
+                curTool = Tool.draw;
                 l.enabled = true;
             }
 
@@ -224,8 +233,9 @@ public class MapEditor : MonoBehaviour
 
             switch (curTool)
             {
-                case Tool.select:
-
+                
+                case Tool.move:
+                    
                     if (hitPoint != null)
                     {
                         if (Input.GetMouseButtonDown(0))
@@ -242,6 +252,12 @@ public class MapEditor : MonoBehaviour
                         }
                     }
 
+                  
+                    break;
+                case Tool.select:
+
+                   //implement marquee box 
+                   
                     break;
 
                 case Tool.connect:
@@ -252,7 +268,7 @@ public class MapEditor : MonoBehaviour
                     break;
 
                 case Tool.draw:
-
+                       
                     if (selectedPoints.Count > 0)
                     {
                         l.SetPosition(0, selectedPoints[selectedPoints.Count - 1].transform.position);
