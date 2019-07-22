@@ -194,18 +194,19 @@ public class Spline : MonoBehaviour
 		Select = this;
 		Splines.Add (this);
 		Material newMat;
-		newMat = Services.Prefabs.lines[3];
-		Texture tex = newMat.mainTexture;
-		float length = newMat.mainTextureScale.x;
-		float height = newMat.mainTextureScale.y;
+//		newMat = Services.Prefabs.lines[3];
+//		Texture tex = newMat.mainTexture;
+//		float length = newMat.mainTextureScale.x;
+//		float height = newMat.mainTextureScale.y;
+
 		line = new VectorLine (name, line.points3, 1, LineType.Continuous, Vectrosity.Joins.Weld);
 		line.color = Color.black;
 		line.smoothWidth = true;
 		line.smoothColor = true;
 		line.points3 = new List<Vector3> (SplinePoints.Count * curveFidelity);
 
-		line.texture = tex;
-		line.textureScale = newMat.mainTextureScale.x;
+//		line.texture = tex;
+//		line.textureScale = newMat.mainTextureScale.x;
 
 
 	}

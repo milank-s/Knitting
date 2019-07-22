@@ -94,7 +94,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	[HideInInspector]
 	public Vector2 cursorDir;
 
-	public void Setup(){
+	public void Awake(){
 		joystickLocked = true;
 		playerSprite = GetComponentInChildren<SpriteRenderer>();
 		sound = GetComponent<AudioSource>();
@@ -117,40 +117,42 @@ public class PlayerBehaviour: MonoBehaviour {
 		lastPoint = null;
 	}
 
-	void Start(){
+	public void Initialize(){
 		cursor = Services.Cursor;
+		curPoint = Services.StartPoint;
 		cursorSprite = Services.Cursor.GetComponent<Image>();
 		curPoint.OnPointEnter ();
-
-		Material newMat;
-		newMat = Services.Prefabs.lines[3];
-		Texture tex = newMat.mainTexture;
-		float length = newMat.mainTextureScale.x;
-		float height = newMat.mainTextureScale.y;
-
-		velocityLine = new VectorLine (name, new List<Vector3> (10), height, LineType.Discrete, Vectrosity.Joins.Weld);
-		velocityLine.color = Color.black;
-		velocityLine.smoothWidth = true;
-		velocityLine.smoothColor = true;
-
-		velocityLine.texture = tex;
-		velocityLine.textureScale = newMat.mainTextureScale.x;
-
-		newMat = Services.Prefabs.lines[3];
-		tex = newMat.mainTexture;
-		length = newMat.mainTextureScale.x;
-		height = newMat.mainTextureScale.y;
-
-		velocityLine2 = new VectorLine (name, new List<Vector3> (30), height, LineType.Discrete, Vectrosity.Joins.Weld);
-		velocityLine2.color =  Color.black;
-		velocityLine2.smoothWidth = true;
-		velocityLine2.smoothColor = true;
-
-		velocityLine2.texture = tex;
-		velocityLine2.textureScale = newMat.mainTextureScale.x;
-
 		t.time = 100;
+		
+//		Material newMat;
+//		newMat = Services.Prefabs.lines[3];
+//		Texture tex = newMat.mainTexture;
+//		float length = newMat.mainTextureScale.x;
+//		float height = newMat.mainTextureScale.y;
+//
+//		velocityLine = new VectorLine (name, new List<Vector3> (10), height, LineType.Discrete, Vectrosity.Joins.Weld);
+//		velocityLine.color = Color.black;
+//		velocityLine.smoothWidth = true;
+//		velocityLine.smoothColor = true;
+//
+//		velocityLine.texture = tex;
+//		velocityLine.textureScale = newMat.mainTextureScale.x;
+//
+//		newMat = Services.Prefabs.lines[3];
+//		tex = newMat.mainTexture;
+//		length = newMat.mainTextureScale.x;
+//		height = newMat.mainTextureScale.y;
+//
+//		velocityLine2 = new VectorLine (name, new List<Vector3> (30), height, LineType.Discrete, Vectrosity.Joins.Weld);
+//		velocityLine2.color =  Color.black;
+//		velocityLine2.smoothWidth = true;
+//		velocityLine2.smoothColor = true;
+//
+//		velocityLine2.texture = tex;
+//		velocityLine2.textureScale = newMat.mainTextureScale.x;
 	}
+	
+	
 
 	public void Step () {
 

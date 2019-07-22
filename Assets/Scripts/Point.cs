@@ -97,6 +97,7 @@ public class Point : MonoBehaviour
 	}
 	#endregion
 
+	public static bool editMode = false;
 	void Awake(){
 		pointClouds = new List<PointCloud>();
 		stiffness = 1600;
@@ -117,7 +118,11 @@ public class Point : MonoBehaviour
 		c = 0;
 		cooldown = 0;
 		SR = GetComponent<SpriteRenderer> ();
-		SR.color = Color.black;
+		if (MapEditor.editing)
+		{
+			SR.color = Color.black;
+		}
+
 		originalPos = transform.position;
 	}
 
@@ -155,11 +160,19 @@ public class Point : MonoBehaviour
 	}
 
 	public void Update(){
+		if (!MapEditor.editing)
+		{
 			SetColor();
 
-			if(!isKinematic){
+			if (!isKinematic)
+			{
 				Movement();
 			}
+		}
+		else
+		{
+			SR.color = Color.white;
+		}
 	}
 
 	void Movement(){

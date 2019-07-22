@@ -1,6 +1,7 @@
 	 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+	 using UnityEditorInternal;
+	 using UnityEngine;
 using UnityEngine.UI;
 
 public class Main : MonoBehaviour {
@@ -10,6 +11,7 @@ public class Main : MonoBehaviour {
 	public Image PauseScreen;
 	public GameObject PauseMenu;
 	public Text Word;
+	public GameObject canvas;
 	public bool _paused
 	{
 		set
@@ -32,7 +34,9 @@ public class Main : MonoBehaviour {
 	
 	void Awake ()
 	{
+		Services.GameUI = canvas;
 		Services.Word = Word;
+		Services.mainCam = Camera.main;
 		Services.Prefabs = GetComponent<PrefabManager>();
 		Services.Player = Player;
 		Services.PlayerBehaviour = Player.GetComponent<PlayerBehaviour>();
@@ -40,12 +44,21 @@ public class Main : MonoBehaviour {
 		PointManager._pointsHit = new List<Point> ();
 		PointManager._connectedPoints = new List<Point> ();
 		Services.Sounds = GetComponent<SoundBank> ();
+		Services.main = this;
 		PauseScreen.color = new Color(0,0,0,1);
 		PauseMenu.SetActive(false);
 		StartCoroutine(FadeIn()); 
 	}
 
-	
+	void Start()
+	{
+		canvas.SetActive(!MapEditor.editing);
+		
+		if (Services.StartPoint != null && !MapEditor.editing)
+		{
+			Services.PlayerBehaviour.Initialize();
+		}
+	}
 	void Update()
 	{
 		if (Input.GetKeyDown(KeyCode.P))
@@ -54,12 +67,33 @@ public class Main : MonoBehaviour {
 		}
 		if (!paused)
 		{
-			
-			Services.PlayerBehaviour.Step();
+			if (!MapEditor.editing)
+			{
+				if (Services.PlayerBehaviour.curPoint != null)
+				{
+					Services.PlayerBehaviour.Step();
+				}
+				
+			}
 		}
 		else
 		{
 	
+		}
+	}
+	
+	public void EnterEditMode(bool enter)
+	{
+		canvas.SetActive(!enter);
+		Services.mainCam.enabled = !enter;
+		Player.SetActive(!enter);
+		Services.mainCam.GetComponentInChildren<Camera>().enabled = !enter;
+		if (!enter)
+		{
+			if (Services.StartPoint != null)
+			{
+				Services.PlayerBehaviour.Initialize();
+			}
 		}
 	}
 

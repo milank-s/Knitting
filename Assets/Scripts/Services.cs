@@ -11,5 +11,9 @@ public static class Services{
 	public static PrefabManager Prefabs { get; set; }
 	public static SoundBank Sounds { get; set; }
 	
+	public static Camera mainCam { get; set; }
+	public static Main main{ get; set; }
 	public static Text Word { get; set; }
+	
+	public static GameObject GameUI { get; set; }
 }
