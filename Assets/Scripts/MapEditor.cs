@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,11 +8,20 @@ using UnityEngine.UI;
 public class MapEditor : MonoBehaviour
 {
 
+    private Point activePoint
+    {
+        get { return selectedPoints[selectedPoints.Count-1]; }
+    }
+
+    public Transform pointsParent;
+    public Transform splinesParent;
+    
     public static bool editing = false;
     public GameObject selector;
     public Transform canvas;
+    public GameObject selectedPointIndicator;
     private List<Image> selectors;
-    
+    private LineRenderer l;
     private Camera cam;
     public enum Tool
     {
@@ -20,6 +30,7 @@ public class MapEditor : MonoBehaviour
         connect
     }
 
+    
     private List<Point> selectedPoints;
     private List<Spline> selectedSplines;
     
@@ -51,10 +62,12 @@ public class MapEditor : MonoBehaviour
         selectedPoints = new List<Point>();
         selectedSplines = new List<Spline>();
         Point.editMode = true;
+        l = GetComponent<LineRenderer>();
     }
 
     void Start()
     {
+        l.enabled = false;
         cam.enabled = editing;
         Services.main.EnterEditMode(editing);
     }
@@ -65,6 +78,12 @@ public class MapEditor : MonoBehaviour
         {
             selectedPoints.Add(p);
             selectors[selectedPoints.Count - 1].color = Color.white;
+            
+        }
+        else
+        {
+            selectedPoints.Remove(p);
+            selectedPoints.Add(p);
         }
     }
     
@@ -72,9 +91,21 @@ public class MapEditor : MonoBehaviour
     {
         if (selectedPoints.Contains(p))
         {
+            
             selectors[selectedPoints.Count - 1].color = Color.clear;
             selectedPoints.Remove(p);
         }
+    }
+    
+    public void SetTension(float t)
+    {
+        activePoint.tension = t;
+    }
+    
+    
+    public void SetBias(float t)
+    {
+        activePoint.bias = t;
     }
     // Update is called once per frame
     void Update()
@@ -91,8 +122,19 @@ public class MapEditor : MonoBehaviour
         if (Physics.Raycast(r.origin, r.direction, out hit))
         {
             hitPoint = hit.transform.GetComponent<Point>();
+
+            if (hitPoint != null)
+            {
+                if (Input.GetMouseButtonDown(1))
+                {
+                    RemoveSelectedPoint(hitPoint);
+                }
+
+                
+            }
         }
 
+      
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (selectedPoints.Count > 0)
@@ -119,6 +161,10 @@ public class MapEditor : MonoBehaviour
                 }
                 else
                 {
+                    if (curTool != Tool.connect)
+                    {
+                        l.enabled = false;
+                    }
                     tools[i].color = Color.gray;
                     tooltips[i].color = Color.clear;
                 }
@@ -136,6 +182,12 @@ public class MapEditor : MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.E))
             {
                 curTool = Tool.connect;
+                l.enabled = true;
+            }
+
+            if (selectedPoints.Count == 0)
+            {
+                selectedPointIndicator.SetActive(false);
             }
 
             switch (curTool)
@@ -144,17 +196,12 @@ public class MapEditor : MonoBehaviour
 
                     if (hitPoint != null)
                     {
-                        if (Input.GetMouseButtonDown(1))
-                        {
-                            RemoveSelectedPoint(hitPoint);
-                        }
-
                         if (Input.GetMouseButtonDown(0))
                         {
 
                             AddSelectedPoint(hitPoint);
                         }
-
+                        
                         if (selectedPoints.Contains(hitPoint) && Input.GetMouseButton(0))
                         {
                             Vector3 pos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
@@ -169,12 +216,33 @@ public class MapEditor : MonoBehaviour
 
                     if (hitPoint == null && Input.GetMouseButtonDown(0))
                     {
-                        SplineUtil.CreatePoint(worldPos);
+                        Point newPoint = SplineUtil.CreatePoint(worldPos);
+                        newPoint.transform.parent = pointsParent;
+                        AddSelectedPoint(newPoint);
                     }
 
                     break;
 
                 case Tool.connect:
+
+                    if (selectedPoints.Count > 0)
+                    {
+                        l.SetPosition(0, selectedPoints[selectedPoints.Count - 1].transform.position);
+                        l.SetPosition(1, worldPos);
+                        if (hitPoint != null && hitPoint != selectedPoints[selectedPoints.Count - 1])
+
+                            l.SetPosition(1, hitPoint.Pos);
+                            if (Input.GetMouseButtonDown(0))
+                            {
+                                SplinePointPair spp = SplineUtil.ConnectPoints(null, selectedPoints[selectedPoints.Count - 1], hitPoint);
+                                spp.s.transform.parent = splinesParent;
+                                spp.p.transform.parent = pointsParent;
+                                
+                                AddSelectedPoint(hitPoint);
+                            }
+                    }
+
+
                     break;
 
             }
@@ -182,9 +250,17 @@ public class MapEditor : MonoBehaviour
             int index = 0;
             foreach (Point p in selectedPoints)
             {
-                selectors[index].transform.Rotate(Vector3.forward);
-                selectors[index].transform.position = cam.WorldToScreenPoint(p.Pos);
-                p.proximity = Mathf.Sin(Time.time);
+              
+                    selectors[index].transform.Rotate(Vector3.forward);
+                    selectors[index].transform.position = cam.WorldToScreenPoint(p.Pos);
+
+                    if (index == selectedPoints.Count-1)
+                    {
+                        selectedPointIndicator.transform.position = cam.WorldToScreenPoint(p.Pos);
+                        selectedPointIndicator.SetActive(true);    
+                    }
+
+                    p.proximity = Mathf.Sin(Time.time);
                 index++;
             }
 
