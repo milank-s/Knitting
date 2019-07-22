@@ -10,9 +10,32 @@ public class MapEditor : MonoBehaviour
 
     private Point activePoint
     {
-        get { return selectedPoints[selectedPoints.Count-1]; }
+        get
+        {
+            if (selectedPoints.Count > 0)
+            {
+                return selectedPoints[selectedPoints.Count-1];
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 
+    private Spline activeSpline
+    {
+        get
+        {
+            if(selectedSplines.Count > 0){
+                return selectedSplines[selectedSplines.Count-1];
+   
+            }else{
+                return null;
+            }
+        }
+    }
+    
     public Transform pointsParent;
     public Transform splinesParent;
     
@@ -85,6 +108,15 @@ public class MapEditor : MonoBehaviour
             selectedPoints.Remove(p);
             selectedPoints.Add(p);
         }
+    }
+    
+    void AddSelectedSpline(Spline p)
+    {
+        if (!selectedSplines.Contains(p))
+        {
+            selectedSplines.Add(p);
+        }
+       
     }
     
     void RemoveSelectedPoint(Point p)
@@ -234,11 +266,16 @@ public class MapEditor : MonoBehaviour
                             l.SetPosition(1, hitPoint.Pos);
                             if (Input.GetMouseButtonDown(0))
                             {
-                                SplinePointPair spp = SplineUtil.ConnectPoints(null, selectedPoints[selectedPoints.Count - 1], hitPoint);
-                                spp.s.transform.parent = splinesParent;
-                                spp.p.transform.parent = pointsParent;
-                                
-                                AddSelectedPoint(hitPoint);
+                                SplinePointPair spp = SplineUtil.ConnectPoints(activeSpline, selectedPoints[selectedPoints.Count - 1], hitPoint);
+                                if (spp.s != null)
+                                {
+                                    spp.s.transform.parent = splinesParent;
+                                    spp.p.transform.parent = pointsParent;
+                                    AddSelectedPoint(hitPoint);
+                                    AddSelectedSpline(spp.s);
+                                }
+
+                               
                             }
                     }
 
@@ -262,6 +299,11 @@ public class MapEditor : MonoBehaviour
 
                     p.proximity = Mathf.Sin(Time.time);
                 index++;
+            }
+
+            foreach (Spline s in selectedSplines)
+            {
+                    s.DrawSplineOverride();
             }
 
         }

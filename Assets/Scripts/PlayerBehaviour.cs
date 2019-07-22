@@ -1298,14 +1298,15 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		if (curSpline != null) {
-			if(flow > 0.25f){
-				velocityLine.color = Color.Lerp(velocityLine.color, new Color(1,1,1,0.1f), Time.deltaTime);
-				velocityLine2.color = Color.Lerp(velocityLine2.color, new Color(1,1,1,0.1f), Time.deltaTime);
-				// DrawVelocity();
-			}else{
-				velocityLine.color = new Color(1,1,1,0.1f);
-				velocityLine2.color = new Color(1,1,1,0.1f);
-			}
+//			if(flow > 0.25f){
+//				velocityLine.color = Color.Lerp(velocityLine.color, new Color(1,1,1,0.1f), Time.deltaTime);
+//				velocityLine2.color = Color.Lerp(velocityLine2.color, new Color(1,1,1,0.1f), Time.deltaTime);
+//				// DrawVelocity();
+//			}else{
+//				velocityLine.color = new Color(1,1,1,0.1f);
+//				velocityLine2.color = new Color(1,1,1,0.1f);
+//			}
+
 //			curSpline.DrawLineSegmentVelocity (progress, Mathf.Sign (accuracy), goingForward ? 0 : 1);\
 			// curSpline.l.material.mainTextureOffset -= Vector2.right * Mathf.Sign (accuracy) * flow * curSpline.l.material.mainTextureScale.x * 2 * Time.deltaTime;
 //			l.SetPosition(0, transform.position);

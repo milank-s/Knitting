@@ -200,7 +200,15 @@ public class Spline : MonoBehaviour
 //		float height = newMat.mainTextureScale.y;
 
 		line = new VectorLine (name, line.points3, 1, LineType.Continuous, Vectrosity.Joins.Weld);
-		line.color = Color.black;
+		if (MapEditor.editing)
+		{
+			line.color = Color.black;
+		}
+		else
+		{
+			line.color = Color.white;
+		}
+
 		line.smoothWidth = true;
 		line.smoothColor = true;
 		line.points3 = new List<Vector3> (SplinePoints.Count * curveFidelity);
@@ -262,6 +270,27 @@ public class Spline : MonoBehaviour
 		}
 	}
 
+	public void DrawSplineOverride()
+	{
+		for (int i = 0; i < SplinePoints.Count; i++)
+		{
+			for (int k = 0; k <= curveFidelity; k++)
+			{
+
+				int index = (i * curveFidelity) + k;
+				float step = (float) k / (float) (curveFidelity);
+
+				
+					DrawLine(i, index, step);
+					Vector3 v = Vector3.zero;
+					v = GetPointAtIndex(i, step);
+					
+			}
+		}
+
+		line.Draw3D();
+	}
+
 	public void DrawSpline(bool drawn, int pointIndex, int endIndex){
 
 				for (int i = pointIndex; i < endIndex ; i++) {
@@ -311,12 +340,12 @@ public class Spline : MonoBehaviour
 
 	void DrawLine(int pointIndex, int segmentIndex, float step){
 
-		int playerIndex = GetPlayerLineSegment ();
+		
 		Vector3 v = GetPointAtIndex (pointIndex, step);
 
 		//Add movement Effects of player is on the spline
 		if (isPlayerOn) {
-
+			int playerIndex = GetPlayerLineSegment ();
 			int indexDiff;
 
 			//Find the shortest distance to the player in case of loop
@@ -373,9 +402,11 @@ public class Spline : MonoBehaviour
 
 		//Set the color. There are weird problems with vectrosity going out of range with color values...
 
-		if (segmentIndex < 1) {
-				line.SetColor (Color.white, segmentIndex);
-		}
+		//ASFUALDFJKL:AEGJIOGWEJIOPGJIEOSIOJEVF
+//		WHAT THE FUCK IS GOING ON HERE
+//		if (segmentIndex < 1) {
+//				line.SetColor (Color.white, segmentIndex);
+//		}
 //
 // 			//CHECK ITS NOT THE LAST POINT
 // //		SplinePoints [i + 1].color = Color.Lerp (SplinePoints [i + 1].color, Color.white, Mathf.Pow (invertedDistance, 2));
