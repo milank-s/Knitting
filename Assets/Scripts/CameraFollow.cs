@@ -17,7 +17,7 @@ public class CameraFollow : MonoBehaviour {
 		CameraDolly.topBound = float.NegativeInfinity;
 		CameraDolly.bottomBound = float.PositiveInfinity;
 		desiredFOV = cam.fieldOfView;
-		Cursor.visible = false;
+		
 	}
 
 	// Update is called once per frame

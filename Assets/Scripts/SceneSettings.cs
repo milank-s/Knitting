@@ -11,9 +11,7 @@ public class SceneSettings : MonoBehaviour
     void Awake()
     {
         Services.StartPoint = startPoint;
-        Services.PlayerBehaviour.curPoint = startPoint;
-        Services.PlayerBehaviour.transform.position = startPoint.Pos;
-        Services.PlayerBehaviour.Setup();
+        
     }
 
     // Update is called once per frame

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class Main : MonoBehaviour {
 
-	public GameObject Cursor;
+	public GameObject cursor;
 	public GameObject Player;
 	public Image PauseScreen;
 	public GameObject PauseMenu;
@@ -40,7 +40,7 @@ public class Main : MonoBehaviour {
 		Services.Prefabs = GetComponent<PrefabManager>();
 		Services.Player = Player;
 		Services.PlayerBehaviour = Player.GetComponent<PlayerBehaviour>();
-		Services.Cursor = Cursor;
+		Services.Cursor = cursor;
 		PointManager._pointsHit = new List<Point> ();
 		PointManager._connectedPoints = new List<Point> ();
 		Services.Sounds = GetComponent<SoundBank> ();
@@ -90,10 +90,15 @@ public class Main : MonoBehaviour {
 		Services.mainCam.GetComponentInChildren<Camera>().enabled = !enter;
 		if (!enter)
 		{
+			Cursor.lockState = CursorLockMode.Locked;
 			if (Services.StartPoint != null)
 			{
 				Services.PlayerBehaviour.Initialize();
 			}
+		}
+		else
+		{
+			Cursor.lockState = CursorLockMode.None;
 		}
 	}
 

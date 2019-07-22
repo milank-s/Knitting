@@ -98,11 +98,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		joystickLocked = true;
 		playerSprite = GetComponentInChildren<SpriteRenderer>();
 		sound = GetComponent<AudioSource>();
-		Cursor.lockState = CursorLockMode.Locked;
+		
 		pointDest = null;
 		traversedPoints = new List<Point> ();
 		traversedPoints.Add (curPoint);
-		curPoint.proximity = 1;
+		
 		connectTimeCoefficient = 1;
 		state = PlayerState.Switching;
 		sounds = GetComponent<PlayerSounds> ();
@@ -118,10 +118,14 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	public void Initialize(){
+
 		cursor = Services.Cursor;
 		curPoint = Services.StartPoint;
+		transform.position = curPoint.Pos;
 		cursorSprite = Services.Cursor.GetComponent<Image>();
+		
 		curPoint.OnPointEnter ();
+		
 		t.time = 100;
 		
 //		Material newMat;
