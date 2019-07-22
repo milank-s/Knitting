@@ -318,6 +318,85 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 167037758}
   m_CullTransparentMesh: 0
+--- !u!1 &280665528
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 280665529}
+  - component: {fileID: 280665531}
+  - component: {fileID: 280665530}
+  m_Layer: 10
+  m_Name: Word
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &280665529
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 280665528}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1243429402}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0.1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0}
+--- !u!114 &280665530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 280665528}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: defcd8117fe3347e1918ec5c3e0060a9, type: 3}
+    m_FontSize: 300
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 0
+    m_MaxSize: 300
+    m_Alignment: 7
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: 
+--- !u!222 &280665531
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 280665528}
+  m_CullTransparentMesh: 0
 --- !u!1001 &452133012
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -328,7 +407,7 @@ PrefabInstance:
     - target: {fileID: 114769404741685902, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
         type: 3}
       propertyPath: lines.Array.size
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 114769404741685902, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
         type: 3}
@@ -629,6 +708,32 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1000013746456480, guid: e141273c6017a48918ca340cd2ce2a49,
         type: 3}
+    - target: {fileID: 114769404741685902, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
+        type: 3}
+      propertyPath: lines.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 632137b06eb306e48bece90ad9621259, type: 2}
+    - target: {fileID: 114769404741685902, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
+        type: 3}
+      propertyPath: lines.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: bb1be1b8454d24381b5f3dc8e3707f16, type: 2}
+    - target: {fileID: 114769404741685902, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
+        type: 3}
+      propertyPath: lines.Array.data[2]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3bc3c46bd6a55414d9899554a37f0917, type: 2}
+    - target: {fileID: 114769404741685902, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
+        type: 3}
+      propertyPath: lines.Array.data[3]
+      value: 
+      objectReference: {fileID: 2100000, guid: 7d12424d4f92045f5910793e1f5c0982, type: 2}
+    - target: {fileID: 114769404741685902, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
+        type: 3}
+      propertyPath: pointSprites.Array.data[3]
+      value: 
+      objectReference: {fileID: 21300000, guid: f810288834cd0ef4388bfa4d7dcffbae,
+        type: 3}
     - target: {fileID: 4904352334662818, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -686,6 +791,11 @@ PrefabInstance:
       propertyPath: PauseMenu
       value: 
       objectReference: {fileID: 167037758}
+    - target: {fileID: 114228048911152496, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
+        type: 3}
+      propertyPath: Word
+      value: 
+      objectReference: {fileID: 280665530}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
 --- !u!1 &541579642 stripped
@@ -1087,7 +1197,7 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1000
-  m_Time: 100
+  m_Time: 0
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 0.005
@@ -1434,10 +1544,10 @@ MonoBehaviour:
   curPoint: {fileID: 0}
   pointDest: {fileID: 0}
   lastPoint: {fileID: 0}
-  speed: 1
+  speed: 0
   maxSpeed: 2.5
   acceleration: 0.1
-  decay: 1
+  decay: 10
   accuracyCoefficient: 3
   flowAmount: 0
   boostAmount: 0.5
@@ -1455,6 +1565,7 @@ MonoBehaviour:
   curSpeed: 0
   connectTime: 0
   connectTimeCoefficient: 0
+  gravity: 0
   flyingSpeedThreshold: 0
   PointDrawDistance: 0.5
   creationCD: 3
@@ -1479,7 +1590,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1908993228}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -2.17, z: 0}
+  m_LocalPosition: {x: -2, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1038554067}
@@ -1537,7 +1648,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 245e336a1e6784b5bbfd1def20ff27ec, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 4fa9d2d2c30c4294e93fd4002a5b41ff, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0
   m_Pitch: 1
@@ -1641,11 +1752,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4382828466378800, guid: 773eddfe2665e7f4b97ef78c33c3b82b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 4382828466378800, guid: 773eddfe2665e7f4b97ef78c33c3b82b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.17
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4382828466378800, guid: 773eddfe2665e7f4b97ef78c33c3b82b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1679,7 +1790,7 @@ PrefabInstance:
     - target: {fileID: 114960858668928550, guid: 773eddfe2665e7f4b97ef78c33c3b82b,
         type: 3}
       propertyPath: speed
-      value: 0.2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 114272458491890184, guid: 773eddfe2665e7f4b97ef78c33c3b82b,
         type: 3}
@@ -1882,7 +1993,7 @@ MonoBehaviour:
   sustains: []
   background: {fileID: 0}
   braking: {fileID: 8300000, guid: 3cd89aa86836a492bbab343de162a149, type: 3}
-  accelerating: {fileID: 8300000, guid: 3cd89aa86836a492bbab343de162a149, type: 3}
+  accelerating: {fileID: 8300000, guid: 1f3dea85e1f43534c8e4d5b29c0371a4, type: 3}
   curPointSound: {fileID: 1055735477}
   pointDestSound: {fileID: 12023046}
   brakingSound: {fileID: 1104410829}

@@ -43,29 +43,20 @@ public class CameraFollow : MonoBehaviour {
 				if(Services.PlayerBehaviour.curSpline == null){
 					return;
 				}
-					foreach (Point p in Services.PlayerBehaviour.curSpline.SplinePoints) {
-						if (p.Pos.y >= CameraDolly.topBound) {
-							CameraDolly.topBound = p.Pos.y;
-						}else{
-							CameraDolly.topBound -= Time.deltaTime * speed;
-						}
-						if (p.Pos.y <= CameraDolly.bottomBound) {
-							CameraDolly.bottomBound = p.Pos.y;
-						}else{
-							CameraDolly.bottomBound += Time.deltaTime * speed;
-						}
-						if (p.Pos.x >= CameraDolly.rightBound) {
-							CameraDolly.rightBound = p.Pos.x;
-						}else{
-							CameraDolly.rightBound -= Time.deltaTime * speed;
-						}
-						if (p.Pos.x <= CameraDolly.leftBound) {
-							CameraDolly.leftBound = p.Pos.x;
-						}else{
-							CameraDolly.leftBound += Time.deltaTime * speed;
-						}
-
-					}
+//					foreach (Point p in Services.PlayerBehaviour.curSpline.SplinePoints) {
+//						if (p.Pos.y >= CameraDolly.topBound) {
+//							CameraDolly.topBound = p.Pos.y;
+//						}
+//						if (p.Pos.y <= CameraDolly.bottomBound) {
+//							CameraDolly.bottomBound = p.Pos.y;
+//						}
+//						if (p.Pos.x >= CameraDolly.rightBound) {
+//							CameraDolly.rightBound = p.Pos.x;
+//						}
+//						if (p.Pos.x <= CameraDolly.leftBound) {
+//							CameraDolly.leftBound = p.Pos.x;
+//						}
+//					}
 
 					if (target.position.x > CameraDolly.rightBound) {
 						CameraDolly.rightBound = target.position.x;
@@ -82,6 +73,12 @@ public class CameraFollow : MonoBehaviour {
 					if (target.position.y < CameraDolly.bottomBound) {
 						CameraDolly.bottomBound = target.position.y;
 					}
+					
+					CameraDolly.topBound -= Time.deltaTime/5f;
+					CameraDolly.bottomBound += Time.deltaTime/5f;
+					CameraDolly.rightBound -= Time.deltaTime/5f;
+					CameraDolly.leftBound += Time.deltaTime/5f;
+					
 
 				// if (Services.Cursor.transform.position.x > CameraDolly.CameraDolly.rightBound) {
 				// 	CameraDolly.rightBound = Services.Cursor.transform.position.x;
@@ -107,6 +104,15 @@ public class CameraFollow : MonoBehaviour {
 				// 	CameraDolly.bottomBound = CameraDolly.CameraDolly.bottomBound;
 				// }
 
+				CameraDolly.topBound =
+					Mathf.Clamp(CameraDolly.topBound, target.position.y + 0.25f, target.position.y + 100);
+				CameraDolly.bottomBound =
+					Mathf.Clamp(CameraDolly.bottomBound, target.position.y - 100,  target.position.y - 0.25f);
+				CameraDolly.rightBound =
+					Mathf.Clamp(CameraDolly.rightBound, target.position.x + 0.25f, target.position.x + 100);
+				CameraDolly.leftBound =
+					Mathf.Clamp(CameraDolly.leftBound, target.position.x - 100, target.position.x - 0.25f);
+				
 				height = CameraDolly.topBound - CameraDolly.bottomBound;
 				yPos = Mathf.Lerp (CameraDolly.bottomBound, CameraDolly.topBound, 0.5f);
 				xPos = Mathf.Lerp (CameraDolly.leftBound, CameraDolly.rightBound, 0.5f);
@@ -120,10 +126,11 @@ public class CameraFollow : MonoBehaviour {
 				// Debug.Log(CameraDolly.FOVForHeightAndDistance (height, offset.z));
 				// this is negative
 
+				
 					cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, CameraDolly.FOVForHeightAndDistance (height, -offset.z) + 10, Time.deltaTime * speed);
 					Vector3 shake = Services.PlayerBehaviour.state == PlayerState.Traversing ? Random.onUnitSphere * Mathf.Clamp(Mathf.Pow(1- Services.PlayerBehaviour.accuracy, 2) * Services.PlayerBehaviour.curSpeed / 10f, 0, 0.1f) : Vector3.zero;
 
-					Vector3 targetPos = Vector3.SmoothDamp (transform.position, Vector3.Lerp(Services.PlayerBehaviour.transform.position, new Vector3(xPos, yPos, Services.PlayerBehaviour.transform.position.z), 0.5f) + shake, ref velocity, 0.25f);
+					Vector3 targetPos = Vector3.SmoothDamp (transform.position, Vector3.Lerp(Services.PlayerBehaviour.transform.position, new Vector3(xPos, yPos, Services.PlayerBehaviour.transform.position.z), 0f) + shake, ref velocity, 0.25f);
 
 					transform.position = new Vector3(targetPos.x, targetPos.y, Services.PlayerBehaviour.transform.position.z + offset.z);
 				// }

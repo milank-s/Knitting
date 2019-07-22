@@ -9,7 +9,7 @@ public class Main : MonoBehaviour {
 	public GameObject Player;
 	public Image PauseScreen;
 	public GameObject PauseMenu;
-
+	public Text Word;
 	public bool _paused
 	{
 		set
@@ -30,8 +30,9 @@ public class Main : MonoBehaviour {
 
 	private bool paused;
 	
-	void Awake () {
-		
+	void Awake ()
+	{
+		Services.Word = Word;
 		Services.Prefabs = GetComponent<PrefabManager>();
 		Services.Player = Player;
 		Services.PlayerBehaviour = Player.GetComponent<PlayerBehaviour>();

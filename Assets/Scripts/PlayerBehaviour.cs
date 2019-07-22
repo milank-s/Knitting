@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,9 +21,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	public Point curPoint;
 	public Point pointDest;
 	public Point lastPoint;
-	[Space(10)]
 
-	[Header("Movement Tuning")]
+	[Space(10)] [Header("Movement Tuning")]
 	public float speed;
 	public float maxSpeed;
 	public float acceleration;
@@ -44,7 +44,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	[HideInInspector]
 	public bool goingForward = true;
 	[HideInInspector]
-	public float progress, accuracy, flow, boost, boostTimer, curSpeed, connectTime, connectTimeCoefficient;
+	public float progress, accuracy, flow, boost, boostTimer, curSpeed, connectTime, connectTimeCoefficient, gravity;
 
 	[Header("Flying tuning")]
 	public float flyingSpeedThreshold = 3;
@@ -148,6 +148,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		velocityLine2.texture = tex;
 		velocityLine2.textureScale = newMat.mainTextureScale.x;
+
+		t.time = 100;
 	}
 
 	public void Step () {
@@ -198,8 +200,10 @@ public class PlayerBehaviour: MonoBehaviour {
 			 cursorSprite.sprite = canFlySprite;
 		 }
 
-		}else if(state == PlayerState.Switching) {
-			curSpeed = 0;
+		}else if(state == PlayerState.Switching)
+		{
+			gravity = 0;
+//			curSpeed = 0;
 			transform.position = curPoint.Pos;
 			PlayerOnPoint();
 		}
@@ -247,7 +251,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 		#endregion
 	}
-
+	
 	public void PlayerOnPoint(){
 		bool canTraverse = false;
 
@@ -759,7 +763,9 @@ public class PlayerBehaviour: MonoBehaviour {
 //		MAKE FLOW NON REVERSIBLE. ADJUST LINE ACCURACY WITH FLOW TO MAKE PLAYER NOT STOP AT INTERSECTIONS
 //		NEGOTIATE FLOW CANCELLING OUT CURRENT SPEED
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
-
+		//flow -= Vector3.Dot(Vector3.up, curSpline.GetDirection(progress))/100f;
+		
+		
 		accuracyCoefficient = Mathf.Pow(Mathf.Abs(accuracy), 2);
 		if (accuracy > 0.5f && !joystickLocked) {
 
@@ -773,6 +779,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if(Mathf.Abs(flow) < maxSpeed){
 			flow += Mathf.Sign (accuracy) * accuracyCoefficient * acceleration * Time.deltaTime;
+			
 			}
 
 		}
@@ -795,8 +802,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		// (adjustedAccuracy + 0.1f)
 		if (!joystickLocked)
 		{
-			curSpeed = ((flow + boost + (speed * Mathf.Sign(flow))) / curSpline.distance) * adjustedAccuracy;
-			progress += curSpeed * Time.deltaTime;
+			curSpeed = (((flow + boost + speed) * adjustedAccuracy));
+			progress += (curSpeed * Time.deltaTime) / curSpline.distance;
 		}
 
 		boost = Mathf.Lerp (boost, 0, Time.deltaTime * 3f);
@@ -917,7 +924,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 // THIS IS KINDA SHITTY. DO IT BETTER
 			accuracy = 1;
-
+			
 			Point PreviousPoint = curPoint;
 			curPoint.proximity = 0;
 			if (progress > 1) {
@@ -950,10 +957,11 @@ public class PlayerBehaviour: MonoBehaviour {
 				traversedPoints.Add (curPoint);
 				lastPoint = PreviousPoint;
 			}
-
-			if(curPoint.pointType == PointTypes.boost){
+	
+			
+			if(curPoint.pointType == PointTypes.stop){
 //				traversedPoints.Clear();
-				traversedPoints.Add(curPoint);
+//				traversedPoints.Add(curPoint);
 			}
 
 			state = PlayerState.Switching;
@@ -1335,14 +1343,15 @@ public class PlayerBehaviour: MonoBehaviour {
 	 //
 			Services.Sounds.master.GetFloat ("CenterFreq", out curFreqGain);
 			float lerpAmount = Services.PlayerBehaviour.goingForward ? Services.PlayerBehaviour.progress : 1 - Services.PlayerBehaviour.progress;
-			sounds.ambientSound.volume = Mathf.Lerp(sounds.ambientSound.volume, Mathf.Clamp01(curSpeed/2f)/10f, Time.deltaTime);
+			sounds.ambientSound.volume = Mathf.Lerp(sounds.ambientSound.volume, Mathf.Clamp01(curSpeed), Time.deltaTime);
+			sounds.ambientSound.pitch = sounds.ambientSound.volume;
 			sounds.brakingSound.volume = Mathf.Pow(Mathf.Clamp01(0.5f - accuracy)/10, 2);
 	 //
 			Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(Services.PlayerBehaviour.flow)/2 + 1f);
 			Services.Sounds.master.SetFloat("CenterFreq", Mathf.Lerp(curFreqGain, ((dot/2f + 0.5f) + Mathf.Clamp01(1f/Mathf.Pow(curSpline.segmentDistance, 5))) * (16000f / curFreqGain), lerpAmount));
 
 			if(pointDest.pointType != PointTypes.ghost){
-				sounds.pointDestSound.volume = Mathf.Pow(pointDest.proximity, 2)/10f;
+				//sounds.pointDestSound.volume = Mathf.Pow(pointDest.proximity, 2)/10f;
 			}else{
 				sounds.pointDestSound.volume = 0;
 			}

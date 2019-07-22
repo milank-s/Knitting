@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public enum PointTypes{normal, fly, connect, boost, ghost}
+public enum PointTypes{normal, fly, ghost, stop, connect}
 //fly points enable flying
 //boost add additional boostAmount. tension = ?
 //leaves cannot be connected to
@@ -135,12 +135,12 @@ public class Point : MonoBehaviour
 				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.fly];
 			break;
 
-			case PointTypes.boost:
-				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.boost];
+			case PointTypes.stop:
+				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.stop];
 			break;
 
 			case PointTypes.connect:
-				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.boost];
+				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.connect];
 			break;
 
 			case PointTypes.ghost:
@@ -227,7 +227,7 @@ public class Point : MonoBehaviour
 
 		if(textMesh != null){
 			textMesh.GetComponent<FadeTextOnPoint>().alpha = 1;
-
+			Services.Word.text = textMesh.text.ToUpper();
 		}
 
 		if (!visited) {
@@ -261,7 +261,7 @@ public class Point : MonoBehaviour
 	public void OnPointExit(){
 
 		switch(pointType){
-			case PointTypes.boost:
+			case PointTypes.stop:
 				Services.PlayerBehaviour.boost += 0.5f;
 				Services.PlayerBehaviour.flow += 0.1f;
 			break;
