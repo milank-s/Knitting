@@ -120,9 +120,15 @@ public class Point : MonoBehaviour
 		SR = GetComponent<SpriteRenderer> ();
 		if (MapEditor.editing)
 		{
+			SR.color = Color.white;
+			color = Color.white;
+		}
+		else
+		{
 			SR.color = Color.black;
 		}
 
+		
 		originalPos = transform.position;
 	}
 

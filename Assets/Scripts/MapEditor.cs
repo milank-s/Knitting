@@ -72,7 +72,7 @@ public class MapEditor : MonoBehaviour
     void Awake()
     {
         editing = true;
-        
+ 
         selectors = new List<Image>();
         for (int i = 0; i < 20; i++)
         {
@@ -171,7 +171,7 @@ public class MapEditor : MonoBehaviour
         {
             if (selectedPoints.Count > 0)
             {
-                Services.StartPoint = selectedPoints[0];
+                Services.StartPoint = activePoint;
             }
             editing = !editing;
             canvas.gameObject.SetActive(editing);
@@ -244,41 +244,77 @@ public class MapEditor : MonoBehaviour
 
                     break;
 
-                case Tool.draw:
+                case Tool.connect:
 
-                    if (hitPoint == null && Input.GetMouseButtonDown(0))
-                    {
-                        Point newPoint = SplineUtil.CreatePoint(worldPos);
-                        newPoint.transform.parent = pointsParent;
-                        AddSelectedPoint(newPoint);
-                    }
-
+                   
+                    
+                    
                     break;
 
-                case Tool.connect:
+                case Tool.draw:
 
                     if (selectedPoints.Count > 0)
                     {
                         l.SetPosition(0, selectedPoints[selectedPoints.Count - 1].transform.position);
                         l.SetPosition(1, worldPos);
-                        if (hitPoint != null && hitPoint != selectedPoints[selectedPoints.Count - 1])
+                    }
 
-                            l.SetPosition(1, hitPoint.Pos);
-                            if (Input.GetMouseButtonDown(0))
+                    if (hitPoint != null)
+                    {
+                        l.SetPosition(1, hitPoint.Pos);
+                        if (selectedPoints.Count > 0)
+                        {
+                            if (Input.GetMouseButtonDown(0) && hitPoint != activePoint)
                             {
-                                SplinePointPair spp = SplineUtil.ConnectPoints(activeSpline, selectedPoints[selectedPoints.Count - 1], hitPoint);
+                                SplinePointPair spp = SplineUtil.ConnectPoints(activeSpline,
+                                    activePoint, hitPoint);
                                 if (spp.s != null)
                                 {
                                     spp.s.transform.parent = splinesParent;
                                     spp.p.transform.parent = pointsParent;
+                                    RemoveSelectedPoint(activePoint);
                                     AddSelectedPoint(hitPoint);
+                                    
                                     AddSelectedSpline(spp.s);
                                 }
 
-                               
-                            }
-                    }
 
+                            }
+                        }
+                        else
+                        {
+                            AddSelectedPoint(hitPoint);
+                        }
+                    }
+                    else if (hitPoint == null)
+                    {
+                        if (Input.GetMouseButtonDown(0))
+                        {
+                            if (selectedPoints.Count > 0)
+                            {
+                                Point newPoint = SplineUtil.CreatePoint(worldPos);
+                                newPoint.transform.parent = pointsParent;
+
+                                SplinePointPair spp = SplineUtil.ConnectPoints(activeSpline,
+                                    activePoint, newPoint);
+                                if (spp.s != null)
+                                {
+                                    spp.s.transform.parent = splinesParent;
+                                    spp.p.transform.parent = pointsParent;
+                                    RemoveSelectedPoint(activePoint);
+                                    AddSelectedPoint(newPoint);
+                                    AddSelectedSpline(spp.s);
+                                }
+
+                            }
+                            else
+                            {
+                                Point newPoint = SplineUtil.CreatePoint(worldPos);
+                                newPoint.transform.parent = pointsParent;
+                                AddSelectedPoint(newPoint);
+                            }
+                        }
+                    }
 
                     break;
 

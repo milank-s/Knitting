@@ -202,11 +202,11 @@ public class Spline : MonoBehaviour
 		line = new VectorLine (name, line.points3, 1, LineType.Continuous, Vectrosity.Joins.Weld);
 		if (MapEditor.editing)
 		{
-			line.color = Color.black;
+			line.color = Color.white;
 		}
 		else
 		{
-			line.color = Color.white;
+			line.color = Color.black;
 		}
 
 		line.smoothWidth = true;
