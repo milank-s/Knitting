@@ -106,7 +106,7 @@ public class MapEditor : MonoBehaviour
         selectedPointIndicator.SetActive(false);
         pointOptions.SetActive(false);
         selectors = new List<Image>();
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 50; i++)
         {
             Image newSelector = Instantiate(selector, Vector3.zero, Quaternion.identity).GetComponent<Image>();
             selectors.Add(newSelector);
@@ -224,28 +224,31 @@ public class MapEditor : MonoBehaviour
                 case Tool.move:
                     
                         SelectPoint(hitPoint);
-
-                        if (hitPoint != null || dragging || (pointSelected && Input.GetKey(KeyCode.LeftShift)))
+                        
+                        if (pointSelected)
                         {
-                            if (Input.GetMouseButton(0))
+                            if (hitPoint != null || dragging || Input.GetKey(KeyCode.LeftShift))
                             {
-                                dragging = true;
+                                if (Input.GetMouseButton(0))
+                                {
+                                    dragging = true;
 //                            if (hitPoint != activePoint)
 //                            {
 //                                selectedPoints.Remove(hitPoint);
 //                                selectedPoints.Add(hitPoint);
 //                            }
 
-                                Vector3 pos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
-                                    Mathf.Abs(cam.transform.position.z) - activePoint.Pos.z));
+                                    Vector3 pos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
+                                        Mathf.Abs(cam.transform.position.z) - activePoint.Pos.z));
 
-                                Vector3 delta = worldPos - lastPos;
+                                    Vector3 delta = worldPos - lastPos;
 
-                                foreach (Point p in selectedPoints)
-                                {
-                                    
-                                    p.transform.position += new Vector3(delta.x, delta.y, 0);
-                                    p.originalPos = p.Pos;
+                                    foreach (Point p in selectedPoints)
+                                    {
+
+                                        p.transform.position += new Vector3(delta.x, delta.y, 0);
+                                        p.originalPos = p.Pos;
+                                    }
                                 }
                             }
                         }
@@ -263,12 +266,12 @@ public class MapEditor : MonoBehaviour
                     SelectPoint(hitPoint);
 
 
-                    Vector3 screenPos = cam.WorldToScreenPoint(lastPos);
-                    
+                    Vector3 screenPos = cam.WorldToViewportPoint(lastPos);
+                    Vector3 viewPortPos = cam.ScreenToViewportPoint(curPos);
                     if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftShift))
                     {
-                        biasSlider.value += (curPos.x - screenPos.x) /3 * Time.deltaTime;
-                        tensionSlider.value += (curPos.y - screenPos.y) /3 * Time.deltaTime;
+                        biasSlider.value += (viewPortPos.x - screenPos.x) *1000 * Time.deltaTime;
+                        tensionSlider.value += (viewPortPos.y - screenPos.y) * 1000 * Time.deltaTime;
                     }
                     
                     break;
@@ -415,21 +418,21 @@ public class MapEditor : MonoBehaviour
         
         Vector3 viewportPos = cam.ScreenToViewportPoint(curPos);
         
-        if (viewportPos.y > 0.9f)
+        if (viewportPos.y > 0.95f && viewportPos.y < 1)
         {
-            cam.transform.position += Vector3.up * Time.deltaTime * (0.1f - (1-viewportPos.y)) * 10f;
+            cam.transform.position += Vector3.up * Time.deltaTime * (0.1f - (1-viewportPos.y)) * 5f;
            
-        }else if (viewportPos.y < 0.1f)
+        }else if (viewportPos.y < 0.05f && viewportPos.y > 0)
         {
-            cam.transform.position -= Vector3.up * Time.deltaTime * (0.1f - viewportPos.y) * 10f;
+            cam.transform.position -= Vector3.up * Time.deltaTime * (0.1f - viewportPos.y) * 5f;
         }
 
-        if (viewportPos.x > 0.9f)
+        if (viewportPos.x > 0.95f && viewportPos.x < 1 )
         {
-            cam.transform.position += Vector3.right * Time.deltaTime * (0.1f - (1-viewportPos.x)) * 10f;
-        }else if (viewportPos.x < 0.1f)
+            cam.transform.position += Vector3.right * Time.deltaTime * (0.1f - (1-viewportPos.x)) * 5f;
+        }else if (viewportPos.x < 0.05f && viewportPos.x > 0)
         {
-            cam.transform.position -= Vector3.right * Time.deltaTime * (0.1f - viewportPos.x) * 10f;
+            cam.transform.position -= Vector3.right * Time.deltaTime * (0.1f - viewportPos.x) * 5f;
         }
     }
     void SelectPoint(Point p)
