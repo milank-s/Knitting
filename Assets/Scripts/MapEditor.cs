@@ -35,7 +35,21 @@ public class MapEditor : MonoBehaviour
             }
         }
     }
-    
+
+    public Tool _curTool
+    {
+        set
+        {
+            int dummy = (int)curTool;
+            curTool = value;
+            if (dummy != (int)value)
+            {
+                ChangeTool();
+            }
+        }
+
+        get { return curTool; }
+    }
     public Transform pointsParent;
     public Transform splinesParent;
     
@@ -43,11 +57,18 @@ public class MapEditor : MonoBehaviour
     public GameObject selector;
     public Transform canvas;
     public GameObject selectedPointIndicator;
+    public GameObject pointOptions;
     private List<Image> selectors;
     private LineRenderer l;
     private Camera cam;
 
+    private bool dragging;
+    private bool pointSelected
+    {
+        get { return selectedPoints.Count > 0; }
+    }
     private Vector3 curPos;
+    private Vector3 worldPos;
     public enum Tool
     {
         select,
@@ -77,6 +98,8 @@ public class MapEditor : MonoBehaviour
     {
         editing = true;
  
+        selectedPointIndicator.SetActive(false);
+        pointOptions.SetActive(false);
         selectors = new List<Image>();
         for (int i = 0; i < 20; i++)
         {
@@ -99,6 +122,35 @@ public class MapEditor : MonoBehaviour
         Services.main.EnterEditMode(editing);
     }
 
+    void SelectPoint(Point p)
+    {
+        if (p != null && Input.GetMouseButtonDown(0))
+        {
+            if ((!Input.GetKey(KeyCode.LeftShift) && pointSelected))
+            {
+                RemoveSelectedPoint(activePoint);
+            }
+
+            if (curTool == Tool.select && pointSelected && activePoint == p)
+            {
+                RemoveSelectedPoint(p);
+                if (!pointSelected && curTool == Tool.select)
+                {
+                    pointOptions.SetActive(false);
+                }
+            }
+            else
+            {
+                
+                AddSelectedPoint(p);
+                
+                if (pointSelected && curTool == Tool.select)
+                {
+                    pointOptions.SetActive(true);
+                }
+            }
+        }
+    }
     void AddSelectedPoint(Point p)
     {
         if (!selectedPoints.Contains(p))
@@ -107,11 +159,9 @@ public class MapEditor : MonoBehaviour
             selectors[selectedPoints.Count - 1].color = Color.white;
             
         }
-        else
-        {
-            selectedPoints.Remove(p);
-            selectedPoints.Add(p);
-        }
+   
+        selectedPointIndicator.SetActive(pointSelected);
+        
     }
     
     void AddSelectedSpline(Spline p)
@@ -121,6 +171,7 @@ public class MapEditor : MonoBehaviour
             selectedSplines.Add(p);
         }
        
+        
     }
     
     void RemoveSelectedPoint(Point p)
@@ -131,6 +182,8 @@ public class MapEditor : MonoBehaviour
             selectors[selectedPoints.Count - 1].color = Color.clear;
             selectedPoints.Remove(p);
         }
+
+        selectedPointIndicator.SetActive(pointSelected);
     }
     
     public void SetTension(float t)
@@ -143,19 +196,124 @@ public class MapEditor : MonoBehaviour
     {
         activePoint.bias = t;
     }
+
+    void ChangeTool()
+    {
+        for (int i = 0; i < tools.Length; i++)
+        {
+            if (i == (int) curTool)
+            {
+                tools[i].color = Color.white;
+                tooltips[i].color = Color.white;
+                cursor.sprite = cursors[i];
+            }
+            else
+            {
+                if (curTool != Tool.draw)
+                {
+                    l.enabled = false;
+                }
+
+                if (curTool != Tool.select)
+                {
+                    pointOptions.SetActive(false);  
+                }
+
+                if (curTool != Tool.move)
+                {
+                    dragging = false;
+                }
+                tools[i].color = Color.gray;
+                tooltips[i].color = Color.clear;
+            }
+        }
+    }
+
+    void Deselect()
+    {
+        selectedPoints.Clear();
+        selectedPointIndicator.SetActive(false);
+        foreach (Image i in selectors)
+        {
+            i.color = Color.clear;
+        }
+    }
+    
+    IEnumerator MarqueeSelect(Vector3 pos)
+    {
+
+        l.enabled = true;
+        l.positionCount = 5;
+        while (!Input.GetMouseButtonUp(0) && curTool == (int)Tool.select)
+        {
+            
+           
+            Vector3 pos2 = new Vector3(pos.x, worldPos.y, 0);
+            Vector3 pos3 = new Vector3(worldPos.x, pos.y, 0);
+            
+            l.SetPosition(0, pos);
+            l.SetPosition(1, pos2);
+            l.SetPosition(2, worldPos);
+            l.SetPosition(3, pos3);
+            l.SetPosition(4, pos);
+            yield return null;
+        }
+
+        Vector3 center = Vector3.Lerp(pos, worldPos, 0.5f);
+        Vector3 size = worldPos - pos;
+        
+       
+
+        if (Vector3.Distance(worldPos, pos) > 0.25f)
+        {
+            if (!Input.GetKey(KeyCode.LeftShift))
+            {
+                Deselect();
+            }
+            foreach (Collider c in Physics.OverlapBox(center, new Vector3(Mathf.Abs(size.x), Mathf.Abs(size.y), 10) / 2))
+            {
+                Point p = c.GetComponent<Point>();
+                if (p != null)
+                {
+                    if (pointSelected && selectedPoints.Contains(p))
+                    {
+                        RemoveSelectedPoint(p);
+
+                        if (!pointSelected)
+                        {
+                            pointOptions.SetActive(false);
+                        }
+                    }
+                    else
+                    {
+                        AddSelectedPoint(p);
+
+                        if (pointSelected && curTool == Tool.select)
+                        {
+                            pointOptions.SetActive(true);
+                        }
+                    }
+                }
+            }
+        }
+
+        l.positionCount = 2;
+        l.enabled = false;
+
+    }
     // Update is called once per frame
     void Update()
     {
         Cursor.visible = false;
         Point hitPoint = null;
-        
-        Vector3 curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
-        Vector3 worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
+
+       
+        curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
+        worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
             Mathf.Abs(cam.transform.position.z)));
         cursor.transform.position = curPos;
 
-        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
-        {
+        
             Ray r = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             
@@ -168,17 +326,21 @@ public class MapEditor : MonoBehaviour
                     if (Input.GetMouseButtonDown(1))
                     {
                         RemoveSelectedPoint(hitPoint);
+                        if (!pointSelected && curTool == Tool.select)
+                        {
+                            pointOptions.SetActive(false);
+                        }
                     }
 
 
                 }
             }
-        }
+        
 
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (selectedPoints.Count > 0)
+            if (pointSelected)
             {
                 Services.StartPoint = activePoint;
             }
@@ -192,37 +354,26 @@ public class MapEditor : MonoBehaviour
         {
 
 //            Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 2));
-            for (int i = 0; i < tools.Length; i++)
-            {
-                if (i == (int) curTool)
-                {
-                    tools[i].color = Color.white;
-                    tooltips[i].color = Color.white;
-                    cursor.sprite = cursors[i];
-                }
-                else
-                {
-                    if (curTool != Tool.draw)
-                    {
-                        l.enabled = false;
-                    }
-                    tools[i].color = Color.gray;
-                    tooltips[i].color = Color.clear;
-                }
-            }
+            
+           
 
             if (Input.GetKeyDown(KeyCode.Q))
             {
-                curTool = Tool.select;
+
+                _curTool = Tool.select;
+                if (pointSelected)
+                {
+                    pointOptions.SetActive(true);
+                }
             }
             else if (Input.GetKeyDown(KeyCode.W))
             {
-                curTool = Tool.move;
+                _curTool = Tool.move;
 
             }
             else if (Input.GetKeyDown(KeyCode.D))
             {
-                curTool = Tool.draw;
+                _curTool = Tool.draw;
                 l.enabled = true;
             }
 
@@ -231,33 +382,46 @@ public class MapEditor : MonoBehaviour
                 selectedPointIndicator.SetActive(false);
             }
 
+            
             switch (curTool)
             {
                 
                 case Tool.move:
                     
-                    if (hitPoint != null)
-                    {
-                        if (Input.GetMouseButtonDown(0))
-                        {
-
-                            AddSelectedPoint(hitPoint);
-                        }
+                        SelectPoint(hitPoint);
                         
-                        if (selectedPoints.Contains(hitPoint) && Input.GetMouseButton(0))
+                        if (dragging || (hitPoint != null && pointSelected && Input.GetMouseButton(0)))
                         {
+                            dragging = true;
+//                            if (hitPoint != activePoint)
+//                            {
+//                                selectedPoints.Remove(hitPoint);
+//                                selectedPoints.Add(hitPoint);
+//                            }
+
                             Vector3 pos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
-                                Mathf.Abs(cam.transform.position.z) - hitPoint.Pos.z));
-                            hitPoint.transform.position = new Vector3(pos.x, pos.y, hitPoint.Pos.z);
+                                Mathf.Abs(cam.transform.position.z) - activePoint.Pos.z));
+                            activePoint.transform.position = new Vector3(pos.x, pos.y, activePoint.Pos.z);
                         }
-                    }
+
+                        if (dragging && Input.GetMouseButtonUp(0))
+                        {
+                            dragging = false;
+                        }
+                    
 
                   
                     break;
                 case Tool.select:
 
-                   //implement marquee box 
-                   
+                    SelectPoint(hitPoint);
+
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        StartCoroutine(MarqueeSelect(worldPos));
+                    }
+                    //implement marquee box 
+
                     break;
 
                 case Tool.connect:
@@ -336,6 +500,7 @@ public class MapEditor : MonoBehaviour
 
             }
 
+            
             int index = 0;
             foreach (Point p in selectedPoints)
             {
@@ -346,7 +511,8 @@ public class MapEditor : MonoBehaviour
                     if (index == selectedPoints.Count-1)
                     {
                         selectedPointIndicator.transform.position = cam.WorldToScreenPoint(p.Pos);
-                        selectedPointIndicator.SetActive(true);    
+                        pointOptions.transform.position = cam.WorldToScreenPoint(p.Pos);
+
                     }
 
                     p.proximity = Mathf.Sin(Time.time);
