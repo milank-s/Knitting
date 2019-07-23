@@ -75,7 +75,7 @@ public class MapEditor : MonoBehaviour
         move,
         draw,
         connect,
-        
+        marquee
     }
 
     
@@ -93,7 +93,8 @@ public class MapEditor : MonoBehaviour
     public Sprite[] cursors;
     
     public Image cursor;
-    // Start is called before the first frame update
+
+    
     void Awake()
     {
         editing = true;
@@ -226,6 +227,7 @@ public class MapEditor : MonoBehaviour
                 {
                     dragging = false;
                 }
+                
                 tools[i].color = Color.gray;
                 tooltips[i].color = Color.clear;
             }
@@ -247,10 +249,8 @@ public class MapEditor : MonoBehaviour
 
         l.enabled = true;
         l.positionCount = 5;
-        while (!Input.GetMouseButtonUp(0) && curTool == (int)Tool.select)
+        while (!Input.GetMouseButtonUp(0) && curTool == Tool.marquee)
         {
-            
-           
             Vector3 pos2 = new Vector3(pos.x, worldPos.y, 0);
             Vector3 pos3 = new Vector3(worldPos.x, pos.y, 0);
             
@@ -378,6 +378,9 @@ public class MapEditor : MonoBehaviour
             {
                 _curTool = Tool.draw;
                 l.enabled = true;
+            } else if (Input.GetKeyDown(KeyCode.M)){
+                _curTool = Tool.marquee;
+              
             }
 
             if (selectedPoints.Count == 0)
@@ -419,10 +422,7 @@ public class MapEditor : MonoBehaviour
 
                     SelectPoint(hitPoint);
 
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        StartCoroutine(MarqueeSelect(worldPos));
-                    }
+                    
                     //implement marquee box 
 
                     break;
@@ -434,6 +434,15 @@ public class MapEditor : MonoBehaviour
                     
                     break;
 
+                case Tool.marquee:
+                    
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        StartCoroutine(MarqueeSelect(worldPos));
+                    }
+                    
+                    break;
+                    
                 case Tool.draw:
                        
                     if (selectedPoints.Count > 0)
