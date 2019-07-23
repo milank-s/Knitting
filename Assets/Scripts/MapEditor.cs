@@ -62,6 +62,9 @@ public class MapEditor : MonoBehaviour
     private LineRenderer l;
     private Camera cam;
 
+    public Slider tensionSlider;
+    public Slider biasSlider;
+    
     private bool dragging;
     private bool pointSelected
     {
@@ -109,8 +112,6 @@ public class MapEditor : MonoBehaviour
             selectors.Add(newSelector);
             newSelector.transform.parent = canvas;
         }
-
-        cam = GetComponentInChildren<Camera>();
         selectedPoints = new List<Point>();
         selectedSplines = new List<Spline>();
         Point.editMode = true;
@@ -119,8 +120,8 @@ public class MapEditor : MonoBehaviour
 
     void Start()
     {
+        cam = Services.mainCam;
         l.enabled = false;
-        cam.enabled = editing;
         Services.main.EnterEditMode(editing);
         curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
         worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
@@ -167,7 +168,9 @@ public class MapEditor : MonoBehaviour
             selectedPoints.Remove(p);
             selectedPoints.Add(p);
         }
-   
+
+        biasSlider.value = activePoint.bias;
+        tensionSlider.value = activePoint.tension;
         selectedPointIndicator.SetActive(pointSelected);
         
     }
@@ -246,6 +249,9 @@ public class MapEditor : MonoBehaviour
         {
             i.color = Color.clear;
         }
+
+        pointOptions.SetActive(false);
+        
     }
     
     IEnumerator MarqueeSelect(Vector3 pos)
@@ -314,6 +320,7 @@ public class MapEditor : MonoBehaviour
         Cursor.visible = false;
         Point hitPoint = null;
 
+        
         lastPos = worldPos;
         curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
         worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
@@ -361,7 +368,7 @@ public class MapEditor : MonoBehaviour
             }
             editing = !editing;
             canvas.gameObject.SetActive(editing);
-            cam.enabled = editing;
+//            cam.enabled = editing;
             Services.main.EnterEditMode(editing);
         }
 
@@ -426,7 +433,9 @@ public class MapEditor : MonoBehaviour
 
                                 foreach (Point p in selectedPoints)
                                 {
+                                    
                                     p.transform.position += new Vector3(delta.x, delta.y, 0);
+                                    p.originalPos = p.Pos;
                                 }
                             }
                         }
@@ -443,9 +452,12 @@ public class MapEditor : MonoBehaviour
 
                     SelectPoint(hitPoint);
 
+                    if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftShift))
+                    {
+                        biasSlider.value += (worldPos.x - lastPos.x) * 1000 * Time.deltaTime;
+                        tensionSlider.value += (worldPos.y - lastPos.y) * 1000 * Time.deltaTime;
+                    }
                     
-                    //implement marquee box 
-
                     break;
 
                 case Tool.connect:
@@ -466,10 +478,15 @@ public class MapEditor : MonoBehaviour
                     
                 case Tool.draw:
                        
-                    if (selectedPoints.Count > 0)
+                    if (pointSelected)
                     {
                         l.SetPosition(0, selectedPoints[selectedPoints.Count - 1].transform.position);
                         l.SetPosition(1, worldPos);
+                    }
+                    else
+                    {
+                        l.SetPosition(0, Vector3.zero);
+                        l.SetPosition(1, Vector3.zero);
                     }
 
                     if (hitPoint != null)
@@ -506,6 +523,10 @@ public class MapEditor : MonoBehaviour
                             if (selectedPoints.Count > 0)
                             {
                                 Point newPoint = SplineUtil.CreatePoint(worldPos);
+                                if (Input.GetKey(KeyCode.LeftShift))
+                                {
+                                    newPoint.tension = 1;
+                                }
                                 newPoint.transform.parent = pointsParent;
 
                                 SplinePointPair spp = SplineUtil.ConnectPoints(activeSpline,

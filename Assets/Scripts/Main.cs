@@ -84,10 +84,12 @@ public class Main : MonoBehaviour {
 	
 	public void EnterEditMode(bool enter)
 	{
+		
 		canvas.SetActive(!enter);
-		Services.mainCam.enabled = !enter;
 		Player.SetActive(!enter);
-		Services.mainCam.GetComponentInChildren<Camera>().enabled = !enter;
+		Services.mainCam.GetComponent<CameraFollow>().enabled = !enter;
+		
+		//Services.mainCam.GetComponentInChildren<Camera>().enabled = !enter;
 		if (!enter)
 		{
 			Cursor.lockState = CursorLockMode.Locked;
