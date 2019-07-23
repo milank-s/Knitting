@@ -128,199 +128,13 @@ public class MapEditor : MonoBehaviour
             Mathf.Abs(cam.transform.position.z)));
     }
 
-    void SelectPoint(Point p)
-    {
-        if (p != null && Input.GetMouseButtonDown(0))
-        {
-            if ((!Input.GetKey(KeyCode.LeftShift) && pointSelected) && activePoint != p)
-            {
-                Deselect();
-            }
-
-            if (curTool == Tool.select && pointSelected && activePoint == p)
-            {
-                RemoveSelectedPoint(p);
-                if (!pointSelected && curTool == Tool.select)
-                {
-                    pointOptions.SetActive(false);
-                }
-            }else{
-                
-                AddSelectedPoint(p);
-                
-                if (pointSelected && curTool == Tool.select)
-                {
-                    pointOptions.SetActive(true);
-                }
-            }
-        }
-    }
-    void AddSelectedPoint(Point p)
-    {
-        if (!selectedPoints.Contains(p))
-        {
-            selectedPoints.Add(p);
-            selectors[selectedPoints.Count - 1].color = Color.white;
-            
-        }
-        else
-        {
-            selectedPoints.Remove(p);
-            selectedPoints.Add(p);
-        }
-
-        biasSlider.value = activePoint.bias;
-        tensionSlider.value = activePoint.tension;
-        selectedPointIndicator.SetActive(pointSelected);
-        
-    }
-    
-    void AddSelectedSpline(Spline p)
-    {
-        if (!selectedSplines.Contains(p))
-        {
-            selectedSplines.Add(p);
-        }
-       
-        
-    }
-    
-    void RemoveSelectedPoint(Point p)
-    {
-        if (selectedPoints.Contains(p))
-        {
-            
-            selectors[selectedPoints.Count - 1].color = Color.clear;
-            selectedPoints.Remove(p);
-        }
-
-        selectedPointIndicator.SetActive(pointSelected);
-    }
-    
-    public void SetTension(float t)
-    {
-        activePoint.tension = t;
-    }
-    
-    
-    public void SetBias(float t)
-    {
-        activePoint.bias = t;
-    }
-
-    void ChangeTool()
-    {
-        for (int i = 0; i < tools.Length; i++)
-        {
-            if (i == (int) curTool)
-            {
-                tools[i].color = Color.white;
-                tooltips[i].color = Color.white;
-                cursor.sprite = cursors[i];
-            }
-            else
-            {
-                if (curTool != Tool.draw)
-                {
-                    l.enabled = false;
-                }
-
-                if (curTool != Tool.select)
-                {
-                    pointOptions.SetActive(false);  
-                }
-
-                if (curTool != Tool.move)
-                {
-                    dragging = false;
-                }
-                
-                tools[i].color = Color.gray;
-                tooltips[i].color = Color.clear;
-            }
-        }
-    }
-
-    void Deselect()
-    {
-        selectedPoints.Clear();
-        selectedPointIndicator.SetActive(false);
-        foreach (Image i in selectors)
-        {
-            i.color = Color.clear;
-        }
-
-        pointOptions.SetActive(false);
-        
-    }
-    
-    IEnumerator MarqueeSelect(Vector3 pos)
-    {
-
-        l.enabled = true;
-        l.positionCount = 5;
-        while (!Input.GetMouseButtonUp(0))
-        {
-            Vector3 pos2 = new Vector3(pos.x, worldPos.y, 0);
-            Vector3 pos3 = new Vector3(worldPos.x, pos.y, 0);
-            
-            l.SetPosition(0, pos);
-            l.SetPosition(1, pos2);
-            l.SetPosition(2, worldPos);
-            l.SetPosition(3, pos3);
-            l.SetPosition(4, pos);
-            yield return null;
-        }
-
-        Vector3 center = Vector3.Lerp(pos, worldPos, 0.5f);
-        Vector3 size = worldPos - pos;
-        
-       
-
-        if (Vector3.Distance(worldPos, pos) > 0.25f)
-        {
-            if (!Input.GetKey(KeyCode.LeftShift))
-            {
-                Deselect();
-            }
-            foreach (Collider c in Physics.OverlapBox(center, new Vector3(Mathf.Abs(size.x), Mathf.Abs(size.y), 10) / 2))
-            {
-                Point p = c.GetComponent<Point>();
-                if (p != null)
-                {
-                    if (pointSelected && selectedPoints.Contains(p))
-                    {
-                        RemoveSelectedPoint(p);
-
-                        if (!pointSelected)
-                        {
-                            pointOptions.SetActive(false);
-                        }
-                    }
-                    else
-                    {
-                        AddSelectedPoint(p);
-
-                        if (pointSelected && curTool == Tool.select)
-                        {
-                            pointOptions.SetActive(true);
-                        }
-                    }
-                }
-            }
-        }
-
-        l.positionCount = 2;
-        l.enabled = false;
-
-    }
-    // Update is called once per frame
     void Update()
     {
         Cursor.visible = false;
         Point hitPoint = null;
 
-        
+        PanCamera();
+    
         lastPos = worldPos;
         curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
         worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
@@ -357,9 +171,7 @@ public class MapEditor : MonoBehaviour
 
                 }
             }
-        
-
-
+       
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (pointSelected)
@@ -376,8 +188,6 @@ public class MapEditor : MonoBehaviour
         {
 
 //            Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 2));
-            
-           
 
             if (Input.GetKeyDown(KeyCode.Q))
             {
@@ -595,4 +405,214 @@ public class MapEditor : MonoBehaviour
 
         }
     }
+
+    void PanCamera()
+    {
+        cam.fieldOfView += Input.mouseScrollDelta.y * Time.deltaTime * 100f;
+        
+        Vector3 viewportPos = cam.ScreenToViewportPoint(curPos);
+        
+        if (viewportPos.y > 0.9f)
+        {
+            cam.transform.position += Vector3.up * Time.deltaTime * (0.1f - (1-viewportPos.y)) * 10f;
+           
+        }else if (viewportPos.y < 0.1f)
+        {
+            cam.transform.position -= Vector3.up * Time.deltaTime * (0.1f - viewportPos.y) * 10f;
+        }
+
+        if (viewportPos.x > 0.9f)
+        {
+            cam.transform.position += Vector3.right * Time.deltaTime * (0.1f - (1-viewportPos.x)) * 10f;
+        }else if (viewportPos.x < 0.1f)
+        {
+            cam.transform.position -= Vector3.right * Time.deltaTime * (0.1f - viewportPos.x) * 10f;
+        }
+    }
+    void SelectPoint(Point p)
+    {
+        if (p != null && Input.GetMouseButtonDown(0))
+        {
+            if ((!Input.GetKey(KeyCode.LeftShift) && pointSelected) && activePoint != p)
+            {
+                Deselect();
+            }
+
+            if (curTool == Tool.select && pointSelected && activePoint == p)
+            {
+                RemoveSelectedPoint(p);
+                if (!pointSelected && curTool == Tool.select)
+                {
+                    pointOptions.SetActive(false);
+                }
+            }else{
+                
+                AddSelectedPoint(p);
+                
+                if (pointSelected && curTool == Tool.select)
+                {
+                    pointOptions.SetActive(true);
+                }
+            }
+        }
+    }
+    void AddSelectedPoint(Point p)
+    {
+        if (!selectedPoints.Contains(p))
+        {
+            selectedPoints.Add(p);
+            selectors[selectedPoints.Count - 1].color = Color.white;
+            
+        }
+        else
+        {
+            selectedPoints.Remove(p);
+            selectedPoints.Add(p);
+        }
+
+        biasSlider.value = activePoint.bias;
+        tensionSlider.value = activePoint.tension;
+        selectedPointIndicator.SetActive(pointSelected);
+        
+    }
+    
+    void AddSelectedSpline(Spline p)
+    {
+        if (!selectedSplines.Contains(p))
+        {
+            selectedSplines.Add(p);
+        }
+       
+        
+    }
+    
+    void RemoveSelectedPoint(Point p)
+    {
+        if (selectedPoints.Contains(p))
+        {
+            
+            selectors[selectedPoints.Count - 1].color = Color.clear;
+            selectedPoints.Remove(p);
+        }
+
+        selectedPointIndicator.SetActive(pointSelected);
+    }
+    
+    public void SetTension(float t)
+    {
+        activePoint.tension = t;
+    }
+    
+    
+    public void SetBias(float t)
+    {
+        activePoint.bias = t;
+    }
+
+    void ChangeTool()
+    {
+        for (int i = 0; i < tools.Length; i++)
+        {
+            if (i == (int) curTool)
+            {
+                tools[i].color = Color.white;
+                tooltips[i].color = Color.white;
+                cursor.sprite = cursors[i];
+            }
+            else
+            {
+                if (curTool != Tool.draw)
+                {
+                    l.enabled = false;
+                }
+
+                if (curTool != Tool.select)
+                {
+                    pointOptions.SetActive(false);  
+                }
+
+                if (curTool != Tool.move)
+                {
+                    dragging = false;
+                }
+                
+                tools[i].color = Color.gray;
+                tooltips[i].color = Color.clear;
+            }
+        }
+    }
+
+    void Deselect()
+    {
+        selectedPoints.Clear();
+        selectedPointIndicator.SetActive(false);
+        foreach (Image i in selectors)
+        {
+            i.color = Color.clear;
+        }
+
+        pointOptions.SetActive(false);
+        
+    }
+    
+    IEnumerator MarqueeSelect(Vector3 pos)
+    {
+        l.enabled = true;
+        l.positionCount = 5;
+        while (!Input.GetMouseButtonUp(0))
+        {
+            Vector3 pos2 = new Vector3(pos.x, worldPos.y, 0);
+            Vector3 pos3 = new Vector3(worldPos.x, pos.y, 0);
+            
+            l.SetPosition(0, pos);
+            l.SetPosition(1, pos2);
+            l.SetPosition(2, worldPos);
+            l.SetPosition(3, pos3);
+            l.SetPosition(4, pos);
+            yield return null;
+        }
+
+        Vector3 center = Vector3.Lerp(pos, worldPos, 0.5f);
+        Vector3 size = worldPos - pos;
+        
+       
+
+        if (Vector3.Distance(worldPos, pos) > 0.25f)
+        {
+            if (!Input.GetKey(KeyCode.LeftShift))
+            {
+                Deselect();
+            }
+            foreach (Collider c in Physics.OverlapBox(center, new Vector3(Mathf.Abs(size.x), Mathf.Abs(size.y), 10) / 2))
+            {
+                Point p = c.GetComponent<Point>();
+                if (p != null)
+                {
+                    if (pointSelected && selectedPoints.Contains(p))
+                    {
+                        RemoveSelectedPoint(p);
+
+                        if (!pointSelected)
+                        {
+                            pointOptions.SetActive(false);
+                        }
+                    }
+                    else
+                    {
+                        AddSelectedPoint(p);
+
+                        if (pointSelected && curTool == Tool.select)
+                        {
+                            pointOptions.SetActive(true);
+                        }
+                    }
+                }
+            }
+        }
+        l.positionCount = 2;
+        l.enabled = false;
+
+    }
+    // Update is called once per frame
+   
 }
