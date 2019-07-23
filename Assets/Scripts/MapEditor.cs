@@ -68,6 +68,7 @@ public class MapEditor : MonoBehaviour
         get { return selectedPoints.Count > 0; }
     }
     private Vector3 curPos;
+    private Vector3 lastPos;
     private Vector3 worldPos;
     public enum Tool
     {
@@ -121,6 +122,9 @@ public class MapEditor : MonoBehaviour
         l.enabled = false;
         cam.enabled = editing;
         Services.main.EnterEditMode(editing);
+        curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
+        worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
+            Mathf.Abs(cam.transform.position.z)));
     }
 
     void SelectPoint(Point p)
@@ -129,7 +133,7 @@ public class MapEditor : MonoBehaviour
         {
             if ((!Input.GetKey(KeyCode.LeftShift) && pointSelected) && activePoint != p)
             {
-                RemoveSelectedPoint(activePoint);
+                Deselect();
             }
 
             if (curTool == Tool.select && pointSelected && activePoint == p)
@@ -249,7 +253,7 @@ public class MapEditor : MonoBehaviour
 
         l.enabled = true;
         l.positionCount = 5;
-        while (!Input.GetMouseButtonUp(0) && curTool == Tool.marquee)
+        while (!Input.GetMouseButtonUp(0))
         {
             Vector3 pos2 = new Vector3(pos.x, worldPos.y, 0);
             Vector3 pos3 = new Vector3(worldPos.x, pos.y, 0);
@@ -310,7 +314,7 @@ public class MapEditor : MonoBehaviour
         Cursor.visible = false;
         Point hitPoint = null;
 
-       
+        lastPos = worldPos;
         curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
         worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
             Mathf.Abs(cam.transform.position.z)));
@@ -319,7 +323,14 @@ public class MapEditor : MonoBehaviour
         
             Ray r = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
+
+            if (Input.GetMouseButtonDown(1))
+            {
+                //RemoveSelectedPoint(hitPoint);
+                Deselect();
+            }
             
+
             if (Physics.Raycast(r.origin, r.direction, out hit))
             {
                 hitPoint = hit.transform.GetComponent<Point>();
@@ -329,6 +340,7 @@ public class MapEditor : MonoBehaviour
                     if (Input.GetMouseButtonDown(1))
                     {
                         RemoveSelectedPoint(hitPoint);
+                        
                         if (!pointSelected && curTool == Tool.select)
                         {
                             pointOptions.SetActive(false);
@@ -395,19 +407,28 @@ public class MapEditor : MonoBehaviour
                 case Tool.move:
                     
                         SelectPoint(hitPoint);
-                        
-                        if (dragging || (hitPoint != null && pointSelected && Input.GetMouseButton(0)))
+
+                        if (hitPoint != null || dragging || (pointSelected && Input.GetKey(KeyCode.LeftShift)))
                         {
-                            dragging = true;
+                            if (Input.GetMouseButton(0))
+                            {
+                                dragging = true;
 //                            if (hitPoint != activePoint)
 //                            {
 //                                selectedPoints.Remove(hitPoint);
 //                                selectedPoints.Add(hitPoint);
 //                            }
 
-                            Vector3 pos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
-                                Mathf.Abs(cam.transform.position.z) - activePoint.Pos.z));
-                            activePoint.transform.position = new Vector3(pos.x, pos.y, activePoint.Pos.z);
+                                Vector3 pos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
+                                    Mathf.Abs(cam.transform.position.z) - activePoint.Pos.z));
+
+                                Vector3 delta = worldPos - lastPos;
+
+                                foreach (Point p in selectedPoints)
+                                {
+                                    p.transform.position += new Vector3(delta.x, delta.y, 0);
+                                }
+                            }
                         }
 
                         if (dragging && Input.GetMouseButtonUp(0))
@@ -522,15 +543,30 @@ public class MapEditor : MonoBehaviour
 
                     if (index == selectedPoints.Count-1)
                     {
-                        selectedPointIndicator.transform.position = cam.WorldToScreenPoint(p.Pos);
-                        pointOptions.transform.position = cam.WorldToScreenPoint(p.Pos);
+                        if (hitPoint == null)
+                        {
+                            selectedPointIndicator.transform.position = cam.WorldToScreenPoint(p.Pos);
+                        }
+                        else
+                        {
+                            selectedPointIndicator.transform.position = cam.WorldToScreenPoint(hitPoint.Pos);
+                        }
 
+                        pointOptions.transform.position = cam.WorldToScreenPoint(p.Pos);
                     }
 
                     p.proximity = Mathf.Sin(Time.time);
                 index++;
             }
 
+            if (!pointSelected)
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    StartCoroutine(MarqueeSelect(worldPos));
+                }
+            }
+            
             foreach (Spline s in selectedSplines)
             {
                     s.DrawSplineOverride();
