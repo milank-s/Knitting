@@ -262,10 +262,13 @@ public class MapEditor : MonoBehaviour
 
                     SelectPoint(hitPoint);
 
+
+                    Vector3 screenPos = cam.WorldToScreenPoint(lastPos);
+                    
                     if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftShift))
                     {
-                        biasSlider.value += (worldPos.x - lastPos.x) * 1000 * Time.deltaTime;
-                        tensionSlider.value += (worldPos.y - lastPos.y) * 1000 * Time.deltaTime;
+                        biasSlider.value += (curPos.x - screenPos.x) /3 * Time.deltaTime;
+                        tensionSlider.value += (curPos.y - screenPos.y) /3 * Time.deltaTime;
                     }
                     
                     break;
@@ -408,7 +411,7 @@ public class MapEditor : MonoBehaviour
 
     void PanCamera()
     {
-        cam.fieldOfView += Input.mouseScrollDelta.y * Time.deltaTime * 100f;
+        cam.fieldOfView -= Input.mouseScrollDelta.y * Time.deltaTime * 100f;
         
         Vector3 viewportPos = cam.ScreenToViewportPoint(curPos);
         
