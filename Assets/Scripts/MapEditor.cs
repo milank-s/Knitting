@@ -126,7 +126,7 @@ public class MapEditor : MonoBehaviour
     {
         if (p != null && Input.GetMouseButtonDown(0))
         {
-            if ((!Input.GetKey(KeyCode.LeftShift) && pointSelected))
+            if ((!Input.GetKey(KeyCode.LeftShift) && pointSelected) && activePoint != p)
             {
                 RemoveSelectedPoint(activePoint);
             }
@@ -138,9 +138,7 @@ public class MapEditor : MonoBehaviour
                 {
                     pointOptions.SetActive(false);
                 }
-            }
-            else
-            {
+            }else{
                 
                 AddSelectedPoint(p);
                 
@@ -158,6 +156,11 @@ public class MapEditor : MonoBehaviour
             selectedPoints.Add(p);
             selectors[selectedPoints.Count - 1].color = Color.white;
             
+        }
+        else
+        {
+            selectedPoints.Remove(p);
+            selectedPoints.Add(p);
         }
    
         selectedPointIndicator.SetActive(pointSelected);
