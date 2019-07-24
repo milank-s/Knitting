@@ -188,6 +188,18 @@ public class Spline : MonoBehaviour
 			}
 	}
 
+	public void ChangeMaterial(int i)
+	{
+		Material newMat;
+		newMat = Services.Prefabs.lines[i % Services.Prefabs.lines.Length];
+		Texture tex = newMat.mainTexture;
+		float length = newMat.mainTextureScale.x;
+		float height = newMat.mainTextureScale.y;
+		
+		line.texture = tex;
+		line.textureScale = newMat.mainTextureScale.x;
+	}
+
 	void Awake ()
 	{
 		stepSize = (1.0f / (float)curveFidelity);
