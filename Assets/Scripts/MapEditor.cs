@@ -191,7 +191,10 @@ public class MapEditor : MonoBehaviour
             Cursor.visible = false;
             Point hitPoint = null;
 
-            PanCamera();
+            if (!Input.GetMouseButton(0))
+            {
+                PanCamera();
+            }
 
             lastPos = worldPos;
             curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
@@ -295,7 +298,7 @@ public class MapEditor : MonoBehaviour
                                 foreach (Point p in selectedPoints)
                                 {
 
-                                    p.transform.position += new Vector3(delta.x, delta.y, 0);
+                                    p.transform.position += new Vector3(delta.x, delta.y, -Input.mouseScrollDelta.y * Time.deltaTime * 10f);
                                     p.originalPos = p.Pos;
                                 }
                             }
@@ -499,7 +502,7 @@ public class MapEditor : MonoBehaviour
     
     void PanCamera()
     {
-        cam.fieldOfView -= Input.mouseScrollDelta.y * 100 * Time.deltaTime;
+        cam.transform.position -= Vector3.forward * Input.mouseScrollDelta.y * Time.deltaTime * 10f;
         
         Vector3 viewportPos = cam.ScreenToViewportPoint(curPos);
         
