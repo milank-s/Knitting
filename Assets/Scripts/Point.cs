@@ -28,6 +28,7 @@ public class Point : MonoBehaviour
 
 	[Space(10)]
 	[Header("Curve")]
+	public static List<Point> Points;
 	public float tension;
 	public float bias;
 	public float continuity;
@@ -97,8 +98,8 @@ public class Point : MonoBehaviour
 	}
 	#endregion
 
-	public static bool editMode = false;
 	void Awake(){
+		Points.Add(this);
 		pointClouds = new List<PointCloud>();
 		stiffness = 1600;
 		damping = 500;
@@ -132,8 +133,10 @@ public class Point : MonoBehaviour
 		originalPos = transform.position;
 	}
 
-	public void Start(){
+	public void Initialize(){
 
+		_neighbours.Clear();
+		_connectedSplines.Clear();
 		text = gameObject.name;
 
 		if(_neighbours.Count == 2 && pointType == PointTypes.normal){

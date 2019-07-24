@@ -34,6 +34,8 @@ public class Main : MonoBehaviour {
 	
 	void Awake ()
 	{
+		Point.Points = new List<Point>();
+		Spline.Splines = new List<Spline>();
 		Services.GameUI = canvas;
 		Services.Word = Word;
 		Services.mainCam = Camera.main;
@@ -53,6 +55,8 @@ public class Main : MonoBehaviour {
 	void Start()
 	{
 		canvas.SetActive(!MapEditor.editing);
+		
+		InitializeMap();
 		
 		if (Services.StartPoint != null && !MapEditor.editing)
 		{
@@ -81,10 +85,39 @@ public class Main : MonoBehaviour {
 	
 		}
 	}
-	
+
+	public void InitializeMap()
+	{
+		for (int i = Point.Points.Count - 1; i >= 0; i--)
+		{
+			if (Point.Points[i] == null)
+			{
+				Point.Points.RemoveAt(i);
+			}
+			else
+			{
+				Point.Points[i].Initialize();
+			}
+		}
+
+		for (int i = Spline.Splines.Count - 1; i >= 0; i--)
+		{
+			if (Spline.Splines[i] == null)
+			{
+				Spline.Splines.RemoveAt(i);
+			}
+			else
+			{
+				 Spline.Splines[i].SetupSpline();
+			}
+		}
+	}
 	public void EnterEditMode(bool enter)
 	{
-		
+		if (!enter)
+		{
+			InitializeMap();
+		}
 		canvas.SetActive(!enter);
 		Player.SetActive(!enter);
 		Services.mainCam.GetComponent<CameraFollow>().enabled = !enter;

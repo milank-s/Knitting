@@ -114,7 +114,7 @@ public class MapEditor : MonoBehaviour
         }
         selectedPoints = new List<Point>();
         selectedSplines = new List<Spline>();
-        Point.editMode = true;
+ 
         l = GetComponent<LineRenderer>();
     }
 
@@ -126,6 +126,10 @@ public class MapEditor : MonoBehaviour
         curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
         worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
             Mathf.Abs(cam.transform.position.z)));
+        for(int i = 0; i < tooltips.Length; i++)
+        {
+            tooltips[i].gameObject.SetActive(false);
+        }
     }
 
     void Update()
@@ -133,7 +137,7 @@ public class MapEditor : MonoBehaviour
         Cursor.visible = false;
         Point hitPoint = null;
 
-        PanCamera();
+        //PanCamera();
     
         lastPos = worldPos;
         curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
@@ -227,11 +231,15 @@ public class MapEditor : MonoBehaviour
                         
                         if (pointSelected)
                         {
-                            if (hitPoint != null || dragging || Input.GetKey(KeyCode.LeftShift))
+                            if (hitPoint != null && Input.GetMouseButtonDown(0))
                             {
-                                if (Input.GetMouseButton(0))
-                                {
-                                    dragging = true;
+                                dragging = true;
+                            }
+    
+                            if (dragging || Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0)){
+                                
+
+//                                dragging = true;
 //                            if (hitPoint != activePoint)
 //                            {
 //                                selectedPoints.Remove(hitPoint);
@@ -251,7 +259,7 @@ public class MapEditor : MonoBehaviour
                                     }
                                 }
                             }
-                        }
+                        
 
                         if (dragging && Input.GetMouseButtonUp(0))
                         {
@@ -270,10 +278,21 @@ public class MapEditor : MonoBehaviour
                     Vector3 viewPortPos = cam.ScreenToViewportPoint(curPos);
                     if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftShift))
                     {
-                        biasSlider.value += (viewPortPos.x - screenPos.x) *1000 * Time.deltaTime;
-                        tensionSlider.value += (viewPortPos.y - screenPos.y) * 1000 * Time.deltaTime;
+                        if (pointSelected)
+                        {
+                            biasSlider.value += (viewPortPos.x - screenPos.x) * 1000 * Time.deltaTime;
+                            tensionSlider.value += (viewPortPos.y - screenPos.y) * 1000 * Time.deltaTime;
+                        }
+                    }else if (Input.GetMouseButton(0))
+                    {
+                        Vector3 delta = worldPos - lastPos;
+                        Services.mainCam.transform.position -= delta;
+                        
+                        curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
+                        worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
+                            Mathf.Abs(cam.transform.position.z)));
+                        lastPos = worldPos;
                     }
-                    
                     break;
 
                 case Tool.connect:
@@ -285,7 +304,7 @@ public class MapEditor : MonoBehaviour
 
                 case Tool.marquee:
                     
-                    if (Input.GetMouseButtonDown(0))
+                    if (pointSelected && Input.GetMouseButtonDown(0))
                     {
                         StartCoroutine(MarqueeSelect(worldPos));
                     }
@@ -384,9 +403,16 @@ public class MapEditor : MonoBehaviour
                         {
                             selectedPointIndicator.transform.position = cam.WorldToScreenPoint(p.Pos);
                         }
-                        else
+                        else 
                         {
-                            selectedPointIndicator.transform.position = cam.WorldToScreenPoint(hitPoint.Pos);
+                            if (Input.GetMouseButton(0))
+                            {
+                                selectedPointIndicator.transform.position = cam.WorldToScreenPoint(p.Pos);
+                            }
+                            else
+                            {
+                                selectedPointIndicator.transform.position = cam.WorldToScreenPoint(hitPoint.Pos);
+                            }
                         }
 
                         pointOptions.transform.position = cam.WorldToScreenPoint(p.Pos);
@@ -396,9 +422,9 @@ public class MapEditor : MonoBehaviour
                 index++;
             }
 
-            if (!pointSelected)
+            if (!pointSelected && curTool != Tool.marquee)
             {
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftShift))
                 {
                     StartCoroutine(MarqueeSelect(worldPos));
                 }
@@ -522,7 +548,7 @@ public class MapEditor : MonoBehaviour
             if (i == (int) curTool)
             {
                 tools[i].color = Color.white;
-                tooltips[i].color = Color.white;
+                tooltips[i].gameObject.SetActive(true);
                 cursor.sprite = cursors[i];
             }
             else
@@ -543,7 +569,7 @@ public class MapEditor : MonoBehaviour
                 }
                 
                 tools[i].color = Color.gray;
-                tooltips[i].color = Color.clear;
+                tooltips[i].gameObject.SetActive(false);
             }
         }
     }
