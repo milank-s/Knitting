@@ -299,10 +299,23 @@ public class MapEditor : MonoBehaviour
                     }
                 
             }
-            if (Input.GetKeyDown(KeyCode.E) && Spline.Splines.Count > 0)
+            if ((Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)) && Spline.Splines.Count > 0)
             {
-                int i = splineindex + 1;
-               ChangeSelectedSpline(i);
+                int i = 0;
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                   i = splineindex + 1;
+                }else if (Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                   
+                   i = splineindex - 1;
+                   if (i < 0)
+                   {
+                       i = Spline.Splines.Count - 1;
+                   }
+                }
+
+                ChangeSelectedSpline(i);
             }
             
             Cursor.visible = false;
@@ -701,19 +714,26 @@ public class MapEditor : MonoBehaviour
             selectedSpline.ChangeMaterial(3);
         }
 
-       
+        if (Spline.Splines.Count > 0)
+        {
             splineindex = i;
-            if (splineindex < 0 || splineindex >= Spline.Splines.Count)
+            if (splineindex < 0)
             {
-                splineindex = -1;
-                splineSelectedTip.SetActive(false);
+                splineindex = Spline.Splines.Count - 1;
             }
-            else
+            else if (splineindex >= Spline.Splines.Count)
             {
-                splineSelectedTip.SetActive(true);
-                selectedSpline.ChangeMaterial(0);
+                splineindex = 0;
             }
 
+                splineSelectedTip.SetActive(true);
+                selectedSpline.ChangeMaterial(0);
+            
+        }
+        else
+        {
+            splineSelectedTip.SetActive(false);
+        }
 
     }
     
