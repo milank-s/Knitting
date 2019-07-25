@@ -73,6 +73,9 @@ public class MapEditor : MonoBehaviour
     public GameObject marqueeTip;
     public GameObject deselectTip;
     public GameObject splinePointTip;
+
+    private static float cameraDistance = 2;
+    private List<GameObject> text;
     
     private bool dragging;
     private bool pointSelected
@@ -121,7 +124,7 @@ public class MapEditor : MonoBehaviour
     private static Tool curTool;
 
     public Image[] tools;
-    public Text[] tooltips;
+    public GameObject[] tooltips;
     public Sprite[] cursors;
     
     public Image cursor;
@@ -130,7 +133,12 @@ public class MapEditor : MonoBehaviour
     void Awake()
     {
         editing = true;
- 
+
+        text = new List<GameObject>();
+        foreach (Text t in canvas.GetComponentsInChildren<Text>())
+        {
+            text.Add(t.gameObject);
+        }
         selectedPointIndicator.SetActive(false);
         pointOptions.SetActive(false);
         selectors = new List<Image>();
@@ -152,10 +160,10 @@ public class MapEditor : MonoBehaviour
         Services.main.EnterEditMode(editing);
         curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
         worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
-            Mathf.Abs(cam.transform.position.z)));
+            cameraDistance));
         for(int i = 0; i < tooltips.Length; i++)
         {
-            tooltips[i].gameObject.SetActive(false);
+            tooltips[i].SetActive(false);
         }
     }
 
@@ -177,6 +185,14 @@ public class MapEditor : MonoBehaviour
         
         if (editing)
         {
+            if (Input.GetKeyDown(KeyCode.H))
+            {
+               
+                foreach (GameObject t in text)
+                {
+                    t.SetActive(!t.activeSelf);     
+                }
+            }
             if (pointSelected)
             {
                 marqueeTip.SetActive(false);
@@ -329,7 +345,7 @@ public class MapEditor : MonoBehaviour
             lastPos = worldPos;
             curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
             worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
-                Mathf.Abs(cam.transform.position.z)));
+                cameraDistance));
             cursor.transform.position = curPos;
 
 
@@ -626,7 +642,7 @@ public class MapEditor : MonoBehaviour
 
         curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
         worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
-            Mathf.Abs(cam.transform.position.z)));
+            cameraDistance));
         lastPos = worldPos;
     }
     
@@ -768,7 +784,7 @@ public class MapEditor : MonoBehaviour
             if (i == (int) curTool)
             {
                 tools[i].color = Color.white;
-                tooltips[i].gameObject.SetActive(true);
+                tooltips[i].SetActive(true);
                 cursor.sprite = cursors[i];
             }
             else
@@ -789,7 +805,7 @@ public class MapEditor : MonoBehaviour
                 }
                 
                 tools[i].color = Color.gray;
-                tooltips[i].gameObject.SetActive(false);
+                tooltips[i].SetActive(false);
             }
         }
     }
