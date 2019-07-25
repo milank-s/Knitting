@@ -8,6 +8,23 @@ using Vectrosity;
 
 public enum PlayerState{Traversing, Switching, Flying, Animating};
 
+
+//###################################################
+//###################################################
+
+
+//						TO DO					   
+
+
+//Sounds SOUNDS OUNDS OUNDSOUNDSOUNDSOUNDSUON
+//Flying no longer creates points, only attaches to other flying points
+//Tuning closer to dashing in hyper light. Usage of timed button presses on intersections
+
+
+//###################################################
+//###################################################
+
+
 public class PlayerBehaviour: MonoBehaviour {
 
 	public PlayerState state;

@@ -5,6 +5,22 @@ using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+//###################################################
+//###################################################
+
+
+//						TO DO					   
+
+
+//deleting and inserting like in editor script
+//better method to select/deselect splines 
+
+
+//###################################################
+//###################################################
+
+
 public class MapEditor : MonoBehaviour
 {
 
@@ -174,13 +190,114 @@ public class MapEditor : MonoBehaviour
 
             }
 
-            if (selectedSpline != null)
+            if (splineindex >= 0 && splineindex < Spline.Splines.Count)
             {
                 splineSelectedTip.SetActive(true);
                 if (pointSelected)
                 {
                     splinePointTip.SetActive(true);
                 }
+
+                if (Input.GetKeyDown(KeyCode.X))
+                {
+                    selectedSpline.ReverseSpline();
+                }
+
+                if (Input.GetKeyDown(KeyCode.C))
+                {
+                    selectedSpline.closed = !selectedSpline.closed;
+                }
+
+                if (Input.GetKeyDown(KeyCode.T))
+                {
+                    
+                    foreach (Point p in selectedSpline.SplinePoints)
+                    {
+                        p.tension = Mathf.PingPong(p.tension + 1, 1);
+                    }
+                }
+                
+                if(Input.GetKeyDown(KeyCode.LeftArrow))
+                {
+                    if (pointSelected)
+                    {
+
+                        Point curPoint = activePoint;
+                        
+                        if (!Input.GetKey(KeyCode.LeftShift))
+                        {
+                            Deselect();
+                        }
+                        
+                        if (selectedSpline.SplinePoints.Contains(curPoint))
+                        {
+                            int pointIndex = (selectedSpline.SplinePoints.IndexOf(curPoint) - 1) %
+                                        selectedSpline.SplinePoints.Count;
+                            
+                            
+                            
+                            if (pointIndex < 0)
+                            {
+                                AddSelectedPoint(selectedSpline.EndPoint);
+                            }
+                            else
+                            {
+                                AddSelectedPoint(selectedSpline.SplinePoints[pointIndex]);
+                            }
+
+                        }else{
+                           
+                              
+                                AddSelectedPoint(selectedSpline.EndPoint);
+                        }
+                    }
+                    else
+                    {
+
+                        AddSelectedPoint(selectedSpline.EndPoint);
+                    }
+                }else if (Input.GetKeyDown(KeyCode.RightArrow))
+                {
+                   
+                    
+                        if (pointSelected)
+                        {
+                            
+                            Point curPoint = activePoint;
+                            
+                            if (!Input.GetKey(KeyCode.LeftShift))
+                            {
+                                Deselect();
+                            }
+                            
+                            if (selectedSpline.SplinePoints.Contains(curPoint))
+                            {
+
+                                int pointIndex = (selectedSpline.SplinePoints.IndexOf(curPoint) + 1) %
+                                                 selectedSpline.SplinePoints.Count;
+                                
+                                if (pointIndex >= selectedSpline.SplinePoints.Count)
+                                {
+                                    AddSelectedPoint(selectedSpline.StartPoint);
+                                }
+                                else
+                                {
+                                    AddSelectedPoint(selectedSpline.SplinePoints[pointIndex]);
+                                }
+                            
+                            }else{
+                           
+                                
+                                AddSelectedPoint(selectedSpline.StartPoint);
+                            }
+                        }
+                        else
+                        {
+                            
+                            AddSelectedPoint(selectedSpline.StartPoint);
+                        }
+                    }
+                
             }
             if (Input.GetKeyDown(KeyCode.E) && Spline.Splines.Count > 0)
             {

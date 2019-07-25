@@ -9,7 +9,23 @@ using UnityEngine.Audio;
 using System.Linq;
 using SubjectNerd.Utilities;
 
-// [ExecuteInEditMode]
+//###################################################
+//###################################################
+
+
+//						TO DO					   
+
+
+//Better support for textures
+//More customization for how the spline is drawn (controls for static effect, bowing effect, etc)
+//finally fix that extra segment that's being drawn on the end
+//support for different materials, saved to the spline
+
+//###################################################
+//###################################################
+
+
+
 public class Spline : MonoBehaviour
 {
 	public static List<Spline> Splines = new List<Spline> ();

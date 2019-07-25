@@ -2,13 +2,24 @@
 using System.Collections;
 using System.Collections.Generic;
 
+
+//###################################################
+//###################################################
+
+
+//						TO DO					   
+
+
+//Flag points as leaf so that they force creation of a new spline if connected?
+//Initialize callback from player when "lastPoint" is updated
+//Update sprites for points
+//better control over physics for animating shaking
+
+
+//###################################################
+//###################################################
+
 public enum PointTypes{normal, fly, ghost, stop, connect}
-//fly points enable flying
-//boost add additional boostAmount. tension = ?
-//leaves cannot be connected to
-//end points force new spline creation
-//straight continuity = 0;
-//biased bias = ?
 public class Point : MonoBehaviour
 {
 
