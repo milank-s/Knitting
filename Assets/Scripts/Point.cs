@@ -179,6 +179,10 @@ public class Point : MonoBehaviour
 				SR.enabled = false;
 
 				break;
+			
+			case PointTypes.normal:
+				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.normal];
+				break;
 		}
 	}
 

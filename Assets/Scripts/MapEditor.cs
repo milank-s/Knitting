@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -201,46 +202,7 @@ public class MapEditor : MonoBehaviour
                     t.SetActive(!t.activeSelf);     
                 }
             }
-            if (pointSelected)
-            {
-                marqueeTip.SetActive(false);
-                deselectTip.SetActive(true);
-                pointSelectedTip.SetActive(true);
-
-//                string input = Input.inputString;
-                pointType.text = "Type - " + activePoint.pointType.ToString();
-                xPos.text = "x -" + activePoint.Pos.x.ToString();
-                yPos.text =  "y -" + activePoint.Pos.y.ToString();
-                zPos.text =  "z -" + activePoint.Pos.z.ToString();
-                
-                if (Input.GetKeyDown(KeyCode.Alpha1))
-                {
-                    activePoint.SetPointType();
-                    activePoint.pointType = PointTypes.normal;
-                    
-                }else if(Input.GetKeyDown(KeyCode.Alpha2)){
-                    activePoint.SetPointType();
-                    activePoint.pointType = PointTypes.stop;
             
-                }else if (Input.GetKeyDown(KeyCode.Alpha3))
-                {
-                    activePoint.SetPointType();
-                    activePoint.pointType = PointTypes.connect;
-                    
-                }else if (Input.GetKeyDown(KeyCode.Alpha4))
-                {
-                    activePoint.SetPointType();
-                    activePoint.pointType = PointTypes.fly;
-                }
-                
-               
-            }
-            else
-            {
-                marqueeTip.SetActive(true);
-                deselectTip.SetActive(false);
-
-            }
 
             if (splineindex >= 0 && splineindex < Spline.Splines.Count)
             {
@@ -261,14 +223,6 @@ public class MapEditor : MonoBehaviour
                     selectedSpline.closed = !selectedSpline.closed;
                 }
 
-                if (Input.GetKeyDown(KeyCode.T))
-                {
-                    
-                    foreach (Point p in selectedSpline.SplinePoints)
-                    {
-                        p.tension = Mathf.PingPong(p.tension + 1, 1);
-                    }
-                }
                 
                 if(Input.GetKeyDown(KeyCode.LeftArrow))
                 {
@@ -367,6 +321,7 @@ public class MapEditor : MonoBehaviour
             }
             if ((Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)) && Spline.Splines.Count > 0)
             {
+      
                 int i = 0;
                 if (Input.GetKeyDown(KeyCode.UpArrow))
                 {
@@ -680,7 +635,57 @@ public class MapEditor : MonoBehaviour
                     s.DrawSplineOverride();
                 }
                 
+                if (pointSelected)
+                {
+                    marqueeTip.SetActive(false);
+                    deselectTip.SetActive(true);
+                    pointSelectedTip.SetActive(true);
 
+                
+                    if (Input.GetKeyDown(KeyCode.T))
+                    {
+                    
+                        foreach (Point p in selectedPoints)
+                        {
+                            p.tension = Mathf.PingPong(p.tension + 1, 1);
+                        }
+                    }
+                
+//                string input = Input.inputString;
+                    pointType.text = "Type - " + activePoint.pointType.ToString();
+                    xPos.text = "x  " + activePoint.Pos.x.ToString("F2");
+                    yPos.text =  "y  " + activePoint.Pos.y.ToString("F2");
+                    zPos.text =  "z  " + activePoint.Pos.z.ToString("F2");
+                
+                    if (Input.GetKeyDown(KeyCode.Alpha1))
+                    {  
+                        activePoint.pointType = PointTypes.normal;
+                        activePoint.SetPointType();
+                    
+                    }else if(Input.GetKeyDown(KeyCode.Alpha2)){
+                    
+                        activePoint.pointType = PointTypes.stop;
+                        activePoint.SetPointType();
+            
+                    }else if (Input.GetKeyDown(KeyCode.Alpha3))
+                    {
+                        activePoint.pointType = PointTypes.connect;
+                        activePoint.SetPointType();
+                    
+                    }else if (Input.GetKeyDown(KeyCode.Alpha4))
+                    {
+                        activePoint.pointType = PointTypes.fly;
+                        activePoint.SetPointType();
+                    }
+                
+               
+                }
+                else
+                {
+                    marqueeTip.SetActive(true);
+                    deselectTip.SetActive(false);
+
+                }
             
         }
     }
@@ -775,6 +780,8 @@ public class MapEditor : MonoBehaviour
     
     void ChangeSelectedSpline(int i)
     {
+        Deselect();
+        
         if (selectedSpline != null)
         {
             selectedSpline.ChangeMaterial(3);
@@ -794,7 +801,11 @@ public class MapEditor : MonoBehaviour
 
                 splineSelectedTip.SetActive(true);
                 selectedSpline.ChangeMaterial(0);
-            
+
+                foreach (Point p in selectedSpline.SplinePoints)
+                {
+                    AddSelectedPoint(p);
+                }
         }
         else
         {
