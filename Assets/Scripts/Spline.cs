@@ -817,7 +817,7 @@ public class Spline : MonoBehaviour
 	}
 
 	public void InsertPoint(Point p, int index){
-		SplinePoints.Insert(index, p);
+		SplinePoints.Insert(index + 1, p);
 	}
 
 	public void RemovePoint(int i){
@@ -842,8 +842,18 @@ public class Spline : MonoBehaviour
 	public void AddNewPoint(int i){
 		Point newPoint;
 
-		if(SplinePoints.Count > 1){
-			newPoint = SpawnPointPrefab.CreatePoint (SplinePoints[i-1].Pos + GetInitVelocity(SplinePoints[i-1]).normalized/5f);
+		if(SplinePoints.Count > 1)
+		{
+			Vector3 newPos;
+			if (i >= SplinePoints.Count - 1)
+			{
+				newPos = SplinePoints[i].Pos + GetInitVelocity(SplinePoints[i]).normalized / 5f;
+			}
+			else
+			{
+				newPos = GetPointAtIndex(i, 0.5f);
+			}
+			newPoint = SpawnPointPrefab.CreatePoint(newPos);
 			InsertPoint(newPoint, i);
 			newPoint.transform.parent = transform;
 		}else{

@@ -219,6 +219,7 @@ public class MapEditor : MonoBehaviour
                     selectedSpline.ReverseSpline();
                 }
 
+                
                 if (Input.GetKeyDown(KeyCode.C))
                 {
                     selectedSpline.closed = !selectedSpline.closed;
@@ -313,6 +314,19 @@ public class MapEditor : MonoBehaviour
                             AddSelectedPoint(selectedSpline.StartPoint);
                         }
                     }
+
+                if (pointSelected && selectedSpline.SplinePoints.Contains(activePoint))
+                {
+                    if (Input.GetKeyDown(KeyCode.R))
+                    {
+                        selectedSpline.RemovePoint((selectedSpline.SplinePoints.IndexOf(activePoint)));
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.I))
+                    {
+                        selectedSpline.AddNewPoint(selectedSpline.SplinePoints.IndexOf(activePoint));
+                    }
+                }
                 
             }
             if ((Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)) && Spline.Splines.Count > 0)

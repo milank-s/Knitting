@@ -3,6 +3,7 @@ using System.Collections.Generic;
 	 using UnityEditorInternal;
 	 using UnityEngine;
 using UnityEngine.UI;
+	 using UnityEngine.SceneManagement;
 
 public class Main : MonoBehaviour {
 
@@ -65,10 +66,15 @@ public class Main : MonoBehaviour {
 	}
 	void Update()
 	{
+//		if (Input.GetKeyDown (KeyCode.R)) {
+//			SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
+//		}
+		
 		if (Input.GetKeyDown(KeyCode.P))
 		{
 			_paused = !paused;
 		}
+
 		if (!paused)
 		{
 			if (!MapEditor.editing)
@@ -77,12 +83,8 @@ public class Main : MonoBehaviour {
 				{
 					Services.PlayerBehaviour.Step();
 				}
-				
+
 			}
-		}
-		else
-		{
-	
 		}
 	}
 
