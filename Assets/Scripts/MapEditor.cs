@@ -15,6 +15,8 @@ using UnityEngine.UI;
 
 //deleting and inserting like in editor script
 //better method to select/deselect splines 
+//to get the spline that a point is on right now you have to iterate through all the splines?
+
 
 
 //###################################################
@@ -73,7 +75,11 @@ public class MapEditor : MonoBehaviour
     public GameObject marqueeTip;
     public GameObject deselectTip;
     public GameObject splinePointTip;
-
+    public Text pointType;
+    public Text xPos;
+    public Text yPos;
+    public Text zPos;
+    
     private static float cameraDistance = 2;
     private List<GameObject> text;
     
@@ -169,6 +175,8 @@ public class MapEditor : MonoBehaviour
 
     void Update()
     {
+
+        
         
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -198,6 +206,34 @@ public class MapEditor : MonoBehaviour
                 marqueeTip.SetActive(false);
                 deselectTip.SetActive(true);
                 pointSelectedTip.SetActive(true);
+
+//                string input = Input.inputString;
+                pointType.text = "Type - " + activePoint.pointType.ToString();
+                xPos.text = "x -" + activePoint.Pos.x.ToString();
+                yPos.text =  "y -" + activePoint.Pos.y.ToString();
+                zPos.text =  "z -" + activePoint.Pos.z.ToString();
+                
+                if (Input.GetKeyDown(KeyCode.Alpha1))
+                {
+                    activePoint.SetPointType();
+                    activePoint.pointType = PointTypes.normal;
+                    
+                }else if(Input.GetKeyDown(KeyCode.Alpha2)){
+                    activePoint.SetPointType();
+                    activePoint.pointType = PointTypes.stop;
+            
+                }else if (Input.GetKeyDown(KeyCode.Alpha3))
+                {
+                    activePoint.SetPointType();
+                    activePoint.pointType = PointTypes.connect;
+                    
+                }else if (Input.GetKeyDown(KeyCode.Alpha4))
+                {
+                    activePoint.SetPointType();
+                    activePoint.pointType = PointTypes.fly;
+                }
+                
+               
             }
             else
             {
@@ -826,8 +862,6 @@ public class MapEditor : MonoBehaviour
 
     void Deselect()
     {
-       
-        
         selectedPoints.Clear();
         selectedPointIndicator.SetActive(false);
         pointSelectedTip.SetActive(false);

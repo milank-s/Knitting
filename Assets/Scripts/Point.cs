@@ -154,28 +154,31 @@ public class Point : MonoBehaviour
 			pointType = PointTypes.ghost;
 		}
 
+		SetPointType();
+	}
+
+	public void SetPointType()
+	{
+		SR.enabled = true;
+		
 		switch(pointType){
 
 			case PointTypes.fly:
 				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.fly];
-			break;
+				break;
 
 			case PointTypes.stop:
 				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.stop];
-			break;
+				break;
 
 			case PointTypes.connect:
 				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.connect];
-			break;
+				break;
 
 			case PointTypes.ghost:
 				SR.enabled = false;
 
-			break;
-
-			default:
-
-			break;
+				break;
 		}
 	}
 
