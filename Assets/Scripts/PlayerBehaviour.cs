@@ -281,7 +281,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if (CanLeavePoint ()){
 
-				if(((!Input.GetButton ("Button1") || boostTimer > 1) && !joystickLocked) || curPoint.pointType == PointTypes.ghost) {
+				if(curPoint.pointType == PointTypes.ghost || (!joystickLocked && (Input.GetButtonDown ("Button1") || boostTimer > 1))) {
 				canTraverse = true;
 		 	}else{
 			 canTraverse = false;
@@ -291,7 +291,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		 }
 		} else {
 			// NO CONNECTING FOR NOW
-				boostTimer = 0;
+				
 
 				if(CanCreatePoint()){
 					if(Input.GetButtonUp("Button1") && pointDest.pointType == PointTypes.connect){

@@ -817,7 +817,7 @@ public class Spline : MonoBehaviour
 	}
 
 	public void InsertPoint(Point p, int index){
-		SplinePoints.Insert(index + 1, p);
+		SplinePoints.Insert(index, p);
 	}
 
 	public void RemovePoint(int i){

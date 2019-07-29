@@ -56,6 +56,8 @@ public class Main : MonoBehaviour {
 	void Start()
 	{
 		Cursor.visible = false;
+		Cursor.lockState = CursorLockMode.Locked;
+		
 		canvas.SetActive(!MapEditor.editing);
 		
 		InitializeMap();
@@ -64,6 +66,7 @@ public class Main : MonoBehaviour {
 		{
 			Services.PlayerBehaviour.Initialize();
 		}
+		
 	}
 	void Update()
 	{
