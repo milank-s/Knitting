@@ -102,10 +102,10 @@ public class Main : MonoBehaviour {
 			}
 			else
 			{
-				Point.Points[i].Initialize();
+				Point.Points[i].ResetPoint();
 			}
 		}
-
+		
 		for (int i = Spline.Splines.Count - 1; i >= 0; i--)
 		{
 			if (Spline.Splines[i] == null)
@@ -116,6 +116,11 @@ public class Main : MonoBehaviour {
 			{
 				 Spline.Splines[i].SetupSpline();
 			}
+		}
+		
+		for (int i = Point.Points.Count - 1; i >= 0; i--)
+		{
+			Point.Points[i].Initialize();
 		}
 	}
 	public void EnterEditMode(bool enter)

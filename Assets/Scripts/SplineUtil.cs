@@ -100,7 +100,6 @@ public class SplineUtil : MonoBehaviour {
 		
 		RaycastHit hit;
 		
-		Debug.DrawRay(ray.origin, ray.direction, Color.red, 10);
 		if (Physics.Raycast (ray, out hit, distance, LayerMask.GetMask("Points"))) {
 			if (hit.collider.tag == "Point") {
 				Point hitPoint = hit.collider.GetComponent<Point> ();

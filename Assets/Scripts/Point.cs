@@ -132,17 +132,17 @@ public class Point : MonoBehaviour
 		SR = GetComponent<SpriteRenderer> ();
 		
 		
-		SetPointType();
 		originalPos = transform.position;
 	}
 
-	public void Initialize(){
-
+	public void ResetPoint()
+	{
 		_neighbours.Clear();
 		_connectedSplines.Clear();
-		text = gameObject.name;
+	}
+	public void Initialize(){
 
-		
+		text = gameObject.name;
 
 		SetPointType();
 		
