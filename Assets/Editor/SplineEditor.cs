@@ -123,7 +123,7 @@ public class SplineEditor : Editor {
 		}
 		if (GUILayout.Button("+", EditorStyles.miniButtonMid, miniButtonWidth)) {
         // SplinePoints.InsertArrayElementAtIndex(index);
-        spline.AddNewPoint(index + 1);
+        spline.AddNewPoint(index);
 		}
 		if (GUILayout.Button("x", EditorStyles.miniButtonRight, miniButtonWidth)) {
       int oldSize = SplinePoints.arraySize;
@@ -160,7 +160,7 @@ public class SplineEditor : Editor {
             }
 
             Handles.color = new Color(1,1,1);
-
+	
 		 		 			for (int k = 0; k < spline.curveFidelity + 1; k++) {
 
 								float j = (float)k / (float)(spline.curveFidelity);

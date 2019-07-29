@@ -969,9 +969,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 			curPoint.proximity = 1;
-			if(curPoint.pointType == PointTypes.ghost){
-				curPoint.velocity = cursorDir * Mathf.Abs(flow)/3;
-			}
+			curPoint.velocity = cursorDir * curSpeed;
+			
 //			if (curPoint.IsOffCooldown ()) {
 				curPoint.OnPointEnter ();
 				// PlayAttack(PreviousPoint, curPoint);

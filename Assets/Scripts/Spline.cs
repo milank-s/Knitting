@@ -854,7 +854,7 @@ public class Spline : MonoBehaviour
 				newPos = GetPointAtIndex(i, 0.5f);
 			}
 			newPoint = SpawnPointPrefab.CreatePoint(newPos);
-			InsertPoint(newPoint, i);
+			InsertPoint(newPoint, i+1);
 			newPoint.transform.parent = transform;
 		}else{
 			newPoint = SpawnPointPrefab.CreatePoint (transform.position);
