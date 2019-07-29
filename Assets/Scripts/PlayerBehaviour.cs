@@ -118,7 +118,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		pointDest = null;
 		traversedPoints = new List<Point> ();
-		traversedPoints.Add (curPoint);
 		
 		connectTimeCoefficient = 1;
 		state = PlayerState.Switching;
@@ -136,15 +135,17 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Initialize(){
 
+		traversedPoints.Clear();
 		cursor = Services.Cursor;
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
 		cursorSprite = Services.Cursor.GetComponent<Image>();
 		
+		traversedPoints.Add (curPoint);
 		curPoint.OnPointEnter ();
 		
 		t.time = 100;
-		
+
 //		Material newMat;
 //		newMat = Services.Prefabs.lines[3];
 //		Texture tex = newMat.mainTexture;
@@ -1184,14 +1185,11 @@ public class PlayerBehaviour: MonoBehaviour {
 //			}
 
 			cursorDir += new Vector2(Input.GetAxis ("Mouse X"), Input.GetAxis ("Mouse Y"));
-			if (cursorDir.magnitude <= 0.1f){
+			if (cursorDir.magnitude <= 0.01f){
 			  joystickLocked = true;
 				cursorDir = Vector3.zero;
 			}else{
 				joystickLocked = false;
-			}
-			if (cursorDir.magnitude > 1) {
-				cursorDir.Normalize ();
 			}
 			cursorDir = Vector3.Lerp (lastCursorDir, cursorDir, (cursorRotateSpeed/(Mathf.Abs(flow) + 1) * Time.deltaTime));
 		}
@@ -1212,7 +1210,12 @@ public class PlayerBehaviour: MonoBehaviour {
 		// cursorPos = Camera.main.ViewportToWorldPoint(screenPos);
 		// float screenWidth = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, Camera.main.nearClipPlane)).y - transform.position.y;
 		// cursorPos = transform.position + ((Vector3)cursorDir * screenWidth);
-		cursorPos = transform.position + (Vector3)cursorDir/4f;
+		
+		cursorPos = transform.position + (Vector3)cursorDir / (Services.mainCam.fieldOfView * 0.1f);
+		Vector3 screenPos = ((Vector3)cursorDir/4f + Vector3.one/2f);
+
+		screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Mathf.Abs(transform.position.z - Services.mainCam.transform.position.z));
+		cursorPos = Services.mainCam.ViewportToWorldPoint(screenPos);
 		cursor.transform.position = cursorPos;
 		cursor.transform.rotation = Quaternion.Euler(0, 0, (float)(Mathf.Atan2(-cursorDir.x, cursorDir.y) / Mathf.PI) * 180f);
 		playerSprite.transform.up = cursorDir;

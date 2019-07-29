@@ -55,6 +55,7 @@ public class Main : MonoBehaviour {
 
 	void Start()
 	{
+		Cursor.visible = false;
 		canvas.SetActive(!MapEditor.editing);
 		
 		InitializeMap();

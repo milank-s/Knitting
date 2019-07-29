@@ -114,7 +114,7 @@ public class Point : MonoBehaviour
 		pointClouds = new List<PointCloud>();
 		stiffness = 1600;
 		damping = 500;
-		color = Color.white/10;
+		color = Color.white;
 		Point.pointCount++;
 		activationSprite = GetComponentInChildren<FadeSprite> ();
 		timeOffset = Point.pointCount;
@@ -130,17 +130,9 @@ public class Point : MonoBehaviour
 		c = 0;
 		cooldown = 0;
 		SR = GetComponent<SpriteRenderer> ();
-		if (MapEditor.editing)
-		{
-			SR.color = Color.white;
-			color = Color.white;
-		}
-		else
-		{
-			SR.color = Color.black;
-		}
-
 		
+		
+		SetPointType();
 		originalPos = transform.position;
 	}
 
@@ -150,15 +142,26 @@ public class Point : MonoBehaviour
 		_connectedSplines.Clear();
 		text = gameObject.name;
 
-		if(_neighbours.Count == 2 && pointType == PointTypes.normal){
-			pointType = PointTypes.ghost;
-		}
+		
 
 		SetPointType();
+		
+		if (MapEditor.editing)
+		{
+			SR.color = Color.white;
+			color = Color.white;
+		}
+		
+		
 	}
 
 	public void SetPointType()
 	{
+		
+		if(_neighbours.Count == 2 && pointType == PointTypes.normal){
+			pointType = PointTypes.ghost;
+		}
+		
 		SR.enabled = true;
 		
 		switch(pointType){
@@ -374,7 +377,11 @@ public class Point : MonoBehaviour
 //		SR.color = Color.Lerp (color, new Color (1,1,1, c), Time.deltaTime * 5);
 		SR.color = color;
 	}else{
-		color = new Color(1.25f, 1.25f, 1.25f, proximity);
+		if(pointType == PointTypes.ghost){
+			color = new Color(1.25f, 1.25f, 1.25f, proximity);
+		}else{
+			
+		}
 		SR.color = color;
 		}
 	}

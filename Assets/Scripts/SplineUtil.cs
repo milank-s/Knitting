@@ -96,10 +96,12 @@ public class SplineUtil : MonoBehaviour {
 	static public Point RaycastFromCamera(Vector3 pos, float distance){
 		//		Ray ray = new Ray (pos + -(Vector3.forward) * 100, Vector3.forward);
 		Ray ray = Camera.main.ScreenPointToRay (Camera.main.WorldToScreenPoint (pos));
-
+		ray.origin = ray.GetPoint(Vector3.Distance(pos, Services.mainCam.transform.position) - 1);
+		
 		RaycastHit hit;
-
-		if (Physics.Raycast (ray, out hit, distance - Camera.main.transform.position.z, LayerMask.GetMask("Points"))) {
+		
+		Debug.DrawRay(ray.origin, ray.direction, Color.red, 10);
+		if (Physics.Raycast (ray, out hit, distance, LayerMask.GetMask("Points"))) {
 			if (hit.collider.tag == "Point") {
 				Point hitPoint = hit.collider.GetComponent<Point> ();
 

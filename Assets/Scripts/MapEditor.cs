@@ -17,7 +17,7 @@ using UnityEngine.UI;
 //deleting and inserting like in editor script
 //better method to select/deselect splines 
 //to get the spline that a point is on right now you have to iterate through all the splines?
-
+// a way to switch points, ones that you cant insert because they're already placed and connected
 
 
 //###################################################

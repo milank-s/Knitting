@@ -26,6 +26,8 @@ public class CameraFollow : MonoBehaviour {
 		//find its bounds
 		// get around them
 
+		uiCam.fieldOfView = cam.fieldOfView;
+		
 //		transform.position = Vector3.SmoothDamp (transform.position, target.position + offset, ref velocity, speed);
 
 				float height;
@@ -41,6 +43,10 @@ public class CameraFollow : MonoBehaviour {
 					// CameraDolly.bottomBound = CameraDolly.topBound;
 				//
 				if(Services.PlayerBehaviour.curSpline == null){
+					
+					Vector3 targetPosition = Vector3.SmoothDamp (transform.position,Services.PlayerBehaviour.transform.position, ref velocity, 0.25f);
+
+					transform.position = new Vector3(targetPosition.x, targetPosition.y, Services.PlayerBehaviour.transform.position.z + offset.z);
 					return;
 				}
 //					foreach (Point p in Services.PlayerBehaviour.curSpline.SplinePoints) {
@@ -134,8 +140,6 @@ public class CameraFollow : MonoBehaviour {
 
 					transform.position = new Vector3(targetPos.x, targetPos.y, Services.PlayerBehaviour.transform.position.z + offset.z);
 				// }
-
-				uiCam.fieldOfView = cam.fieldOfView;
 
 				// Vector3 targetPos = Vector3.Lerp(new Vector3 (xPos, yPos, target.position.z + offset.z), target.position + offset, 0.5f);
 
