@@ -5,7 +5,7 @@ using UnityEngine;
 public class SplineUtil : MonoBehaviour {
 
 	static public Point CreatePoint(Vector3 pos){
-		GameObject p = Instantiate(Services.Prefabs.point as GameObject) as GameObject;
+		GameObject p = Instantiate(Services.Prefabs.point) as GameObject;
 		Point newPoint = p.GetComponent<Point>();
 
 		newPoint.transform.position = pos;
