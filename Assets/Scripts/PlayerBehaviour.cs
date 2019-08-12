@@ -104,7 +104,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public LineRenderer cursorOnPoint;
 	private VectorLine velocityLine;
 	private VectorLine velocityLine2;
-
+	
 	private bool buttonPressed;
 	private float buttonPressedBuffer = 0.2f;
 	private float buttonPressedTimer;
@@ -313,7 +313,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			else if (!joystickLocked && (!Input.GetButton("Button1")|| boostTimer > 1))
 			{
 
-				if (curPoint.locked && buttonPressed)
+				if (curPoint.locked)
 				{
 					canTraverse = true;
 					curPoint.locked = false;
@@ -446,7 +446,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	bool TryToFly(){
-		if (Mathf.Abs(flow) > flyingSpeedThreshold && curPoint.pointType == PointTypes.fly){
+		if (Mathf.Abs(flow) > flyingSpeedThreshold && curPoint.pointType != PointTypes.ghost){
 			l.positionCount = 2;
 			l.SetPosition (0, cursorPos);
 			l.SetPosition (1, transform.position);
@@ -463,7 +463,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		curSpline.OnSplineExit ();
 		curPoint.OnPointExit ();
 		curPoint.proximity = 0;
-		
+		flow += 0.25f;
 	}
 	void Fly(){
 		pointDest = null;
@@ -711,10 +711,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void FreeMovement()
 	{
-		
 		Point raycastPoint = SplineUtil.RaycastFromCamera(cursorPos, 1f);
 		
-		if (raycastPoint != null && raycastPoint.pointType == PointTypes.fly)
+		if (raycastPoint != null && raycastPoint != curPoint && raycastPoint.pointType != PointTypes.ghost)
 		{
 			pointDest = raycastPoint;
 		}
@@ -733,7 +732,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 		else
 		{
-			flow -= Time.deltaTime/10;
+			flow -= Time.deltaTime/2;
 			Vector3 inertia = cursorDir * flow;
 			transform.position += inertia * Time.deltaTime;
 		}
@@ -1058,6 +1057,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			curPoint.proximity = 1;
 			curPoint.velocity = cursorDir * curSpeed;
+
+			foreach (Point p in curPoint._neighbours)
+			{
+				p.velocity = Vector3.Lerp((curPoint.Pos - p.Pos).normalized, curPoint.velocity.normalized, 0.5f) * curPoint.velocity.magnitude / 3f;
+			}
 			
 //			if (curPoint.IsOffCooldown ()) {
 				curPoint.OnPointEnter ();

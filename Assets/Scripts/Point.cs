@@ -99,6 +99,8 @@ public class Point : MonoBehaviour
 		{
 			_velocity = value;
 		}
+
+		get { return _velocity; }
 	}
 
 	public Vector3 Pos
@@ -317,8 +319,8 @@ public class Point : MonoBehaviour
 
 		switch(pointType){
 			case PointTypes.stop:
-				Services.PlayerBehaviour.boost += 0.5f;
-				Services.PlayerBehaviour.flow += 0.1f;
+//				Services.PlayerBehaviour.boost += 0.5f;
+//				Services.PlayerBehaviour.flow += 0.1f;
 			break;
 
 			case PointTypes.fly:
