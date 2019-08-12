@@ -723,12 +723,12 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			transform.position += (pointDest.transform.position - transform.position).normalized * Time.deltaTime;
 
-			if (Vector3.Distance(transform.position, pointDest.Pos) < 0.1f)
+			if (Vector3.Distance(transform.position, pointDest.Pos) < 0.025f)
 			{
 				curPoint = pointDest;
 				state = PlayerState.Switching;
 				curPoint.proximity = 1;
-				
+				curPoint.velocity = cursorDir * Mathf.Abs(flow);
 			}
 		}
 		else
