@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Experimental.PlayerLoop;
 
 
 //###################################################
@@ -107,14 +108,22 @@ public class Point : MonoBehaviour
 			return transform.position;
 		}
 	}
+
+	public Color _color
+	{
+		get { return SR.color; }
+	}
 	#endregion
 
-	void Awake(){
+	void Awake()
+	{
+		locked = true;
 		Points.Add(this);
 		pointClouds = new List<PointCloud>();
 		stiffness = 1600;
-		damping = 500;
-		color = Color.white;
+		damping = 1000;
+		mass = 20;
+		color = Color.black;
 		Point.pointCount++;
 		activationSprite = GetComponentInChildren<FadeSprite> ();
 		timeOffset = Point.pointCount;
@@ -144,12 +153,12 @@ public class Point : MonoBehaviour
 
 		text = gameObject.name;
 
+		
 		SetPointType();
 		
 		if (MapEditor.editing)
 		{
 			SR.color = Color.white;
-			color = Color.white;
 		}
 		
 		
@@ -163,6 +172,7 @@ public class Point : MonoBehaviour
 		}
 		
 		SR.enabled = true;
+		color = Color.black;
 		
 		switch(pointType){
 
@@ -206,6 +216,7 @@ public class Point : MonoBehaviour
 	}
 
 	void Movement(){
+		
 		Vector3 stretch = transform.position - originalPos;
 		Vector3 force = -stiffness * stretch - damping * _velocity;
 		Vector3 acceleration = force / mass;
@@ -265,9 +276,10 @@ public class Point : MonoBehaviour
 	}
 
 	public void OnPointEnter(){
-		color += Color.white/5;
-		SR.color = color;
+		color = Color.white/2;
 
+		stiffness = Mathf.Clamp(stiffness -100, 100, 10000);
+		damping = Mathf.Clamp(damping - 100, 100, 10000);
 		if(textMesh != null){
 			textMesh.GetComponent<FadeTextOnPoint>().alpha = 1;
 			Services.Word.text = textMesh.text.ToUpper();
@@ -366,24 +378,19 @@ public class Point : MonoBehaviour
 
 	void SetColor(){
 
-	if(visited){
+
 		// c = (Mathf.Sin (3 * (Time.time + timeOffset))/4 + 0.3f) + proximity;
 //		c = proximity + Mathf.Sin(Time.time + timeOffset)/10 + 0.11f;
 		// ACCRETION IS SHOWING POINTS THAT IT SHOULDNT?????
-		c = proximity + 0.25f;
+		c = proximity;
 		// accretion
 		c = Mathf.Pow (c, 1);
-		color = new Color(c, c, c, 1);
+		
 //		SR.color = Color.Lerp (color, new Color (1,1,1, c), Time.deltaTime * 5);
-		SR.color = color;
-	}else{
-		if(pointType == PointTypes.ghost){
-			color = new Color(1.25f, 1.25f, 1.25f, proximity);
-		}else{
-			
-		}
-		SR.color = color;
-		}
+		SR.color = color + new Color(c, c, c, 1);
+		
+
+
 	}
 
 	void SetSprite(){

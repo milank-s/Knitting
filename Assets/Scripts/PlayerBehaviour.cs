@@ -105,6 +105,10 @@ public class PlayerBehaviour: MonoBehaviour {
 	private VectorLine velocityLine;
 	private VectorLine velocityLine2;
 
+	private bool buttonPressed;
+	private float buttonPressedBuffer = 0.2f;
+	private float buttonPressedTimer;
+	
 	private GameObject cursor;
 	[HideInInspector]
 	public Vector3 cursorPos;
@@ -131,6 +135,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		int i = 0;
 		lastPoint = null;
+		
 	}
 
 	public void Initialize(){
@@ -180,6 +185,19 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		Point.hitColorLerp = connectTime;
 
+		if (Input.GetButtonDown("Button1"))
+		{
+			buttonPressed = true;
+			buttonPressedTimer = buttonPressedBuffer;
+		}
+
+		buttonPressedTimer -= Time.deltaTime;
+		
+		if (buttonPressedTimer < 0)
+		{
+			buttonPressed = false;
+		}
+		
 		float speedCoefficient;
 		if(state == PlayerState.Switching || state == PlayerState.Animating){
 			speedCoefficient = 0;
@@ -240,15 +258,20 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			foreach(Spline s in curPoint._connectedSplines){
 				//should always be drawn
-				if(!s.locked){
-					s.DrawSpline(true, s.SplinePoints.IndexOf(curPoint), Mathf.Clamp(s.SplinePoints.IndexOf(curPoint) + 1, 0, s.SplinePoints.Count + (s.closed ? 0 : 0)));
+				if(!s.locked)
+				{
+					s.reactToPlayer = true;
+//					s.DrawSpline(true, s.SplinePoints.IndexOf(curPoint), Mathf.Clamp(s.SplinePoints.IndexOf(curPoint) + 1, 0, s.SplinePoints.Count + (s.closed ? 0 : 0)));
+					s.DrawSpline( s.SplinePoints.IndexOf(curPoint));
 				}
 			}
 
 			if(pointDest != null){
 				foreach(Spline s in pointDest._connectedSplines){
-					if(!s.locked){
-						s.DrawSpline(false, s.SplinePoints.IndexOf(pointDest), Mathf.Clamp(s.SplinePoints.IndexOf(pointDest) + 1, 0, s.SplinePoints.Count + (s.closed ? 0 : 0)));
+					if(!s.locked)
+					{
+						s.reactToPlayer = true;
+						s.DrawSpline(s.SplinePoints.IndexOf(pointDest));
 					}
 				}
 			}
@@ -279,17 +302,36 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void PlayerOnPoint(){
 		bool canTraverse = false;
 
-			if (CanLeavePoint ()){
+		if (CanLeavePoint())
+		{
 
-				if(curPoint.pointType == PointTypes.ghost || (!joystickLocked && (Input.GetButtonDown ("Button1") || boostTimer > 1))) {
+			if (curPoint.pointType == PointTypes.ghost)
+			{
 				canTraverse = true;
-		 	}else{
-			 canTraverse = false;
-			 cursorSprite.sprite = traverseSprite;
-			 l.positionCount = 0;
- 			cursorOnPoint.positionCount = 0;
-		 }
-		} else {
+
+			}
+			else if (!joystickLocked && (!Input.GetButton("Button1")|| boostTimer > 1))
+			{
+
+				if (curPoint.locked && buttonPressed)
+				{
+					canTraverse = true;
+					curPoint.locked = false;
+				}
+				else if (!curPoint.locked)
+				{
+					canTraverse = true;
+				}
+			}
+			else
+			{
+				canTraverse = false;
+				cursorSprite.sprite = traverseSprite;
+				l.positionCount = 0;
+				cursorOnPoint.positionCount = 0;
+			}
+		}
+		else {
 			// NO CONNECTING FOR NOW
 				
 
@@ -311,7 +353,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					}else if(TryToFly()){
 						cursorSprite.sprite = canFlySprite;
 						if(Input.GetButton("Button1") || boostTimer >= 1){
-							Fly();
+							Float();
 							return;
 						}
 				 }else{
@@ -321,14 +363,22 @@ public class PlayerBehaviour: MonoBehaviour {
 				 }
 			}
 
+
+		if (!canTraverse)
+		{
 			if(Input.GetButton("Button1")){
-			 boostTimer += Time.deltaTime / stopTimer;
-		 }else{
-			  boostTimer = Mathf.Clamp01(boostTimer - Time.deltaTime);
-		 }
-		 l.positionCount = 2;
-		 l.SetPosition (0, Vector3.Lerp(transform.position, cursorPos, Easing.QuadEaseOut(boostTimer)));
-		 l.SetPosition (1, transform.position);
+				boostTimer += Time.deltaTime / stopTimer;
+
+			}else{
+				boostTimer = Mathf.Clamp01(boostTimer - Time.deltaTime);
+			}
+			
+			l.positionCount = 2;
+			l.SetPosition (0, Vector3.Lerp(transform.position, cursorPos, Easing.QuadEaseOut(boostTimer)));
+			l.SetPosition (1, transform.position);
+		}
+
+
 
 		if(canTraverse){
 			// pointInfo.GetComponent<Text>().text = "";
@@ -336,12 +386,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			LeavePoint();
 			boostTimer = 0;
 		}else{
-			if(pointDest != null && pointDest.lockAmount > 0){
-				// pointInfo.GetComponent<Text>().text = pointDest.lockAmount + "•";
-				// pointInfo.position = pointDest.Pos + Vector3.right/5f;
-			}else{
-				// pointInfo.GetComponent<Text>().text = "";
-			}
+			
 			//Staying on a point is too punishing.
 			StayOnPoint();
 		}
@@ -364,7 +409,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				if(drawnPoint == null){
 					drawnPointNull = true;
 				}
-				if (pointDest != null && pointDest != curPoint && pointDest.isUnlocked() && !pointDest.IsAdjacent(curPoint)) {
+				if (pointDest != null && pointDest != curPoint && !pointDest.IsAdjacent(curPoint)) {
 					if(drawnPoint != null){
 						if(drawnPoint != pointDest){
 							return true;
@@ -410,6 +455,16 @@ public class PlayerBehaviour: MonoBehaviour {
 		return false;
 	}
 
+	void Float()
+	{
+		pointDest = null;
+		l.positionCount = 0;
+		state = PlayerState.Flying;
+		curSpline.OnSplineExit ();
+		curPoint.OnPointExit ();
+		curPoint.proximity = 0;
+		
+	}
 	void Fly(){
 		pointDest = null;
 		l.positionCount = 0;
@@ -654,7 +709,38 @@ public class PlayerBehaviour: MonoBehaviour {
 		state = PlayerState.Switching;
 	}
 
-	void FreeMovement(){
+	void FreeMovement()
+	{
+		
+		Point raycastPoint = SplineUtil.RaycastFromCamera(cursorPos, 1f);
+		
+		if (raycastPoint != null && raycastPoint.pointType == PointTypes.fly)
+		{
+			pointDest = raycastPoint;
+		}
+
+		if (pointDest != null)
+		{
+			transform.position += (pointDest.transform.position - transform.position).normalized * Time.deltaTime;
+
+			if (Vector3.Distance(transform.position, pointDest.Pos) < 0.1f)
+			{
+				curPoint = pointDest;
+				state = PlayerState.Switching;
+				curPoint.proximity = 1;
+				
+			}
+		}
+		else
+		{
+			flow -= Time.deltaTime/10;
+			Vector3 inertia = cursorDir * flow;
+			transform.position += inertia * Time.deltaTime;
+		}
+	
+	}
+	
+	void TrackFreeMovement(){
 
 		Vector3 inertia;
 
@@ -799,10 +885,10 @@ public class PlayerBehaviour: MonoBehaviour {
 					flow = 0;
 			}else{
 				//
-			maxSpeed = curSpline.distance * 2;
+//			maxSpeed = curSpline.distance * 2;
 
 			if(Mathf.Abs(flow) < maxSpeed){
-			flow += Mathf.Sign (accuracy) * accuracyCoefficient * acceleration * Time.deltaTime;
+			flow += Mathf.Sign (accuracy) * accuracyCoefficient * acceleration * Time.deltaTime * cursorDir.magnitude;
 			
 			}
 
@@ -826,7 +912,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		// (adjustedAccuracy + 0.1f)
 		if (!joystickLocked)
 		{
-			curSpeed = (((flow + boost + speed) * adjustedAccuracy));
+			curSpeed = (((flow + boost + speed) * adjustedAccuracy)) * cursorDir.magnitude;
 			progress += (curSpeed * Time.deltaTime) / curSpline.distance;
 		}
 
@@ -950,7 +1036,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			accuracy = 1;
 			
 			Point PreviousPoint = curPoint;
+			
 			curPoint.proximity = 0;
+			
 			if (progress > 1) {
 
 				progress = 0;
@@ -978,7 +1066,13 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if (PreviousPoint != curPoint) {
 				traversedPoints.Add (curPoint);
+				foreach (Spline s in PreviousPoint._connectedSplines)
+				{
+					s.reactToPlayer = false;
+				}
+				
 				lastPoint = PreviousPoint;
+				
 			}
 	
 			
@@ -1095,7 +1189,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			//this is causing bugs
 
 // && (Input.GetButtonDown("Button1")
-			if (angleToSpline <= StopAngleDiff && pointDest.isUnlocked()) {
+			if (angleToSpline <= StopAngleDiff) {
 				if(curSpline != null){
 					curSpline.OnSplineExit ();
 				}
@@ -1211,14 +1305,15 @@ public class PlayerBehaviour: MonoBehaviour {
 		// cursorPos = transform.position + ((Vector3)cursorDir * screenWidth);
 		
 		cursorPos = transform.position + (Vector3)cursorDir / (Services.mainCam.fieldOfView * 0.1f);
-		Vector3 screenPos = ((Vector3)cursorDir/4f + Vector3.one/2f);
-
+//		Vector3 screenPos = ((Vector3)cursorDir/10f + Vector3.one/2f);
+		Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
+		screenPos += (Vector3) cursorDir / 25f;
 		screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Mathf.Abs(transform.position.z - Services.mainCam.transform.position.z));
 		cursorPos = Services.mainCam.ViewportToWorldPoint(screenPos);
 		cursor.transform.position = cursorPos;
 		cursor.transform.rotation = Quaternion.Euler(0, 0, (float)(Mathf.Atan2(-cursorDir.x, cursorDir.y) / Mathf.PI) * 180f);
 		playerSprite.transform.up = cursorDir;
-		l.positionCount = 2;
+		l.positionCount = 2;	
 		// l.SetPosition(0, transform.position);
 		// l.SetPosition(1, cursorPos);
 	}

@@ -119,7 +119,7 @@ public class CameraFollow : MonoBehaviour {
 				CameraDolly.leftBound =
 					Mathf.Clamp(CameraDolly.leftBound, target.position.x - 100, target.position.x - 0.25f);
 				
-				height = CameraDolly.topBound - CameraDolly.bottomBound;
+				height = Mathf.Abs(CameraDolly.topBound - CameraDolly.bottomBound);
 				yPos = Mathf.Lerp (CameraDolly.bottomBound, CameraDolly.topBound, 0.5f);
 				xPos = Mathf.Lerp (CameraDolly.leftBound, CameraDolly.rightBound, 0.5f);
 

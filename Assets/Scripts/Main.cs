@@ -89,6 +89,14 @@ public class Main : MonoBehaviour {
 				}
 
 			}
+
+			foreach (Spline s in Spline.Splines)
+			{
+				if (!s.reactToPlayer && !s.locked)
+				{
+					s.DrawSpline();
+				}
+			}
 		}
 	}
 
