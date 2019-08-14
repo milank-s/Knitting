@@ -327,9 +327,11 @@ public class Spline : MonoBehaviour
 	public void DrawSpline(int pointIndex = 0)
 	{
 
-		
-		drawIndex = (drawIndex + 1) % line.GetSegmentNumber();
-		
+		if (line.GetSegmentNumber() != 0)
+		{
+			drawIndex = (drawIndex + 1) % line.GetSegmentNumber();
+		}
+
 		int playerIndex = GetPlayerLineSegment(pointIndex);
 		
 				for (int i = 0; i < SplinePoints.Count - (closed ? 0 : 1) ; i++) {
@@ -450,7 +452,7 @@ public class Spline : MonoBehaviour
 		else
 		{
 			amplitude = 0.1f;
-			localDistortion += 1;
+			localDistortion += 0;
 			v += (distortionVector * UnityEngine.Random.Range(-localDistortion, localDistortion) * Mathf.Clamp01(-indexDiff + 1)) * amplitude;
 		}
 

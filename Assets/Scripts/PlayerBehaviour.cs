@@ -264,9 +264,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				//should always be drawn
 				if(!s.locked)
 				{
-					s.reactToPlayer = true;
+//					s.reactToPlayer = true;
 //					s.DrawSpline(true, s.SplinePoints.IndexOf(curPoint), Mathf.Clamp(s.SplinePoints.IndexOf(curPoint) + 1, 0, s.SplinePoints.Count + (s.closed ? 0 : 0)));
-					s.DrawSpline( s.SplinePoints.IndexOf(curPoint));
+//					s.DrawSpline( s.SplinePoints.IndexOf(curPoint));
 				}
 			}
 			
@@ -274,8 +274,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				foreach(Spline s in pointDest._connectedSplines){
 					if(!s.locked)
 					{
-						s.reactToPlayer = true;
-						s.DrawSpline(s.SplinePoints.IndexOf(pointDest));
+//						s.reactToPlayer = true;
+//						s.DrawSpline(s.SplinePoints.IndexOf(pointDest));
 					}
 				}
 			}
