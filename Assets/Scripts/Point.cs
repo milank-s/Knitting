@@ -196,6 +196,7 @@ public class Point : MonoBehaviour
 				break;
 			
 			case PointTypes.normal:
+				color = Color.black;
 				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.normal];
 				break;
 		}

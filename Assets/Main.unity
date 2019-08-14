@@ -154,10 +154,10 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 775e85a5da16a47db8056142c84e33bc, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0
   m_Pitch: 1
-  Loop: 1
+  Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -700,7 +700,7 @@ PrefabInstance:
         type: 3}
       propertyPath: pointSprites.Array.data[1]
       value: 
-      objectReference: {fileID: 21300000, guid: cb4587a2f8cdd4b2eb272821ecba77d5,
+      objectReference: {fileID: 21300000, guid: f810288834cd0ef4388bfa4d7dcffbae,
         type: 3}
     - target: {fileID: 114769404741685902, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
         type: 3}
@@ -812,6 +812,11 @@ PrefabInstance:
       propertyPath: cursor
       value: 
       objectReference: {fileID: 1112097045124285}
+    - target: {fileID: 114448235382618234, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
+        type: 3}
+      propertyPath: isPlaying
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
 --- !u!1 &623296431
@@ -1317,10 +1322,10 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 0e128e67eacaf4bebb61ad16013c4c3c, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0
   m_Pitch: 1
-  Loop: 1
+  Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -1552,7 +1557,7 @@ MonoBehaviour:
   lastPoint: {fileID: 0}
   speed: 0.5
   maxSpeed: 2.5
-  acceleration: 0.1
+  acceleration: 1
   decay: 10
   accuracyCoefficient: 3
   flowAmount: 0
@@ -1617,7 +1622,7 @@ GameObject:
   - component: {fileID: 1544326635}
   - component: {fileID: 1544326637}
   m_Layer: 0
-  m_Name: AmbientSound
+  m_Name: MovingSound
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1647,7 +1652,8 @@ AudioSource:
   m_GameObject: {fileID: 1544326634}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 51b07567f1efb4061b5fdfd143cccc7f,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: 4fa9d2d2c30c4294e93fd4002a5b41ff, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0
@@ -1897,13 +1903,13 @@ MonoBehaviour:
   hits:
   - {fileID: 8300000, guid: 50a017585b92d0346a332bb7d44b2965, type: 3}
   sustains: []
-  background: {fileID: 0}
-  braking: {fileID: 8300000, guid: 3cd89aa86836a492bbab343de162a149, type: 3}
-  accelerating: {fileID: 8300000, guid: 1f3dea85e1f43534c8e4d5b29c0371a4, type: 3}
+  flyingSound: []
+  braking: {fileID: 8300000, guid: 676c14cc1cdb33e43abf19f3032dba1e, type: 3}
+  moving: {fileID: 8300000, guid: be2f1f50858af4ab287d47dcb257258b, type: 3}
   curPointSound: {fileID: 1055735477}
   pointDestSound: {fileID: 12023046}
   brakingSound: {fileID: 1104410829}
-  ambientSound: {fileID: 1544326637}
+  moveSound: {fileID: 1544326637}
 --- !u!81 &1908993231
 AudioListener:
   m_ObjectHideFlags: 0
@@ -1912,7 +1918,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1908993228}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!120 &1908993232
 LineRenderer:
   m_ObjectHideFlags: 0

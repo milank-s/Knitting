@@ -92,7 +92,8 @@ public class Main : MonoBehaviour {
 
 			foreach (Spline s in Spline.Splines)
 			{
-				if (!s.reactToPlayer && !s.locked)
+
+				if (!s.locked && !s.reactToPlayer)
 				{
 					s.DrawSpline();
 				}

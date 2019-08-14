@@ -241,9 +241,13 @@ public class PlayerBehaviour: MonoBehaviour {
 		 }else{
 			 cursorSprite.sprite = canFlySprite;
 		 }
+			
+			transform.position = curSpline.GetPoint(progress);
+			
 
 		}else if(state == PlayerState.Switching)
 		{
+			transform.position = curPoint.Pos;
 			gravity = 0;
 //			curSpeed = 0;
 			transform.position = curPoint.Pos;
@@ -255,7 +259,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			curSpline.UpdateSpline();
 			ManageSound();
-
+			
 			foreach(Spline s in curPoint._connectedSplines){
 				//should always be drawn
 				if(!s.locked)
@@ -265,7 +269,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					s.DrawSpline( s.SplinePoints.IndexOf(curPoint));
 				}
 			}
-
+			
 			if(pointDest != null){
 				foreach(Spline s in pointDest._connectedSplines){
 					if(!s.locked)
@@ -275,16 +279,10 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 				}
 			}
-
-			if(state == PlayerState.Switching){
-				transform.position = curPoint.Pos;
-			}
-
-			if(state == PlayerState.Traversing){
-
-				transform.position = curSpline.GetPoint(progress);
-			}
-
+			
+			
+		
+			
 			if (traversedPoints.Count >= 2 && Input.GetButton("Button2")) {
 				// && Mathf.Abs (flow) <= 0)
 				StartCoroutine (Unwind());
@@ -339,7 +337,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					if(Input.GetButtonUp("Button1") && pointDest.pointType == PointTypes.connect){
 						CreatePoint();
 						canTraverse = true;
-						// PlayAttack(curPoint, pointDest);
+						
 					}else if (pointDest.pointType == PointTypes.connect){
 						l.positionCount = 2;
 		  			cursorOnPoint.positionCount = 2;
@@ -446,7 +444,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	bool TryToFly(){
-		if (Mathf.Abs(flow) > flyingSpeedThreshold && curPoint.pointType != PointTypes.ghost){
+		if (Mathf.Abs(flow) > flyingSpeedThreshold && curPoint.pointType == PointTypes.fly){
 			l.positionCount = 2;
 			l.SetPosition (0, cursorPos);
 			l.SetPosition (1, transform.position);
@@ -1079,6 +1077,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 			}
 	
+			PlayAttack(curPoint, pointDest);
+			
 			
 			if(curPoint.pointType == PointTypes.stop){
 //				traversedPoints.Clear();
@@ -1451,7 +1451,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		noteIndex++;
 		newSound.GetComponent<AudioSource>().Play();
 		newSound.GetComponent<PlaySound>().enabled = true;
-
 	}
 
 	public void ManageSound ()
@@ -1463,16 +1462,16 @@ public class PlayerBehaviour: MonoBehaviour {
 		// sounds.curPointSound.volume =  Mathf.Pow(curPoint.proximity, 3)/5f;
 			// sounds.pointDestSound.volume = Mathf.Sin(pointDest.proximity * Mathf.PI)
 
-			float dot = Vector2.Dot(curSpline.GetDirection (progress), pointDest.Pos - curPoint.Pos);
+			float dot = Vector2.Dot(curSpline.GetDirection (progress), (pointDest.Pos - curPoint.Pos).normalized);
 			float curFreqGain;
 	 //
 			Services.Sounds.master.GetFloat ("CenterFreq", out curFreqGain);
 			float lerpAmount = Services.PlayerBehaviour.goingForward ? Services.PlayerBehaviour.progress : 1 - Services.PlayerBehaviour.progress;
-			sounds.ambientSound.volume = Mathf.Lerp(sounds.ambientSound.volume, Mathf.Clamp01(curSpeed), Time.deltaTime);
-			sounds.ambientSound.pitch = sounds.ambientSound.volume;
-			sounds.brakingSound.volume = Mathf.Pow(Mathf.Clamp01(0.5f - accuracy)/10, 2);
+			sounds.moveSound.volume = Mathf.Lerp(sounds.moveSound.volume, Mathf.Clamp01(curSpeed), Time.deltaTime);
+			sounds.moveSound.pitch = Mathf.Pow(accuracy / 2 + 0.5f, 0.5f);
+			sounds.brakingSound.volume = Mathf.Pow(Mathf.Clamp01(0.5f - accuracy)/2, 2);
 	 //
-			Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(Services.PlayerBehaviour.flow)/2 + 1f);
+			Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(curSpeed)/2 + 1f);
 			Services.Sounds.master.SetFloat("CenterFreq", Mathf.Lerp(curFreqGain, ((dot/2f + 0.5f) + Mathf.Clamp01(1f/Mathf.Pow(curSpline.segmentDistance, 5))) * (16000f / curFreqGain), lerpAmount));
 
 			if(pointDest.pointType != PointTypes.ghost){
@@ -1482,7 +1481,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 		}else{
 			sounds.pointDestSound.volume = 0;
-			sounds.ambientSound.volume = Mathf.Lerp(sounds.ambientSound.volume, 0, Time.deltaTime);
+			sounds.moveSound.volume = Mathf.Lerp(sounds.moveSound.volume, 0, Time.deltaTime);
 			sounds.brakingSound.volume = 0;
 		}
 

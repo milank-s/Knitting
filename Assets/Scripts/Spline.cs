@@ -28,6 +28,7 @@ using SubjectNerd.Utilities;
 
 public class Spline : MonoBehaviour
 {
+	public static float distortion;
 	public static List<Spline> Splines = new List<Spline> ();
 	public static float drawSpeed = 0.01f;
 	[Reorderable]
@@ -55,8 +56,8 @@ public class Spline : MonoBehaviour
 
 	[HideInInspector]
 	public bool isPlayerOn = false;
-
 	public bool reactToPlayer = false;
+	
 	[HideInInspector]
 	public bool draw = true;
 	[HideInInspector]
@@ -124,7 +125,7 @@ public class Spline : MonoBehaviour
 	{
 		draw = false;
 		isPlayerOn = false;
-
+		reactToPlayer = false;
 		// if (curSound != null) {
 		// 	StopCoroutine (curSound);
 		// 	StartCoroutine (FadeNote (sound));
@@ -204,6 +205,8 @@ public class Spline : MonoBehaviour
 			if(closed){
 				AddPoint (null, EndPoint);
 			}
+
+			reactToPlayer = false;
 	}
 
 	public void ChangeMaterial(int i)
@@ -321,8 +324,14 @@ public class Spline : MonoBehaviour
 		line.Draw3D();
 	}
 
-	public void DrawSpline(int pointIndex = 0){
+	public void DrawSpline(int pointIndex = 0)
+	{
 
+		
+		drawIndex = (drawIndex + 1) % line.GetSegmentNumber();
+		
+		int playerIndex = GetPlayerLineSegment(pointIndex);
+		
 				for (int i = 0; i < SplinePoints.Count - (closed ? 0 : 1) ; i++) {
 					for (int k = 0; k <= curveFidelity; k++)
 					{
@@ -331,15 +340,24 @@ public class Spline : MonoBehaviour
 						float step = (float) k / (float) (curveFidelity);
 
 						Vector3 v = Vector3.zero;
+						
 						if (reactToPlayer)
 						{
-							DrawLine(i, index, step, pointIndex);
+							DrawLine(i, index, step, playerIndex);
 						}
 						else
 						{
-							v = GetPointAtIndex(i, step);
-							SetLinePoint(v, index);
+							DrawLine(i, index, step, drawIndex);
 						}
+//						else
+//						{
+//							v = GetPointAtIndex(i, step);
+//							SetLinePoint(v, index);
+//						}else
+//						{
+//							v = GetPointAtIndex(i, step);
+//							SetLinePoint(v, index);
+//						}
 
 //						if (isPlayerOn &&
 //						    index <= (pointIndex * curveFidelity) + (playerProgress * curveFidelity) + 2 &&
@@ -351,36 +369,6 @@ public class Spline : MonoBehaviour
 //							}
 //						}
 
-						if (index < line.GetSegmentNumber())
-						{
-							int j = 0;
-							if (i + 1 > SplinePoints.Count - 1)
-							{
-								if (closed)
-								{
-									j = 0;
-								}
-								else
-								{
-									j = i;
-								}
-							}
-							else
-							{
-								j = i + 1;
-							}
-
-							if (reactToPlayer && index <= (pointIndex * curveFidelity) + (playerProgress * curveFidelity))
-							{
-								line.SetColor(SplinePoints[i]._color, index);
-							}
-							else
-							{
-								
-								line.SetColor(Color.Lerp(SplinePoints[i]._color, SplinePoints[j]._color, step), index);
-								
-							}
-						}
 
 //							if(index <= (i * curveFidelity) + (playerProgress * curveFidelity)){
 //						 if (index <= ((pointIndex + 1) * curveFidelity) + playerProgress * curveFidelity)
@@ -400,62 +388,118 @@ public class Spline : MonoBehaviour
 			 line.Draw3D();
 	 }
 
-	void DrawLine(int pointIndex, int segmentIndex, float step, int curPointIndex){
+	void DrawLine(int pointIndex, int segmentIndex, float step, int activeIndex)
+	{
 
-		
-		Vector3 v = GetPointAtIndex (pointIndex, step);
+
+		Vector3 v = GetPointAtIndex(pointIndex, step);
 
 		//Add movement Effects of player is on the spline
-		if (isPlayerOn) {
-			int playerIndex = GetPlayerLineSegment (curPointIndex); //this is fucking wrong and you have to fix it
-			int indexDiff;
 
-			//Find the shortest distance to the player in case of loop
-			if (closed) {
-				int dist1 = Mathf.Abs(segmentIndex - playerIndex);
-				int dist2;
 
-				if (segmentIndex < playerIndex) {
-					dist2 = Mathf.Abs ((line.GetSegmentNumber () - playerIndex) + segmentIndex);
-				} else {
-					dist2 = Mathf.Abs ((line.GetSegmentNumber () - segmentIndex) + playerIndex);
-				}
+		int indexDiff;
 
-				indexDiff = Mathf.Min (dist1, dist2);
+		//Find the shortest distance to the player in case of loop
+		if (closed)
+		{
+			int dist1 = Mathf.Abs(segmentIndex - activeIndex);
+			int dist2;
 
-			} else {
-				indexDiff = Mathf.Abs(playerIndex - segmentIndex);
+			if (segmentIndex < activeIndex)
+			{
+				dist2 = Mathf.Abs((line.GetSegmentNumber() - activeIndex) + segmentIndex);
+			}
+			else
+			{
+				dist2 = Mathf.Abs((line.GetSegmentNumber() - segmentIndex) + activeIndex);
 			}
 
-			//find the distance. 1 = one curve
-			distanceFromPlayer = (float)indexDiff / (float)curveFidelity;
+			indexDiff = Mathf.Min(dist1, dist2);
 
-			//closeness to the player. 0 = one curve away
-			invertedDistance = 1f - Mathf.Clamp01 (Mathf.Abs (distanceFromPlayer));
-
-			float flow = Mathf.Abs(Services.PlayerBehaviour.flow);
-			float newFrequency = Mathf.Abs(Services.PlayerBehaviour.accuracy * 10);
-
-			//use accuracy to show static
-			float distortion = Mathf.Lerp (0, 1, Mathf.Pow (0.5f - Services.PlayerBehaviour.accuracy/2, 3));
-			float amplitude = Mathf.Clamp01(flow)/5;
-			NewFrequency(newFrequency);
-
-			//get value for sine wave effect
-			float offset = Mathf.Sin (Time.time * frequency + phase + segmentIndex * 0.5f);
-
-			//rotate direction 90 degrees
-			Vector3 direction = GetVelocityAtIndex (pointIndex, step);
-			Vector3 distortionVector = new Vector3 (-direction.y, direction.x, direction.z);
-
-			// apply effects with distance falloff
-			//(direction * offset * Mathf.Clamp01(distanceFromPlayer))
-			v += ((distortionVector * UnityEngine.Random.Range (-distortion, distortion) * invertedDistance)) * amplitude;
+		}
+		else
+		{
+			indexDiff = Mathf.Abs(activeIndex - segmentIndex);
 		}
 
 
-			SetLinePoint(v, segmentIndex);
 
+
+		//find the distance. 1 = one curve
+		distanceFromPlayer = (float) indexDiff / (float) curveFidelity;
+
+		//closeness to the player. 0 = one curve away
+		invertedDistance = 1f - Mathf.Clamp01(Mathf.Abs(distanceFromPlayer));
+
+		float flow = Mathf.Abs(Services.PlayerBehaviour.flow);
+		float newFrequency = Mathf.Abs(Services.PlayerBehaviour.accuracy * 10);
+
+		//use accuracy to show static
+		float localDistortion = distortion;
+		float amplitude;
+		
+		Vector3 direction = GetVelocityAtIndex(pointIndex, step);
+		Vector3 distortionVector = new Vector3(-direction.y, direction.x, direction.z);
+		
+		if (isPlayerOn)
+		{
+			localDistortion = Mathf.Lerp(0, 1, Mathf.Pow(0.5f - Services.PlayerBehaviour.accuracy / 2, 3));
+			amplitude = Mathf.Clamp01(flow) / 5;
+			v += (distortionVector * UnityEngine.Random.Range(-localDistortion, localDistortion) * invertedDistance) * amplitude;
+		}
+		else
+		{
+			amplitude = 0.1f;
+			localDistortion += 1;
+			v += (distortionVector * UnityEngine.Random.Range(-localDistortion, localDistortion) * Mathf.Clamp01(-indexDiff + 1)) * amplitude;
+		}
+
+		NewFrequency(newFrequency);
+
+		//get value for sine wave effect
+		float offset = Mathf.Sin(Time.time * frequency + phase + segmentIndex * 0.5f);
+
+		//(direction * offset * Mathf.Clamp01(distanceFromPlayer))
+		
+
+
+		SetLinePoint(v, segmentIndex);
+
+		
+		if (segmentIndex < line.GetSegmentNumber())
+		{
+			int j = 0;
+			if (pointIndex + 1 > SplinePoints.Count - 1)
+			{
+				if (closed)
+				{
+					j = 0;
+				}
+				else
+				{
+					j = pointIndex;
+				}
+			}
+			else
+			{
+				j = pointIndex + 1;
+			}
+
+			if (reactToPlayer && segmentIndex <= (pointIndex * curveFidelity) + (playerProgress * curveFidelity))
+			{
+				Color c = Color.Lerp(SplinePoints[pointIndex].color, Color.white, invertedDistance);
+				line.SetColor(c, segmentIndex);
+			}
+			else
+			{
+
+				Color c = Color.Lerp(SplinePoints[pointIndex].color, SplinePoints[j].color, step);
+				c = Color.Lerp(c, Color.white, invertedDistance);
+				line.SetColor(c, segmentIndex);
+								
+			}
+		}
+		
 
 
 
@@ -475,10 +519,10 @@ public class Spline : MonoBehaviour
 // //		line.SetWidth (Mathf.Lerp (1, 1, Mathf.Pow (invertedDistance, 10)), index);
 //
 // 			//if the player is on the leading edge of the line keep it black (you should be using low and hi here?)
-// 				if(index > playerIndex && isPlayerOn){
+// 				if(index > activeIndex && isPlayerOn){
 //
 // 					// if ((reversed && Services.PlayerBehaviour.progress < playerProgress) || (!reversed && Services.PlayerBehaviour.progress > playerProgress)) {
-// 					if(index - playerIndex == 1){
+// 					if(index - activeIndex == 1){
 // 						float difference = 1 - ((t - Services.PlayerBehaviour.progress) * curveFidelity);
 // 						line.SetColor (Color.Lerp (Color.black, Color.white, difference), index);
 // 					}else{
