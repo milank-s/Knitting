@@ -42,6 +42,7 @@ public class Spline : MonoBehaviour
 
 	public static Spline Select;
 	[Space(15)]
+	
 	public bool closed = false;
 	public bool locked = false;
 	[Space(15)]
@@ -487,16 +488,15 @@ public class Spline : MonoBehaviour
 				j = pointIndex + 1;
 			}
 
-			if (reactToPlayer && segmentIndex <= (pointIndex * curveFidelity) + (playerProgress * curveFidelity))
+			if ((reactToPlayer || isPlayerOn) && segmentIndex <= (pointIndex * curveFidelity) + (playerProgress * curveFidelity))
 			{
-				Color c = Color.Lerp(SplinePoints[pointIndex].color, Color.white, invertedDistance);
+				Color c = Color.Lerp(SplinePoints[pointIndex]._color, Color.white, invertedDistance);
 				line.SetColor(c, segmentIndex);
 			}
 			else
 			{
-
-				Color c = Color.Lerp(SplinePoints[pointIndex].color, SplinePoints[j].color, step);
-				c = Color.Lerp(c, Color.white, invertedDistance);
+				Color c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step);
+				//c = Color.Lerp(c, Color.white, invertedDistance);
 				line.SetColor(c, segmentIndex);
 								
 			}

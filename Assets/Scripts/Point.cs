@@ -113,8 +113,19 @@ public class Point : MonoBehaviour
 
 	public Color _color
 	{
-		get { return SR.color; }
+		get
+		{
+			if (visited)
+			{
+				return SR.color;
+			}
+			else
+			{
+				return Color.black;
+			}
+		}
 	}
+	
 	#endregion
 
 	void Awake()
@@ -174,7 +185,7 @@ public class Point : MonoBehaviour
 		}
 		
 		SR.enabled = true;
-		color = Color.black;
+		color = Color.white;
 		
 		switch(pointType){
 
@@ -300,20 +311,27 @@ public class Point : MonoBehaviour
 		 }
 		}
 
-		if (!hit) {
-			PointManager.AddPointHit (this);
-			if(hasPointcloud){
-				foreach(PointCloud p in pointClouds){
+		if (!hit)
+		{
+			PointManager.AddPointHit(this);
+			if (hasPointcloud)
+			{
+				foreach (PointCloud p in pointClouds)
+				{
 					p._pointshit.Add(this);
 					p.CheckCompleteness();
 				}
 			}
+
 			hit = true;
-			if(pointType != PointTypes.ghost){
-				GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
-				fx.transform.parent = transform;
-			}
 		}
+
+		if(pointType != PointTypes.ghost){
+				GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
+				Services.PlayerBehaviour.EmitParticles();
+				fx.transform.parent = transform;
+		}
+		
 	}
 
 	public void OnPointExit(){
@@ -328,6 +346,7 @@ public class Point : MonoBehaviour
 			break;
 
 			case PointTypes.normal:
+				
 				if(!hit){
 				}
 			break;
@@ -335,6 +354,7 @@ public class Point : MonoBehaviour
 
 		if(pointType != PointTypes.ghost){
 			Services.PlayerBehaviour.boost += Services.PlayerBehaviour.boostAmount * Services.PlayerBehaviour.boostTimer * Services.PlayerBehaviour.accuracyCoefficient;
+			
 		}
 		accretion += 0.1f;
 		/*

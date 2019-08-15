@@ -463,6 +463,12 @@ public class PlayerBehaviour: MonoBehaviour {
 		curPoint.proximity = 0;
 		flow += 0.25f;
 	}
+
+	public void EmitParticles()
+	{
+		ps.Emit(5);
+	}
+	
 	void Fly(){
 		pointDest = null;
 		l.positionCount = 0;
