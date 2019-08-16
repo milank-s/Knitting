@@ -26,6 +26,22 @@ public class Point : MonoBehaviour
 
 	#region
 
+	public bool canFly
+	{
+		get
+		{
+			if (pointType == PointTypes.fly && !used)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+
+	public bool used = false;
 	public bool visited = false;
 	public PointTypes pointType = PointTypes.normal;
 	[Space(10)]
@@ -255,8 +271,12 @@ public class Point : MonoBehaviour
 		}
 	}
 
-	public void ResetCooldown(){
-
+	public void Reinitialize()
+	{
+		used = false;
+		visited = false;
+		hit = false;
+		SetPointType();
 	}
 
 	public bool isUnlocked(){
@@ -343,6 +363,7 @@ public class Point : MonoBehaviour
 			break;
 
 			case PointTypes.fly:
+				
 			break;
 
 			case PointTypes.normal:
@@ -410,8 +431,15 @@ public class Point : MonoBehaviour
 		c = Mathf.Pow (c, 1);
 		
 //		SR.color = Color.Lerp (color, new Color (1,1,1, c), Time.deltaTime * 5);
-		SR.color = color + new Color(c, c, c, 1);
-		
+		if (!used)
+		{
+			SR.color = color + new Color(c, c, c, 1);
+		}
+		else
+		{
+			SR.color = Color.Lerp(SR.color, new Color(0, 0, 0, 0), Time.deltaTime);
+		}
+
 
 
 	}

@@ -178,9 +178,46 @@ public class PlayerBehaviour: MonoBehaviour {
 //		velocityLine2.texture = tex;
 //		velocityLine2.textureScale = newMat.mainTextureScale.x;
 	}
-	
-	
 
+
+
+	public IEnumerator Reset()
+	{
+
+		state = PlayerState.Animating;
+		float f = 0;
+		while (f < 1)
+		{
+			t.time = Mathf.Lerp(t.time, 0, Mathf.Pow(f, 4));
+			Spline.distortion = 1 - f;
+			f += Time.deltaTime/2;
+			yield return null;
+		}
+
+		//spawn a connect point
+		Point p = SplineUtil.CreatePoint(transform.position);
+		p.pointType = PointTypes.connect;
+		p.Initialize();
+		
+		Spline.distortion = 0;
+		if (traversedPoints.Count > 0)
+		{
+			curPoint = traversedPoints[0];
+			foreach (Point pi in traversedPoints)
+			{
+				pi.Reinitialize();
+			}
+		}
+
+		curSpline = null;
+		
+		traversedPoints.Clear();
+		traversedPoints.Add(curPoint);
+
+		state = PlayerState.Switching;
+
+		t.time = 100;
+	}
 	public void Step () {
 
 		Point.hitColorLerp = connectTime;
@@ -250,7 +287,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			transform.position = curPoint.Pos;
 			gravity = 0;
 //			curSpeed = 0;
-			transform.position = curPoint.Pos;
 			PlayerOnPoint();
 		}
 
@@ -444,7 +480,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	bool TryToFly(){
-		if (Mathf.Abs(flow) > flyingSpeedThreshold && curPoint.pointType == PointTypes.fly){
+		if (Mathf.Abs(flow) >= flyingSpeedThreshold && curPoint.canFly)
+		{
 			l.positionCount = 2;
 			l.SetPosition (0, cursorPos);
 			l.SetPosition (1, transform.position);
@@ -455,13 +492,20 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void Float()
 	{
+		curPoint.used = true;
+		
 		pointDest = null;
 		l.positionCount = 0;
 		state = PlayerState.Flying;
-		curSpline.OnSplineExit ();
+		if (curSpline != null)
+		{
+			curSpline.OnSplineExit();
+		}
+
 		curPoint.OnPointExit ();
 		curPoint.proximity = 0;
-		flow += 0.25f;
+		flow += 1f;
+		Debug.Log("this got called right?");
 	}
 
 	public void EmitParticles()
@@ -728,19 +772,62 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if (Vector3.Distance(transform.position, pointDest.Pos) < 0.025f)
 			{
-				curPoint = pointDest;
-				state = PlayerState.Switching;
-				curPoint.proximity = 1;
-				curPoint.velocity = cursorDir * Mathf.Abs(flow);
+				EnterPoint(curPoint);
 			}
 		}
 		else
 		{
-			flow -= Time.deltaTime/2;
-			Vector3 inertia = cursorDir * flow;
-			transform.position += inertia * Time.deltaTime;
+			if (flow > 0)
+			{
+				flow -= Time.deltaTime;
+				Vector3 inertia = cursorDir * flow;
+				transform.position += inertia * Time.deltaTime;
+			}
+			else
+			{
+				StartCoroutine(Reset());
+			}
 		}
 	
+	}
+
+	public void EnterPoint(Point previousPoint)
+	{
+		curPoint = pointDest;
+		state = PlayerState.Switching;
+		curPoint.proximity = 1;
+		curPoint.OnPointEnter ();
+		
+		PlayAttack(curPoint, pointDest);
+			
+		curPoint.velocity = cursorDir * Mathf.Abs(flow);
+		
+		foreach (Point p in curPoint._neighbours)
+		{
+			p.velocity = Vector3.Lerp((curPoint.Pos - p.Pos).normalized, curPoint.velocity.normalized, 0.5f) * curPoint.velocity.magnitude / 3f;
+		}
+
+		if (previousPoint == null)
+		{
+			traversedPoints.Add (curPoint);
+		}else if (previousPoint != curPoint) {
+			traversedPoints.Add (curPoint);
+			foreach (Spline s in previousPoint._connectedSplines)
+			{
+				s.reactToPlayer = false;
+			}
+				
+			lastPoint = previousPoint;
+				
+		}
+		
+			
+		//checkpoint shit
+		if(curPoint.pointType == PointTypes.stop){
+//				traversedPoints.Clear();
+//				traversedPoints.Add(curPoint);
+		}
+
 	}
 	
 	void TrackFreeMovement(){
@@ -1059,39 +1146,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			}
 
-			curPoint.proximity = 1;
-			curPoint.velocity = cursorDir * curSpeed;
-
-			foreach (Point p in curPoint._neighbours)
-			{
-				p.velocity = Vector3.Lerp((curPoint.Pos - p.Pos).normalized, curPoint.velocity.normalized, 0.5f) * curPoint.velocity.magnitude / 3f;
-			}
-			
-//			if (curPoint.IsOffCooldown ()) {
-				curPoint.OnPointEnter ();
-				// PlayAttack(PreviousPoint, curPoint);
-//			}
-
-			if (PreviousPoint != curPoint) {
-				traversedPoints.Add (curPoint);
-				foreach (Spline s in PreviousPoint._connectedSplines)
-				{
-					s.reactToPlayer = false;
-				}
-				
-				lastPoint = PreviousPoint;
-				
-			}
+			EnterPoint(PreviousPoint);
 	
-			PlayAttack(curPoint, pointDest);
-			
-			
-			if(curPoint.pointType == PointTypes.stop){
-//				traversedPoints.Clear();
-//				traversedPoints.Add(curPoint);
-			}
-
-			state = PlayerState.Switching;
 			PlayerOnPoint();
 
 		}
