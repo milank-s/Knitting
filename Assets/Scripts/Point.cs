@@ -276,7 +276,20 @@ public class Point : MonoBehaviour
 		used = false;
 		visited = false;
 		hit = false;
+		StartCoroutine(LightUp());
 		SetPointType();
+		
+	}
+
+	IEnumerator LightUp()
+	{
+		float f = 0;
+		while (f < 1)
+		{
+			SR.color = Color.Lerp(new Color(0,0,0,0), color, f);
+			f += Time.deltaTime;
+			yield return null;
+		}
 	}
 
 	public bool isUnlocked(){

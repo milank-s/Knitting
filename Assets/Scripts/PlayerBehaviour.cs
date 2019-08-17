@@ -148,7 +148,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		traversedPoints.Add (curPoint);
 		curPoint.OnPointEnter ();
-		
+		t.Clear();
 		t.time = 100;
 
 //		Material newMat;
@@ -184,39 +184,53 @@ public class PlayerBehaviour: MonoBehaviour {
 	public IEnumerator Reset()
 	{
 
+
+		Vector3[] positions = new Vector3[t.positionCount];
+		t.GetPositions(positions);
 		state = PlayerState.Animating;
 		float f = 0;
-		while (f < 1)
-		{
-			t.time = Mathf.Lerp(t.time, 0, Mathf.Pow(f, 4));
-			Spline.distortion = 1 - f;
-			f += Time.deltaTime/2;
-			yield return null;
-		}
-
-		//spawn a connect point
+		float lerpSpeed = 1;
+		float distance;
+			
 		Point p = SplineUtil.CreatePoint(transform.position);
 		p.pointType = PointTypes.connect;
 		p.Initialize();
 		
-		Spline.distortion = 0;
 		if (traversedPoints.Count > 0)
 		{
-			curPoint = traversedPoints[0];
+			
 			foreach (Point pi in traversedPoints)
 			{
 				pi.Reinitialize();
 			}
 		}
-
-		curSpline = null;
 		
-		traversedPoints.Clear();
-		traversedPoints.Add(curPoint);
+		for (int i = positions.Length -1; i >= 0; i--)
+		{
+			float temp = 0;
+			Vector3 tempPos = transform.position;
+			distance = Vector3.Distance(tempPos, positions[i]);
+//			while (temp < 1)
+//			{
+//				transform.position = Vector3.Lerp(tempPos, positions[i], temp);
+				transform.position = positions[i];
+				temp += (Time.deltaTime * lerpSpeed)/distance;
+				lerpSpeed += Time.deltaTime/2;
+				f = Mathf.Clamp01(lerpSpeed);
+				Spline.distortion = 1 - f;
+				//play drone music or whatever
+				yield return null;
+//			}
 
+			//bake the mesh out after this and copy it before clearing the trail renderer
+		}
+	
+		Spline.distortion = 0;
+		
+		
+		curSpline = null;
+		Initialize();
 		state = PlayerState.Switching;
-
-		t.time = 100;
 	}
 	public void Step () {
 
@@ -761,7 +775,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		Point raycastPoint = SplineUtil.RaycastFromCamera(cursorPos, 1f);
 		
-		if (raycastPoint != null && raycastPoint != curPoint && raycastPoint.pointType != PointTypes.ghost)
+		if (raycastPoint != null && raycastPoint != curPoint && raycastPoint.pointType != PointTypes.ghost && !raycastPoint.used)
 		{
 			pointDest = raycastPoint;
 		}
