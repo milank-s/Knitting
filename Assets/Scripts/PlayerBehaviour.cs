@@ -519,14 +519,14 @@ public class PlayerBehaviour: MonoBehaviour {
 		curPoint.OnPointExit ();
 		curPoint.proximity = 0;
 		flow += 1f;
-		Debug.Log("this got called right?");
+
 	}
 
 	public void EmitParticles()
 	{
 		ps.Emit(5);
 	}
-	
+	 
 	void Fly(){
 		pointDest = null;
 		l.positionCount = 0;
@@ -823,9 +823,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (previousPoint == null)
 		{
-			traversedPoints.Add (curPoint);
 		}else if (previousPoint != curPoint) {
-			traversedPoints.Add (curPoint);
+			traversedPoints.Add (previousPoint);
 			foreach (Spline s in previousPoint._connectedSplines)
 			{
 				s.reactToPlayer = false;
@@ -1143,22 +1142,22 @@ public class PlayerBehaviour: MonoBehaviour {
 			
 			curPoint.proximity = 0;
 			
-			if (progress > 1) {
+//			if (progress > 1) {
+//
+//				progress = 0;
+//
+//				if (curSpline.Selected == curSpline.EndPoint && curSpline.closed) {
+//					curPoint = curSpline.StartPoint;
+//				} else {
+//					curPoint = curSpline.SplinePoints [curSpline.GetPointIndex(curSpline.Selected) + 1];
+//				}
+//
+//			} else if (progress < 0) {
+//
+//				progress = 0;
+//				curPoint = curSpline.Selected;
 
-				progress = 0;
-
-				if (curSpline.Selected == curSpline.EndPoint && curSpline.closed) {
-					curPoint = curSpline.StartPoint;
-				} else {
-					curPoint = curSpline.SplinePoints [curSpline.GetPointIndex(curSpline.Selected) + 1];
-				}
-
-			} else if (progress < 0) {
-
-				progress = 0;
-				curPoint = curSpline.Selected;
-
-			}
+//			}
 
 			EnterPoint(PreviousPoint);
 	
