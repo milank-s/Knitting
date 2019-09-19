@@ -234,15 +234,7 @@ public class Spline : MonoBehaviour
 //		float height = newMat.mainTextureScale.y;
 
 		line = new VectorLine (name, line.points3, 2, LineType.Continuous, Vectrosity.Joins.Weld);
-		if (MapEditor.editing)
-		{
-			line.color = Color.white;
-		}
-		else
-		{
-			line.color = Color.black;
-		}
-
+		line.color = Color.white;
 		line.smoothWidth = true;
 		line.smoothColor = true;
 		line.points3 = new List<Vector3> (SplinePoints.Count * curveFidelity);
@@ -315,10 +307,10 @@ public class Spline : MonoBehaviour
 				float step = (float) k / (float) (curveFidelity);
 
 				
-					DrawLine(i, index, step, i);
+//					DrawLine(i, index, step, i);
 					Vector3 v = Vector3.zero;
 					v = GetPointAtIndex(i, step);
-					
+					SetLinePoint(v, index);
 			}
 		}
 
@@ -330,7 +322,7 @@ public class Spline : MonoBehaviour
 
 		if (line.GetSegmentNumber() != 0)
 		{
-			drawIndex = (drawIndex + 1) % line.GetSegmentNumber();
+			//drawIndex = (drawIndex + 1) % line.GetSegmentNumber();
 		}
 
 		int playerIndex = GetPlayerLineSegment(pointIndex);
@@ -425,9 +417,6 @@ public class Spline : MonoBehaviour
 			indexDiff = Mathf.Abs(activeIndex - segmentIndex);
 		}
 
-
-
-
 		//find the distance. 1 = one curve
 		distanceFromPlayer = (float) indexDiff / (float) curveFidelity;
 
@@ -490,6 +479,7 @@ public class Spline : MonoBehaviour
 
 			if ((reactToPlayer || isPlayerOn) && segmentIndex <= (pointIndex * curveFidelity) + (playerProgress * curveFidelity))
 			{
+				
 				Color c = Color.Lerp(SplinePoints[pointIndex]._color, Color.white, invertedDistance);
 				line.SetColor(c, segmentIndex);
 			}

@@ -100,6 +100,7 @@ public class Point : MonoBehaviour
 	private FadeSprite activationSprite;
 	private SpriteRenderer SR;
 
+	[HideInInspector] public int timesHit = 0;
 	public bool isSelect
 	{
 		get
@@ -182,7 +183,7 @@ public class Point : MonoBehaviour
 
 		text = gameObject.name;
 
-		
+		timesHit = 0;
 		SetPointType();
 		
 		if (MapEditor.editing)
@@ -276,6 +277,7 @@ public class Point : MonoBehaviour
 		used = false;
 		visited = false;
 		hit = false;
+		timesHit = 0;
 		StartCoroutine(LightUp());
 		SetPointType();
 		
@@ -324,7 +326,7 @@ public class Point : MonoBehaviour
 
 	public void OnPointEnter(){
 		color = Color.white/2;
-
+		timesHit++;
 //		stiffness = Mathf.Clamp(stiffness -100, 100, 10000);
 //		damping = Mathf.Clamp(damping - 100, 100, 10000);
 		
@@ -341,22 +343,13 @@ public class Point : MonoBehaviour
 		if(hasPointcloud){
 			foreach(PointCloud p in pointClouds){
 			p.isOn = true;
-			p.CheckCompleteness();
+			p.TryToUnlock();
 		 }
 		}
-
+		
 		if (!hit)
 		{
 			PointManager.AddPointHit(this);
-			if (hasPointcloud)
-			{
-				foreach (PointCloud p in pointClouds)
-				{
-					p._pointshit.Add(this);
-					p.CheckCompleteness();
-				}
-			}
-
 			hit = true;
 		}
 
@@ -370,6 +363,8 @@ public class Point : MonoBehaviour
 
 	public void OnPointExit(){
 
+		
+		
 		switch(pointType){
 			case PointTypes.stop:
 //				Services.PlayerBehaviour.boost += 0.5f;
@@ -377,12 +372,14 @@ public class Point : MonoBehaviour
 			break;
 
 			case PointTypes.fly:
-				
+				Services.Prefabs.particleEffect.transform.position = Pos;
+				Services.Prefabs.particleEffect.Emit(50);
 			break;
 
 			case PointTypes.normal:
 				
 				if(!hit){
+					
 				}
 			break;
 		}

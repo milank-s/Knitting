@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 	 using UnityEditorInternal;
 	 using UnityEngine;
-using UnityEngine.UI;
+	 using UnityEngine.Experimental.PlayerLoop;
+	 using UnityEngine.UI;
 	 using UnityEngine.SceneManagement;
 
 public class Main : MonoBehaviour {
@@ -87,15 +88,21 @@ public class Main : MonoBehaviour {
 				{
 					Services.PlayerBehaviour.Step();
 				}
-
-			}
-
-			foreach (Spline s in Spline.Splines)
-			{
-
-				if (!s.locked && !s.reactToPlayer)
+				
+				foreach (Spline s in Spline.Splines)
 				{
-					s.DrawSpline();
+
+					if (!s.locked && !s.reactToPlayer)
+					{
+						s.DrawSpline();
+					}
+				}
+			}
+			else
+			{
+				foreach (Spline s in Spline.Splines)
+				{
+					s.DrawSplineOverride();
 				}
 			}
 		}
@@ -175,5 +182,10 @@ public class Main : MonoBehaviour {
 			t += Time.deltaTime;
 			yield return null;
 		}
+	}
+
+	void Init()
+	{
+		
 	}
 }

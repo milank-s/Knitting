@@ -8,6 +8,7 @@ public class PrefabManager : MonoBehaviour {
 	public GameObject soundEffectObject;
 	public GameObject spawnedText;
 	public GameObject circleEffect;
+	public ParticleSystem particleEffect;
 	public GameObject point;
 	public GameObject spline;
 	public GameObject splineTurtle;

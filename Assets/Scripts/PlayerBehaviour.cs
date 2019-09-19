@@ -95,7 +95,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	public AudioSource brakingSound;
 	private PlayerSounds sounds;
 	private AudioSource sound;
-	private TrailRenderer t;
+	public TrailRenderer t;
+	public TrailRenderer flyingTrail;
 	private ParticleSystem ps;
 	private LineRenderer l;
 	private Image cursorSprite;
@@ -149,7 +150,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversedPoints.Add (curPoint);
 		curPoint.OnPointEnter ();
 		t.Clear();
-		t.time = 100;
 
 //		Material newMat;
 //		newMat = Services.Prefabs.lines[3];
@@ -184,9 +184,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	public IEnumerator Reset()
 	{
 
-
-		Vector3[] positions = new Vector3[t.positionCount];
-		t.GetPositions(positions);
+		
+		Vector3[] positions = new Vector3[flyingTrail.positionCount];
+		flyingTrail.GetPositions(positions);
 		state = PlayerState.Animating;
 		float f = 0;
 		float lerpSpeed = 1;
@@ -195,15 +195,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		Point p = SplineUtil.CreatePoint(transform.position);
 		p.pointType = PointTypes.connect;
 		p.Initialize();
-		
-		if (traversedPoints.Count > 0)
-		{
-			
-			foreach (Point pi in traversedPoints)
-			{
-				pi.Reinitialize();
-			}
-		}
 		
 		for (int i = positions.Length -1; i >= 0; i--)
 		{
@@ -224,13 +215,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			//bake the mesh out after this and copy it before clearing the trail renderer
 		}
-	
-		Spline.distortion = 0;
-		
-		
-		curSpline = null;
-		Initialize();
+
+		flyingTrail.time = 0;
+		flyingTrail.Clear();
 		state = PlayerState.Switching;
+		StartCoroutine(Unwind());
 	}
 	public void Step () {
 
@@ -358,18 +347,15 @@ public class PlayerBehaviour: MonoBehaviour {
 				canTraverse = true;
 
 			}
-			else if (!joystickLocked && (!Input.GetButton("Button1")|| boostTimer > 1))
+			else if (!joystickLocked && (boostTimer > 1 || (!Input.GetButton("Button1") && curPoint.pointType != PointTypes.stop) || Input.GetButtonUp("Button1")))
 			{
 
 				if (curPoint.locked)
 				{
-					canTraverse = true;
 					curPoint.locked = false;
 				}
-				else if (!curPoint.locked)
-				{
-					canTraverse = true;
-				}
+				
+				canTraverse = true;
 			}
 			else
 			{
@@ -507,7 +493,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	void Float()
 	{
 		curPoint.used = true;
-		
 		pointDest = null;
 		l.positionCount = 0;
 		state = PlayerState.Flying;
@@ -518,8 +503,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		curPoint.OnPointExit ();
 		curPoint.proximity = 0;
-		flow += 1f;
-
+		flow += 0.1f;
+		flyingTrail.Clear();
+		flyingTrail.time = 100;
+		
 	}
 
 	public void EmitParticles()
@@ -793,7 +780,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			if (flow > 0)
 			{
-				flow -= Time.deltaTime;
+				flow -= Time.deltaTime/3;
 				Vector3 inertia = cursorDir * flow;
 				transform.position += inertia * Time.deltaTime;
 			}
@@ -807,10 +794,24 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void EnterPoint(Point previousPoint)
 	{
+		
 		curPoint = pointDest;
 		state = PlayerState.Switching;
 		curPoint.proximity = 1;
 		curPoint.OnPointEnter ();
+		
+		if (previousPoint == null)
+		{
+		}else if (previousPoint != curPoint) {
+			traversedPoints.Add (curPoint);
+			foreach (Spline s in previousPoint._connectedSplines)
+			{
+				s.reactToPlayer = false;
+			}
+				
+			lastPoint = previousPoint;
+				
+		}
 		
 		PlayAttack(curPoint, pointDest);
 			
@@ -821,18 +822,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			p.velocity = Vector3.Lerp((curPoint.Pos - p.Pos).normalized, curPoint.velocity.normalized, 0.5f) * curPoint.velocity.magnitude / 3f;
 		}
 
-		if (previousPoint == null)
-		{
-		}else if (previousPoint != curPoint) {
-			traversedPoints.Add (previousPoint);
-			foreach (Spline s in previousPoint._connectedSplines)
-			{
-				s.reactToPlayer = false;
-			}
-				
-			lastPoint = previousPoint;
-				
-		}
 		
 			
 		//checkpoint shit
@@ -1054,12 +1043,12 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		Point nextPoint =  traversedPoints [pIndex];
 
-		if (state == PlayerState.Switching) {
-			pIndex--;
-		} else {
+		if (state != PlayerState.Switching) {
+		
 			moveToLastPoint = true;
 		}
 
+		pIndex--;
 
 		//add case for stopping in middle of line
 		//figure out why flow is always non-zero on line.
@@ -1090,37 +1079,43 @@ public class PlayerBehaviour: MonoBehaviour {
 				yield return null;
 			}
 			curSpline.draw = false;
-			pIndex--;
+			
 		}
 
-		for(int i = pIndex; i >= 0; i--) {
+		for (int i = pIndex; i >= 0; i--)
+		{
 
 			curPoint = nextPoint;
-			nextPoint = traversedPoints [i];
-			curSpline = curPoint.GetConnectingSpline (nextPoint);
-			SetPlayerAtStart (curSpline, nextPoint);
+			nextPoint = traversedPoints[i];
+			curSpline = curPoint.GetConnectingSpline(nextPoint);
+			SetPlayerAtStart(curSpline, nextPoint);
 			moving = true;
 
-			while(moving){
+			while (moving)
+			{
 				t += Time.deltaTime;
 				t = Mathf.Clamp(t, 0f, 9f);
 				flow = t;
-				if (goingForward) {
+				if (goingForward)
+				{
 					progress += Time.deltaTime * t / curSpline.distance;
-				} else {
+				}
+				else
+				{
 					progress -= Time.deltaTime * t / curSpline.distance;
 				}
 
-				transform.position = curSpline.GetPoint (progress);
+				transform.position = curSpline.GetPoint(progress);
 
-				if (progress > 1 || progress < 0) {
-					transform.position = curSpline.GetPoint (Mathf.Clamp01(progress));
+				if (progress > 1 || progress < 0)
+				{
+					transform.position = curSpline.GetPoint(Mathf.Clamp01(progress));
+					traversedPoints[i].Reinitialize();
 					moving = false;
 				}
+
 				yield return null;
 			}
-
-
 		}
 
 		flow = 0;
@@ -1129,6 +1124,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversedPoints.Clear ();
 		traversedPoints.Add (curPoint);
 		state = PlayerState.Switching;
+		Initialize();
 	}
 
 		void CheckProgress(){
@@ -1386,7 +1382,15 @@ public class PlayerBehaviour: MonoBehaviour {
 		cursorPos = transform.position + (Vector3)cursorDir / (Services.mainCam.fieldOfView * 0.1f);
 //		Vector3 screenPos = ((Vector3)cursorDir/10f + Vector3.one/2f);
 		Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
-		screenPos += (Vector3) cursorDir / 25f;
+		if (state != PlayerState.Switching)
+		{
+			screenPos += (Vector3) cursorDir / 25f;
+		}
+		else
+		{
+			screenPos += (Vector3) cursorDir /5f;
+		}
+
 		screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Mathf.Abs(transform.position.z - Services.mainCam.transform.position.z));
 		cursorPos = Services.mainCam.ViewportToWorldPoint(screenPos);
 		cursor.transform.position = cursorPos;

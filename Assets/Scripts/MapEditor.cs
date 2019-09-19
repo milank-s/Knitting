@@ -629,11 +629,6 @@ public class MapEditor : MonoBehaviour
                         StartCoroutine(MarqueeSelect(worldPos));
                     }
                 }
-
-                foreach (Spline s in Spline.Splines)
-                {
-                    s.DrawSplineOverride();
-                }
                 
                 if (pointSelected)
                 {

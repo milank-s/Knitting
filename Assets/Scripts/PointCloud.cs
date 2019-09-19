@@ -4,11 +4,16 @@ using UnityEngine;
 
 public class PointCloud : MonoBehaviour {
 
+	public enum UnlockType{laps, speed}
+
+	public UnlockType unlockMethod;
 	[HideInInspector]
 	public List<Point> _pointshit;
 	[HideInInspector]
 	public List<Point> _points;
 	public Spline unlock;
+	public int lapsRequired = 1;
+	public float speedRequired = 1;
 	[Space(10)]
 	[Header("Point Physics")]
 	public bool isKinematic;
@@ -30,7 +35,7 @@ public class PointCloud : MonoBehaviour {
 	private string[] words;
 	private int wordIndex;
 	private float fade;
-
+	private bool hasUnlock;
 	public string GetWord (){
 		wordIndex++;
 		return words[(wordIndex-1) % (words.Length)];
@@ -39,6 +44,7 @@ public class PointCloud : MonoBehaviour {
 	public void Start(){
 		if(unlock){
 			unlock.locked = true;
+			hasUnlock = true;
 		}
 
 		if(image != null){
@@ -65,28 +71,73 @@ foreach(Spline s in GetComponents<Spline>()){
 	}
 }
 
-	public void CheckCompleteness(){
+	public void CheckCompleteness()
+	{
 
-		if(_pointshit.Count >= _points.Count){
+		bool isDone = true;
+		foreach (Point p in _points)
+		{
+			if (p.timesHit < lapsRequired)
+			{
+				isDone = false;
+				break;
+			}
+		}
+
+		if (isDone)
+		{
 			isComplete = true;
-			if(unlock != null){
+			if (unlock != null)
+			{
 				unlock.locked = false;
 			}
 		}
 	}
 
+	public void TryToUnlock()
+	{
+		if (hasUnlock && !isComplete)
+		{
+			switch (unlockMethod)
+			{
+			case UnlockType.laps:
+				CheckCompleteness();
+				break;
+			
+			case UnlockType.speed:
+				CheckSpeed();
+				break;
+			}
+		}
+	}
+	public void CheckSpeed()
+	{
+		if (Services.PlayerBehaviour.curSpeed > speedRequired)
+		{
+			if (unlock != null)
+			{
+				unlock.locked = false;
+			}
+
+			isComplete = true;
+		}
+	}
 	void Update(){
 		if (isOn) {
+			if(title != null){
+				title.color = Color.Lerp(title.color, new Color (1, 1, 1, 1), Time.deltaTime);
+			}
 			fade = Mathf.Clamp(fade + Time.deltaTime/20, 0, 0.1f);
 		} else {
+			if(title != null){
+				title.color = Color.Lerp(title.color, new Color (1, 1, 1, 0), Time.deltaTime);
+			}
 			fade = Mathf.Clamp01(fade - Time.deltaTime/10);
 		}
 
-		if(image != null){
+		if(image != null && isComplete){
 			image.color = new Color (1, 1, 1, fade);
 		}
-		if(title != null && isComplete){
-			title.color = Color.Lerp(title.color, new Color (1, 1, 1, 1), Time.deltaTime);
-		}
+		
 	}
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class FadeTextOnPoint: MonoBehaviour {
 
 	bool fading = false;
-	public float alpha = 1;
+	public float alpha;
 	TextMesh t;
 	public Point p;
 	public bool startOn;
@@ -15,13 +15,16 @@ public class FadeTextOnPoint: MonoBehaviour {
 		{
 			alpha = 1;
 		}
+		else
+		{
+			alpha = 0;
+		}
 	}
 	// Update is called once per frame
 	void Update () {
 		if(p != null)
 		{
-			float proximity = p.proximity;
-			t.color = Color.Lerp(t.color, p.color * 5, Time.deltaTime);
+			t.color = new Color(1, 1, 1, p.proximity);
 		}else if(!startOn){
 			alpha = Mathf.Clamp01(alpha - Time.deltaTime/3);
 			t.color = new Color(1,1,1, alpha);
