@@ -15,6 +15,7 @@ public class PrefabManager : MonoBehaviour {
 	public GameObject joint;
 	public Sprite[] symbols;
 	public Material[] lines;
+	public FXManager fx;
 	public Sprite[] pointSprites;
 
 	void Awake(){

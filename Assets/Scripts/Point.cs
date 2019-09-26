@@ -324,7 +324,23 @@ public class Point : MonoBehaviour
 		_neighbours.Remove (p);
 	}
 
-	public void OnPointEnter(){
+	public void TurnOff()
+	{
+		
+	}
+
+	public void TurnOn()
+	{
+
+		if (pointType != PointTypes.ghost)
+		{
+			Services.Prefabs.fx.PlayAnimationAtPosition(FXManager.FXType.burst, transform);
+		}
+	}
+	
+	public void OnPointEnter()
+	{
+		
 		color = Color.white/2;
 		timesHit++;
 //		stiffness = Mathf.Clamp(stiffness -100, 100, 10000);
@@ -354,9 +370,12 @@ public class Point : MonoBehaviour
 		}
 
 		if(pointType != PointTypes.ghost){
+			
 				GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
 				Services.PlayerBehaviour.EmitParticles();
 				fx.transform.parent = transform;
+				
+				Services.Prefabs.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, transform);
 		}
 		
 	}

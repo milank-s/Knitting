@@ -811,6 +811,10 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 			lastPoint = previousPoint;
 				
+			foreach (Spline s in curPoint._connectedSplines)
+			{
+				s.reactToPlayer = true;
+			}
 		}
 		
 		PlayAttack(curPoint, pointDest);
@@ -820,6 +824,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		foreach (Point p in curPoint._neighbours)
 		{
 			p.velocity = Vector3.Lerp((curPoint.Pos - p.Pos).normalized, curPoint.velocity.normalized, 0.5f) * curPoint.velocity.magnitude / 3f;
+			p.TurnOn();
 		}
 
 		
