@@ -40,6 +40,12 @@ public class Spline : MonoBehaviour
 	[HideInInspector]
 	public VectorLine line;
 
+	public AudioClip SoundFile;
+	public float accuracyCoefficient;
+	public float maxSpeed;
+	public float boost;
+	public float acceleration;
+	
 	public static Spline Select;
 	[Space(15)]
 	
@@ -208,6 +214,8 @@ public class Spline : MonoBehaviour
 			}
 
 			reactToPlayer = false;
+			
+			
 	}
 
 	public void ChangeMaterial(int i)
@@ -277,6 +285,10 @@ public class Spline : MonoBehaviour
 				}
 			}
 		}
+		
+		CalculateDistance ();
+		maxSpeed = distance;
+		
 	}
 
 	void SetLinePoint(Vector3 v, int index){

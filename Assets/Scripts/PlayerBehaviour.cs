@@ -973,7 +973,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		//flow -= Vector3.Dot(Vector3.up, curSpline.GetDirection(progress))/100f;
 		
 		
-		accuracyCoefficient = Mathf.Pow(Mathf.Abs(accuracy), 2);
+		accuracyCoefficient = Mathf.Pow(Mathf.Abs(accuracy), accuracyCoefficient);
 		if (accuracy > 0.5f && !joystickLocked) {
 
 			if(flow < 0){
@@ -984,8 +984,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				//
 //			maxSpeed = curSpline.distance * 2;
 
-			if(Mathf.Abs(flow) < maxSpeed){
-			flow += Mathf.Sign (accuracy) * accuracyCoefficient * acceleration * Time.deltaTime * cursorDir.magnitude;
+			if(Mathf.Abs(flow) < curSpline.distance){
+			flow += accuracy * acceleration * Time.deltaTime * cursorDir.magnitude;
 			
 			}
 
@@ -999,17 +999,17 @@ public class PlayerBehaviour: MonoBehaviour {
 		if ((accuracy < 0.5f) || joystickLocked) {
 
 			if (flow > 0) {
-				// flow -= decay * (0.5f - accuracy/2f) * Time.deltaTime;
+				flow -= (0.5f - accuracy/2f) * Time.deltaTime;
 				if (flow < 0)
 					flow = 0;
 			}
 		}
 
-		float adjustedAccuracy = goingForward ? Mathf.Clamp(accuracy, 0.1f, 1f) : -Mathf.Clamp(accuracy, -1, -0.5f);
+		float adjustedAccuracy = goingForward ? 1 - accuracy : -Mathf.Clamp(accuracy, -1, -0.5f);
 		// (adjustedAccuracy + 0.1f)
 		if (!joystickLocked)
 		{
-			curSpeed = (((flow + boost + speed) * adjustedAccuracy)) * cursorDir.magnitude;
+			curSpeed = Mathf.Clamp01(flow + boost + speed - adjustedAccuracy) * cursorDir.magnitude;
 			progress += (curSpeed * Time.deltaTime) / curSpline.distance;
 		}
 
