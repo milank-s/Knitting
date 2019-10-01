@@ -286,8 +286,6 @@ public class Spline : MonoBehaviour
 			}
 		}
 		
-		CalculateDistance ();
-		maxSpeed = distance;
 		
 	}
 
@@ -348,7 +346,7 @@ public class Spline : MonoBehaviour
 
 						Vector3 v = Vector3.zero;
 						
-						if (reactToPlayer)
+						if (reactToPlayer || isPlayerOn)
 						{
 							DrawLine(i, index, step, playerIndex);
 						}
@@ -489,11 +487,18 @@ public class Spline : MonoBehaviour
 				j = pointIndex + 1;
 			}
 
-			if ((reactToPlayer || isPlayerOn) && segmentIndex <= (pointIndex * curveFidelity) + (playerProgress * curveFidelity))
+			if ((reactToPlayer || isPlayerOn))
 			{
-				
-				Color c = Color.Lerp(SplinePoints[pointIndex]._color, Color.white, invertedDistance);
-				line.SetColor(c, segmentIndex);
+				if (segmentIndex <= activeIndex)
+				{
+					Color c = Color.white;
+					line.SetColor(c, segmentIndex);
+				}
+				else
+				{
+					Color c = Color.Lerp(SplinePoints[pointIndex]._color, Color.white, invertedDistance);
+					line.SetColor(c, segmentIndex);
+				}
 			}
 			else
 			{
@@ -1076,6 +1081,7 @@ public class Spline : MonoBehaviour
 		output.WriteAttributeString ("int", curveFidelity.ToString ());
 		output.WriteEndElement ();
 		output.Flush ();
+		
 
 		output.WriteEndElement ();
 		output.Flush ();

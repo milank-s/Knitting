@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using Vectrosity;
 
 public enum PlayerState{Traversing, Switching, Flying, Animating};
@@ -97,7 +98,10 @@ public class PlayerBehaviour: MonoBehaviour {
 	private AudioSource sound;
 	public TrailRenderer t;
 	public TrailRenderer flyingTrail;
-	private ParticleSystem ps;
+	[SerializeField] ParticleSystem sparks;
+	[SerializeField] ParticleSystem flyingParticles;
+	[SerializeField] ParticleSystem hitParticles;
+	[SerializeField] ParticleSystem speedParticles;
 	private LineRenderer l;
 	private Image cursorSprite;
 	private SpriteRenderer playerSprite;
@@ -131,7 +135,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		t = GetComponentInChildren<TrailRenderer> ();
 
 		inventory = new List<Point>();
-		ps = GetComponent<ParticleSystem> ();
 		newPointList = new List<Transform> ();
 
 		int i = 0;
@@ -183,11 +186,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public IEnumerator Reset()
 	{
-
-		
+		state = PlayerState.Animating;
 		Vector3[] positions = new Vector3[flyingTrail.positionCount];
 		flyingTrail.GetPositions(positions);
-		state = PlayerState.Animating;
 		float f = 0;
 		float lerpSpeed = 1;
 		float distance;
@@ -218,6 +219,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		flyingTrail.time = 0;
 		flyingTrail.Clear();
+		
 		state = PlayerState.Switching;
 		StartCoroutine(Unwind());
 	}
@@ -305,7 +307,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				{
 //					s.reactToPlayer = true;
 //					s.DrawSpline(true, s.SplinePoints.IndexOf(curPoint), Mathf.Clamp(s.SplinePoints.IndexOf(curPoint) + 1, 0, s.SplinePoints.Count + (s.closed ? 0 : 0)));
-//					s.DrawSpline( s.SplinePoints.IndexOf(curPoint));
+					s.DrawSpline( s.SplinePoints.IndexOf(curPoint));
 				}
 			}
 			
@@ -314,7 +316,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					if(!s.locked)
 					{
 //						s.reactToPlayer = true;
-//						s.DrawSpline(s.SplinePoints.IndexOf(pointDest));
+						s.DrawSpline(s.SplinePoints.IndexOf(pointDest));
 					}
 				}
 			}
@@ -324,7 +326,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			
 			if (traversedPoints.Count >= 2 && Input.GetButton("Button2")) {
 				// && Mathf.Abs (flow) <= 0)
-				StartCoroutine (Unwind());
+				SwitchState(PlayerState.Animating);
 			}
 		}
 
@@ -367,30 +369,38 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 		else {
 			// NO CONNECTING FOR NOW
-				
 
-				if(CanCreatePoint()){
-					if(Input.GetButtonUp("Button1") && pointDest.pointType == PointTypes.connect){
-						CreatePoint();
-						canTraverse = true;
-						
-					}else if (pointDest.pointType == PointTypes.connect){
-						l.positionCount = 2;
-		  			cursorOnPoint.positionCount = 2;
-						l.SetPosition (0, pointDest.Pos);
-						l.SetPosition (1, transform.position);
-						cursorOnPoint.SetPosition (0, pointDest.Pos);
-						cursorOnPoint.SetPosition (1, cursorPos);
-						canTraverse = false;
-						cursorSprite.sprite = canConnectSprite;
+
+			if (CanCreatePoint())
+			{
+				if (Input.GetButtonUp("Button1") && pointDest.pointType == PointTypes.connect)
+				{
+					CreatePoint();
+					canTraverse = true;
+
+				}
+				else if (pointDest.pointType == PointTypes.connect)
+				{
+					l.positionCount = 2;
+					cursorOnPoint.positionCount = 2;
+					l.SetPosition(0, pointDest.Pos);
+					l.SetPosition(1, transform.position);
+					cursorOnPoint.SetPosition(0, pointDest.Pos);
+					cursorOnPoint.SetPosition(1, cursorPos);
+					canTraverse = false;
+					cursorSprite.sprite = canConnectSprite;
+				}
+			}
+			else if (TryToFly())
+				{
+					cursorSprite.sprite = canFlySprite;
+					if (Input.GetButton("Button1") || boostTimer >= 1)
+					{
+						SwitchState(PlayerState.Flying);
+						return;
 					}
-					}else if(TryToFly()){
-						cursorSprite.sprite = canFlySprite;
-						if(Input.GetButton("Button1") || boostTimer >= 1){
-							Float();
-							return;
-						}
-				 }else{
+				}
+				else{
 					l.positionCount = 0;
 		 			cursorOnPoint.positionCount = 0;
 		 			cursorSprite.sprite = brakeSprite;
@@ -416,9 +426,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if(canTraverse){
 			// pointInfo.GetComponent<Text>().text = "";
-			l.positionCount = 0;
-			LeavePoint();
-			boostTimer = 0;
+			
+			SwitchState(PlayerState.Traversing);
+			
 		}else{
 			
 			//Staying on a point is too punishing.
@@ -490,28 +500,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		return false;
 	}
 
-	void Float()
-	{
-		curPoint.used = true;
-		pointDest = null;
-		l.positionCount = 0;
-		state = PlayerState.Flying;
-		if (curSpline != null)
-		{
-			curSpline.OnSplineExit();
-		}
-
-		curPoint.OnPointExit ();
-		curPoint.proximity = 0;
-		flow += 0.1f;
-		flyingTrail.Clear();
-		flyingTrail.time = 100;
-		
-	}
 
 	public void EmitParticles()
 	{
-		ps.Emit(5);
+		sparks.Emit(5);
 	}
 	 
 	void Fly(){
@@ -531,34 +523,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		flow = Mathf.Abs(flow);
 	}
 
-	void LeavePoint(){
-		if(curPoint.hasPointcloud){
-			if(pointDest.hasPointcloud){
-				foreach(PointCloud p in curPoint.pointClouds){
-					p.isOn = false;
-					foreach(PointCloud q in pointDest.pointClouds){
-
-						if(p == q){
-							p.isOn = true;
-						}
-					}
-				}
-			}
-		}
-		VectorLine v = velocityLine2;
-		velocityLine2 = velocityLine;
-		velocityLine = v;
-
-		curPoint.OnPointExit ();
-		connectTime = 1;
-		state = PlayerState.Traversing;
-
-		//this is making it impossible to get off points that are widows. wtf.
-		SetPlayerAtStart (curSpline, pointDest);
-		curSpline.OnSplineEnter (true, curPoint, pointDest, false);
-		SetCursorAlignment ();
-		// PlayerMovement ();
-	}
 
 	void StayOnPoint(){
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
@@ -773,7 +737,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if (Vector3.Distance(transform.position, pointDest.Pos) < 0.025f)
 			{
-				EnterPoint(curPoint);
+				SwitchState(PlayerState.Switching);
 			}
 		}
 		else
@@ -786,55 +750,10 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 			else
 			{
-				StartCoroutine(Reset());
+				SwitchState(PlayerState.Flying);
 			}
 		}
 	
-	}
-
-	public void EnterPoint(Point previousPoint)
-	{
-		
-		curPoint = pointDest;
-		state = PlayerState.Switching;
-		curPoint.proximity = 1;
-		curPoint.OnPointEnter ();
-		
-		if (previousPoint == null)
-		{
-		}else if (previousPoint != curPoint) {
-			traversedPoints.Add (curPoint);
-			foreach (Spline s in previousPoint._connectedSplines)
-			{
-				s.reactToPlayer = false;
-			}
-				
-			lastPoint = previousPoint;
-				
-			foreach (Spline s in curPoint._connectedSplines)
-			{
-				s.reactToPlayer = true;
-			}
-		}
-		
-		PlayAttack(curPoint, pointDest);
-			
-		curPoint.velocity = cursorDir * Mathf.Abs(flow);
-		
-		foreach (Point p in curPoint._neighbours)
-		{
-			p.velocity = Vector3.Lerp((curPoint.Pos - p.Pos).normalized, curPoint.velocity.normalized, 0.5f) * curPoint.velocity.magnitude / 3f;
-			p.TurnOn();
-		}
-
-		
-			
-		//checkpoint shit
-		if(curPoint.pointType == PointTypes.stop){
-//				traversedPoints.Clear();
-//				traversedPoints.Add(curPoint);
-		}
-
 	}
 	
 	void TrackFreeMovement(){
@@ -880,7 +799,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				curPoint.GetComponent<Collider>().enabled = true;
 				curPoint.velocity = cursorDir * Mathf.Abs(flow);
 				curPoint.isKinematic = false;
-				LeavePoint();
+				SwitchState(PlayerState.Traversing);
 				return;
 			}
 
@@ -894,7 +813,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		 if (flow < 0) {
 //			CreateJoint (newPointList[newPointList.Count-1].GetComponent<Rigidbody>());
 			// StartCoroutine (ReturnToLastPoint ());
-			StartCoroutine(Unwind());
+			SwitchState(PlayerState.Animating);
 
 		} else {
 			inertia = cursorDir * flow;
@@ -984,7 +903,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				//
 //			maxSpeed = curSpline.distance * 2;
 
-			if(Mathf.Abs(flow) < curSpline.distance){
+			if(Mathf.Abs(flow) < curSpline.distance * 3){
 			flow += accuracy * acceleration * Time.deltaTime * cursorDir.magnitude;
 			
 			}
@@ -1003,13 +922,14 @@ public class PlayerBehaviour: MonoBehaviour {
 				if (flow < 0)
 					flow = 0;
 			}
+
 		}
 
 		float adjustedAccuracy = goingForward ? 1 - accuracy : -Mathf.Clamp(accuracy, -1, -0.5f);
 		// (adjustedAccuracy + 0.1f)
 		if (!joystickLocked)
 		{
-			curSpeed = Mathf.Clamp01(flow + boost + speed - adjustedAccuracy) * cursorDir.magnitude;
+			curSpeed = Mathf.Clamp(flow + boost + speed - adjustedAccuracy, 0, 1000) * cursorDir.magnitude;
 			progress += (curSpeed * Time.deltaTime) / curSpline.distance;
 		}
 
@@ -1160,7 +1080,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 //			}
 
-			EnterPoint(PreviousPoint);
+			SwitchState(PlayerState.Switching);
 	
 			PlayerOnPoint();
 
@@ -1479,16 +1399,179 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	}
 
+	void LeaveState()
+	{
+		switch (state)
+		{
+			case PlayerState.Traversing:
+				
+				sparks.Pause();
+
+				//turn on sparks
+				break;
+			
+			case PlayerState.Flying:
+
+				flyingParticles.Pause();
+
+				break;
+			
+			case PlayerState.Switching:
+				l.positionCount = 0;
+				boostTimer = 0;
+				
+				break;
+			
+			case PlayerState.Animating:
+
+				break;
+		}	
+	}
+
+	void SwitchState(PlayerState newState)
+	{
+		LeaveState();
+
+		switch (newState)
+		{
+			case PlayerState.Traversing:
+
+				if(curPoint.hasPointcloud){
+					if(pointDest.hasPointcloud){
+						foreach(PointCloud p in curPoint.pointClouds){
+							p.isOn = false;
+							foreach(PointCloud q in pointDest.pointClouds){
+
+								if(p == q){
+									p.isOn = true;
+								}
+							}
+						}
+					}
+				}
+				VectorLine v = velocityLine2;
+				velocityLine2 = velocityLine;
+				velocityLine = v;
+
+				curPoint.OnPointExit ();
+				connectTime = 1;
+				state = PlayerState.Traversing;
+
+				foreach (Spline s in pointDest._connectedSplines)
+				{
+					s.reactToPlayer = true;
+				}
+		
+				//this is making it impossible to get off points that are widows. wtf.
+				SetPlayerAtStart (curSpline, pointDest);
+				curSpline.OnSplineEnter (true, curPoint, pointDest, false);
+				SetCursorAlignment ();
+		
+				PlayerMovement ();
+				sparks.Play();
+
+				break;
+
+			case PlayerState.Flying:
+
+				curPoint.used = true;
+				pointDest = null;
+				l.positionCount = 0;
+
+				if (curSpline != null)
+				{
+					curSpline.OnSplineExit();
+				}
+
+				curPoint.OnPointExit();
+				curPoint.proximity = 0;
+				flow += 0.1f;
+				flyingTrail.Clear();
+				flyingTrail.time = 100;
+				flyingParticles.Play();
+
+				state = PlayerState.Flying;
+
+
+				break;
+
+			case PlayerState.Switching:
+
+				state = PlayerState.Switching;
+
+				pointDest.proximity = 1;
+				pointDest.OnPointEnter();
+
+				if (curPoint == null)
+				{
+
+				}
+				else if (curPoint != pointDest)
+				{
+					traversedPoints.Add(pointDest);
+					foreach (Spline s in curPoint._connectedSplines)
+					{
+						s.reactToPlayer = false;
+					}
+
+					lastPoint = curPoint;
+
+					foreach (Spline s in pointDest._connectedSplines)
+					{
+						s.reactToPlayer = true;
+					}
+				}
+
+
+				PlayAttack(curPoint, pointDest);
+
+				curPoint = pointDest;
+
+				//weird physics shit
+//		curPoint.velocity = cursorDir * Mathf.Abs(flow);
+//		
+				foreach (Point p in curPoint._neighbours)
+				{
+//			p.velocity = Vector3.Lerp((curPoint.Pos - p.Pos).normalized, curPoint.velocity.normalized, 0.5f) * curPoint.velocity.magnitude / 3f;
+					p.TurnOn();
+				}
+
+				//checkpoint shit
+				if (curPoint.pointType == PointTypes.stop)
+				{
+//				traversedPoints.Clear();
+//				traversedPoints.Add(curPoint);
+				}
+
+				break;
+
+			case PlayerState.Animating:
+				//turn off particles
+
+				if (state == PlayerState.Flying)
+				{
+					StartCoroutine(Reset());
+				}
+				else
+				{
+					StartCoroutine(Unwind());
+
+				}
+
+				break;
+		}
+	}
+
+
 	public void Effects(){
 
-		ParticleSystem.EmissionModule e = ps.emission;
+		ParticleSystem.EmissionModule e = sparks.emission;
 
 		float Absflow = Mathf.Abs (flow);
 
-		if (state == PlayerState.Flying) {
-			e.rateOverTimeMultiplier = Mathf.Lerp(0, 50, Mathf.Abs(curSpeed));
-//			t.time = Absflow;
-			//do shit with particle systems for flying
+		if (state == PlayerState.Flying)
+		{
+			
 		} else {
 //			t.time = Mathf.Lerp(t.time, 0, Time.deltaTime);
 // (accuracy < 0 && flow > 0) || accuracy > 0 && flow <

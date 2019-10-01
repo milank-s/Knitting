@@ -8,23 +8,55 @@ public class FadeTextOnPoint: MonoBehaviour {
 	public float alpha;
 	TextMesh t;
 	public Point p;
+	private bool hasPoint;
 	public bool startOn;
+	public bool stayOn;
 	void Start(){
 		t = GetComponent<TextMesh> ();
+		
 		if (startOn)
 		{
 			alpha = 1;
+			t.color = Color.white;
 		}
 		else
 		{
 			alpha = 0;
+			t.color = Color.black;
+		}
+
+		if (p == null)
+		{
+			p = GetComponentInParent<Point>();
+			if (p != null)
+			{
+				hasPoint = true;
+			}
+		}
+		else
+		{
+			hasPoint = true;
 		}
 	}
 	// Update is called once per frame
 	void Update () {
-		if(p != null)
+		if(hasPoint)
 		{
-			t.color = new Color(1, 1, 1, p.proximity);
+			if (stayOn)
+			{
+				if (p.hit)
+				{
+					t.color = Color.Lerp(t.color, Color.white, Time.deltaTime);
+				}
+				else
+				{
+					t.color = Color.Lerp(t.color,  new Color(1, 1, 1, p.proximity), Time.deltaTime);
+				}
+			}
+			else
+			{
+				t.color = new Color(1, 1, 1, p.proximity);
+			}
 		}else if(!startOn){
 			alpha = Mathf.Clamp01(alpha - Time.deltaTime/3);
 			t.color = new Color(1,1,1, alpha);

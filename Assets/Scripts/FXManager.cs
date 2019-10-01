@@ -9,7 +9,7 @@ public class FXManager : MonoBehaviour
     [SerializeField] private GameObject fxPrefab;
   private int index;
   private List<Animator> fxInstances = new List<Animator>();
-
+ 
   void Start()
   {
       for (int i = 0; i < 12; i++)
