@@ -110,6 +110,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	private bool buttonPressed;
 	private float buttonPressedBuffer = 0.2f;
 	private float buttonPressedTimer;
+	private float progressRemainder;
 	
 	private GameObject cursor;
 	[HideInInspector]
@@ -511,7 +512,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void StayOnPoint(){
 
-		if (timeOnPoint == 0)
+		if (timeOnPoint == 0 && curPoint.pointType != PointTypes.ghost)
 		{
 			curPoint.velocity += (Vector3)cursorDir * Mathf.Abs(flow) * 3;
 		}
@@ -1071,7 +1072,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			accuracy = 1;
 			
 			Point PreviousPoint = curPoint;
-			
+			progressRemainder = progress - 1;
 			curPoint.proximity = 0;
 			
 //			if (progress > 1) {
@@ -1092,9 +1093,6 @@ public class PlayerBehaviour: MonoBehaviour {
 //			}
 
 			SwitchState(PlayerState.Switching);
-	
-			PlayerOnPoint();
-
 		}
 	}
 
@@ -1107,7 +1105,15 @@ public class PlayerBehaviour: MonoBehaviour {
 			progress = 1 - Mathf.Epsilon;
 
 		} else {
-			progress = 0 + Mathf.Epsilon;
+			if (timeOnPoint == 0)
+			{
+				progress = progressRemainder;
+			}
+			else
+			{
+				progress = 0 + Mathf.Epsilon;
+			}
+			
 			goingForward = true;
 			s.Selected = curPoint;
 		}
@@ -1468,7 +1474,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 				//this is making it impossible to get off points that are widows. wtf.
 				SetPlayerAtStart (curSpline, pointDest);
+				
 				curSpline.OnSplineEnter (true, curPoint, pointDest, false);
+				
 				SetCursorAlignment ();
 		
 				//PlayerMovement ();
@@ -1533,15 +1541,8 @@ public class PlayerBehaviour: MonoBehaviour {
 						s.reactToPlayer = true;
 					}
 				}
-
-
-				
-
 				curPoint = pointDest;
 
-				//weird physics shit
-				
-//		
 				foreach (Point p in curPoint._neighbours)
 				{
 //			p.velocity = Vector3.Lerp((curPoint.Pos - p.Pos).normalized, curPoint.velocity.normalized, 0.5f) * curPoint.velocity.magnitude / 3f;
@@ -1554,6 +1555,9 @@ public class PlayerBehaviour: MonoBehaviour {
 //				traversedPoints.Clear();
 //				traversedPoints.Add(curPoint);
 				}
+				
+				PlayerOnPoint();
+				
 
 				break;
 

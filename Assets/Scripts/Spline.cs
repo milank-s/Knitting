@@ -886,7 +886,7 @@ public class Spline : MonoBehaviour
 	public void CalculateDistance ()
 	{
 		//IDK IF THIS WORKS FORWARD/BACKWARDS
-		int Count = SplinePoints.Count;
+
 		float step = (1.0f / (float)curveFidelity);
 		distance = 0;
 
