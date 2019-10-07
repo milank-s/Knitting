@@ -13,6 +13,7 @@ public class Main : MonoBehaviour {
 	public Image PauseScreen;
 	public GameObject PauseMenu;
 	public Text Word;
+	public FXManager fx;
 	public GameObject canvas;
 	public bool _paused
 	{
@@ -43,6 +44,7 @@ public class Main : MonoBehaviour {
 		Services.mainCam = Camera.main;
 		Services.Prefabs = GetComponent<PrefabManager>();
 		Services.Player = Player;
+		Services.fx = fx;
 		Services.PlayerBehaviour = Player.GetComponent<PlayerBehaviour>();
 		Services.Cursor = cursor;
 		PointManager._pointsHit = new List<Point> ();
@@ -94,7 +96,7 @@ public class Main : MonoBehaviour {
 
 					if (!s.locked && !s.reactToPlayer)
 					{
-						s.DrawSpline();
+						//s.DrawSpline();
 					}
 				}
 			}

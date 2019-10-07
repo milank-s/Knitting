@@ -30,7 +30,8 @@ public class Point : MonoBehaviour
 	{
 		get
 		{
-			if (pointType == PointTypes.fly && !used)
+			if (pointType == PointTypes.fly)
+//				&& !used
 			{
 				return true;
 			}
@@ -54,6 +55,8 @@ public class Point : MonoBehaviour
 	public static float hitColorLerp;
 	public static int pointCount = 0;
 
+	public static float boostAmount = 1f;
+	
 	[Space(10)]
 	[Header("Curve")]
 	public static List<Point> Points;
@@ -99,7 +102,7 @@ public class Point : MonoBehaviour
 	public static Point Select;
 	private FadeSprite activationSprite;
 	private SpriteRenderer SR;
-
+	private float timeOnPoint;
 	[HideInInspector] public int timesHit = 0;
 	public bool isSelect
 	{
@@ -220,11 +223,11 @@ public class Point : MonoBehaviour
 
 			case PointTypes.ghost:
 				SR.enabled = false;
-
+				color = Color.black;
 				break;
 			
 			case PointTypes.normal:
-				color = Color.black;
+				
 				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.normal];
 				break;
 		}
@@ -334,13 +337,13 @@ public class Point : MonoBehaviour
 
 		if (pointType != PointTypes.ghost)
 		{
-			Services.Prefabs.fx.PlayAnimationAtPosition(FXManager.FXType.burst, transform);
+			//Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, transform);
 		}
 	}
 	
 	public void OnPointEnter()
 	{
-		
+		timeOnPoint = 0;
 		color = Color.white/2;
 		timesHit++;
 //		stiffness = Mathf.Clamp(stiffness -100, 100, 10000);
@@ -372,10 +375,9 @@ public class Point : MonoBehaviour
 		if(pointType != PointTypes.ghost){
 			
 				GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
-				Services.PlayerBehaviour.EmitParticles();
 				fx.transform.parent = transform;
-				
-				Services.Prefabs.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, transform);
+				Services.Sounds.PlayPointAttack();
+				Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, transform);
 		}
 		
 	}
@@ -386,13 +388,15 @@ public class Point : MonoBehaviour
 		
 		switch(pointType){
 			case PointTypes.stop:
-//				Services.PlayerBehaviour.boost += 0.5f;
+				Services.PlayerBehaviour.flow += boostAmount * (Services.PlayerBehaviour.boostTimer);
+				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
+				Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.boostTimer + 1 * 5, transform);
+				Services.fx.EmitLinearBurst(50, Services.PlayerBehaviour.boostTimer + 1, transform, Services.PlayerBehaviour.cursorDir);
 //				Services.PlayerBehaviour.flow += 0.1f;
 			break;
 
 			case PointTypes.fly:
-				Services.Prefabs.particleEffect.transform.position = Pos;
-				Services.Prefabs.particleEffect.Emit(50);
+				
 			break;
 
 			case PointTypes.normal:
@@ -404,7 +408,6 @@ public class Point : MonoBehaviour
 		}
 
 		if(pointType != PointTypes.ghost){
-			Services.PlayerBehaviour.boost += Services.PlayerBehaviour.boostAmount * Services.PlayerBehaviour.boostTimer * Services.PlayerBehaviour.accuracyCoefficient;
 			
 		}
 		accretion += 0.1f;
@@ -461,8 +464,9 @@ public class Point : MonoBehaviour
 		c = Mathf.Pow (c, 1);
 		
 //		SR.color = Color.Lerp (color, new Color (1,1,1, c), Time.deltaTime * 5);
-		if (!used)
+		if (true)
 		{
+			//when used
 			SR.color = color + new Color(c, c, c, 1);
 		}
 		else
@@ -474,6 +478,12 @@ public class Point : MonoBehaviour
 
 	}
 
+	public void PlayerOnPoint(Vector3 direction, float force)
+	{
+		timeOnPoint += Time.deltaTime;
+		//velocity += (Vector3)Random.insideUnitCircle / Mathf.Pow(1 + timeOnPoint, 2);
+	}
+	
 	void SetSprite(){
 		if(locked && PointManager._pointsHit.Count < lockAmount){
 			SR.sprite = Services.Prefabs.pointSprites[1];

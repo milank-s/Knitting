@@ -15,5 +15,6 @@ public static class Services{
 	public static Main main{ get; set; }
 	public static Text Word { get; set; }
 	
+	public static FXManager fx;
 	public static GameObject GameUI { get; set; }
 }

@@ -241,8 +241,8 @@ public class Spline : MonoBehaviour
 //		float length = newMat.mainTextureScale.x;
 //		float height = newMat.mainTextureScale.y;
 
-		line = new VectorLine (name, line.points3, 2, LineType.Continuous, Vectrosity.Joins.Weld);
-		line.color = Color.white;
+		line = new VectorLine (name, line.points3, 1, LineType.Continuous, Vectrosity.Joins.Weld);
+		line.color = Color.black;
 		line.smoothWidth = true;
 		line.smoothColor = true;
 		line.points3 = new List<Vector3> (SplinePoints.Count * curveFidelity);
@@ -332,12 +332,16 @@ public class Spline : MonoBehaviour
 
 		if (line.GetSegmentNumber() != 0)
 		{
-			//drawIndex = (drawIndex + 1) % line.GetSegmentNumber();
+			drawIndex += 1;
 		}
 
-		int playerIndex = GetPlayerLineSegment(pointIndex);
-		
-				for (int i = 0; i < SplinePoints.Count - (closed ? 0 : 1) ; i++) {
+		float curIndex;
+		if (reactToPlayer || isPlayerOn)
+		{
+			drawIndex = GetPlayerLineSegment(pointIndex);
+		}
+			
+				for (int i = Mathf.Clamp(pointIndex, 0, SplinePoints.Count); i < SplinePoints.Count - (closed ? 0 : 1) ; i++) {
 					for (int k = 0; k <= curveFidelity; k++)
 					{
 
@@ -346,14 +350,8 @@ public class Spline : MonoBehaviour
 
 						Vector3 v = Vector3.zero;
 						
-						if (reactToPlayer || isPlayerOn)
-						{
-							DrawLine(i, index, step, playerIndex);
-						}
-						else
-						{
-							DrawLine(i, index, step, drawIndex);
-						}
+						DrawLine(i, index, step);
+						
 //						else
 //						{
 //							v = GetPointAtIndex(i, step);
@@ -393,7 +391,7 @@ public class Spline : MonoBehaviour
 			 line.Draw3D();
 	 }
 
-	void DrawLine(int pointIndex, int segmentIndex, float step, int activeIndex)
+	void DrawLine(int pointIndex, int segmentIndex, float step)
 	{
 
 
@@ -407,16 +405,16 @@ public class Spline : MonoBehaviour
 		//Find the shortest distance to the player in case of loop
 		if (closed)
 		{
-			int dist1 = Mathf.Abs(segmentIndex - activeIndex);
+			int dist1 = Mathf.Abs(segmentIndex - drawIndex);
 			int dist2;
 
-			if (segmentIndex < activeIndex)
+			if (segmentIndex < drawIndex)
 			{
-				dist2 = Mathf.Abs((line.GetSegmentNumber() - activeIndex) + segmentIndex);
+				dist2 = Mathf.Abs((line.GetSegmentNumber() - drawIndex) + segmentIndex);
 			}
 			else
 			{
-				dist2 = Mathf.Abs((line.GetSegmentNumber() - segmentIndex) + activeIndex);
+				dist2 = Mathf.Abs((line.GetSegmentNumber() - segmentIndex) + drawIndex);
 			}
 
 			indexDiff = Mathf.Min(dist1, dist2);
@@ -424,7 +422,7 @@ public class Spline : MonoBehaviour
 		}
 		else
 		{
-			indexDiff = Mathf.Abs(activeIndex - segmentIndex);
+			indexDiff = Mathf.Abs(drawIndex - segmentIndex);
 		}
 
 		//find the distance. 1 = one curve
@@ -470,6 +468,8 @@ public class Spline : MonoBehaviour
 		
 		if (segmentIndex < line.GetSegmentNumber())
 		{
+			bool shouldDraw = true;
+			
 			int j = 0;
 			if (pointIndex + 1 > SplinePoints.Count - 1)
 			{
@@ -479,6 +479,7 @@ public class Spline : MonoBehaviour
 				}
 				else
 				{
+					shouldDraw = false;
 					j = pointIndex;
 				}
 			}
@@ -489,7 +490,7 @@ public class Spline : MonoBehaviour
 
 			if ((reactToPlayer || isPlayerOn))
 			{
-				if (segmentIndex <= activeIndex)
+				if (segmentIndex <= drawIndex)
 				{
 					Color c = Color.white;
 					line.SetColor(c, segmentIndex);
@@ -502,10 +503,13 @@ public class Spline : MonoBehaviour
 			}
 			else
 			{
-				Color c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step);
-				//c = Color.Lerp(c, Color.white, invertedDistance);
-				line.SetColor(c, segmentIndex);
-								
+				if (shouldDraw)
+				{
+					Color c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step);
+					//c = Color.Lerp(c, Color.white, invertedDistance);
+					line.SetColor(c, segmentIndex);
+				}
+
 			}
 		}
 		
@@ -886,7 +890,7 @@ public class Spline : MonoBehaviour
 		float step = (1.0f / (float)curveFidelity);
 		distance = 0;
 
-		for (int k = 0; k <= curveFidelity; k++) {
+		for (int k = 0; k < curveFidelity; k++) {
 
 			float t = (float)k / (float)(curveFidelity);
 			distance += Vector3.Distance (GetPoint (t), GetPoint (t + step));

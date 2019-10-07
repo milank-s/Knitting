@@ -18,5 +18,11 @@ public class SoundBank : MonoBehaviour {
 	Point p1;
 	Point p2;
 
-
+	public void PlayPointAttack ()
+	{
+		GameObject newSound = Instantiate(Services.Prefabs.soundEffectObject, transform.position, Quaternion.identity);
+		newSound.GetComponent<AudioSource>().clip = hits[0];
+		newSound.GetComponent<AudioSource>().Play();
+		newSound.GetComponent<PlaySound>().enabled = true;
+	}
 }

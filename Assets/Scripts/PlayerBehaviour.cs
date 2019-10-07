@@ -62,7 +62,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	[HideInInspector]
 	public bool goingForward = true;
 	[HideInInspector]
-	public float progress, accuracy, flow, boost, boostTimer, curSpeed, connectTime, connectTimeCoefficient, gravity;
+	public float progress, accuracy, flow, boost, boostTimer, curSpeed, connectTime, timeOnPoint, connectTimeCoefficient, gravity;
 
 	[Header("Flying tuning")]
 	public float flyingSpeedThreshold = 3;
@@ -99,9 +99,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	public TrailRenderer t;
 	public TrailRenderer flyingTrail;
 	[SerializeField] ParticleSystem sparks;
-	[SerializeField] ParticleSystem flyingParticles;
-	[SerializeField] ParticleSystem hitParticles;
-	[SerializeField] ParticleSystem speedParticles;
 	private LineRenderer l;
 	private Image cursorSprite;
 	private SpriteRenderer playerSprite;
@@ -408,32 +405,20 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 
-		if (!canTraverse)
+		if (canTraverse)
 		{
-			if(Input.GetButton("Button1")){
-				boostTimer += Time.deltaTime / stopTimer;
-
-			}else{
-				boostTimer = Mathf.Clamp01(boostTimer - Time.deltaTime);
-			}
-			
-			l.positionCount = 2;
-			l.SetPosition (0, Vector3.Lerp(transform.position, cursorPos, Easing.QuadEaseOut(boostTimer)));
-			l.SetPosition (1, transform.position);
-		}
-
-
-
-		if(canTraverse){
 			// pointInfo.GetComponent<Text>().text = "";
-			
+
 			SwitchState(PlayerState.Traversing);
-			
-		}else{
-			
-			//Staying on a point is too punishing.
-			StayOnPoint();
+
+
 		}
+		else{
+			
+			StayOnPoint();
+			
+		}
+		
 	}
 
 	public void SetCursorAlignment(){
@@ -519,12 +504,31 @@ public class PlayerBehaviour: MonoBehaviour {
 		curDrawDistance = 0;
 		curSpline.OnSplineEnter(true, drawnPoint, curPoint, false);
 		curPoint.GetComponent<Collider>().enabled = false;
-		boost = boostAmount;
+
 		flow = Mathf.Abs(flow);
 	}
 
 
 	void StayOnPoint(){
+
+		if (timeOnPoint == 0)
+		{
+			curPoint.velocity += (Vector3)cursorDir * Mathf.Abs(flow) * 3;
+		}
+
+		timeOnPoint += Time.deltaTime;
+		
+		if(Input.GetButton("Button1")){
+			boostTimer += Time.deltaTime / stopTimer;
+
+		}else{
+			boostTimer = Mathf.Clamp01(boostTimer - Time.deltaTime);
+		}
+		curPoint.PlayerOnPoint(cursorDir, flow);
+		l.positionCount = 2;
+		l.SetPosition (0, Vector3.Lerp(transform.position, cursorPos, Easing.QuadEaseOut(boostTimer)));
+		l.SetPosition (1, transform.position);
+		
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
 		if (connectTime < 0) {
 			if (flow > 0) {
@@ -726,8 +730,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		Point raycastPoint = SplineUtil.RaycastFromCamera(cursorPos, 1f);
 		
-		if (raycastPoint != null && raycastPoint != curPoint && raycastPoint.pointType != PointTypes.ghost && !raycastPoint.used)
+		if (raycastPoint != null && raycastPoint != curPoint && raycastPoint.pointType != PointTypes.ghost )
 		{
+			//& !raycastPoint.used
 			pointDest = raycastPoint;
 		}
 
@@ -735,6 +740,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			transform.position += (pointDest.transform.position - transform.position).normalized * Time.deltaTime;
 
+			foreach (Spline p in pointDest._connectedSplines)
+			{
+				p.DrawSpline(p.SplinePoints.IndexOf(pointDest));
+			}
 			if (Vector3.Distance(transform.position, pointDest.Pos) < 0.025f)
 			{
 				SwitchState(PlayerState.Switching);
@@ -750,7 +759,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 			else
 			{
-				SwitchState(PlayerState.Flying);
+				//reset here
+				//SwitchState(PlayerState.Flying);
 			}
 		}
 	
@@ -903,7 +913,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				//
 //			maxSpeed = curSpline.distance * 2;
 
-			if(Mathf.Abs(flow) < curSpline.distance * 3){
+			if(Mathf.Abs(flow) < curSpline.distance * 100){
 			flow += accuracy * acceleration * Time.deltaTime * cursorDir.magnitude;
 			
 			}
@@ -925,15 +935,16 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		}
 
-		float adjustedAccuracy = goingForward ? 1 - accuracy : -Mathf.Clamp(accuracy, -1, -0.5f);
+		float adjustedAccuracy = goingForward ? Mathf.Pow(1 - accuracy, 2) : -Mathf.Clamp(accuracy, -1, -0.5f);
+		
 		// (adjustedAccuracy + 0.1f)
 		if (!joystickLocked)
 		{
-			curSpeed = Mathf.Clamp(flow + boost + speed - adjustedAccuracy, 0, 1000) * cursorDir.magnitude;
+			curSpeed = Mathf.Clamp(flow + speed - adjustedAccuracy, 0, 1000);
 			progress += (curSpeed * Time.deltaTime) / curSpline.distance;
 		}
 
-		boost = Mathf.Lerp (boost, 0, Time.deltaTime * 3f);
+		//boost = Mathf.Lerp (boost, 0, Time.deltaTime * 2);
 		//set player position to a point along the curve
 
 		if (curPoint == curSpline.Selected) {
@@ -1307,15 +1318,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		cursorPos = transform.position + (Vector3)cursorDir / (Services.mainCam.fieldOfView * 0.1f);
 //		Vector3 screenPos = ((Vector3)cursorDir/10f + Vector3.one/2f);
 		Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
-		if (state != PlayerState.Switching)
-		{
-			screenPos += (Vector3) cursorDir / 25f;
-		}
-		else
-		{
-			screenPos += (Vector3) cursorDir /5f;
-		}
-
+		
+		screenPos += (Vector3) cursorDir / 25f;
+			
+		
 		screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Mathf.Abs(transform.position.z - Services.mainCam.transform.position.z));
 		cursorPos = Services.mainCam.ViewportToWorldPoint(screenPos);
 		cursor.transform.position = cursorPos;
@@ -1404,21 +1410,19 @@ public class PlayerBehaviour: MonoBehaviour {
 		switch (state)
 		{
 			case PlayerState.Traversing:
-				
 				sparks.Pause();
-
+				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
 				//turn on sparks
 				break;
 			
 			case PlayerState.Flying:
-
-				flyingParticles.Pause();
-
+				Services.fx.BakeTrail(Services.fx.flyingTrail, Services.fx.flyingTrailMesh);
+				Services.fx.BakeParticleTrail(Services.fx.flyingParticles, Services.fx.flyingParticleTrailMesh);
+				Services.fx.BakeParticles(Services.fx.flyingParticles, Services.fx.flyingParticleMesh);
 				break;
 			
 			case PlayerState.Switching:
 				l.positionCount = 0;
-				boostTimer = 0;
 				
 				break;
 			
@@ -1467,13 +1471,15 @@ public class PlayerBehaviour: MonoBehaviour {
 				curSpline.OnSplineEnter (true, curPoint, pointDest, false);
 				SetCursorAlignment ();
 		
-				PlayerMovement ();
+				//PlayerMovement ();
 				sparks.Play();
 
 				break;
 
 			case PlayerState.Flying:
 
+				Services.PlayerBehaviour.flow += 0.25f;
+				
 				curPoint.used = true;
 				pointDest = null;
 				l.positionCount = 0;
@@ -1488,8 +1494,11 @@ public class PlayerBehaviour: MonoBehaviour {
 				flow += 0.1f;
 				flyingTrail.Clear();
 				flyingTrail.time = 100;
-				flyingParticles.Play();
+				Services.fx.flyingParticles.Play();
 
+				Services.fx.EmitRadialBurst(20,curSpeed, transform);
+				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
+				
 				state = PlayerState.Flying;
 
 
@@ -1498,10 +1507,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			case PlayerState.Switching:
 
 				state = PlayerState.Switching;
-
+				boostTimer = 0;
 				pointDest.proximity = 1;
 				pointDest.OnPointEnter();
 
+				timeOnPoint = 0;
+				
 				if (curPoint == null)
 				{
 
@@ -1512,6 +1523,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					foreach (Spline s in curPoint._connectedSplines)
 					{
 						s.reactToPlayer = false;
+						
 					}
 
 					lastPoint = curPoint;
@@ -1523,12 +1535,12 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 
 
-				PlayAttack(curPoint, pointDest);
+				
 
 				curPoint = pointDest;
 
 				//weird physics shit
-//		curPoint.velocity = cursorDir * Mathf.Abs(flow);
+				
 //		
 				foreach (Point p in curPoint._neighbours)
 				{
@@ -1563,26 +1575,30 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 
-	public void Effects(){
+	public void Effects()
+	{
 
 		ParticleSystem.EmissionModule e = sparks.emission;
 
-		float Absflow = Mathf.Abs (flow);
+		float Absflow = Mathf.Abs(flow);
 
 		if (state == PlayerState.Flying)
 		{
-			
-		} else {
+
+		}
+		else
+		{
 //			t.time = Mathf.Lerp(t.time, 0, Time.deltaTime);
 // (accuracy < 0 && flow > 0) || accuracy > 0 && flow <
-			if (state != PlayerState.Switching) {
+			if (state != PlayerState.Switching)
+			{
 				e.rateOverTimeMultiplier = (1 - Mathf.Abs(accuracy)) * Mathf.Abs(flow) * 25;
-			} else {
-				e.rateOverTimeMultiplier = Mathf.Lerp (e.rateOverTimeMultiplier, 0, Time.deltaTime * 5);
 			}
+			
 		}
 
-		if (curSpline != null) {
+		if (curSpline != null)
+		{
 //			if(flow > 0.25f){
 //				velocityLine.color = Color.Lerp(velocityLine.color, new Color(1,1,1,0.1f), Time.deltaTime);
 //				velocityLine2.color = Color.Lerp(velocityLine2.color, new Color(1,1,1,0.1f), Time.deltaTime);
@@ -1599,26 +1615,9 @@ public class PlayerBehaviour: MonoBehaviour {
 //			l.SetPosition(1, transform.position + cursorDir/2);
 //			GetComponentInChildren<Camera>().farClipPlane = Mathf.Lerp(GetComponentInChildren<Camera>().farClipPlane,  flow + 12, Time.deltaTime * 10);
 		}
-
-
 	}
 
-	public void PlayAttack (Point point1, Point point2)
-	{
 
-//		do some angle shit or normalize it??
-		float segmentDistance = Vector3.Distance (point1.Pos, point2.Pos);
-		Vector3 linearDirection = point2.Pos - point1.Pos;
-		linearDirection = new Vector2(linearDirection.x, linearDirection.y).normalized;
-		float dot = Vector2.Dot (linearDirection, Vector2.up);
-
-		// int index = (int)(((dot/2f) + 0.5f) * (sounds.hits.Length - 1));
-		GameObject newSound = Instantiate(Services.Prefabs.soundEffectObject, transform.position, Quaternion.identity);
-		newSound.GetComponent<AudioSource>().clip = sounds.hits[0];
-		noteIndex++;
-		newSound.GetComponent<AudioSource>().Play();
-		newSound.GetComponent<PlaySound>().enabled = true;
-	}
 
 	public void ManageSound ()
 	{
@@ -1634,9 +1633,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	 //
 			Services.Sounds.master.GetFloat ("CenterFreq", out curFreqGain);
 			float lerpAmount = Services.PlayerBehaviour.goingForward ? Services.PlayerBehaviour.progress : 1 - Services.PlayerBehaviour.progress;
-			sounds.moveSound.volume = Mathf.Lerp(sounds.moveSound.volume, Mathf.Clamp01(curSpeed), Time.deltaTime);
-			sounds.moveSound.pitch = Mathf.Pow(accuracy / 2 + 0.5f, 0.5f);
-			sounds.brakingSound.volume = Mathf.Pow(Mathf.Clamp01(0.5f - accuracy)/2, 2);
+			sounds.moveSound.volume = Mathf.Lerp(sounds.moveSound.volume, Mathf.Clamp01(curSpeed)/100f, Time.deltaTime);
+//			sounds.moveSound.pitch = Mathf.Pow(accuracy / 2 + 0.5f, 0.5f);
+			sounds.brakingSound.volume = Mathf.Pow(Mathf.Clamp01(0.5f - accuracy)/2, 2) ;
 	 //
 			Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(curSpeed)/2 + 1f);
 			Services.Sounds.master.SetFloat("CenterFreq", Mathf.Lerp(curFreqGain, ((dot/2f + 0.5f) + Mathf.Clamp01(1f/Mathf.Pow(curSpline.segmentDistance, 5))) * (16000f / curFreqGain), lerpAmount));

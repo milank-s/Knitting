@@ -133,8 +133,8 @@ public class CameraFollow : MonoBehaviour {
 				// this is negative
 
 				
-					cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, CameraDolly.FOVForHeightAndDistance (height, -offset.z) + 40, Time.deltaTime * speed);
-					Vector3 shake = Services.PlayerBehaviour.state == PlayerState.Traversing ? Random.onUnitSphere * Mathf.Clamp(Mathf.Pow(1- Services.PlayerBehaviour.accuracy, 2) * Services.PlayerBehaviour.curSpeed / 10f, 0, 0.1f) : Vector3.zero;
+					cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, Mathf.Clamp(CameraDolly.FOVForHeightAndDistance (height, -offset.z) + 10, 20, 100), Time.deltaTime * speed);
+					Vector3 shake = Services.PlayerBehaviour.state == PlayerState.Traversing ? Random.onUnitSphere * Mathf.Clamp(Mathf.Pow(1- Services.PlayerBehaviour.accuracy, 2) * Services.PlayerBehaviour.curSpeed , 0, 0.5f) : Vector3.zero;
 
 					Vector3 targetPos = Vector3.SmoothDamp (transform.position, Vector3.Lerp(Services.PlayerBehaviour.transform.position, new Vector3(xPos, yPos, Services.PlayerBehaviour.transform.position.z), 0f) + shake, ref velocity, 0.25f);
 
