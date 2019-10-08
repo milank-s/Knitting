@@ -25,37 +25,28 @@ public class FadeTextOnPoint: MonoBehaviour {
 			t.color = Color.black;
 		}
 
-		if (p == null)
-		{
+		
 			p = GetComponentInParent<Point>();
 			if (p != null)
 			{
 				hasPoint = true;
 			}
-		}
-		else
-		{
-			hasPoint = true;
-		}
+	
 	}
 	// Update is called once per frame
 	void Update () {
 		if(hasPoint)
 		{
-			if (stayOn)
+			if (stayOn && p.hit)
 			{
-				if (p.hit)
-				{
-					t.color = Color.Lerp(t.color, Color.white, Time.deltaTime);
-				}
-				else
-				{
-					t.color = Color.Lerp(t.color,  new Color(1, 1, 1, p.proximity), Time.deltaTime);
-				}
+			
+				t.color = new Color(1,1,1, alpha);
+				
 			}
 			else
 			{
-				t.color = new Color(1, 1, 1, p.proximity);
+				alpha = Mathf.Clamp01(alpha - Time.deltaTime);
+				t.color = new Color(1, 1, 1, alpha);
 			}
 		}else if(!startOn){
 			alpha = Mathf.Clamp01(alpha - Time.deltaTime/3);

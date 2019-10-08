@@ -296,15 +296,13 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (state != PlayerState.Animating && curPoint.HasSplines () && curSpline != null) {
 
 
-			curSpline.UpdateSpline();
+			//curSpline.UpdateSpline();
 			ManageSound();
 			
 			foreach(Spline s in curPoint._connectedSplines){
 				//should always be drawn
 				if(!s.locked)
 				{
-//					s.reactToPlayer = true;
-//					s.DrawSpline(true, s.SplinePoints.IndexOf(curPoint), Mathf.Clamp(s.SplinePoints.IndexOf(curPoint) + 1, 0, s.SplinePoints.Count + (s.closed ? 0 : 0)));
 					s.DrawSpline( s.SplinePoints.IndexOf(curPoint));
 				}
 			}
@@ -313,7 +311,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				foreach(Spline s in pointDest._connectedSplines){
 					if(!s.locked)
 					{
-//						s.reactToPlayer = true;
 						s.DrawSpline(s.SplinePoints.IndexOf(pointDest));
 					}
 				}
@@ -731,7 +728,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		Point raycastPoint = SplineUtil.RaycastFromCamera(cursorPos, 1f);
 		
-		if (raycastPoint != null && raycastPoint != curPoint && raycastPoint.pointType != PointTypes.ghost )
+		if (raycastPoint != null && raycastPoint != curPoint && raycastPoint.pointType != PointTypes.ghost && !raycastPoint.locked)
 		{
 			//& !raycastPoint.used
 			pointDest = raycastPoint;
@@ -903,7 +900,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		//flow -= Vector3.Dot(Vector3.up, curSpline.GetDirection(progress))/100f;
 		
 		
-		accuracyCoefficient = Mathf.Pow(Mathf.Abs(accuracy), accuracyCoefficient);
 		if (accuracy > 0.5f && !joystickLocked) {
 
 			if(flow < 0){
@@ -914,9 +910,10 @@ public class PlayerBehaviour: MonoBehaviour {
 				//
 //			maxSpeed = curSpline.distance * 2;
 
-			if(Mathf.Abs(flow) < curSpline.distance * 100){
-			flow += accuracy * acceleration * Time.deltaTime * cursorDir.magnitude;
-			
+			if(Mathf.Abs(flow) < curSpline.distance * 100)
+			{
+				flow += Mathf.Pow(accuracy, 2) * acceleration * Time.deltaTime * cursorDir.magnitude;
+
 			}
 
 		}
@@ -937,11 +934,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		float adjustedAccuracy = goingForward ? Mathf.Pow(1 - accuracy, 2) : -Mathf.Clamp(accuracy, -1, -0.5f);
-		
+		float accuracyMultiplier = Mathf.Pow(accuracy, accuracyCoefficient);
 		// (adjustedAccuracy + 0.1f)
 		if (!joystickLocked)
 		{
-			curSpeed = Mathf.Clamp(flow + speed - adjustedAccuracy, 0, 1000);
+			curSpeed = Mathf.Clamp(flow + speed - adjustedAccuracy, 0, 1000) * cursorDir.magnitude * accuracyMultiplier;
 			progress += (curSpeed * Time.deltaTime) / curSpline.distance;
 		}
 
@@ -1181,16 +1178,16 @@ public class PlayerBehaviour: MonoBehaviour {
 
 							} else {
 
-								if(curPoint.pointType == PointTypes.ghost){
-									if(p.pointType == PointTypes.ghost){
-										curAngle = 0;
-									}else{
-										// curAngle = s.CompareAngleAtPoint (lastPoint.GetConnectingSpline(curPoint).GetVelocity(0.99f), curPoint);
-										curAngle = 0;
-									}
-								}else{
+//								if(curPoint.pointType == PointTypes.ghost){
+//									if(p.pointType == PointTypes.ghost){
+//										curAngle = 0;
+//									}else{
+//										// curAngle = s.CompareAngleAtPoint (lastPoint.GetConnectingSpline(curPoint).GetVelocity(0.99f), curPoint);
+//										curAngle = 0;
+//									}
+//								}else{
 									curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
-								}
+//								}
 							}
 
 						if (curAngle < angleToSpline) {
@@ -1206,7 +1203,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			//this is causing bugs
 
 // && (Input.GetButtonDown("Button1")
-			if (angleToSpline <= StopAngleDiff) {
+			if (angleToSpline <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) {
 				if(curSpline != null){
 					curSpline.OnSplineExit ();
 				}
@@ -1418,6 +1415,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			case PlayerState.Traversing:
 				sparks.Pause();
 				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
+				
 				//turn on sparks
 				break;
 			
@@ -1481,7 +1479,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 				//PlayerMovement ();
 				sparks.Play();
-
+				t.emitting = true; 
+				
 				break;
 
 			case PlayerState.Flying:
@@ -1500,15 +1499,15 @@ public class PlayerBehaviour: MonoBehaviour {
 				curPoint.OnPointExit();
 				curPoint.proximity = 0;
 				flow += 0.1f;
-				flyingTrail.Clear();
-				flyingTrail.time = 100;
+
 				Services.fx.flyingParticles.Play();
 
 				Services.fx.EmitRadialBurst(20,curSpeed, transform);
 				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
 				
 				state = PlayerState.Flying;
-
+				flyingTrail.emitting = true;
+				
 
 				break;
 

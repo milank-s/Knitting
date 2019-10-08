@@ -654,23 +654,20 @@ public class MapEditor : MonoBehaviour
                 
                     if (Input.GetKeyDown(KeyCode.Alpha1))
                     {  
-                        activePoint.pointType = PointTypes.normal;
-                        activePoint.SetPointType();
+
+                        activePoint.SetPointType(PointTypes.normal);
                     
                     }else if(Input.GetKeyDown(KeyCode.Alpha2)){
                     
-                        activePoint.pointType = PointTypes.stop;
-                        activePoint.SetPointType();
+                        activePoint.SetPointType(PointTypes.stop);
             
                     }else if (Input.GetKeyDown(KeyCode.Alpha3))
                     {
-                        activePoint.pointType = PointTypes.connect;
-                        activePoint.SetPointType();
+                        activePoint.SetPointType(PointTypes.connect);
                     
                     }else if (Input.GetKeyDown(KeyCode.Alpha4))
                     {
-                        activePoint.pointType = PointTypes.fly;
-                        activePoint.SetPointType();
+                        activePoint.SetPointType(PointTypes.fly);
                     }
                 
                

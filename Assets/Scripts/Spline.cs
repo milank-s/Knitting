@@ -50,12 +50,37 @@ public class Spline : MonoBehaviour
 	[Space(15)]
 	
 	public bool closed = false;
-	public bool locked = false;
+
+	private bool _locked;
+	public bool locked
+	{
+		get { return _locked; }
+		
+		set
+		{
+			if (value)
+			{
+				foreach (Point p in SplinePoints)
+				{
+					if (p._connectedSplines.Count <= 1)
+					{
+						p.locked = true;
+					}
+				}
+			}
+			else
+			{
+				foreach (Point p in SplinePoints)
+				{
+					p.locked = false;
+				}
+			}
+		}
+	}
+
 	[Space(15)]
 	public float unlockSpeed;
 
-	[HideInInspector]
-	public List<Spline> splinesToUnlock;
 
 	[Space(20)]
 	public int curveFidelity = 10;
@@ -253,15 +278,6 @@ public class Spline : MonoBehaviour
 
 	}
 
-	public void UpdateSpline(){
-		for(int i = 0; i < splinesToUnlock.Count; i++){
-			if(Services.PlayerBehaviour.flow > splinesToUnlock[i].unlockSpeed){
-				// splinesToUnlock[i].locked = false;
-				// splinesToUnlock.Remove(splinesToUnlock[i]);
-			}
-		}
-	}
-
 	void Start(){
 
 		SetupSpline();
@@ -272,21 +288,7 @@ public class Spline : MonoBehaviour
 				 float step = (float)k / (float)(curveFidelity);
 					SetLinePoint(GetPointAtIndex (i, step), index);
 				}
-		 }
-
-		splinesToUnlock = new List<Spline>();
-
-		foreach(Point p in SplinePoints){
-			if(p._connectedSplines.Count > 1){
-				foreach(Spline s in p._connectedSplines){
-					if(s.locked && s != this && !splinesToUnlock.Contains(s)){
-						splinesToUnlock.Add(s);
-					}
-				}
-			}
-		}
-		
-		
+		 }	
 	}
 
 	void SetLinePoint(Vector3 v, int index){

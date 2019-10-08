@@ -66,7 +66,7 @@ public class Point : MonoBehaviour
 	[Space(10)]
 
 	public bool isKinematic;
-	
+	public bool defaultToGhost = true;
 	[HideInInspector]
 	
 	public static float damping = 1000f;
@@ -92,8 +92,26 @@ public class Point : MonoBehaviour
 	public float timeOffset;
 	[HideInInspector]
 	public float proximity = 0;
+
+	private bool _locked;
+
 	[HideInInspector]
-	public bool locked = false;
+	public bool locked
+	{
+		get { return _locked; }
+		set
+		{
+			if (value)
+			{
+				color = Color.black;
+			}
+			else
+			{
+				StartCoroutine(Unlock());
+			}
+		}
+	}
+
 	[HideInInspector]
 	public Color color;
 	[HideInInspector]
@@ -150,13 +168,11 @@ public class Point : MonoBehaviour
 
 	void Awake()
 	{
-		locked = true;
 		Points.Add(this);
 		pointClouds = new List<PointCloud>();
 		stiffness = 1600;
 		damping = 1000;
 		mass = 20;
-		color = Color.black;
 		Point.pointCount++;
 		activationSprite = GetComponentInChildren<FadeSprite> ();
 		timeOffset = Point.pointCount;
@@ -187,27 +203,36 @@ public class Point : MonoBehaviour
 		text = gameObject.name;
 
 		timesHit = 0;
-		SetPointType();
+		
+		if(defaultToGhost && _neighbours.Count == 2 && pointType == PointTypes.normal){
+			pointType = PointTypes.ghost;
+		}
+		
+		
+		SetPointType(pointType);
 		
 		if (MapEditor.editing)
 		{
 			SR.color = Color.white;
 		}
-		
-		
+
+		if (locked)
+		{
+			color = Color.black;
+		}
+		else
+		{
+			color = Color.white;
+		}
 	}
 
-	public void SetPointType()
+	public void SetPointType(PointTypes t)
 	{
 		
-		if(_neighbours.Count == 2 && pointType == PointTypes.normal){
-			pointType = PointTypes.ghost;
-		}
-		
 		SR.enabled = true;
-		color = Color.white;
+		pointType = t;
 		
-		switch(pointType){
+		switch(t){
 
 			case PointTypes.fly:
 				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.fly];
@@ -223,7 +248,6 @@ public class Point : MonoBehaviour
 
 			case PointTypes.ghost:
 				SR.enabled = false;
-				color = Color.black;
 				break;
 			
 			case PointTypes.normal:
@@ -281,20 +305,25 @@ public class Point : MonoBehaviour
 		visited = false;
 		hit = false;
 		timesHit = 0;
-		StartCoroutine(LightUp());
-		SetPointType();
+		if(_neighbours.Count == 2 && pointType == PointTypes.normal){
+			pointType = PointTypes.ghost;
+		}
+
+		SetPointType(pointType);
 		
 	}
 
-	IEnumerator LightUp()
+	IEnumerator Unlock()
 	{
 		float f = 0;
 		while (f < 1)
 		{
-			SR.color = Color.Lerp(new Color(0,0,0,0), color, f);
+			color = Color.Lerp(Color.black, Color.white, f);
 			f += Time.deltaTime;
 			yield return null;
 		}
+
+		locked = false;
 	}
 
 	public bool isUnlocked(){
@@ -334,11 +363,11 @@ public class Point : MonoBehaviour
 
 	public void TurnOn()
 	{
-
-		if (pointType != PointTypes.ghost)
-		{
-			//Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, transform);
-		}
+//		locked = false;
+//		if (pointType != PointTypes.ghost)
+//		{
+//			Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, transform);
+//		}
 	}
 	
 	public void OnPointEnter()
@@ -464,18 +493,8 @@ public class Point : MonoBehaviour
 		c = Mathf.Pow (c, 1);
 		
 //		SR.color = Color.Lerp (color, new Color (1,1,1, c), Time.deltaTime * 5);
-		if (true)
-		{
-			//when used
+		
 			SR.color = color + new Color(c, c, c, 1);
-		}
-		else
-		{
-			SR.color = Color.Lerp(SR.color, new Color(0, 0, 0, 0), Time.deltaTime);
-		}
-
-
-
 	}
 
 	public void PlayerOnPoint(Vector3 direction, float force)

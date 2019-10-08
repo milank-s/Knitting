@@ -5,15 +5,23 @@ using UnityEngine;
 public class PointCloud : MonoBehaviour {
 
 	public enum UnlockType{laps, speed}
-
+	public enum UnlockMechanism{unlockSpline, turnOnSpline, unlockPoints, switchPointTypes}
+	
+	public List<UnlockMechanism> unlockActions = new List<UnlockMechanism>() {UnlockMechanism.unlockSpline};
+	
+	List<ActivatedBehaviour>  activateOnCompletion = new List<ActivatedBehaviour>();
+	
 	public UnlockType unlockMethod;
 	[HideInInspector]
 	public List<Point> _pointshit;
 	[HideInInspector]
 	public List<Point> _points;
+	
 	public Spline unlock;
+	
 	public int lapsRequired = 1;
 	public float speedRequired = 1;
+	
 	[Space(10)]
 	[Header("Point Physics")]
 	public bool isKinematic;
@@ -29,6 +37,7 @@ public class PointCloud : MonoBehaviour {
 	public TextAsset text;
 	[Space(10)]
 
+	
 	[HideInInspector]
 	public bool isOn;
 	bool isComplete;
@@ -47,6 +56,11 @@ public class PointCloud : MonoBehaviour {
 			hasUnlock = true;
 		}
 
+		foreach (ActivatedBehaviour a in GetComponentsInChildren<ActivatedBehaviour>())
+		{
+			activateOnCompletion.Add(a);
+
+		}
 		if(image != null){
 			image.color = new Color(0,0,0,0);
 		}
@@ -70,8 +84,8 @@ foreach(Spline s in GetComponents<Spline>()){
 		}
 	}
 }
-
-	public void CheckCompleteness()
+	
+	public bool CheckCompleteness()
 	{
 
 		bool isDone = true;
@@ -84,42 +98,47 @@ foreach(Spline s in GetComponents<Spline>()){
 			}
 		}
 
-		if (isDone)
-		{
-			isComplete = true;
-			if (unlock != null)
-			{
-				unlock.locked = false;
-			}
-		}
+		return isDone;
 	}
 
 	public void TryToUnlock()
 	{
 		if (hasUnlock && !isComplete)
 		{
+			bool complete = false;
 			switch (unlockMethod)
 			{
 			case UnlockType.laps:
-				CheckCompleteness();
+				complete = CheckCompleteness();
 				break;
 			
 			case UnlockType.speed:
-				CheckSpeed();
+				complete = CheckSpeed();
 				break;
 			}
+			
+			if (complete)
+			{
+				unlock.locked = false;
+
+				for (int i = 0; i < activateOnCompletion.Count; i++)
+				{
+					activateOnCompletion[i].DoBehaviour();
+				}
+			}
 		}
+
+		
 	}
-	public void CheckSpeed()
+	public bool CheckSpeed()
 	{
 		if (Services.PlayerBehaviour.curSpeed > speedRequired)
 		{
-			if (unlock != null)
-			{
-				unlock.locked = false;
-			}
-
-			isComplete = true;
+			return true;
+		}
+		else
+		{
+			return false;
 		}
 	}
 	void Update(){
