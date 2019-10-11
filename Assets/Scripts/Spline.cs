@@ -58,12 +58,15 @@ public class Spline : MonoBehaviour
 		
 		set
 		{
+			_locked = value;
 			if (value)
 			{
 				foreach (Point p in SplinePoints)
 				{
-					if (p._connectedSplines.Count <= 1)
+					
+					if (p != null && p._connectedSplines.Count <= 1)
 					{
+						
 						p.locked = true;
 					}
 				}
@@ -72,6 +75,8 @@ public class Spline : MonoBehaviour
 			{
 				foreach (Point p in SplinePoints)
 				{
+
+					if(p != null)
 					p.locked = false;
 				}
 			}
@@ -446,7 +451,7 @@ public class Spline : MonoBehaviour
 		if (isPlayerOn)
 		{
 			localDistortion = Mathf.Lerp(0, 1, Mathf.Pow(0.5f - Services.PlayerBehaviour.accuracy / 2, 3));
-			amplitude = Mathf.Clamp01(flow) / 5;
+			amplitude = flow / 5;
 			v += (distortionVector * UnityEngine.Random.Range(-localDistortion, localDistortion) * invertedDistance) * amplitude;
 		}
 		else

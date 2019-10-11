@@ -33,6 +33,7 @@ public class PointCloud : MonoBehaviour {
 	[Header("Visuals")]
 	public TextMesh title;
 	public SpriteRenderer image;
+	public bool fixedCam = true;
 	public float desiredFOV = 30;
 	public TextAsset text;
 	[Space(10)]
@@ -76,7 +77,7 @@ public class PointCloud : MonoBehaviour {
 			words = text.text.Split (new char[] { ' ' });
 		}
 
-foreach(Spline s in GetComponents<Spline>()){
+foreach(Spline s in GetComponentsInChildren<Spline>()){
 		foreach(Point p in s.SplinePoints){
 			p.hasPointcloud = true;
 			p.pointClouds.Add(this);
@@ -103,7 +104,8 @@ foreach(Spline s in GetComponents<Spline>()){
 
 	public void TryToUnlock()
 	{
-		if (hasUnlock && !isComplete)
+		
+		if (!isComplete)
 		{
 			bool complete = false;
 			switch (unlockMethod)
@@ -119,13 +121,18 @@ foreach(Spline s in GetComponents<Spline>()){
 			
 			if (complete)
 			{
+				if(hasUnlock)
 				unlock.locked = false;
 
 				for (int i = 0; i < activateOnCompletion.Count; i++)
 				{
 					activateOnCompletion[i].DoBehaviour();
 				}
+
+				isComplete = true;
 			}
+
+			
 		}
 
 		
@@ -142,7 +149,11 @@ foreach(Spline s in GetComponents<Spline>()){
 		}
 	}
 	void Update(){
-		if (isOn) {
+		if (isOn)
+		{
+			CameraFollow.fixedCamera = fixedCam;
+			CameraFollow.desiredFOV = desiredFOV;
+			
 			if(title != null){
 				title.color = Color.Lerp(title.color, new Color (1, 1, 1, 1), Time.deltaTime);
 			}

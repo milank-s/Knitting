@@ -101,6 +101,8 @@ public class Point : MonoBehaviour
 		get { return _locked; }
 		set
 		{
+			_locked = value;
+			
 			if (value)
 			{
 				color = Color.black;
@@ -216,7 +218,7 @@ public class Point : MonoBehaviour
 			SR.color = Color.white;
 		}
 
-		if (locked)
+		if (_locked)
 		{
 			color = Color.black;
 		}
@@ -323,17 +325,9 @@ public class Point : MonoBehaviour
 			yield return null;
 		}
 
-		locked = false;
 	}
 
-	public bool isUnlocked(){
-		 if(!locked || PointManager._pointsHit.Count >= lockAmount){
-			locked = false;
-			return true;
-		}else{
-			return false;
-		}
-	}
+
 
 	public float NeighbourCount(){
 		return _connectedSplines.Count;
@@ -369,6 +363,27 @@ public class Point : MonoBehaviour
 //			Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, transform);
 //		}
 	}
+
+	public void TurnOnPointCloud()
+	{
+		if(hasPointcloud){
+			foreach(PointCloud p in pointClouds){
+				
+				p.isOn = true;
+				p.TryToUnlock();
+			}
+		}
+	}
+	
+	public void TurnOffPointCloud()
+	{
+		if(hasPointcloud){
+			foreach(PointCloud p in pointClouds)
+			{
+				p.isOn = false;
+			}
+		}
+	}
 	
 	public void OnPointEnter()
 	{
@@ -388,12 +403,7 @@ public class Point : MonoBehaviour
 
 		}
 
-		if(hasPointcloud){
-			foreach(PointCloud p in pointClouds){
-			p.isOn = true;
-			p.TryToUnlock();
-		 }
-		}
+		TurnOnPointCloud();
 		
 		if (!hit)
 		{
@@ -413,10 +423,11 @@ public class Point : MonoBehaviour
 
 	public void OnPointExit(){
 
-		
+		TurnOffPointCloud();
 		
 		switch(pointType){
 			case PointTypes.stop:
+				Services.PlayerBehaviour.boost += boostAmount;
 				Services.PlayerBehaviour.flow += boostAmount * (Services.PlayerBehaviour.boostTimer);
 				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
 				Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.boostTimer + 1 * 5, transform);
@@ -429,6 +440,8 @@ public class Point : MonoBehaviour
 			break;
 
 			case PointTypes.normal:
+				
+				Services.PlayerBehaviour.boost += boostAmount * (Services.PlayerBehaviour.boostTimer);
 				
 				if(!hit){
 					

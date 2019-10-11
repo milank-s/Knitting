@@ -8,6 +8,7 @@ public class CameraFollow : MonoBehaviour {
 	private Vector3 velocity = Vector2.zero;
 	public Vector3 offset;
 	private Camera cam;
+	public static bool fixedCamera;
 	public static float desiredFOV;
 	// Use this for initialization
 	void Start () {
@@ -17,7 +18,6 @@ public class CameraFollow : MonoBehaviour {
 		CameraDolly.topBound = float.NegativeInfinity;
 		CameraDolly.bottomBound = float.PositiveInfinity;
 		desiredFOV = cam.fieldOfView;
-		
 	}
 
 	// Update is called once per frame
@@ -26,6 +26,8 @@ public class CameraFollow : MonoBehaviour {
 		//find its bounds
 		// get around them
 
+		cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, desiredFOV, Time.deltaTime * 3);
+		
 		uiCam.fieldOfView = cam.fieldOfView;
 		
 //		transform.position = Vector3.SmoothDamp (transform.position, target.position + offset, ref velocity, speed);
@@ -42,11 +44,12 @@ public class CameraFollow : MonoBehaviour {
 					// CameraDolly.rightBound = CameraDolly.leftBound;
 					// CameraDolly.bottomBound = CameraDolly.topBound;
 				//
-				if(Services.PlayerBehaviour.curSpline == null){
+				if((!fixedCamera  && Services.PlayerBehaviour.state == PlayerState.Traversing)|| Services.PlayerBehaviour.state != PlayerState.Traversing){
 					
 					Vector3 targetPosition = Vector3.SmoothDamp (transform.position,Services.PlayerBehaviour.transform.position, ref velocity, 0.25f);
 
-					transform.position = new Vector3(targetPosition.x, targetPosition.y, Services.PlayerBehaviour.transform.position.z + offset.z);
+					transform.position = new Vector3(targetPosition.x, targetPosition.y,   offset.z);
+					//Services.PlayerBehaviour.transform.position.z
 					return;
 				}
 //					foreach (Point p in Services.PlayerBehaviour.curSpline.SplinePoints) {
@@ -132,12 +135,16 @@ public class CameraFollow : MonoBehaviour {
 				// Debug.Log(CameraDolly.FOVForHeightAndDistance (height, offset.z));
 				// this is negative
 
-				
-					cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, Mathf.Clamp(CameraDolly.FOVForHeightAndDistance (height, -offset.z) + 5, 25, 100), Time.deltaTime * speed);
-					Vector3 shake = Services.PlayerBehaviour.state == PlayerState.Traversing ? Random.onUnitSphere * Mathf.Clamp(Mathf.Pow(1- Services.PlayerBehaviour.accuracy, 2) * Services.PlayerBehaviour.curSpeed , 0, 0.5f) : Vector3.zero;
+				Vector3 curSplinePos = Services.PlayerBehaviour.curSpline.transform.position;
+//					cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, Mathf.Clamp(CameraDolly.FOVForHeightAndDistance (height, -offset.z) + 5, 25, 100), Time.deltaTime * speed);
+					
+					Vector3 shake = Services.PlayerBehaviour.state == PlayerState.Traversing ? Random.onUnitSphere * Mathf.Clamp(Mathf.Pow(1- Services.PlayerBehaviour.accuracy, Services.PlayerBehaviour.accuracyCoefficient) * Services.PlayerBehaviour.flow , 0, 0.5f) : Vector3.zero;
 
-					Vector3 targetPos = Vector3.SmoothDamp (transform.position, Vector3.Lerp(Services.PlayerBehaviour.transform.position, new Vector3(xPos, yPos, Services.PlayerBehaviour.transform.position.z), 0f) + shake, ref velocity, 0.25f);
+					Vector3 targetPos = Vector3.SmoothDamp (transform.position, new Vector3(curSplinePos.x, curSplinePos.y, Services.PlayerBehaviour.transform.position.z + offset.z) + shake, ref velocity, 0.25f);
 
+					// new Vector3(curSplinePos.x, curSplinePos.y Services.PlayerBehaviour.transform.position.z)
+					//Vector3.Lerp(Services.PlayerBehaviour.transform.position, new Vector3(xPos, yPos, Services.PlayerBehaviour.transform.position.z), 1f)
+					
 					transform.position = new Vector3(targetPos.x, targetPos.y, Services.PlayerBehaviour.transform.position.z + offset.z);
 				// }
 

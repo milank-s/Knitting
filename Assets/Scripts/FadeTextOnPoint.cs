@@ -35,6 +35,7 @@ public class FadeTextOnPoint: MonoBehaviour {
 	}
 	// Update is called once per frame
 	void Update () {
+
 		if(hasPoint)
 		{
 			if (stayOn && p.hit)

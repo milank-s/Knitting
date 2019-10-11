@@ -269,6 +269,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (state == PlayerState.Traversing) {
 			if(curSpline != null){
 				SetCursorAlignment ();
+				transform.position = curSpline.GetPoint(progress);
 			}
 
 			PlayerMovement ();
@@ -282,7 +283,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			 cursorSprite.sprite = canFlySprite;
 		 }
 			
-			transform.position = curSpline.GetPoint(progress);
+			
 			
 
 		}else if(state == PlayerState.Switching)
@@ -938,11 +939,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		// (adjustedAccuracy + 0.1f)
 		if (!joystickLocked)
 		{
-			curSpeed = Mathf.Clamp(flow + speed - adjustedAccuracy, 0, 1000) * cursorDir.magnitude * accuracyMultiplier;
+			curSpeed = Mathf.Clamp(flow + speed  + boost - adjustedAccuracy, 0, 1000) * cursorDir.magnitude * accuracyMultiplier;
 			progress += (curSpeed * Time.deltaTime) / curSpline.distance;
 		}
 
-		//boost = Mathf.Lerp (boost, 0, Time.deltaTime * 2);
+		boost = Mathf.Lerp (boost, 0, Time.deltaTime * 2);
 		//set player position to a point along the curve
 
 		if (curPoint == curSpline.Selected) {
@@ -1204,10 +1205,14 @@ public class PlayerBehaviour: MonoBehaviour {
 
 // && (Input.GetButtonDown("Button1")
 			if (angleToSpline <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) {
-				if(curSpline != null){
-					curSpline.OnSplineExit ();
+				if(curSpline != null && curSpline != splineDest){
+					
+					
+				}else if (curSpline != splineDest)
+				{
+					curSpline = splineDest;
 				}
-				curSpline = splineDest;
+
 				return true;
 			}else{
 				return false;
@@ -1427,7 +1432,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			
 			case PlayerState.Switching:
 				l.positionCount = 0;
-				
+				curPoint.OnPointExit();
+				connectTime = 1;
 				break;
 			
 			case PlayerState.Animating:
@@ -1444,25 +1450,12 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			case PlayerState.Traversing:
 
-				if(curPoint.hasPointcloud){
-					if(pointDest.hasPointcloud){
-						foreach(PointCloud p in curPoint.pointClouds){
-							p.isOn = false;
-							foreach(PointCloud q in pointDest.pointClouds){
-
-								if(p == q){
-									p.isOn = true;
-								}
-							}
-						}
-					}
-				}
+				pointDest.TurnOnPointCloud();
+				
 				VectorLine v = velocityLine2;
 				velocityLine2 = velocityLine;
 				velocityLine = v;
 
-				curPoint.OnPointExit ();
-				connectTime = 1;
 				state = PlayerState.Traversing;
 
 				foreach (Spline s in pointDest._connectedSplines)
@@ -1491,11 +1484,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				pointDest = null;
 				l.positionCount = 0;
 
-				if (curSpline != null)
-				{
-					curSpline.OnSplineExit();
-				}
-
 				curPoint.OnPointExit();
 				curPoint.proximity = 0;
 				flow += 0.1f;
@@ -1513,6 +1501,12 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Switching:
 
+				if (curSpline != null)
+				{
+					curSpline.OnSplineExit();
+				}
+
+				curSpline = null;
 				state = PlayerState.Switching;
 				boostTimer = 0;
 				pointDest.proximity = 1;
