@@ -40,7 +40,6 @@ public class Spline : MonoBehaviour
 	[HideInInspector]
 	public VectorLine line;
 
-	public AudioClip SoundFile;
 	public float accuracyCoefficient;
 	public float maxSpeed;
 	public float boost;
@@ -59,27 +58,6 @@ public class Spline : MonoBehaviour
 		set
 		{
 			_locked = value;
-			if (value)
-			{
-				foreach (Point p in SplinePoints)
-				{
-					
-					if (p != null && p._connectedSplines.Count <= 1)
-					{
-						
-						p.locked = true;
-					}
-				}
-			}
-			else
-			{
-				foreach (Point p in SplinePoints)
-				{
-
-					if(p != null)
-					p.locked = false;
-				}
-			}
 		}
 	}
 
@@ -141,8 +119,6 @@ public class Spline : MonoBehaviour
 	private float frequency;
 	private float phase;
 	private float volume;
-	private AudioSource sound;
-	private Coroutine curSound;
 
 	private static string path;
 
@@ -170,17 +146,14 @@ public class Spline : MonoBehaviour
 
 	}
 
-	public void OnSplineEnter (bool enter, Point p1, Point p2, bool forceDraw = false)
+	public void OnSplineEnter (Point p1, Point p2)
 	{
-		draw = false;
+		draw = true;
 		drawIndex = SplinePoints.IndexOf(p1) * curveFidelity;
 		int i = SplinePoints.IndexOf (p1);
 		int j = SplinePoints.IndexOf (p2);
 
-		if (forceDraw) {
-			draw = true;
-		}
-
+		Selected = p1;
 		//find the range of indices the player has been on
 		//most likely super bugged right now
 
@@ -283,6 +256,19 @@ public class Spline : MonoBehaviour
 
 	}
 
+	public void LockSpline(bool b)
+	{
+		locked = b;
+		foreach (Point p in SplinePoints)
+		{
+					
+			if (p != null && p._connectedSplines.Count <= 1)
+			{
+				p.locked = b;
+			}
+		}
+	}
+	
 	void Start(){
 
 		SetupSpline();
@@ -519,10 +505,10 @@ public class Spline : MonoBehaviour
 
 			}
 		}
+
+
+
 		
-
-
-
 
 		//because I was indexing out of vectrosity's line's points, just make sure its in there
 
@@ -597,85 +583,85 @@ public class Spline : MonoBehaviour
 // 		}
 	}
 
-	public void PlayAttack (Point point1, Point point2){
+//	public void PlayAttack (Point point1, Point point2){
+//
+////		do some angle shit or normalize it??
+//		segmentDistance = Vector3.Distance (point1.Pos, point2.Pos);
+//		linearDirection = point2.Pos - point1.Pos;
+//		linearDirection = new Vector2(linearDirection.x, linearDirection.y).normalized;
+//		float dot = Vector2.Dot (linearDirection, Vector2.up);
+//
+//		int index = (int)(((dot/2f) + 0.5f) * (Services.Sounds.sustains.Count-1));
+//
+//		curSound = StartCoroutine (PlaySustain (index));
+//
+//	}
 
-//		do some angle shit or normalize it??
-		segmentDistance = Vector3.Distance (point1.Pos, point2.Pos);
-		linearDirection = point2.Pos - point1.Pos;
-		linearDirection = new Vector2(linearDirection.x, linearDirection.y).normalized;
-		float dot = Vector2.Dot (linearDirection, Vector2.up);
+//	public void ManageSound (bool fade, float lerpVal)
+//	{
+//
+//		if (fade) {
+//			sound.volume = Mathf.Lerp (Services.PlayerBehaviour.connectTime, 0, lerpVal);
+//		} else {
+//			sound.volume = Mathf.Lerp (0, Services.PlayerBehaviour.connectTime, lerpVal);
+//		}
+//		float dot = Vector2.Dot(Services.PlayerBehaviour.curSpline.GetDirection (Services.PlayerBehaviour.progress), linearDirection);
+//		float curFreqGain;
+//
+//		Services.Sounds.master.GetFloat ("CenterFreq", out curFreqGain);
+//		float lerpAmount = Services.PlayerBehaviour.goingForward ? Services.PlayerBehaviour.progress : 1 - Services.PlayerBehaviour.progress;
+//
+//
+//		Services.Sounds.master.SetFloat("CenterFreq", Mathf.Lerp(curFreqGain, ((dot/2f + 0.5f) + Mathf.Clamp01(1f/Mathf.Pow(segmentDistance, 5))) * (16000f / curFreqGain), lerpAmount));
+//
+//		//centering freq on note freq will just boost the fundamental. can shift this value to highlight diff harmonics
+//		//graph functions
+//		//normalize values before multiplying by freq
+//		//use note to freq script
+//
+////		pitch = dot product between the current tangent of the spline and the linear distance between points
+//		Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(Services.PlayerBehaviour.flow)/2 + 1f);
+//	}
 
-		int index = (int)(((dot/2f) + 0.5f) * (Services.Sounds.sustains.Count-1));
+//	public IEnumerator PlaySustain (int index)
+//	{
+//
+////		AudioClip soundEffect = Services.Sounds.Loops [(int)((1 - Mathf.Clamp01 ((segmentDistance) / 10 * 2.5f)) * (Services.Sounds.Loops.Count - 1))];
+//		AudioClip soundEffect = Services.Sounds.sustains[index];
+//
+//		sound = Services.Prefabs.CreateSoundEffect (soundEffect, Selected.Pos);
+//		sound.clip = soundEffect;
+//		sound.Play ();
+//
+//		float t = 0;
+//
+//		while (t < 1) {
+//			ManageSound (false, t);
+//			t += Time.deltaTime;
+//			yield return null;
+//		}
+//
+//		while (true) {
+////			float progressToSin = Mathf.Sin (Services.PlayerBehaviour.progress * Mathf.PI);
+//			ManageSound (false, 1);
+//			yield return null;
+//		}
+//
+//	}
 
-		curSound = StartCoroutine (PlaySustain (index));
-
-	}
-
-	public void ManageSound (bool fade, float lerpVal)
-	{
-
-		if (fade) {
-			sound.volume = Mathf.Lerp (Services.PlayerBehaviour.connectTime, 0, lerpVal);
-		} else {
-			sound.volume = Mathf.Lerp (0, Services.PlayerBehaviour.connectTime, lerpVal);
-		}
-		float dot = Vector2.Dot(Services.PlayerBehaviour.curSpline.GetDirection (Services.PlayerBehaviour.progress), linearDirection);
-		float curFreqGain;
-
-		Services.Sounds.master.GetFloat ("CenterFreq", out curFreqGain);
-		float lerpAmount = Services.PlayerBehaviour.goingForward ? Services.PlayerBehaviour.progress : 1 - Services.PlayerBehaviour.progress;
-
-
-		Services.Sounds.master.SetFloat("CenterFreq", Mathf.Lerp(curFreqGain, ((dot/2f + 0.5f) + Mathf.Clamp01(1f/Mathf.Pow(segmentDistance, 5))) * (16000f / curFreqGain), lerpAmount));
-
-		//centering freq on note freq will just boost the fundamental. can shift this value to highlight diff harmonics
-		//graph functions
-		//normalize values before multiplying by freq
-		//use note to freq script
-
-//		pitch = dot product between the current tangent of the spline and the linear distance between points
-		Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(Services.PlayerBehaviour.flow)/2 + 1f);
-	}
-
-	public IEnumerator PlaySustain (int index)
-	{
-
-//		AudioClip soundEffect = Services.Sounds.Loops [(int)((1 - Mathf.Clamp01 ((segmentDistance) / 10 * 2.5f)) * (Services.Sounds.Loops.Count - 1))];
-		AudioClip soundEffect = Services.Sounds.sustains[index];
-
-		sound = Services.Prefabs.CreateSoundEffect (soundEffect, Selected.Pos);
-		sound.clip = soundEffect;
-		sound.Play ();
-
-		float t = 0;
-
-		while (t < 1) {
-			ManageSound (false, t);
-			t += Time.deltaTime;
-			yield return null;
-		}
-
-		while (true) {
-//			float progressToSin = Mathf.Sin (Services.PlayerBehaviour.progress * Mathf.PI);
-			ManageSound (false, 1);
-			yield return null;
-		}
-
-	}
-
-	public IEnumerator FadeNote(AudioSource s){
-
-		GameObject toDelete = s.gameObject;
-		float t = 0;
-
-		while (t < 1) {
-			s.volume = Mathf.Lerp (s.volume, 0, t);
-			t += Time.deltaTime/1;
-			yield return null;
-		}
-
-		Destroy (toDelete);
-	}
+//	public IEnumerator FadeNote(AudioSource s){
+//
+//		GameObject toDelete = s.gameObject;
+//		float t = 0;
+//
+//		while (t < 1) {
+//			s.volume = Mathf.Lerp (s.volume, 0, t);
+//			t += Time.deltaTime/1;
+//			yield return null;
+//		}
+//
+//		Destroy (toDelete);
+//	}
 
 
 	void OnDestroy ()

@@ -63,6 +63,9 @@ public class Point : MonoBehaviour
 	public float tension;
 	public float bias;
 	public float continuity;
+	private float initTension;
+	private float initBias;
+	private float initContinuity;
 	[Space(10)]
 
 	public bool isKinematic;
@@ -72,8 +75,10 @@ public class Point : MonoBehaviour
 	public static float damping = 1000f;
 	public static float stiffness = 1000f;
 	public static float mass = 50f;
-	[HideInInspector]
-	public Vector3 originalPos;
+                     	[HideInInspector]
+	public Vector3 anchorPos;
+
+	public Vector3 initPos;
 	[Space(10)]
 
 	[HideInInspector]
@@ -102,15 +107,12 @@ public class Point : MonoBehaviour
 		set
 		{
 			_locked = value;
+
+			if (!value)
+			{
+				TurnOn();
+			}
 			
-			if (value)
-			{
-				color = Color.black;
-			}
-			else
-			{
-				StartCoroutine(Unlock());
-			}
 		}
 	}
 
@@ -172,9 +174,9 @@ public class Point : MonoBehaviour
 	{
 		Points.Add(this);
 		pointClouds = new List<PointCloud>();
-		stiffness = 1600;
-		damping = 1000;
-		mass = 20;
+//		stiffness = 1600;
+//		damping = 1000;
+//		mass = 20;
 		Point.pointCount++;
 		activationSprite = GetComponentInChildren<FadeSprite> ();
 		timeOffset = Point.pointCount;
@@ -190,18 +192,31 @@ public class Point : MonoBehaviour
 		c = 0;
 		cooldown = 0;
 		SR = GetComponent<SpriteRenderer> ();
-		
-		
-		originalPos = transform.position;
+
+		initPos = transform.position;
+		anchorPos = initPos;
 	}
 
+	public void TurnOn()
+	{
+		if (pointType != PointTypes.ghost)
+		{
+			StartCoroutine(LightUp());
+		}
+
+	}
+	
 	public void ResetPoint()
 	{
 		_neighbours.Clear();
 		_connectedSplines.Clear();
 	}
 	public void Initialize(){
-
+		initPos = transform.position;
+		anchorPos = initPos;
+		initContinuity = continuity;
+		initTension = tension;
+		initBias = bias;
 		text = gameObject.name;
 
 		timesHit = 0;
@@ -218,14 +233,8 @@ public class Point : MonoBehaviour
 			SR.color = Color.white;
 		}
 
-		if (_locked)
-		{
-			color = Color.black;
-		}
-		else
-		{
-			color = Color.white;
-		}
+		color = Color.black;
+
 	}
 
 	public void SetPointType(PointTypes t)
@@ -268,6 +277,8 @@ public class Point : MonoBehaviour
 			{
 				Movement();
 			}
+
+
 		}
 		else
 		{
@@ -277,12 +288,12 @@ public class Point : MonoBehaviour
 
 	void Movement(){
 		
-		Vector3 stretch = transform.position - originalPos;
+		Vector3 stretch = transform.position - anchorPos;
 		Vector3 force = -stiffness * stretch - damping * _velocity;
 		Vector3 acceleration = force / mass;
 
 		_velocity += acceleration * Time.deltaTime;
-		transform.position += _velocity * Time.deltaTime;
+		transform.position += _velocity/100;
 	}
 
 	public void AddSpline(Spline s){
@@ -303,9 +314,13 @@ public class Point : MonoBehaviour
 
 	public void Reinitialize()
 	{
+		anchorPos = initPos;
 		used = false;
 		visited = false;
 		hit = false;
+		bias = initBias;
+		tension = initTension;
+		continuity = initContinuity;
 		timesHit = 0;
 		if(_neighbours.Count == 2 && pointType == PointTypes.normal){
 			pointType = PointTypes.ghost;
@@ -315,19 +330,24 @@ public class Point : MonoBehaviour
 		
 	}
 
-	IEnumerator Unlock()
+	IEnumerator LightUp()
 	{
 		float f = 0;
 		while (f < 1)
 		{
-			color = Color.Lerp(Color.black, Color.white, f);
-			f += Time.deltaTime;
+			if (proximity == 1)
+			{
+				break;
+			}
+
+			Color startColor = color;
+			color = Color.Lerp(startColor, Color.white, f);
+			f += Time.deltaTime * 3f;
 			yield return null;
 		}
-
+		
+		Services.fx.PlayAnimationAtPosition(FXManager.FXType.rotate, transform);
 	}
-
-
 
 	public float NeighbourCount(){
 		return _connectedSplines.Count;
@@ -355,21 +375,26 @@ public class Point : MonoBehaviour
 		
 	}
 
-	public void TurnOn()
-	{
-//		locked = false;
-//		if (pointType != PointTypes.ghost)
-//		{
-//			Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, transform);
-//		}
-	}
 
+	public void UpdatePointClouds()
+	{
+		foreach(PointCloud p in pointClouds)
+		{
+
+			p.Step();
+		}
+	}
+	
 	public void TurnOnPointCloud()
 	{
 		if(hasPointcloud){
 			foreach(PointCloud p in pointClouds){
 				
 				p.isOn = true;
+				if (p.isComplete)
+				{
+					Services.fx.trailParticles.Play();
+				}
 				p.TryToUnlock();
 			}
 		}
@@ -381,14 +406,17 @@ public class Point : MonoBehaviour
 			foreach(PointCloud p in pointClouds)
 			{
 				p.isOn = false;
+			
+				Services.fx.trailParticles.Pause();
+				
 			}
 		}
 	}
 	
 	public void OnPointEnter()
 	{
+		
 		timeOnPoint = 0;
-		color = Color.white/2;
 		timesHit++;
 //		stiffness = Mathf.Clamp(stiffness -100, 100, 10000);
 //		damping = Mathf.Clamp(damping - 100, 100, 10000);
@@ -400,7 +428,6 @@ public class Point : MonoBehaviour
 
 		if (!visited) {
 			visited = true;
-
 		}
 
 		TurnOnPointCloud();
@@ -423,6 +450,7 @@ public class Point : MonoBehaviour
 
 	public void OnPointExit(){
 
+	
 		TurnOffPointCloud();
 		
 		switch(pointType){
@@ -452,7 +480,8 @@ public class Point : MonoBehaviour
 		if(pointType != PointTypes.ghost){
 			
 		}
-		accretion += 0.1f;
+
+		
 		/*
 			if(curPoint.IsOffCooldown()){
 			// flow += flowAmount;
@@ -463,6 +492,17 @@ public class Point : MonoBehaviour
 		*/
 	}
 
+	public void Contract()
+	{
+		tension = Mathf.Clamp(tension + Time.deltaTime /5f, -1f, 1f);
+	}
+
+	public void Release()
+	{
+		anchorPos = Vector3.Lerp(anchorPos, initPos, Time.deltaTime);
+		tension = Mathf.Lerp(tension, initTension, Time.deltaTime);
+	}
+	
 	public bool HasSplines(){
 		return _connectedSplines.Count > 0 ? true : false;
 	}
@@ -507,12 +547,13 @@ public class Point : MonoBehaviour
 		
 //		SR.color = Color.Lerp (color, new Color (1,1,1, c), Time.deltaTime * 5);
 		
-			SR.color = color + new Color(c, c, c, 1);
+	    SR.color = color + new Color(c, c, c, 1);
 	}
 
 	public void PlayerOnPoint(Vector3 direction, float force)
 	{
 		timeOnPoint += Time.deltaTime;
+		anchorPos = initPos + ((Vector3)Random.insideUnitCircle / 10f * Services.PlayerBehaviour.flow *  Mathf.Clamp01(timeOnPoint));
 		//velocity += (Vector3)Random.insideUnitCircle / Mathf.Pow(1 + timeOnPoint, 2);
 	}
 	

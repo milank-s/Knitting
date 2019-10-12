@@ -1,17 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vectrosity;
 
 public class FXManager : MonoBehaviour
 {
     public enum FXType{fizzle, burst, rotate, pulse, cross}
 
-    public ParticleSystem popParticles, flyingParticles, speedParticles;
+    public ParticleSystem popParticles, flyingParticles, speedParticles, trailParticles;
     public TrailRenderer playerTrail, flyingTrail;
     public MeshFilter flyingParticleMesh, flyingParticleTrailMesh, flyingTrailMesh, playerTrailMesh, brakeParticleMesh;
-    
+    public GameObject MeshPrefab;
+
+    private int lineIndex;
+    private VectorLine line;
     [SerializeField] private GameObject fxPrefab;
   private int index;
+ 
   private List<Animator> fxInstances = new List<Animator>();
  
   void Start()
@@ -22,14 +27,20 @@ public class FXManager : MonoBehaviour
           fxInstances.Add(newFX.GetComponent<Animator>());   
       }
       
+      
+      line = new VectorLine (name, new List<Vector3> (20), 2, LineType.Continuous, Vectrosity.Joins.Weld);
+      line.color = new Color(1,1,1,0.25f);
+      line.smoothWidth = true;
+      line.smoothColor = true;
+
       flyingParticleMesh.mesh = new Mesh();
       flyingParticleTrailMesh.mesh = new Mesh();
       flyingTrailMesh.mesh = new Mesh();
       playerTrailMesh.mesh = new Mesh();
       brakeParticleMesh.mesh = new Mesh();
+      
   }
-
-
+  
   public void BakeTrail(TrailRenderer t, MeshFilter f)
   {
       t.emitting = false;
@@ -101,6 +112,13 @@ public class FXManager : MonoBehaviour
       popParticles.transform.position = t.position;
       popParticles.Emit(i);
   }
+  
+  public void EmitTracerBurst(int i, float force, Transform t)
+  {
+      ParticleSystem.MainModule m = trailParticles.main;
+      trailParticles.transform.position = t.position;
+      trailParticles.Emit(i);
+  }
 
   public void EmitLinearBurst(int i, float force, Transform t, Vector3 direction)
   {
@@ -110,7 +128,25 @@ public class FXManager : MonoBehaviour
       speedParticles.transform.up = direction;
       speedParticles.Emit(i);
   }
-  
+
+  public void DrawLine()
+  {
+      lineIndex += (int)(50 * Time.deltaTime);
+      List<Vector3> pos = new List<Vector3>();
+      Vector3[] positions = new Vector3[playerTrail.positionCount];
+      playerTrail.GetPositions(positions);
+      int indices = Mathf.Clamp(playerTrail.positionCount, 0, 50);
+      for (int i = 0; i < indices; i++)
+      {
+          if (Random.Range(0, 100) < 100)
+          {
+              pos.Add(positions[(indices + lineIndex - i)%playerTrail.positionCount] +  (Vector3) Random.insideUnitCircle /100);
+//             
+          }
+      } 
+      line.points3 = pos;
+      line.Draw3D();
+  }
  
   
 }

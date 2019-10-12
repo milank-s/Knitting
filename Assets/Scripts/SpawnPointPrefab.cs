@@ -22,7 +22,6 @@ public class SpawnPointPrefab : ScriptableObject {
 		Point newPoint2 = p2.GetComponent<Point>();
 
 		newPoint2.transform.position = pos;
-		newPoint2.originalPos = pos;
 		newPoint2.GetComponent<Collider> ().enabled = true;
 
 		return newPoint2;

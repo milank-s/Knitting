@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.WSA;
 
 public class PointCloud : MonoBehaviour {
 
@@ -41,7 +42,7 @@ public class PointCloud : MonoBehaviour {
 	
 	[HideInInspector]
 	public bool isOn;
-	bool isComplete;
+	public bool isComplete;
 	private string[] words;
 	private int wordIndex;
 	private float fade;
@@ -53,7 +54,7 @@ public class PointCloud : MonoBehaviour {
 
 	public void Start(){
 		if(unlock){
-			unlock.locked = true;
+			unlock.LockSpline(true);
 			hasUnlock = true;
 		}
 
@@ -102,11 +103,50 @@ foreach(Spline s in GetComponentsInChildren<Spline>()){
 		return isDone;
 	}
 
+	public void Step()
+	{
+		
+			if (isOn)
+			{
+				if (isComplete)
+				{
+					List<Vector3> positions = new List<Vector3>();
+					foreach (Point p in _points)
+					{
+
+						
+						p.Contract();
+					}
+
+					Services.fx.DrawLine();
+				}
+				
+				CameraFollow.fixedCamera = fixedCam;
+				CameraFollow.desiredFOV = desiredFOV;
+			
+				if(title != null){
+					title.color = Color.Lerp(title.color, new Color (1, 1, 1, 1), Time.deltaTime);
+				}
+				fade = Mathf.Clamp(fade + Time.deltaTime/20, 0, 0.1f);
+			} else {
+				if(title != null){
+					title.color = Color.Lerp(title.color, new Color (1, 1, 1, 0), Time.deltaTime);
+				}
+				fade = Mathf.Clamp01(fade - Time.deltaTime/10);
+			}
+			
+			if(image != null && isComplete){
+				image.color = new Color (1, 1, 1, fade);
+			}
+
+		
+	}
 	public void TryToUnlock()
 	{
 		
 		if (!isComplete)
 		{
+			
 			bool complete = false;
 			switch (unlockMethod)
 			{
@@ -122,20 +162,23 @@ foreach(Spline s in GetComponentsInChildren<Spline>()){
 			if (complete)
 			{
 				if(hasUnlock)
-				unlock.locked = false;
-
+				unlock.LockSpline(false);
+				
 				for (int i = 0; i < activateOnCompletion.Count; i++)
 				{
 					activateOnCompletion[i].DoBehaviour();
 				}
 
+				foreach (Point p in _points)
+				{
+					p.TurnOn();
+				}
 				isComplete = true;
 			}
 
 			
 		}
-
-		
+	
 	}
 	public bool CheckSpeed()
 	{
@@ -147,27 +190,5 @@ foreach(Spline s in GetComponentsInChildren<Spline>()){
 		{
 			return false;
 		}
-	}
-	void Update(){
-		if (isOn)
-		{
-			CameraFollow.fixedCamera = fixedCam;
-			CameraFollow.desiredFOV = desiredFOV;
-			
-			if(title != null){
-				title.color = Color.Lerp(title.color, new Color (1, 1, 1, 1), Time.deltaTime);
-			}
-			fade = Mathf.Clamp(fade + Time.deltaTime/20, 0, 0.1f);
-		} else {
-			if(title != null){
-				title.color = Color.Lerp(title.color, new Color (1, 1, 1, 0), Time.deltaTime);
-			}
-			fade = Mathf.Clamp01(fade - Time.deltaTime/10);
-		}
-
-		if(image != null && isComplete){
-			image.color = new Color (1, 1, 1, fade);
-		}
-		
 	}
 }

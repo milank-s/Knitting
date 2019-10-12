@@ -9,9 +9,9 @@ public class SplineUtil : MonoBehaviour {
 		Point newPoint = p.GetComponent<Point>();
 
 		newPoint.transform.position = pos;
-		newPoint.originalPos = pos;
 		newPoint.GetComponent<Collider> ().enabled = true;
-
+		newPoint.Initialize();
+		
 		return newPoint;
 	}
 

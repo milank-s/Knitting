@@ -450,7 +450,7 @@ public class MapEditor : MonoBehaviour
                                 {
 
                                     p.transform.position += new Vector3(delta.x, delta.y, -Input.mouseScrollDelta.y * Time.deltaTime * 10f);
-                                    p.originalPos = p.Pos;
+                                    p.initPos = p.Pos;
                                 }
                             }
                         }

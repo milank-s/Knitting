@@ -152,6 +152,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		curPoint.OnPointEnter ();
 		t.Clear();
 
+		
 //		Material newMat;
 //		newMat = Services.Prefabs.lines[3];
 //		Texture tex = newMat.mainTexture;
@@ -299,6 +300,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			//curSpline.UpdateSpline();
 			ManageSound();
+			if (curPoint.hasPointcloud)
+			{
+				curPoint.UpdatePointClouds();
+				
+			}
 			
 			foreach(Spline s in curPoint._connectedSplines){
 				//should always be drawn
@@ -310,15 +316,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			
 			if(pointDest != null){
 				foreach(Spline s in pointDest._connectedSplines){
-					if(!s.locked)
+					if(!s.locked && s!=curSpline)
 					{
 						s.DrawSpline(s.SplinePoints.IndexOf(pointDest));
 					}
 				}
 			}
-			
-			
-		
 			
 			if (traversedPoints.Count >= 2 && Input.GetButton("Button2")) {
 				// && Mathf.Abs (flow) <= 0)
@@ -501,7 +504,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		curPoint = SplineUtil.CreatePoint(transform.position);
 		curSpline = SplineUtil.CreateSpline(drawnPoint, curPoint);
 		curDrawDistance = 0;
-		curSpline.OnSplineEnter(true, drawnPoint, curPoint, false);
+		curSpline.OnSplineEnter(drawnPoint, curPoint);
 		curPoint.GetComponent<Collider>().enabled = false;
 
 		flow = Mathf.Abs(flow);
@@ -512,7 +515,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (timeOnPoint == 0 && curPoint.pointType != PointTypes.ghost)
 		{
-			curPoint.velocity += (Vector3)cursorDir * Mathf.Abs(flow) * 3;
+			curPoint.velocity += (Vector3)cursorDir * Mathf.Abs(flow);
 		}
 
 		timeOnPoint += Time.deltaTime;
@@ -830,7 +833,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			transform.position += inertia * Time.deltaTime;
 			curDrawDistance += Vector3.Distance (curPoint.Pos, transform.position);
 			curPoint.transform.position = transform.position;
-			curPoint.originalPos = transform.position;
 			creationInterval -= Time.deltaTime;
 			if (creationInterval < 0 && curDrawDistance > PointDrawDistance) {
 					creationInterval = creationCD;
@@ -853,7 +855,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					curPoint = newPoint;
 					curSpline.Selected = drawnPoint;
 					traversedPoints.Add(drawnPoint);
-				  curSpline.OnSplineEnter (true, drawnPoint, curPoint, false);
+				  curSpline.OnSplineEnter (drawnPoint, curPoint);
 				// } else {
 				// 	CreateJoint (newPointList [newPointList.Count - 1].GetComponent<Rigidbody> ());
 				// }
@@ -1207,12 +1209,15 @@ public class PlayerBehaviour: MonoBehaviour {
 			if (angleToSpline <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) {
 				if(curSpline != null && curSpline != splineDest){
 					
+					curSpline.OnSplineExit();
+				}else{
 					
-				}else if (curSpline != splineDest)
-				{
-					curSpline = splineDest;
+//					splineDest.Selected = curPoint;
+					splineDest.OnSplineEnter(curPoint, pointDest);
+					
 				}
-
+				
+				curSpline = splineDest;
 				return true;
 			}else{
 				return false;
@@ -1279,7 +1284,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			joystickLocked = false;
 		}
 
-			cursorDir = Vector3.Lerp (lastCursorDir, cursorDir, (cursorRotateSpeed/(((Mathf.Abs(flow) * 10) + 1)) * Time.deltaTime));
+			cursorDir = Vector3.Lerp (lastCursorDir, cursorDir, (cursorRotateSpeed/(((Mathf.Abs(flow) * 1) + 1)) * Time.deltaTime));
 			//free movement: transform.position = transform.position + new Vector3 (-Input.GetAxis ("Joy X") / 10, Input.GetAxis ("Joy Y") / 10, 0);
 			//angle to joystick position
 			//zAngle = Mathf.Atan2 (Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y")) * Mathf.Rad2Deg;
@@ -1418,8 +1423,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		switch (state)
 		{
 			case PlayerState.Traversing:
-				sparks.Pause();
-				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
+				Services.fx.BakeParticles(sparks, Services.fx.brakeParticleMesh);
 				
 				//turn on sparks
 				break;
@@ -1427,7 +1431,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			case PlayerState.Flying:
 				Services.fx.BakeTrail(Services.fx.flyingTrail, Services.fx.flyingTrailMesh);
 				Services.fx.BakeParticleTrail(Services.fx.flyingParticles, Services.fx.flyingParticleTrailMesh);
+				Services.fx.flyingParticles.Pause();
 				Services.fx.BakeParticles(Services.fx.flyingParticles, Services.fx.flyingParticleMesh);
+				
 				break;
 			
 			case PlayerState.Switching:
@@ -1466,11 +1472,12 @@ public class PlayerBehaviour: MonoBehaviour {
 				//this is making it impossible to get off points that are widows. wtf.
 				SetPlayerAtStart (curSpline, pointDest);
 				
-				curSpline.OnSplineEnter (true, curPoint, pointDest, false);
+				//curSpline.OnSplineEnter (true, curPoint, pointDest, false);
 				
 				SetCursorAlignment ();
 		
 				//PlayerMovement ();
+				
 				sparks.Play();
 				t.emitting = true; 
 				
@@ -1478,6 +1485,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Flying:
 
+				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
 				Services.PlayerBehaviour.flow += 0.25f;
 				
 				curPoint.used = true;
@@ -1539,7 +1547,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				foreach (Point p in curPoint._neighbours)
 				{
 //			p.velocity = Vector3.Lerp((curPoint.Pos - p.Pos).normalized, curPoint.velocity.normalized, 0.5f) * curPoint.velocity.magnitude / 3f;
-					p.TurnOn();
+//					p.TurnOn();
 				}
 
 				//checkpoint shit
@@ -1576,7 +1584,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 
 		ParticleSystem.EmissionModule e = sparks.emission;
-
+		
 		float Absflow = Mathf.Abs(flow);
 
 		if (state == PlayerState.Flying)

@@ -42,24 +42,24 @@ public class AnimateSpline : MonoBehaviour {
 			p.continuity = continuityVal.Evaluate(time) * cMultiplier;
 			if (offsetPerPoint)
 			{
-				if ((transform.position - new Vector3(p.originalPos.x, p.originalPos.y, transform.position.z))
+				if ((transform.position - new Vector3(p.anchorPos.x, p.anchorPos.y, transform.position.z))
 				    .magnitude > 0.01f)
 				{
-					p.transform.position -= (transform.position - p.originalPos).normalized * Time.deltaTime *
+					p.transform.position -= (transform.position - p.anchorPos).normalized * Time.deltaTime *
 					                        Mathf.Sin(Time.time * speed + i * offset) * contraction;
 				}
 			}
 			else
 			{
-				if ((transform.position - new Vector3(p.originalPos.x, p.originalPos.y, transform.position.z))
+				if ((transform.position - new Vector3(p.anchorPos.x, p.anchorPos.y, transform.position.z))
 				    .magnitude > 0.01f)
 				{
-					p.transform.position -= (transform.position - p.originalPos).normalized * Time.deltaTime *
+					p.transform.position -= (transform.position - p.anchorPos).normalized * Time.deltaTime *
 					                        (Mathf.Sin(Time.time * speed + offset)) * contraction;
 				}
 			}
 
-			//p.originalPos = p.transform.position;
+			//p.anchorPos = p.transform.position;
 			p.isKinematic = true;
 			p.transform.RotateAround(transform.position, transform.forward, rotation * Time.deltaTime);
 			i++;
