@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Vectrosity;
+using UnityEngine.UI;
 
 public class FXManager : MonoBehaviour
 {
@@ -11,7 +12,8 @@ public class FXManager : MonoBehaviour
     public TrailRenderer playerTrail, flyingTrail;
     public MeshFilter flyingParticleMesh, flyingParticleTrailMesh, flyingTrailMesh, playerTrailMesh, brakeParticleMesh;
     public GameObject MeshPrefab;
-
+    public Text readout;
+    
     private int lineIndex;
     private VectorLine line;
     [SerializeField] private GameObject fxPrefab;

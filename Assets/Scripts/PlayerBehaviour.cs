@@ -1152,7 +1152,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if(s.locked){
 
-				}else{
+				}else
+				{
+
+					s.Selected = curPoint;
 
 				foreach (Point p in curPoint.GetNeighbours()) {
 
@@ -1190,6 +1193,9 @@ public class PlayerBehaviour: MonoBehaviour {
 //									}
 //								}else{
 									curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
+									float angleToPoint = Vector3.Angle(cursorDir, (s.GetPointAtIndex(s.SplinePoints.IndexOf(curPoint), 0.99f) - curPoint.Pos).normalized);
+									curAngle = Mathf.Lerp(curAngle, angleToPoint, 0.75f);
+
 //								}
 							}
 
@@ -1423,8 +1429,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		switch (state)
 		{
 			case PlayerState.Traversing:
-				Services.fx.BakeParticles(sparks, Services.fx.brakeParticleMesh);
-				
+				//Services.fx.BakeParticles(sparks, Services.fx.brakeParticleMesh);
+				sparks.Pause();
 				//turn on sparks
 				break;
 			

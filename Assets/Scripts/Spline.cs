@@ -148,6 +148,7 @@ public class Spline : MonoBehaviour
 
 	public void OnSplineEnter (Point p1, Point p2)
 	{
+		
 		draw = true;
 		drawIndex = SplinePoints.IndexOf(p1) * curveFidelity;
 		int i = SplinePoints.IndexOf (p1);

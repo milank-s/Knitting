@@ -48,7 +48,7 @@ public class CameraFollow : MonoBehaviour {
 					
 					Vector3 targetPosition = Vector3.SmoothDamp (transform.position,Services.PlayerBehaviour.transform.position, ref velocity, 0.25f);
 
-					transform.position = new Vector3(targetPosition.x, targetPosition.y,   offset.z);
+					transform.position = new Vector3(targetPosition.x, targetPosition.y,  Services.PlayerBehaviour.transform.position.z +  offset.z);
 					//Services.PlayerBehaviour.transform.position.z
 					return;
 				}

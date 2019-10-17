@@ -391,10 +391,7 @@ public class Point : MonoBehaviour
 			foreach(PointCloud p in pointClouds){
 				
 				p.isOn = true;
-				if (p.isComplete)
-				{
-					Services.fx.trailParticles.Play();
-				}
+				
 				p.TryToUnlock();
 			}
 		}
@@ -552,8 +549,12 @@ public class Point : MonoBehaviour
 
 	public void PlayerOnPoint(Vector3 direction, float force)
 	{
+		if (timeOnPoint == 0)
+		{
+			velocity += (Vector3)Services.PlayerBehaviour.cursorDir * Mathf.Abs(Services.PlayerBehaviour.flow);
+		}
 		timeOnPoint += Time.deltaTime;
-		anchorPos = initPos + ((Vector3)Random.insideUnitCircle / 10f * Services.PlayerBehaviour.flow *  Mathf.Clamp01(timeOnPoint));
+		//anchorPos = initPos + ((Vector3)Random.insideUnitCircle / 10f * Services.PlayerBehaviour.flow *  Mathf.Clamp01(timeOnPoint));
 		//velocity += (Vector3)Random.insideUnitCircle / Mathf.Pow(1 + timeOnPoint, 2);
 	}
 	

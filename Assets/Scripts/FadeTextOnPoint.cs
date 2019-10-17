@@ -14,6 +14,7 @@ public class FadeTextOnPoint: MonoBehaviour {
 	void Start(){
 		t = GetComponent<TextMesh> ();
 		
+		gameObject.SetActive(false);
 		if (startOn)
 		{
 			alpha = 1;
@@ -47,7 +48,7 @@ public class FadeTextOnPoint: MonoBehaviour {
 			else
 			{
 				alpha = Mathf.Clamp01(alpha - Time.deltaTime);
-				t.color = new Color(1, 1, 1, alpha);
+				//t.color = new Color(1, 1, 1, alpha);
 			}
 		}else if(!startOn){
 			alpha = Mathf.Clamp01(alpha - Time.deltaTime/3);

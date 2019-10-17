@@ -108,6 +108,16 @@ foreach(Spline s in GetComponentsInChildren<Spline>()){
 		
 			if (isOn)
 			{
+				Services.fx.readout.transform.position = transform.position;
+				if (unlockMethod == UnlockType.speed)
+				{
+					Services.fx.readout.text = (Services.PlayerBehaviour.flow - speedRequired).ToString("F2");
+				}
+				else
+				{
+//					Services.fx.readout.text = _points[0].timesHit.ToString() + " / " + lapsRequired;
+				}
+
 				if (isComplete)
 				{
 					List<Vector3> positions = new List<Vector3>();
@@ -115,7 +125,7 @@ foreach(Spline s in GetComponentsInChildren<Spline>()){
 					{
 
 						
-						p.Contract();
+						//p.Contract();
 					}
 
 					Services.fx.DrawLine();
@@ -182,7 +192,7 @@ foreach(Spline s in GetComponentsInChildren<Spline>()){
 	}
 	public bool CheckSpeed()
 	{
-		if (Services.PlayerBehaviour.curSpeed > speedRequired)
+		if (Services.PlayerBehaviour.flow > speedRequired)
 		{
 			return true;
 		}
