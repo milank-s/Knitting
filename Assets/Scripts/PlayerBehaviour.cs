@@ -1047,7 +1047,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				if (progress > 1 || progress < 0)
 				{
 					transform.position = curSpline.GetPoint(Mathf.Clamp01(progress));
-					traversedPoints[i].Reinitialize();
+					traversedPoints[i].Reset();
 					moving = false;
 				}
 

@@ -80,6 +80,7 @@ public class Main : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.P))
 		{
 			_paused = !paused;
+			
 		}
 
 		if (!paused)
@@ -110,6 +111,7 @@ public class Main : MonoBehaviour {
 		}
 	}
 
+	
 	public void InitializeMap()
 	{
 		for (int i = Point.Points.Count - 1; i >= 0; i--)
@@ -120,7 +122,7 @@ public class Main : MonoBehaviour {
 			}
 			else
 			{
-				Point.Points[i].ResetPoint();
+				Point.Points[i].Clear();
 			}
 		}
 		
@@ -132,7 +134,7 @@ public class Main : MonoBehaviour {
 			}
 			else
 			{
-				 Spline.Splines[i].SetupSpline();
+				 Spline.Splines[i].Initialize();
 			}
 		}
 		
@@ -143,10 +145,7 @@ public class Main : MonoBehaviour {
 	}
 	public void EnterEditMode(bool enter)
 	{
-		if (!enter)
-		{
-			InitializeMap();
-		}
+
 		canvas.SetActive(!enter);
 		Player.SetActive(!enter);
 		Services.mainCam.GetComponent<CameraFollow>().enabled = !enter;
@@ -154,6 +153,7 @@ public class Main : MonoBehaviour {
 		//Services.mainCam.GetComponentInChildren<Camera>().enabled = !enter;
 		if (!enter)
 		{
+			InitializeMap();
 			Cursor.lockState = CursorLockMode.Locked;
 			if (Services.StartPoint != null)
 			{
@@ -162,6 +162,11 @@ public class Main : MonoBehaviour {
 		}
 		else
 		{
+			foreach (Point p in Point.Points)
+			{
+				p.Reset();
+			}
+			
 			Cursor.lockState = CursorLockMode.None;
 		}
 	}

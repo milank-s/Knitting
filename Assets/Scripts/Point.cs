@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using SimpleJSON;
 using UnityEngine.Experimental.PlayerLoop;
 
 
@@ -163,13 +164,32 @@ public class Point : MonoBehaviour
 			}
 			else
 			{
-				return Color.black;
+				return color + new Color(c, c, c, 1);
 			}
 		}
 	}
 	
 	#endregion
 
+	public JSONObject Save(int i)
+	{
+		JSONObject data = new JSONObject();
+		data ["x"].AsFloat = transform.position.x;
+		data ["y"].AsFloat = transform.position.y;
+		data ["z"].AsFloat = transform.position.z;
+		data["tension"].AsFloat = tension;
+		data["bias"].AsFloat = bias;
+		data["continuity"].AsFloat = continuity;
+		data["index"].AsInt = i;
+		data["pointType"].AsInt = (int) pointType;
+		return data;
+	}
+
+	public void Destroy()
+	{
+		Points.Remove(this);
+		Destroy(gameObject);
+	}
 	void Awake()
 	{
 		Points.Add(this);
@@ -206,7 +226,7 @@ public class Point : MonoBehaviour
 
 	}
 	
-	public void ResetPoint()
+	public void Clear()
 	{
 		_neighbours.Clear();
 		_connectedSplines.Clear();
@@ -225,15 +245,16 @@ public class Point : MonoBehaviour
 			pointType = PointTypes.ghost;
 		}
 		
-		
 		SetPointType(pointType);
-		
+
 		if (MapEditor.editing)
 		{
-			SR.color = Color.white;
+			color = Color.white;
 		}
-
-		color = Color.black;
+		else
+		{
+			color = Color.black;
+		}
 
 	}
 
@@ -312,7 +333,7 @@ public class Point : MonoBehaviour
 		}
 	}
 
-	public void Reinitialize()
+	public void Reset()
 	{
 		anchorPos = initPos;
 		used = false;
@@ -322,12 +343,8 @@ public class Point : MonoBehaviour
 		tension = initTension;
 		continuity = initContinuity;
 		timesHit = 0;
-		if(_neighbours.Count == 2 && pointType == PointTypes.normal){
-			pointType = PointTypes.ghost;
-		}
-
-		SetPointType(pointType);
-		
+		SR.enabled = true;
+		color = Color.white;
 	}
 
 	IEnumerator LightUp()
@@ -351,15 +368,6 @@ public class Point : MonoBehaviour
 
 	public float NeighbourCount(){
 		return _connectedSplines.Count;
-	}
-
-	public void Reset(){
-		for (int i = 0; i < _connectedSplines.Count; i++){
-			RemoveSpline(_connectedSplines[i]);
-		}
-		for (int i = 0; i < _neighbours.Count; i++){
-			RemovePoint(_neighbours[i]);
-		}
 	}
 
 	public void RemoveSpline(Spline s){

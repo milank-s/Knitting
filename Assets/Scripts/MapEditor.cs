@@ -1,12 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UI;
-
-
+using SimpleJSON;
+using System.IO;
 //###################################################
 //###################################################
 
@@ -68,7 +66,7 @@ public class MapEditor : MonoBehaviour
     private List<Image> selectors;
     private LineRenderer l;
     private Camera cam;
-
+    private String sceneName;
     public Slider tensionSlider;
     public Slider biasSlider;
     public GameObject pointSelectedTip;
@@ -80,10 +78,14 @@ public class MapEditor : MonoBehaviour
     public Text xPos;
     public Text yPos;
     public Text zPos;
+
+    public InputField sceneTitle;
+    public Dropdown levelList;
     
     private static float cameraDistance = 2;
     private List<GameObject> text;
-    
+
+    public bool typing;
     private bool dragging;
     private bool pointSelected
     {
@@ -139,6 +141,8 @@ public class MapEditor : MonoBehaviour
     
     void Awake()
     {
+        
+        sceneName = "Stellation 1";
         editing = true;
 
         text = new List<GameObject>();
@@ -158,8 +162,20 @@ public class MapEditor : MonoBehaviour
         selectedPoints = new List<Point>();
  
         l = GetComponent<LineRenderer>();
+        
+       
     }
 
+    public void Typing()
+    {
+        typing = true;
+    }
+
+    public void StopTyping(String name)
+    {
+        typing = false;
+        sceneName = name;
+    }
     void Start()
     {
         cam = Services.mainCam;
@@ -172,117 +188,128 @@ public class MapEditor : MonoBehaviour
         {
             tooltips[i].SetActive(false);
         }
+        
+        UnityEngine.Object[] files = Resources.LoadAll ("Levels");
+        for (int i = 0; i < files.Length; i++) {
+            levelList.options.Add(new Dropdown.OptionData(files[i].name));
+        }
+
+        _curTool = Tool.draw;
+
     }
 
     void Update()
     {
 
-        
-        
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (!typing)
         {
-            if (pointSelected)
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                Services.StartPoint = activePoint;
-            }
-
-            editing = !editing;
-            canvas.gameObject.SetActive(editing);
-//            cam.enabled = editing;
-            Services.main.EnterEditMode(editing);
-        }
-        
-        if (editing)
-        {
-            if (Input.GetKeyDown(KeyCode.H))
-            {
-               
-                foreach (GameObject t in text)
-                {
-                    t.SetActive(!t.activeSelf);     
-                }
-            }
-            
-
-            if (splineindex >= 0 && splineindex < Spline.Splines.Count)
-            {
-                splineSelectedTip.SetActive(true);
                 if (pointSelected)
                 {
-                    splinePointTip.SetActive(true);
+                    Services.StartPoint = activePoint;
                 }
 
-                if (Input.GetKeyDown(KeyCode.X))
+                editing = !editing;
+                canvas.gameObject.SetActive(editing);
+//            cam.enabled = editing;
+                Services.main.EnterEditMode(editing);
+            }
+
+            if (editing)
+            {
+                if (Input.GetKeyDown(KeyCode.H))
                 {
-                    selectedSpline.ReverseSpline();
+
+                    foreach (GameObject t in text)
+                    {
+                        t.SetActive(!t.activeSelf);
+                    }
                 }
 
-                
-                if (Input.GetKeyDown(KeyCode.C))
-                {
-                    selectedSpline.closed = !selectedSpline.closed;
-                }
 
-                
-                if(Input.GetKeyDown(KeyCode.LeftArrow))
+                if (splineindex >= 0 && splineindex < Spline.Splines.Count)
                 {
+                    splineSelectedTip.SetActive(true);
                     if (pointSelected)
                     {
-
-                        Point curPoint = activePoint;
-                        
-                        if (!Input.GetKey(KeyCode.LeftShift))
-                        {
-                            Deselect();
-                        }
-                        
-                        if (selectedSpline.SplinePoints.Contains(curPoint))
-                        {
-                            int pointIndex = (selectedSpline.SplinePoints.IndexOf(curPoint) - 1) %
-                                        selectedSpline.SplinePoints.Count;
-                            
-                            
-                            
-                            if (pointIndex < 0)
-                            {
-                                AddSelectedPoint(selectedSpline.EndPoint);
-                            }
-                            else
-                            {
-                                AddSelectedPoint(selectedSpline.SplinePoints[pointIndex]);
-                            }
-
-                        }else{
-                           
-                              
-                                AddSelectedPoint(selectedSpline.EndPoint);
-                        }
+                        splinePointTip.SetActive(true);
                     }
-                    else
+
+                    if (Input.GetKeyDown(KeyCode.X))
                     {
-
-                        AddSelectedPoint(selectedSpline.EndPoint);
+                        selectedSpline.ReverseSpline();
                     }
-                }else if (Input.GetKeyDown(KeyCode.RightArrow))
-                {
-                   
-                    
+
+
+                    if (Input.GetKeyDown(KeyCode.C))
+                    {
+                        selectedSpline.closed = !selectedSpline.closed;
+                    }
+
+
+                    if (Input.GetKeyDown(KeyCode.LeftArrow))
+                    {
                         if (pointSelected)
                         {
-                            
+
                             Point curPoint = activePoint;
-                            
+
                             if (!Input.GetKey(KeyCode.LeftShift))
                             {
                                 Deselect();
                             }
-                            
+
+                            if (selectedSpline.SplinePoints.Contains(curPoint))
+                            {
+                                int pointIndex = (selectedSpline.SplinePoints.IndexOf(curPoint) - 1) %
+                                                 selectedSpline.SplinePoints.Count;
+
+
+
+                                if (pointIndex < 0)
+                                {
+                                    AddSelectedPoint(selectedSpline.EndPoint);
+                                }
+                                else
+                                {
+                                    AddSelectedPoint(selectedSpline.SplinePoints[pointIndex]);
+                                }
+
+                            }
+                            else
+                            {
+
+
+                                AddSelectedPoint(selectedSpline.EndPoint);
+                            }
+                        }
+                        else
+                        {
+
+                            AddSelectedPoint(selectedSpline.EndPoint);
+                        }
+                    }
+                    else if (Input.GetKeyDown(KeyCode.RightArrow))
+                    {
+
+
+                        if (pointSelected)
+                        {
+
+                            Point curPoint = activePoint;
+
+                            if (!Input.GetKey(KeyCode.LeftShift))
+                            {
+                                Deselect();
+                            }
+
                             if (selectedSpline.SplinePoints.Contains(curPoint))
                             {
 
                                 int pointIndex = (selectedSpline.SplinePoints.IndexOf(curPoint) + 1) %
                                                  selectedSpline.SplinePoints.Count;
-                                
+
                                 if (pointIndex >= selectedSpline.SplinePoints.Count)
                                 {
                                     AddSelectedPoint(selectedSpline.StartPoint);
@@ -291,98 +318,103 @@ public class MapEditor : MonoBehaviour
                                 {
                                     AddSelectedPoint(selectedSpline.SplinePoints[pointIndex]);
                                 }
-                            
-                            }else{
-                           
-                                
+
+                            }
+                            else
+                            {
+
+
                                 AddSelectedPoint(selectedSpline.StartPoint);
                             }
                         }
                         else
                         {
-                            
+
                             AddSelectedPoint(selectedSpline.StartPoint);
                         }
                     }
 
-                if (pointSelected && selectedSpline.SplinePoints.Contains(activePoint))
-                {
-                    if (Input.GetKeyDown(KeyCode.R))
+                    if (pointSelected && selectedSpline.SplinePoints.Contains(activePoint))
                     {
-                        selectedSpline.RemovePoint((selectedSpline.SplinePoints.IndexOf(activePoint)));
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.I))
-                    {
-                        selectedSpline.AddNewPoint(selectedSpline.SplinePoints.IndexOf(activePoint));
-                    }
-                }
-                
-            }
-            if ((Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)) && Spline.Splines.Count > 0)
-            {
-      
-                int i = 0;
-                if (Input.GetKeyDown(KeyCode.UpArrow))
-                {
-                   i = splineindex + 1;
-                }else if (Input.GetKeyDown(KeyCode.DownArrow))
-                {
-                   
-                   i = splineindex - 1;
-                   if (i < 0)
-                   {
-                       i = Spline.Splines.Count - 1;
-                   }
-                }
-
-                ChangeSelectedSpline(i);
-            }
-            
-            Cursor.visible = false;
-            Point hitPoint = null;
-
-            if (!Input.GetMouseButton(0))
-            {
-                PanCamera();
-            }
-
-            lastPos = worldPos;
-            curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
-            worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
-                cameraDistance));
-            cursor.transform.position = curPos;
-
-
-            Ray r = cam.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            if (Input.GetMouseButtonDown(1))
-            {
-                //RemoveSelectedPoint(hitPoint);
-                Deselect();
-            }
-
-
-            if (Physics.Raycast(r.origin, r.direction, out hit))
-            {
-                hitPoint = hit.transform.GetComponent<Point>();
-
-                if (hitPoint != null)
-                {
-                    if (Input.GetMouseButtonDown(1))
-                    {
-                        RemoveSelectedPoint(hitPoint);
-
-                        if (!pointSelected && curTool == Tool.select)
+                        if (Input.GetKeyDown(KeyCode.R))
                         {
-                            pointOptions.SetActive(false);
+                            selectedSpline.RemovePoint((selectedSpline.SplinePoints.IndexOf(activePoint)));
+                        }
+
+                        if (Input.GetKeyDown(KeyCode.I))
+                        {
+                            selectedSpline.AddNewPoint(selectedSpline.SplinePoints.IndexOf(activePoint));
                         }
                     }
 
-
                 }
-            }
+
+                if ((Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)) &&
+                    Spline.Splines.Count > 0)
+                {
+
+                    int i = 0;
+                    if (Input.GetKeyDown(KeyCode.UpArrow))
+                    {
+                        i = splineindex + 1;
+                    }
+                    else if (Input.GetKeyDown(KeyCode.DownArrow))
+                    {
+
+                        i = splineindex - 1;
+                        if (i < 0)
+                        {
+                            i = Spline.Splines.Count - 1;
+                        }
+                    }
+
+                    ChangeSelectedSpline(i);
+                }
+
+                Cursor.visible = false;
+                Point hitPoint = null;
+
+                if (!Input.GetMouseButton(0))
+                {
+                    PanCamera();
+                }
+
+                lastPos = worldPos;
+                curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
+                worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
+                    cameraDistance));
+                cursor.transform.position = curPos;
+
+
+                Ray r = cam.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                if (Input.GetMouseButtonDown(1))
+                {
+                    //RemoveSelectedPoint(hitPoint);
+                    Deselect();
+                }
+
+
+                if (Physics.Raycast(r.origin, r.direction, out hit))
+                {
+                    hitPoint = hit.transform.GetComponent<Point>();
+
+                    if (hitPoint != null)
+                    {
+                        if (Input.GetMouseButtonDown(1))
+                        {
+                            RemoveSelectedPoint(hitPoint);
+
+                            if (!pointSelected && curTool == Tool.select)
+                            {
+                                pointOptions.SetActive(false);
+                            }
+                        }
+
+
+                    }
+                }
 //            Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 2));
 
                 if (Input.GetKeyDown(KeyCode.Q))
@@ -449,17 +481,19 @@ public class MapEditor : MonoBehaviour
                                 foreach (Point p in selectedPoints)
                                 {
 
-                                    p.transform.position += new Vector3(delta.x, delta.y, -Input.mouseScrollDelta.y * Time.deltaTime * 10f);
+                                    p.transform.position += new Vector3(delta.x, delta.y,
+                                        -Input.mouseScrollDelta.y * Time.deltaTime * 10f);
                                     p.initPos = p.Pos;
                                 }
                             }
                         }
 
-                        if (!dragging && hitPoint == null && Input.GetMouseButton(0) && !Input.GetKey(KeyCode.LeftShift))
+                        if (!dragging && hitPoint == null && Input.GetMouseButton(0) &&
+                            !Input.GetKey(KeyCode.LeftShift))
                         {
                             DragCamera();
                         }
-                        
+
 
                         if (dragging && Input.GetMouseButtonUp(0))
                         {
@@ -522,7 +556,7 @@ public class MapEditor : MonoBehaviour
 
                         if (hitPoint != null)
                         {
- 
+
                             if (pointSelected)
                             {
                                 l.SetPosition(1, hitPoint.Pos);
@@ -629,48 +663,52 @@ public class MapEditor : MonoBehaviour
                         StartCoroutine(MarqueeSelect(worldPos));
                     }
                 }
-                
+
                 if (pointSelected)
                 {
                     marqueeTip.SetActive(false);
                     deselectTip.SetActive(true);
                     pointSelectedTip.SetActive(true);
 
-                
+
                     if (Input.GetKeyDown(KeyCode.T))
                     {
-                    
+
                         foreach (Point p in selectedPoints)
                         {
                             p.tension = Mathf.PingPong(p.tension + 1, 1);
                         }
                     }
-                
+
 //                string input = Input.inputString;
                     pointType.text = "Type - " + activePoint.pointType.ToString();
                     xPos.text = "x  " + activePoint.Pos.x.ToString("F2");
-                    yPos.text =  "y  " + activePoint.Pos.y.ToString("F2");
-                    zPos.text =  "z  " + activePoint.Pos.z.ToString("F2");
-                
+                    yPos.text = "y  " + activePoint.Pos.y.ToString("F2");
+                    zPos.text = "z  " + activePoint.Pos.z.ToString("F2");
+
                     if (Input.GetKeyDown(KeyCode.Alpha1))
-                    {  
+                    {
 
                         activePoint.SetPointType(PointTypes.normal);
-                    
-                    }else if(Input.GetKeyDown(KeyCode.Alpha2)){
-                    
+
+                    }
+                    else if (Input.GetKeyDown(KeyCode.Alpha2))
+                    {
+
                         activePoint.SetPointType(PointTypes.stop);
-            
-                    }else if (Input.GetKeyDown(KeyCode.Alpha3))
+
+                    }
+                    else if (Input.GetKeyDown(KeyCode.Alpha3))
                     {
                         activePoint.SetPointType(PointTypes.connect);
-                    
-                    }else if (Input.GetKeyDown(KeyCode.Alpha4))
+
+                    }
+                    else if (Input.GetKeyDown(KeyCode.Alpha4))
                     {
                         activePoint.SetPointType(PointTypes.fly);
                     }
-                
-               
+
+
                 }
                 else
                 {
@@ -678,10 +716,173 @@ public class MapEditor : MonoBehaviour
                     deselectTip.SetActive(false);
 
                 }
-            
+
+            }
         }
     }
+    
 
+    public void Save()
+    {
+
+        Debug.Log("save me");
+        
+        JSONObject level = new JSONObject();
+
+        level["name"] = sceneName;
+        level["pointCount"].AsInt = Point.Points.Count;
+        
+        for(int i = 0; i < Point.Points.Count; i++)
+        {
+            level["p" + i] = Point.Points[i].Save(i);
+        }
+
+        level["splineCount"].AsInt = Spline.Splines.Count;
+        
+        for(int j = 0; j < Spline.Splines.Count; j++)
+        {
+            JSONObject splineData = new JSONObject();
+            //record if its closed
+            splineData["closed"].AsBool = Spline.Splines[j].closed;
+            splineData["numPoints"] = Spline.Splines[j].SplinePoints.Count;
+            
+            JSONObject pointIndices = new JSONObject();
+
+            int pi = 0;
+            foreach (Point sp in  Spline.Splines[j].SplinePoints)
+            {
+                
+                for(int i = 0; i < Point.Points.Count; i++)
+                {
+                    if (sp == Point.Points[i])
+                    {
+                        pointIndices["p" + pi] = i;
+                        pi++;
+                    }
+                }
+            }
+
+            splineData["points"] = pointIndices;
+            level["spline" + j] = splineData;
+        }
+        
+        WriteJSONtoFile ("Assets/Resources/Levels", gameObject.name + ".json", level);
+        
+        levelList.options.Add(new Dropdown.OptionData(gameObject.name));
+    }
+    
+    static void WriteJSONtoFile(string path, string fileName, JSONObject json){
+        StreamWriter sw = new StreamWriter(path + "/" + fileName);
+        sw.Write(json.ToString());
+        sw.Close();
+    }
+
+    static JSONNode ReadJSONFromFile(string path, string fileName){
+        StreamReader sr = new StreamReader (path + "/" + fileName);
+
+        string resultstring = sr.ReadToEnd ();
+
+        sr.Close ();
+
+        JSONNode result = JSON.Parse (resultstring);
+
+        return result;
+    }
+
+
+    public void LoadFromDropDown(Int32 i)
+    {
+        Load(levelList.options[i].text);
+    }
+    public void Load(string fileName)
+    {   
+        //Delete everything already in the scene
+        //take care of any local variables in here that reference shit in the scene
+        
+        ClearSelection();
+        
+        JSONNode json = ReadJSONFromFile("Assets/Resources/Levels", fileName + ".json");
+
+        List<Point> newPoints = new List<Point>();
+        sceneName = json["name"];
+        sceneTitle.text = sceneName;
+        
+        for (int i = 0; i < json["pointCount"]; i++)
+        {
+            
+            Vector3 spawnPos = new Vector3(json["p" + i]["x"],json["p" + i]["y"],json["p" + i]["z"]);
+            
+            Point newPoint;
+            if (i < Point.Points.Count)
+            {
+                newPoint = Point.Points[i];
+                newPoint.Clear();
+                newPoint.transform.position = spawnPos;
+            }    
+            else
+            {
+                //make new Point
+                newPoint = SplineUtil.CreatePoint(spawnPos);
+            }
+
+            newPoint.tension = json["p" + i]["tension"];
+            newPoint.bias = json["p" + i]["bias"];
+            newPoint.continuity = json["p" + i]["continuity"];
+            int t = json["p" + i]["pointType"];
+            newPoint.pointType = (PointTypes)t;
+            
+            newPoints.Add(newPoint);
+        }
+
+        
+        for (int i = 0; i < json["splineCount"]; i++)
+        {    
+            Point p1 = newPoints[json["spline" + i]["points"]["p" + 0]];
+            Point p2 = newPoints[json["spline" + i]["points"]["p" + 1]];
+
+            Spline newSpline;
+                
+            if (i < Spline.Splines.Count)
+            {
+                newSpline = Spline.Splines[i];
+                newSpline.Reset();
+                newSpline.SplinePoints.Add(p1);
+                newSpline.SplinePoints.Add(p2);
+            }
+            else
+            {
+                newSpline = SplineUtil.CreateSpline(p1, p2);
+            }
+
+            
+            int numPoints = json["spline" + i]["numPoints"];
+            
+            if (json["spline" + i]["numPoints"] > 2)
+            {
+                for (int k = 2; k < numPoints; k++)
+                {
+                    newSpline.SplinePoints.Add(newPoints[json["spline" + i]["points"]["p" + k]]);
+                }
+            }
+            
+            newSpline.closed = json["spline" + i]["closed]"];
+            
+        }
+
+        for (int i = Spline.Splines.Count-1; i >= json["splineCount"]; i--)
+        {
+            Spline.Splines[i].Destroy();
+        }
+
+        for (int i = Point.Points.Count -1 ; i >= json["pointCount"]; i--)
+        {
+            Point.Points[i].Destroy();
+        }
+    }
+    
+ 
+    
+    
     void DragCamera()
     {
         Vector3 delta = worldPos - lastPos;
@@ -805,7 +1006,18 @@ public class MapEditor : MonoBehaviour
         }
 
     }
-    
+
+    void ClearSelection()
+    {
+
+           for (int i = selectedPoints.Count - 1; i >= 0; i--)
+            {
+                RemoveSelectedPoint(selectedPoints[i]);
+           }
+        
+
+        splineindex = 0;
+    }
     void RemoveSelectedPoint(Point p)
     {
         if (selectedPoints.Contains(p))
@@ -854,7 +1066,12 @@ public class MapEditor : MonoBehaviour
 
                 if (curTool != Tool.move)
                 {
+                    cursor.rectTransform.pivot = new Vector3(0f, 0f);
                     dragging = false;
+                }
+                else
+                {
+                    cursor.rectTransform.pivot = new Vector3(0.5f, 0.5f);
                 }
                 
                 tools[i].color = Color.gray;
@@ -883,8 +1100,8 @@ public class MapEditor : MonoBehaviour
         l.positionCount = 5;
         while (!Input.GetMouseButtonUp(0))
         {
-            Vector3 pos2 = new Vector3(pos.x, worldPos.y, 0);
-            Vector3 pos3 = new Vector3(worldPos.x, pos.y, 0);
+            Vector3 pos2 = new Vector3(pos.x, worldPos.y, worldPos.z);
+            Vector3 pos3 = new Vector3(worldPos.x, pos.y, worldPos.z);
             
             l.SetPosition(0, pos);
             l.SetPosition(1, pos2);

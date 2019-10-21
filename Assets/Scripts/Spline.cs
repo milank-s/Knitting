@@ -204,7 +204,8 @@ public class Spline : MonoBehaviour
 		SplinePoints[index].transform.position = pos;
 	}
 
-	public void SetupSpline(){
+	void SetupSpline(){
+		
 			for(int i = 0; i < SplinePoints.Count; i++) {
 				SplinePoints[i].AddSpline(this);
 				if(i != 0){
@@ -218,8 +219,6 @@ public class Spline : MonoBehaviour
 			}
 
 			reactToPlayer = false;
-			
-			
 	}
 
 	public void ChangeMaterial(int i)
@@ -245,18 +244,60 @@ public class Spline : MonoBehaviour
 //		float length = newMat.mainTextureScale.x;
 //		float height = newMat.mainTextureScale.y;
 
+//		line.texture = tex;
+//		line.textureScale = newMat.mainTextureScale.x;
+		Initialize();
+	}
+
+	public void Initialize()
+	{
+		ResetVectorLine();
+		SetupSpline();
+	}
+
+	public void Destroy()
+	{
+		Splines.Remove(this);
+		DestroyVectorLine();
+		Destroy(gameObject);
+	}
+	
+	public void ResetVectorLine()
+	{
+		DestroyVectorLine();
+		
 		line = new VectorLine (name, line.points3, 1, LineType.Continuous, Vectrosity.Joins.Weld);
-		line.color = Color.black;
+		if (MapEditor.editing)
+		{
+			line.color = Color.white;
+		}
+		else
+		{
+			line.color = Color.black;
+		}
+
 		line.smoothWidth = true;
 		line.smoothColor = true;
 		line.points3 = new List<Vector3> (SplinePoints.Count * curveFidelity);
-
-//		line.texture = tex;
-//		line.textureScale = newMat.mainTextureScale.x;
-
-
 	}
 
+	public void Reset()
+	{
+		SplinePoints.Clear();
+		closed = false;
+		ResetVectorLine();
+	}
+
+	public void DestroyVectorLine()
+	{
+		if (line != null)
+		{
+			List<VectorLine> LinesToDestroy = new List<VectorLine>();
+			LinesToDestroy.Add(line);
+			VectorLine.Destroy(LinesToDestroy);
+		}
+	}
+	
 	public void LockSpline(bool b)
 	{
 		locked = b;
@@ -272,7 +313,7 @@ public class Spline : MonoBehaviour
 	
 	void Start(){
 
-		SetupSpline();
+		Initialize();
 
 		for (int i = 0; i < SplinePoints.Count; i++) {
 		 for (int k = 0; k <= curveFidelity; k++) {
@@ -311,10 +352,10 @@ public class Spline : MonoBehaviour
 				float step = (float) k / (float) (curveFidelity);
 
 				
-//					DrawLine(i, index, step, i);
-					Vector3 v = Vector3.zero;
-					v = GetPointAtIndex(i, step);
-					SetLinePoint(v, index);
+					DrawLine(i, index, step);
+//					Vector3 v = Vector3.zero;
+//					v = GetPointAtIndex(i, step);
+//					SetLinePoint(v, index);
 			}
 		}
 
