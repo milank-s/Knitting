@@ -42,7 +42,23 @@ public class FXManager : MonoBehaviour
       brakeParticleMesh.mesh = new Mesh();
       
   }
-  
+
+  public void Reset()
+  {
+      flyingParticleMesh.mesh = new Mesh();
+      flyingParticleTrailMesh.mesh = new Mesh();
+      flyingTrailMesh.mesh = new Mesh();
+      playerTrailMesh.mesh = new Mesh();
+      brakeParticleMesh.mesh = new Mesh();
+      
+      VectorLine.Destroy(ref line);
+      
+      line = new VectorLine (name, new List<Vector3> (20), 2, LineType.Continuous, Vectrosity.Joins.Weld);
+      line.color = new Color(1,1,1,0.25f);
+      line.smoothWidth = true;
+      line.smoothColor = true;
+      
+  }
   public void BakeTrail(TrailRenderer t, MeshFilter f)
   {
       t.emitting = false;

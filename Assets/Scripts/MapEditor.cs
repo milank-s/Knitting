@@ -871,7 +871,7 @@ public class MapEditor : MonoBehaviour
 
         for (int i = Spline.Splines.Count-1; i >= json["splineCount"]; i--)
         {
-            Spline.Splines[i].Destroy();
+            Destroy(Spline.Splines[i]);
         }
 
         for (int i = Point.Points.Count -1 ; i >= json["pointCount"]; i--)

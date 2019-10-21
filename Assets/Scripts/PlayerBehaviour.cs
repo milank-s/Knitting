@@ -182,8 +182,21 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 
+	public void Reset()
+	{
+		progress = 0;
+		state = PlayerState.Switching;
+		curSpline = null;
+		curPoint = Services.StartPoint;
+		traversedPoints.Clear();
+		Services.main.fx.Reset();
+		flow = 0;
+		pointDest = null;
+		lastPoint = null;
 
-	public IEnumerator Reset()
+	}
+
+	public IEnumerator RetraceTrail()
 	{
 		state = PlayerState.Animating;
 		Vector3[] positions = new Vector3[flyingTrail.positionCount];
@@ -1573,7 +1586,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if (state == PlayerState.Flying)
 				{
-					StartCoroutine(Reset());
+					StartCoroutine(RetraceTrail());
 				}
 				else
 				{

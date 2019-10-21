@@ -215,7 +215,8 @@ public class Spline : MonoBehaviour
 			}
 
 			if(closed){
-				AddPoint (null, EndPoint);
+				StartPoint.AddPoint (EndPoint);
+				EndPoint.AddPoint(StartPoint);
 			}
 
 			reactToPlayer = false;
@@ -255,12 +256,6 @@ public class Spline : MonoBehaviour
 		SetupSpline();
 	}
 
-	public void Destroy()
-	{
-		Splines.Remove(this);
-		DestroyVectorLine();
-		Destroy(gameObject);
-	}
 	
 	public void ResetVectorLine()
 	{
@@ -709,6 +704,8 @@ public class Spline : MonoBehaviour
 	void OnDestroy ()
 	{
 		Splines.Remove (this);
+		DestroyVectorLine();
+		Destroy(gameObject);
 	}
 
 	#region
@@ -994,11 +991,6 @@ public class Spline : MonoBehaviour
 
 	public void AddPoint (Point curPoint, Point p)
 	{
-
-		if(SplinePoints.Contains(p)){
-			Debug.Log("ADDING EXISTING POINT BACK TO SPLINE. WRONG");
-		}
-
 		p.AddSpline (this);
 
 		int newIndex = 0;
@@ -1007,7 +999,6 @@ public class Spline : MonoBehaviour
 			SplinePoints.Add (p);
 
 		} else if (SplinePoints.Count >= 1 && curPoint == StartPoint) {
-
 
 			SplinePoints.Insert (0, p);
 			p.AddPoint (SplinePoints [1]);

@@ -15,6 +15,9 @@ public class Main : MonoBehaviour {
 	public Text Word;
 	public FXManager fx;
 	public GameObject canvas;
+
+	private string curLevel;
+	
 	public bool _paused
 	{
 		set
@@ -34,9 +37,22 @@ public class Main : MonoBehaviour {
 	}
 
 	private bool paused;
-	
+
+	public void LoadLevel(string i)
+	{
+		if (curLevel != "")
+		{
+			SceneManager.UnloadSceneAsync(curLevel);
+		}
+
+		Services.PlayerBehaviour.Reset();
+		Services.PlayerBehaviour.curSpline = null;
+		SceneManager.LoadScene(i, LoadSceneMode.Additive);
+		curLevel = i;
+	}
 	void Awake ()
 	{
+		curLevel = "";
 		Point.Points = new List<Point>();
 		Spline.Splines = new List<Spline>();
 		Services.GameUI = canvas;
@@ -51,24 +67,18 @@ public class Main : MonoBehaviour {
 		PointManager._connectedPoints = new List<Point> ();
 		Services.Sounds = GetComponent<SoundBank> ();
 		Services.main = this;
-		PauseScreen.color = new Color(0,0,0,1);
+		PauseScreen.color = new Color(0,0,0,0);
 		PauseMenu.SetActive(false);
 		StartCoroutine(FadeIn()); 
 	}
 
 	void Start()
 	{
-		Cursor.visible = false;
-		Cursor.lockState = CursorLockMode.Locked;
+		paused = true;
+	#if UNITY_STANDALONE
+		SceneManager.LoadScene(1, LoadSceneMode.Additive);
+	#endif
 		
-		canvas.SetActive(!MapEditor.editing);
-		
-		InitializeMap();
-		
-		if (Services.StartPoint != null && !MapEditor.editing)
-		{
-			Services.PlayerBehaviour.Initialize();
-		}
 		
 	}
 	void Update()
@@ -80,7 +90,18 @@ public class Main : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.P))
 		{
 			_paused = !paused;
-			
+			if (paused)
+			{
+				Cursor.visible = true;
+				Cursor.lockState = CursorLockMode.None;
+				SceneManager.LoadScene(1, LoadSceneMode.Additive);
+			}
+			else
+			{
+				Cursor.visible = false;
+				Cursor.lockState = CursorLockMode.Locked;
+				SceneManager.UnloadSceneAsync(1);
+			}
 		}
 
 		if (!paused)
@@ -114,6 +135,7 @@ public class Main : MonoBehaviour {
 	
 	public void InitializeMap()
 	{
+		
 		for (int i = Point.Points.Count - 1; i >= 0; i--)
 		{
 			if (Point.Points[i] == null)
@@ -142,10 +164,15 @@ public class Main : MonoBehaviour {
 		{
 			Point.Points[i].Initialize();
 		}
+		
+		if (Services.StartPoint != null && !MapEditor.editing)
+		{
+			Services.PlayerBehaviour.Initialize();
+		}
+		
 	}
 	public void EnterEditMode(bool enter)
 	{
-
 		canvas.SetActive(!enter);
 		Player.SetActive(!enter);
 		Services.mainCam.GetComponent<CameraFollow>().enabled = !enter;
