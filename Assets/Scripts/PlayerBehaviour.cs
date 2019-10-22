@@ -98,6 +98,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	private AudioSource sound;
 	public TrailRenderer t;
 	public TrailRenderer flyingTrail;
+	public TrailRenderer shortTrail;
 	[SerializeField] ParticleSystem sparks;
 	private LineRenderer l;
 	private Image cursorSprite;
@@ -151,7 +152,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversedPoints.Add (curPoint);
 		curPoint.OnPointEnter ();
 		t.Clear();
-
+		shortTrail.Clear();
 		
 //		Material newMat;
 //		newMat = Services.Prefabs.lines[3];
@@ -181,7 +182,6 @@ public class PlayerBehaviour: MonoBehaviour {
 //		velocityLine2.textureScale = newMat.mainTextureScale.x;
 	}
 
-
 	public void Reset()
 	{
 		progress = 0;
@@ -193,7 +193,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		flow = 0;
 		pointDest = null;
 		lastPoint = null;
-
 	}
 
 	public IEnumerator RetraceTrail()

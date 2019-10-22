@@ -8,9 +8,8 @@ public class SceneSettings : MonoBehaviour
 
     public Point startPoint;
     
-    void Awake()
+    void Start()
     {
-        
         Services.StartPoint = startPoint;
         Services.main.InitializeMap();
         

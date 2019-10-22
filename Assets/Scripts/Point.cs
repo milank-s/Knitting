@@ -190,6 +190,11 @@ public class Point : MonoBehaviour
 		Points.Remove(this);
 		Destroy(gameObject);
 	}
+
+	public void OnDestroy()
+	{
+		Points.Remove(this);
+	}
 	void Awake()
 	{
 		Points.Add(this);
@@ -232,6 +237,7 @@ public class Point : MonoBehaviour
 		_connectedSplines.Clear();
 	}
 	public void Initialize(){
+		
 		initPos = transform.position;
 		anchorPos = initPos;
 		initContinuity = continuity;

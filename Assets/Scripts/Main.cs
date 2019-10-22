@@ -1,8 +1,6 @@
 	 using System.Collections;
-using System.Collections.Generic;
-	 using UnityEditorInternal;
+	using System.Collections.Generic;
 	 using UnityEngine;
-	 using UnityEngine.Experimental.PlayerLoop;
 	 using UnityEngine.UI;
 	 using UnityEngine.SceneManagement;
 
@@ -38,17 +36,54 @@ public class Main : MonoBehaviour {
 
 	private bool paused;
 
-	public void LoadLevel(string i)
+	public void LoadEditor()
 	{
+		if (curLevel == "Editor")
+		{
+			return;
+		}
+		
+		SceneManager.LoadScene("Editor", LoadSceneMode.Additive);
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
+	}
+
+	public void LoadLevel(string m)
+	{
+		StartCoroutine(LoadTransition(m));
+	}
+	IEnumerator LoadTransition(string i)
+	{
+		StartCoroutine(FadeOut());
+		
+		yield return new WaitForSeconds(1);
+		
+		if (i == "Editor")
+		{
+			LoadEditor();
+			yield break;
+		}
+		
 		if (curLevel != "")
 		{
+			
 			SceneManager.UnloadSceneAsync(curLevel);
 		}
 
+		
 		Services.PlayerBehaviour.Reset();
-		Services.PlayerBehaviour.curSpline = null;
+
 		SceneManager.LoadScene(i, LoadSceneMode.Additive);
+
 		curLevel = i;
+
+		Cursor.visible = false;
+		Cursor.lockState = CursorLockMode.Locked;
+		
+		SceneManager.UnloadSceneAsync(1);
+		
+		_paused = false;
+		StartCoroutine(FadeIn());
 	}
 	void Awake ()
 	{
@@ -92,15 +127,19 @@ public class Main : MonoBehaviour {
 			_paused = !paused;
 			if (paused)
 			{
-				Cursor.visible = true;
-				Cursor.lockState = CursorLockMode.None;
 				SceneManager.LoadScene(1, LoadSceneMode.Additive);
+				Cursor.lockState = CursorLockMode.None;
+				Cursor.visible = true;
 			}
 			else
 			{
-				Cursor.visible = false;
-				Cursor.lockState = CursorLockMode.Locked;
 				SceneManager.UnloadSceneAsync(1);
+				
+				if (curLevel != "Editor")
+				{
+					Cursor.visible = false;
+					Cursor.lockState = CursorLockMode.Locked;
+				}
 			}
 		}
 
@@ -108,6 +147,7 @@ public class Main : MonoBehaviour {
 		{
 			if (!MapEditor.editing)
 			{
+				CameraFollow.instance.FollowPlayer();
 				if (Services.PlayerBehaviour.curPoint != null)
 				{
 					Services.PlayerBehaviour.Step();
@@ -170,6 +210,7 @@ public class Main : MonoBehaviour {
 			Services.PlayerBehaviour.Initialize();
 		}
 		
+		Services.mainCam.GetComponent<CameraFollow>().WarpToPlayer();
 	}
 	public void EnterEditMode(bool enter)
 	{
@@ -207,11 +248,29 @@ public class Main : MonoBehaviour {
 			yield return null;
 		}
 	}
-	
-	IEnumerator FadeOut(){
+
+	IEnumerator FadeInOut()
+	{
 		float t = 0;
 		yield return new WaitForSeconds(0.1f);
 		while (t < 1.2f){
+			PauseScreen.color = Color.Lerp(new Color (0,0,0,1), new Color (0,0,0,0), Easing.QuadEaseIn(t));
+			t += Time.deltaTime;
+			yield return null;
+		}
+		t = 0;
+		yield return new WaitForSeconds(0.1f);
+		while (t < 1.2f){
+			PauseScreen.color = Color.Lerp(new Color (0,0,0,0), new Color (0,0,0,1), Easing.QuadEaseIn(t));
+			t += Time.deltaTime;
+			yield return null;
+		}
+		
+	}
+	IEnumerator FadeOut(){
+		float t = 0;
+		
+		while (t < 1f){
 			PauseScreen.color = Color.Lerp(new Color (0,0,0,0), new Color (0,0,0,1), Easing.QuadEaseIn(t));
 			t += Time.deltaTime;
 			yield return null;

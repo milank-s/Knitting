@@ -10,8 +10,12 @@ public class CameraFollow : MonoBehaviour {
 	private Camera cam;
 	public static bool fixedCamera;
 	public static float desiredFOV;
+
+	public static CameraFollow instance;
 	// Use this for initialization
-	void Start () {
+	void Start ()
+	{
+		instance = this;
 		cam = GetComponent<Camera> ();
 		CameraDolly.leftBound = float.PositiveInfinity;
 		CameraDolly.rightBound = float.NegativeInfinity;
@@ -19,9 +23,19 @@ public class CameraFollow : MonoBehaviour {
 		CameraDolly.bottomBound = float.PositiveInfinity;
 		desiredFOV = cam.fieldOfView;
 	}
+	
+	public void WarpToPosition(Vector3 pos)
+	{
+		transform.position = pos + offset;
+	}
+
+	public void WarpToPlayer()
+	{
+		transform.position = Services.Player.transform.position + offset;
+	}
 
 	// Update is called once per frame
-	void Update () {
+	public void FollowPlayer () {
 		//get cur spline
 		//find its bounds
 		// get around them
@@ -44,7 +58,7 @@ public class CameraFollow : MonoBehaviour {
 					// CameraDolly.rightBound = CameraDolly.leftBound;
 					// CameraDolly.bottomBound = CameraDolly.topBound;
 				//
-				if((!fixedCamera  && Services.PlayerBehaviour.state == PlayerState.Traversing)|| Services.PlayerBehaviour.state != PlayerState.Traversing){
+				if(!fixedCamera || (Services.PlayerBehaviour.state != PlayerState.Traversing && Services.PlayerBehaviour.state != PlayerState.Switching)){
 					
 					Vector3 targetPosition = Vector3.SmoothDamp (transform.position,Services.PlayerBehaviour.transform.position, ref velocity, 0.25f);
 
@@ -134,13 +148,22 @@ public class CameraFollow : MonoBehaviour {
 				//-transform.position.z
 				// Debug.Log(CameraDolly.FOVForHeightAndDistance (height, offset.z));
 				// this is negative
+				Vector3 targetPos;
+				if (fixedCamera)
+				{
+					Vector3 curSplinePos = Services.PlayerBehaviour.curSpline.transform.position;
+					targetPos = new Vector3(curSplinePos.x, curSplinePos.y,
+						Services.PlayerBehaviour.transform.position.z + offset.z);
+				}
+				else
+				{
+					targetPos = new Vector3(transform.position.x, transform.position.y, 
+						Services.PlayerBehaviour.transform.position.z + offset.z);
+				}
 
-				Vector3 curSplinePos = Services.PlayerBehaviour.curSpline.transform.position;
 //					cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, Mathf.Clamp(CameraDolly.FOVForHeightAndDistance (height, -offset.z) + 5, 25, 100), Time.deltaTime * speed);
 					
 					Vector3 shake = Services.PlayerBehaviour.state == PlayerState.Traversing ? Random.onUnitSphere * Mathf.Clamp(Mathf.Pow(1- Services.PlayerBehaviour.accuracy, Services.PlayerBehaviour.accuracyCoefficient) * Services.PlayerBehaviour.flow , 0, 0.5f) : Vector3.zero;
-
-					Vector3 targetPos = Vector3.SmoothDamp (transform.position, new Vector3(curSplinePos.x, curSplinePos.y, Services.PlayerBehaviour.transform.position.z + offset.z) + shake, ref velocity, 0.25f);
 
 					// new Vector3(curSplinePos.x, curSplinePos.y Services.PlayerBehaviour.transform.position.z)
 					//Vector3.Lerp(Services.PlayerBehaviour.transform.position, new Vector3(xPos, yPos, Services.PlayerBehaviour.transform.position.z), 1f)
