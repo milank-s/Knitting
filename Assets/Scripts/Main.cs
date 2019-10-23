@@ -24,29 +24,21 @@ public class Main : MonoBehaviour {
 			if (value)
 			{
 				PauseMenu.SetActive(true);
-				Time.timeScale = 0;
 			}
 			else
 			{
 				PauseMenu.SetActive(false);
-				Time.timeScale = 1;
 			}
 		}
 	}
 
 	private bool paused;
 
-	public void LoadEditor()
+	void Init()
 	{
-		if (curLevel == "Editor")
-		{
-			return;
-		}
 		
-		SceneManager.LoadScene("Editor", LoadSceneMode.Additive);
-		Cursor.lockState = CursorLockMode.None;
-		Cursor.visible = true;
 	}
+	
 
 	public void LoadLevel(string m)
 	{
@@ -58,11 +50,6 @@ public class Main : MonoBehaviour {
 		
 		yield return new WaitForSeconds(1);
 		
-		if (i == "Editor")
-		{
-			LoadEditor();
-			yield break;
-		}
 		
 		if (curLevel != "")
 		{
@@ -77,10 +64,18 @@ public class Main : MonoBehaviour {
 
 		curLevel = i;
 
-		Cursor.visible = false;
-		Cursor.lockState = CursorLockMode.Locked;
-		
-		SceneManager.UnloadSceneAsync(1);
+		if (curLevel != "Editor")
+		{
+			Cursor.visible = false;
+			Cursor.lockState = CursorLockMode.Locked;
+		}
+		else
+		{
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = true;
+		}
+
+		SceneManager.UnloadSceneAsync("Menu");
 		
 		_paused = false;
 		StartCoroutine(FadeIn());
@@ -277,8 +272,4 @@ public class Main : MonoBehaviour {
 		}
 	}
 
-	void Init()
-	{
-		
-	}
 }

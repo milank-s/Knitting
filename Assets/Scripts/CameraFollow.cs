@@ -32,6 +32,7 @@ public class CameraFollow : MonoBehaviour {
 	public void WarpToPlayer()
 	{
 		transform.position = Services.Player.transform.position + offset;
+		fixedCamera = false;
 	}
 
 	// Update is called once per frame
@@ -149,7 +150,7 @@ public class CameraFollow : MonoBehaviour {
 				// Debug.Log(CameraDolly.FOVForHeightAndDistance (height, offset.z));
 				// this is negative
 				Vector3 targetPos;
-				if (fixedCamera)
+				if (fixedCamera && Services.PlayerBehaviour.curSpline)
 				{
 					Vector3 curSplinePos = Services.PlayerBehaviour.curSpline.transform.position;
 					targetPos = new Vector3(curSplinePos.x, curSplinePos.y,
