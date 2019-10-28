@@ -13,7 +13,7 @@ public class Main : MonoBehaviour {
 	public Text Word;
 	public FXManager fx;
 	public GameObject canvas;
-
+	public static bool usingJoystick;
 	private string curLevel;
 	
 	public bool _paused
@@ -57,6 +57,10 @@ public class Main : MonoBehaviour {
 			SceneManager.UnloadSceneAsync(curLevel);
 		}
 
+		if (curLevel == "Editor")
+		{
+			LeaveEditMode();
+		}
 		
 		Services.PlayerBehaviour.Reset();
 
@@ -71,6 +75,7 @@ public class Main : MonoBehaviour {
 		}
 		else
 		{
+			
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;
 		}
@@ -113,11 +118,15 @@ public class Main : MonoBehaviour {
 	}
 	void Update()
 	{
+		
+		if (Input.GetAxis ("Joy Y") != 0) {
+			usingJoystick = true;
+		}
 //		if (Input.GetKeyDown (KeyCode.R)) {
 //			SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
 //		}
 		
-		if (Input.GetKeyDown(KeyCode.P))
+		if (Input.GetKeyDown(KeyCode.P) && !MapEditor.typing)
 		{
 			_paused = !paused;
 			if (paused)
@@ -167,10 +176,8 @@ public class Main : MonoBehaviour {
 		}
 	}
 
-	
-	public void InitializeMap()
+	public void InitializeLevel()
 	{
-		
 		for (int i = Point.Points.Count - 1; i >= 0; i--)
 		{
 			if (Point.Points[i] == null)
@@ -190,8 +197,8 @@ public class Main : MonoBehaviour {
 				Spline.Splines.RemoveAt(i);
 			}
 			else
-			{
-				 Spline.Splines[i].Initialize();
+			{	
+				Spline.Splines[i].SetUpReferences();
 			}
 		}
 		
@@ -207,21 +214,20 @@ public class Main : MonoBehaviour {
 		
 		Services.mainCam.GetComponent<CameraFollow>().WarpToPlayer();
 	}
+	
 	public void EnterEditMode(bool enter)
 	{
 		canvas.SetActive(!enter);
 		Player.SetActive(!enter);
 		Services.mainCam.GetComponent<CameraFollow>().enabled = !enter;
-		
+		RenderSettings.fog = !enter;
 		//Services.mainCam.GetComponentInChildren<Camera>().enabled = !enter;
 		if (!enter)
 		{
-			InitializeMap();
+			
+			InitializeLevel();
+			
 			Cursor.lockState = CursorLockMode.Locked;
-			if (Services.StartPoint != null)
-			{
-				Services.PlayerBehaviour.Initialize();
-			}
 		}
 		else
 		{
@@ -229,17 +235,29 @@ public class Main : MonoBehaviour {
 			{
 				p.Reset();
 			}
-			
+
+			foreach (Spline s in Spline.Splines)
+			{
+				s.ResetVectorLine();
+			}
 			Cursor.lockState = CursorLockMode.None;
 		}
 	}
 
+	public void LeaveEditMode()
+	{
+		Services.mainCam.GetComponent<CameraFollow>().enabled = true;
+		canvas.SetActive(true);
+		Player.SetActive(true);
+		MapEditor.editing = false;
+	}
+	
 	IEnumerator FadeIn(){
 		float t = 0;
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.01f);
 		while (t < 1.2f){
 			PauseScreen.color = Color.Lerp(new Color (0,0,0,1), new Color (0,0,0,0), Easing.QuadEaseIn(t));
-			t += Time.deltaTime;
+			t += Time.deltaTime * 3;
 			yield return null;
 		}
 	}
@@ -247,17 +265,17 @@ public class Main : MonoBehaviour {
 	IEnumerator FadeInOut()
 	{
 		float t = 0;
-		yield return new WaitForSeconds(0.1f);
 		while (t < 1.2f){
 			PauseScreen.color = Color.Lerp(new Color (0,0,0,1), new Color (0,0,0,0), Easing.QuadEaseIn(t));
-			t += Time.deltaTime;
+			t += Time.deltaTime * 3;
 			yield return null;
 		}
 		t = 0;
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.05f);
+		
 		while (t < 1.2f){
 			PauseScreen.color = Color.Lerp(new Color (0,0,0,0), new Color (0,0,0,1), Easing.QuadEaseIn(t));
-			t += Time.deltaTime;
+			t += Time.deltaTime * 3;
 			yield return null;
 		}
 		
@@ -265,9 +283,9 @@ public class Main : MonoBehaviour {
 	IEnumerator FadeOut(){
 		float t = 0;
 		
-		while (t < 1f){
+		while (t < 1.2f){
 			PauseScreen.color = Color.Lerp(new Color (0,0,0,0), new Color (0,0,0,1), Easing.QuadEaseIn(t));
-			t += Time.deltaTime;
+			t += Time.deltaTime * 3;
 			yield return null;
 		}
 	}

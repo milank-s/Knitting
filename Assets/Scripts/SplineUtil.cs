@@ -5,12 +5,15 @@ using UnityEngine;
 public class SplineUtil : MonoBehaviour {
 
 	static public Point CreatePoint(Vector3 pos){
-		GameObject p = Instantiate(Services.Prefabs.point) as GameObject;
+		GameObject p = Instantiate(Resources.Load("Prefabs/Point")) as GameObject;
 		Point newPoint = p.GetComponent<Point>();
 
 		newPoint.transform.position = pos;
 		newPoint.GetComponent<Collider> ().enabled = true;
-		newPoint.Initialize();
+
+		#if !UNITY_EDITOR
+	newPoint.Initialize();
+		#endif
 		
 		return newPoint;
 	}

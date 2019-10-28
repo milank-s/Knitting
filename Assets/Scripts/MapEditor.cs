@@ -24,7 +24,12 @@ using System.IO;
 
 public class MapEditor : MonoBehaviour
 {
-
+    
+  
+   [SerializeField] public string sceneName;
+    
+    
+    
     private Point activePoint
     {
         get
@@ -55,6 +60,8 @@ public class MapEditor : MonoBehaviour
 
         get { return curTool; }
     }
+    
+    [Space(25)]
     public Transform pointsParent;
     public Transform splinesParent;
     
@@ -66,7 +73,6 @@ public class MapEditor : MonoBehaviour
     private List<Image> selectors;
     private LineRenderer l;
     private Camera cam;
-    private String sceneName;
     public Slider tensionSlider;
     public Slider biasSlider;
     public GameObject pointSelectedTip;
@@ -74,6 +80,7 @@ public class MapEditor : MonoBehaviour
     public GameObject marqueeTip;
     public GameObject deselectTip;
     public GameObject splinePointTip;
+    public Transform pointCoords;
     public Text pointType;
     public Text xPos;
     public Text yPos;
@@ -85,7 +92,7 @@ public class MapEditor : MonoBehaviour
     private static float cameraDistance = 2;
     private List<GameObject> text;
 
-    public bool typing;
+    public static bool typing;
     private bool dragging;
     private bool pointSelected
     {
@@ -116,7 +123,7 @@ public class MapEditor : MonoBehaviour
             }
             if (Spline.Splines.Count > 0)
             {
-                return Spline.Splines[splineindex % Spline.Splines.Count];
+                return Spline.Splines[splineindex];
             }
             else
             {
@@ -143,7 +150,7 @@ public class MapEditor : MonoBehaviour
     {
         
         sceneName = "Stellation 1";
-        editing = true;
+
 
         text = new List<GameObject>();
         foreach (Text t in canvas.GetComponentsInChildren<Text>())
@@ -155,9 +162,10 @@ public class MapEditor : MonoBehaviour
         selectors = new List<Image>();
         for (int i = 0; i < 50; i++)
         {
-            Image newSelector = Instantiate(selector, Vector3.zero, Quaternion.identity).GetComponent<Image>();
+            Image newSelector = Instantiate(selector, Vector3.one * 1000, Quaternion.identity).GetComponent<Image>();
             selectors.Add(newSelector);
-            newSelector.transform.parent = canvas;
+            newSelector.color = Color.clear;
+            newSelector.transform.SetParent(canvas, false);
         }
         selectedPoints = new List<Point>();
  
@@ -178,6 +186,7 @@ public class MapEditor : MonoBehaviour
     }
     void Start()
     {
+        editing = true;
         cam = Services.mainCam;
         l.enabled = false;
         Services.main.EnterEditMode(editing);
@@ -293,7 +302,6 @@ public class MapEditor : MonoBehaviour
                     else if (Input.GetKeyDown(KeyCode.RightArrow))
                     {
 
-
                         if (pointSelected)
                         {
 
@@ -396,6 +404,7 @@ public class MapEditor : MonoBehaviour
                 }
 
 
+                
                 if (Physics.Raycast(r.origin, r.direction, out hit))
                 {
                     hitPoint = hit.transform.GetComponent<Point>();
@@ -570,7 +579,7 @@ public class MapEditor : MonoBehaviour
                                         spp.p.transform.parent = pointsParent;
                                         RemoveSelectedPoint(activePoint);
                                         AddSelectedPoint(hitPoint);
-                                        ChangeSelectedSpline(Spline.Splines.IndexOf(spp.s));
+                                        //ChangeSelectedSpline(Spline.Splines.IndexOf(spp.s));
                                     }
 
 
@@ -606,7 +615,7 @@ public class MapEditor : MonoBehaviour
                                         spp.p.transform.parent = pointsParent;
                                         RemoveSelectedPoint(activePoint);
                                         AddSelectedPoint(newPoint);
-                                        ChangeSelectedSpline(Spline.Splines.IndexOf(spp.s));
+                                        //ChangeSelectedSpline(Spline.Splines.IndexOf(spp.s));
                                     }
 
                                 }
@@ -625,9 +634,37 @@ public class MapEditor : MonoBehaviour
 
 
                 int index = 0;
-                foreach (Point p in selectedPoints)
-                {
 
+                Vector3 lowerLeft = new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
+                Vector3 upperRight = new Vector3(-Mathf.Infinity, -Mathf.Infinity, -Mathf.Infinity);
+                
+      
+                foreach (Point p in selectedPoints)
+                {    
+                    if (p.Pos.x > upperRight.x) {
+                        upperRight.x = p.Pos.x;
+                    }
+
+                    if (p.Pos.x < lowerLeft.x) {
+                        lowerLeft.x = p.Pos.x;
+                    }
+
+                    if (p.Pos.y > upperRight.y) {
+                        upperRight.y = p.Pos.y;
+                    }
+
+                    if (p.Pos.y < lowerLeft.y) {
+                        lowerLeft.y = p.Pos.y;
+                    }
+                    if (p.Pos.z > upperRight.z) {
+                        upperRight.z = p.Pos.z;
+                    }
+
+                    if (p.Pos.z < lowerLeft.z) {
+                        lowerLeft.z = p.Pos.z;
+                    }
+                    
+                    
                     selectors[index].transform.Rotate(Vector3.forward);
                     selectors[index].transform.position = cam.WorldToScreenPoint(p.Pos);
 
@@ -650,6 +687,7 @@ public class MapEditor : MonoBehaviour
                         }
 
                         pointOptions.transform.position = cam.WorldToScreenPoint(p.Pos);
+                        pointCoords.position = cam.WorldToScreenPoint(p.Pos);
                     }
 
                     p.proximity = Mathf.Sin(Time.time);
@@ -664,8 +702,16 @@ public class MapEditor : MonoBehaviour
                     }
                 }
 
+                
                 if (pointSelected)
                 {
+
+                    if (Input.GetKeyDown(KeyCode.F))
+                    {
+                        Vector3 center = Vector3.Lerp(upperRight, lowerLeft, 0.5f);
+                       cam.transform.position = new Vector3(center.x, center.y, center.z - cameraDistance);
+                    }
+                    
                     marqueeTip.SetActive(false);
                     deselectTip.SetActive(true);
                     pointSelectedTip.SetActive(true);
@@ -766,9 +812,9 @@ public class MapEditor : MonoBehaviour
             level["spline" + j] = splineData;
         }
         
-        WriteJSONtoFile ("Assets/Resources/Levels", gameObject.name + ".json", level);
+        WriteJSONtoFile ("Assets/Resources/Levels", sceneName + ".json", level);
         
-        levelList.options.Add(new Dropdown.OptionData(gameObject.name));
+        levelList.options.Add(new Dropdown.OptionData(sceneName));
     }
     
     static void WriteJSONtoFile(string path, string fileName, JSONObject json){
@@ -798,6 +844,9 @@ public class MapEditor : MonoBehaviour
     {   
         //Delete everything already in the scene
         //take care of any local variables in here that reference shit in the scene
+
+        Spline[] splines = splinesParent.GetComponentsInChildren<Spline>();
+        Point[] points = pointsParent.GetComponentsInChildren<Point>();
         
         ClearSelection();
         
@@ -813,9 +862,9 @@ public class MapEditor : MonoBehaviour
             Vector3 spawnPos = new Vector3(json["p" + i]["x"],json["p" + i]["y"],json["p" + i]["z"]);
             
             Point newPoint;
-            if (i < Point.Points.Count)
+            if (i < points.Length)
             {
-                newPoint = Point.Points[i];
+                newPoint = points[i];
                 newPoint.Clear();
                 newPoint.transform.position = spawnPos;
             }    
@@ -830,7 +879,7 @@ public class MapEditor : MonoBehaviour
             newPoint.continuity = json["p" + i]["continuity"];
             int t = json["p" + i]["pointType"];
             newPoint.pointType = (PointTypes)t;
-            
+            newPoint.transform.parent = pointsParent;
             newPoints.Add(newPoint);
         }
 
@@ -842,9 +891,9 @@ public class MapEditor : MonoBehaviour
 
             Spline newSpline;
                 
-            if (i < Spline.Splines.Count)
+            if (i < splines.Length)
             {
-                newSpline = Spline.Splines[i];
+                newSpline = splines[i];
                 newSpline.Reset();
                 newSpline.SplinePoints.Add(p1);
                 newSpline.SplinePoints.Add(p2);
@@ -866,22 +915,20 @@ public class MapEditor : MonoBehaviour
             }
             
             newSpline.closed = json["spline" + i]["closed]"];
-            
+            newSpline.transform.parent = splinesParent;
         }
 
-        for (int i = Spline.Splines.Count-1; i >= json["splineCount"]; i--)
+        
+        for (int i = splines.Length-1; i >= json["splineCount"]; i--)
         {
-            Destroy(Spline.Splines[i]);
+            Destroy(splines[i]);
         }
 
-        for (int i = Point.Points.Count -1 ; i >= json["pointCount"]; i--)
+        for (int i = points.Length -1 ; i >= json["pointCount"]; i--)
         {
-            Point.Points[i].Destroy();
+           points[i].Destroy();
         }
     }
-    
- 
-    
     
     void DragCamera()
     {
@@ -896,8 +943,8 @@ public class MapEditor : MonoBehaviour
     
     void PanCamera()
     {
-        cam.transform.position -= Vector3.forward * Input.mouseScrollDelta.y * Time.deltaTime * 10f;
-        
+        cam.fieldOfView  = Mathf.Clamp(cam.fieldOfView - Input.mouseScrollDelta.y * Time.deltaTime * 100f, 10, 160);
+        cam.transform.position = new Vector3(cam.transform.position.x, cam.transform.position.y, Mathf.Clamp(cam.transform.position.z, -20, -2));
         Vector3 viewportPos = cam.ScreenToViewportPoint(curPos);
         
         if (viewportPos.y > 0.95f && viewportPos.y < 1)
@@ -938,6 +985,7 @@ public class MapEditor : MonoBehaviour
                 }else if (curTool == Tool.move)
                 {
                     Deselect();
+                    pointCoords.gameObject.SetActive(true);
                     AddSelectedPoint(p);
                 }
             }else{
@@ -947,6 +995,11 @@ public class MapEditor : MonoBehaviour
                 if (pointSelected && curTool == Tool.select)
                 {
                     pointOptions.SetActive(true);
+                }
+
+                if (pointSelected && curTool == Tool.move)
+                {
+                    pointCoords.gameObject.SetActive(true);
                 }
             }
         }
@@ -1066,6 +1119,7 @@ public class MapEditor : MonoBehaviour
 
                 if (curTool != Tool.move)
                 {
+                    pointCoords.gameObject.SetActive(false);
                     cursor.rectTransform.pivot = new Vector3(0f, 0f);
                     dragging = false;
                 }
@@ -1082,6 +1136,7 @@ public class MapEditor : MonoBehaviour
 
     void Deselect()
     {
+        
         selectedPoints.Clear();
         selectedPointIndicator.SetActive(false);
         pointSelectedTip.SetActive(false);
@@ -1089,9 +1144,9 @@ public class MapEditor : MonoBehaviour
         {
             i.color = Color.clear;
         }
-
-        pointOptions.SetActive(false);
         
+        pointOptions.SetActive(false);
+        pointCoords.gameObject.SetActive(false);
     }
     
     IEnumerator MarqueeSelect(Vector3 pos)

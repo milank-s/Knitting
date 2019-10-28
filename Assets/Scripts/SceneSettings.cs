@@ -11,8 +11,7 @@ public class SceneSettings : MonoBehaviour
     void Start()
     {
         Services.StartPoint = startPoint;
-        Services.main.InitializeMap();
-        
+        Services.main.InitializeLevel();
     }
 
     // Update is called once per frame

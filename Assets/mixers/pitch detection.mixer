@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!241 &24100000
+AudioMixerController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: pitch detection
+  m_OutputGroup: {fileID: 0}
+  m_MasterGroup: {fileID: 24300001}
+  m_Snapshots:
+  - {fileID: 24500003}
+  m_StartSnapshot: {fileID: 24500003}
+  m_SuspendThreshold: 20
+  m_EnableSuspend: 1
+  m_UpdateMode: 0
+  m_ExposedParameters:
+  - guid: 76ae7e9e86dbd4d1494392bb12d33ccd
+    name: Monitor
+  m_AudioMixerGroupViews:
+  - guids:
+    - 2cd4cb191470342baaa6d9d2cca935aa
+    name: View
+  m_CurrentViewIndex: 0
+  m_TargetSnapshot: {fileID: 24500003}
+--- !u!243 &24300001
+AudioMixerGroupController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Master
+  m_AudioMixer: {fileID: 24100000}
+  m_GroupID: 2cd4cb191470342baaa6d9d2cca935aa
+  m_Children: []
+  m_Volume: dd77cefada5204daab268c01e043398e
+  m_Pitch: b5eff784d7fc146158088f1c93d0bb52
+  m_Effects:
+  - {fileID: 24436232}
+  - {fileID: 24400002}
+  m_UserColorIndex: 0
+  m_Mute: 0
+  m_Solo: 0
+  m_BypassEffects: 0
+--- !u!244 &24400002
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: e55904a6f3ce744f18c8769cd1f54c6d
+  m_EffectName: Attenuation
+  m_MixLevel: cf2c60f9bb9494ae9bb2eb57639705bf
+  m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!244 &24436232
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 94f44b8f9863f4805bc46c3cb4a65c5c
+  m_EffectName: Demo PitchDetector
+  m_MixLevel: 9019d8ca3e697405f8c6c7267bb20a7c
+  m_Parameters:
+  - m_ParameterName: Index
+    m_GUID: 73776a61afc5742348df1c52740f1e30
+  - m_ParameterName: Low Cut
+    m_GUID: 6d66beba6094f4391b7275fef2c90e35
+  - m_ParameterName: High Cut
+    m_GUID: 862694e24a22747d4af578a3a64276c5
+  - m_ParameterName: Low Bin
+    m_GUID: 27fcd01b37b0f4a52bae4dae43a31645
+  - m_ParameterName: High Bin
+    m_GUID: 66d4515b1e95240c58175896d6879e52
+  - m_ParameterName: Threshold
+    m_GUID: d7a04191ab82549ebb58288edc9c6dcf
+  - m_ParameterName: Osc Pitch
+    m_GUID: b04af566c999c494980fa2d60393d312
+  - m_ParameterName: Monitor
+    m_GUID: 76ae7e9e86dbd4d1494392bb12d33ccd
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!245 &24500003
+AudioMixerSnapshotController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Snapshot
+  m_AudioMixer: {fileID: 24100000}
+  m_SnapshotID: 91d058c10408f497fa7420f3b9c38fe4
+  m_FloatValues:
+    8c113d400e4a647f29ac19578dadb4b0: 0.439
+    24df80675828048abb722daa902d42bb: 0.05
+    31b26ca9ea9f54171b7196dcb3337188: 1000
+    dd77cefada5204daab268c01e043398e: -2.5738313
+    fb07e48b5079349908b44f19c5614ae4: 1500
+    b4450e5c65c864ead8af38a0ea99843a: 20
+    bb73014d780ce4b1dbbea1b3fe22e307: 50
+    76ae7e9e86dbd4d1494392bb12d33ccd: 0
+  m_TransitionOverrides: {}

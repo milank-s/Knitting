@@ -61,8 +61,18 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	[HideInInspector]
 	public bool goingForward = true;
-	[HideInInspector]
-	public float progress, accuracy, flow, boost, boostTimer, curSpeed, connectTime, timeOnPoint, connectTimeCoefficient, gravity;
+
+	[HideInInspector] public float progress,
+		accuracy,
+		flow,
+		boost,
+		boostTimer,
+		curSpeed,
+		connectTime,
+		timeOnPoint,
+		connectTimeCoefficient,
+		gravity,
+		decelerationTimer;
 
 	[Header("Flying tuning")]
 	public float flyingSpeedThreshold = 3;
@@ -141,19 +151,16 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 	}
 
-	public void Initialize(){
-
-		traversedPoints.Clear();
+	public void Initialize()
+	{
 		cursor = Services.Cursor;
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
-		cursorSprite = Services.Cursor.GetComponent<Image>();
-		
+		cursorSprite = cursor.GetComponent<Image>();
 		traversedPoints.Add (curPoint);
 		curPoint.OnPointEnter ();
-		t.Clear();
-		shortTrail.Clear();
 		
+		Reset();
 //		Material newMat;
 //		newMat = Services.Prefabs.lines[3];
 //		Texture tex = newMat.mainTexture;
@@ -187,8 +194,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		progress = 0;
 		state = PlayerState.Switching;
 		curSpline = null;
-		curPoint = Services.StartPoint;
 		traversedPoints.Clear();
+		shortTrail.Clear();
+		t.Clear();
 		Services.main.fx.Reset();
 		flow = 0;
 		pointDest = null;
@@ -322,7 +330,14 @@ public class PlayerBehaviour: MonoBehaviour {
 				//should always be drawn
 				if(!s.locked)
 				{
+					if (s != curSpline)
+					{
 					s.DrawSpline( s.SplinePoints.IndexOf(curPoint));
+					}
+					else
+					{
+						s.DrawSpline();
+					}
 				}
 			}
 			
@@ -918,6 +933,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (accuracy > 0.5f && !joystickLocked) {
 
 			if(flow < 0){
+				
 				flow += decay *  accuracy * Time.deltaTime;
 				if (flow > 0)
 					flow = 0;
@@ -928,7 +944,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(Mathf.Abs(flow) < curSpline.distance * 100)
 			{
 				flow += Mathf.Pow(accuracy, 2) * acceleration * Time.deltaTime * cursorDir.magnitude;
-
+				decelerationTimer = Mathf.Clamp01(decelerationTimer - Time.deltaTime * 2f);
 			}
 
 		}
@@ -940,8 +956,15 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if ((accuracy < 0.5f) || joystickLocked) {
 
-			if (flow > 0) {
-				flow -= (0.5f - accuracy/2f) * Time.deltaTime;
+			if (flow > 0)
+			{
+				decelerationTimer = Mathf.Clamp01(decelerationTimer + Time.deltaTime * (2-accuracy));
+				
+				if (decelerationTimer >=1 )
+				{
+					flow -= (0.5f - accuracy / 2f) * Time.deltaTime;
+				}
+
 				if (flow < 0)
 					flow = 0;
 			}
@@ -953,7 +976,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		// (adjustedAccuracy + 0.1f)
 		if (!joystickLocked)
 		{
-			curSpeed = Mathf.Clamp(flow + speed  + boost - adjustedAccuracy, 0, 1000) * cursorDir.magnitude * accuracyMultiplier;
+			curSpeed = Mathf.Clamp(flow + speed  + boost - (adjustedAccuracy * decelerationTimer), 0, 1000) * cursorDir.magnitude * Mathf.Clamp01((1-decelerationTimer) + accuracyMultiplier);
 			progress += (curSpeed * Time.deltaTime) / curSpline.distance;
 		}
 
@@ -1154,7 +1177,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	public bool CanLeavePoint(){
 
 		angleToSpline = Mathf.Infinity;
-
+		float angleOffSpline = Mathf.Infinity;
+		float angleFromPoint = Mathf.Infinity;
 		if (curPoint.HasSplines ()) {
 
 			splineDest = null;
@@ -1205,13 +1229,26 @@ public class PlayerBehaviour: MonoBehaviour {
 //									}
 //								}else{
 									curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
+									angleOffSpline = curAngle;
 									float angleToPoint = Vector3.Angle(cursorDir, (s.GetPointAtIndex(s.SplinePoints.IndexOf(curPoint), 0.99f) - curPoint.Pos).normalized);
 									curAngle = Mathf.Lerp(curAngle, angleToPoint, 0.75f);
-
+									if (curAngle < angleOffSpline)
+									{
+										angleOffSpline = curAngle;
+									}
 //								}
 							}
 
 						if (curAngle < angleToSpline) {
+							if (angleOffSpline < angleFromPoint)
+							{
+								angleFromPoint = angleOffSpline;
+							}
+
+							if (curAngle < angleOffSpline)
+							{
+								angleFromPoint = angleOffSpline;
+							}
 							angleToSpline = curAngle;
 							splineDest = s;
 							pointDest = p;
@@ -1224,7 +1261,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			//this is causing bugs
 
 // && (Input.GetButtonDown("Button1")
-			if (angleToSpline <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) {
+			
+			if ((angleFromPoint <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) && splineDest != null) {
 				if(curSpline != null && curSpline != splineDest){
 					
 					curSpline.OnSplineExit();

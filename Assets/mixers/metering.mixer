@@ -1,0 +1,190 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!241 &24100000
+AudioMixerController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: metering
+  m_OutputGroup: {fileID: 0}
+  m_MasterGroup: {fileID: 24300001}
+  m_Snapshots:
+  - {fileID: 24500003}
+  m_StartSnapshot: {fileID: 24500003}
+  m_SuspendThreshold: 20
+  m_EnableSuspend: 1
+  m_UpdateMode: 0
+  m_ExposedParameters: []
+  m_AudioMixerGroupViews:
+  - guids:
+    - d8526155af821489c88c8e470e2ec5a1
+    name: View
+  m_CurrentViewIndex: 0
+  m_TargetSnapshot: {fileID: 24500003}
+--- !u!243 &24300001
+AudioMixerGroupController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Master
+  m_AudioMixer: {fileID: 24100000}
+  m_GroupID: d8526155af821489c88c8e470e2ec5a1
+  m_Children: []
+  m_Volume: e112e21c8c4ed47c1a88faa50bc7b588
+  m_Pitch: 7586f9b3b2e594694b7ca8b9e3af2a3f
+  m_Effects:
+  - {fileID: 24428466}
+  - {fileID: 24449524}
+  - {fileID: 24487544}
+  - {fileID: 24475020}
+  - {fileID: 24400002}
+  m_UserColorIndex: 0
+  m_Mute: 0
+  m_Solo: 0
+  m_BypassEffects: 0
+--- !u!244 &24400002
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 0bd0f2665597c45d3893bf43f0651337
+  m_EffectName: Attenuation
+  m_MixLevel: f91057f2b75014ea4b8dd5b0d85f4002
+  m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!244 &24428466
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 08eda57140e8d4a3f9cb29fd5968e7dc
+  m_EffectName: Demo Equalizer
+  m_MixLevel: 04edb770e476b40868839087b0804451
+  m_Parameters:
+  - m_ParameterName: MasterGain
+    m_GUID: 6ca218e3085454a8f98cc2d1ada8bf36
+  - m_ParameterName: LowGain
+    m_GUID: 53e91fe8785fc4793803fffe09b8a8e7
+  - m_ParameterName: MidGain
+    m_GUID: 25fc034a69d974d3985d5001e626cede
+  - m_ParameterName: HighGain
+    m_GUID: 66d7ceae5b5224483b39913b639d4845
+  - m_ParameterName: LowFreq
+    m_GUID: d53a740adb4b8405da7ada95a10f004d
+  - m_ParameterName: MidFreq
+    m_GUID: 4e567a894504e4498b30188937a86b7e
+  - m_ParameterName: HighFreq
+    m_GUID: 9002e54ab4fef4619a9eeba31803c1ee
+  - m_ParameterName: LowQ
+    m_GUID: f210df181754a414b83fba49b59bd117
+  - m_ParameterName: MidQ
+    m_GUID: 786f9d5abfcda4bfd8b917e2b5b78624
+  - m_ParameterName: HighQ
+    m_GUID: 7b93cf86dec7a4975bf39346dc1c0a8a
+  - m_ParameterName: UseLogScale
+    m_GUID: d7b6aef1a71944c30bae81260f47dfd7
+  - m_ParameterName: ShowSpectrum
+    m_GUID: bf2211b6b57a4432b9e61efc216dc328
+  - m_ParameterName: SpectrumDecay
+    m_GUID: 0e9d975a3a0fa4e68a2fb645ce42fa24
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!244 &24449524
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 0b1b5149cdf5643ebbade2fe0466c1f8
+  m_EffectName: Demo StereoWidener
+  m_MixLevel: 4bedd002ce6cb4878be487f6762ec591
+  m_Parameters:
+  - m_ParameterName: Amount
+    m_GUID: e10447a600479437abad325c75b8eb86
+  - m_ParameterName: Pre-delay
+    m_GUID: 01ac9f39019ba416497c024fa54b7b3b
+  - m_ParameterName: Post-delay
+    m_GUID: d064947abad10415ea14d7c90ae1511c
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!244 &24475020
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 416a2968d6fae4c9289ff2e03538daa6
+  m_EffectName: Demo LoudnessMeter
+  m_MixLevel: c779253b404fd4b7a8666149b9f02476
+  m_Parameters:
+  - m_ParameterName: Window
+    m_GUID: 386543952101e4653ad191e3f922ec3d
+  - m_ParameterName: YOffset
+    m_GUID: b94c01e907fc448399f2bf7c9e5e96ac
+  - m_ParameterName: YScale
+    m_GUID: 15a4859ad8fb6483592bf93a460ffc16
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!244 &24487544
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: d2de44a2603ff493393bd26585e3dcb0
+  m_EffectName: Demo CorrelationMeter
+  m_MixLevel: 19ad7df6694f240c3b0ca1394f739b2d
+  m_Parameters:
+  - m_ParameterName: Window
+    m_GUID: 7df48b15d757d4859b2553c23b86d529
+  - m_ParameterName: Scale
+    m_GUID: fc00fe4d107d04ef7b75109c7d2a2085
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!245 &24500003
+AudioMixerSnapshotController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Snapshot
+  m_AudioMixer: {fileID: 24100000}
+  m_SnapshotID: 98db2bb9ad7e34f0da9d2d6224022258
+  m_FloatValues:
+    04edb770e476b40868839087b0804451: 0
+    6ca218e3085454a8f98cc2d1ada8bf36: -11
+    7df48b15d757d4859b2553c23b86d529: 0.37
+    386543952101e4653ad191e3f922ec3d: 20.040028
+    7b93cf86dec7a4975bf39346dc1c0a8a: 0.707
+    e10447a600479437abad325c75b8eb86: 7.01
+    bf2211b6b57a4432b9e61efc216dc328: 1
+    f210df181754a414b83fba49b59bd117: 0.707
+    53e91fe8785fc4793803fffe09b8a8e7: 20
+    01ac9f39019ba416497c024fa54b7b3b: 0
+    4e567a894504e4498b30188937a86b7e: 1351.0585
+    b94c01e907fc448399f2bf7c9e5e96ac: -8.450766
+    d53a740adb4b8405da7ada95a10f004d: 173.034
+    25fc034a69d974d3985d5001e626cede: 13
+    9002e54ab4fef4619a9eeba31803c1ee: 6896.3896
+    786f9d5abfcda4bfd8b917e2b5b78624: 0.707
+    d064947abad10415ea14d7c90ae1511c: 0.00018
+    15a4859ad8fb6483592bf93a460ffc16: 2.2599998
+    e112e21c8c4ed47c1a88faa50bc7b588: -9.4
+    fc00fe4d107d04ef7b75109c7d2a2085: 0.47
+    66d7ceae5b5224483b39913b639d4845: 22.5
+  m_TransitionOverrides: {}

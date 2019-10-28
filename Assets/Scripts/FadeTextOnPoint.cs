@@ -14,7 +14,7 @@ public class FadeTextOnPoint: MonoBehaviour {
 	void Start(){
 		t = GetComponent<TextMesh> ();
 		
-		gameObject.SetActive(false);
+		
 		if (startOn)
 		{
 			alpha = 1;

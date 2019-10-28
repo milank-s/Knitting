@@ -150,7 +150,7 @@ public class CameraFollow : MonoBehaviour {
 				// Debug.Log(CameraDolly.FOVForHeightAndDistance (height, offset.z));
 				// this is negative
 				Vector3 targetPos;
-				if (fixedCamera && Services.PlayerBehaviour.curSpline)
+				if (fixedCamera && Services.PlayerBehaviour.curSpline != null)
 				{
 					Vector3 curSplinePos = Services.PlayerBehaviour.curSpline.transform.position;
 					targetPos = new Vector3(curSplinePos.x, curSplinePos.y,
@@ -158,18 +158,18 @@ public class CameraFollow : MonoBehaviour {
 				}
 				else
 				{
-					targetPos = new Vector3(transform.position.x, transform.position.y, 
+					targetPos = new Vector3(target.position.x, target.position.y, 
 						Services.PlayerBehaviour.transform.position.z + offset.z);
 				}
 
 //					cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, Mathf.Clamp(CameraDolly.FOVForHeightAndDistance (height, -offset.z) + 5, 25, 100), Time.deltaTime * speed);
 					
-					Vector3 shake = Services.PlayerBehaviour.state == PlayerState.Traversing ? Random.onUnitSphere * Mathf.Clamp(Mathf.Pow(1- Services.PlayerBehaviour.accuracy, Services.PlayerBehaviour.accuracyCoefficient) * Services.PlayerBehaviour.flow , 0, 0.5f) : Vector3.zero;
-
+					Vector3 shake = Services.PlayerBehaviour.state == PlayerState.Traversing ? (Vector3)Random.insideUnitCircle.normalized * Mathf.Clamp(Mathf.Pow(1- Services.PlayerBehaviour.accuracy, Services.PlayerBehaviour.accuracyCoefficient) * Services.PlayerBehaviour.flow , 0, 0.5f) : Vector3.zero;
+					transform.position =  Vector3.SmoothDamp (transform.position, new Vector3(targetPos.x, targetPos.y, Services.PlayerBehaviour.transform.position.z +  offset.z) + shake, ref velocity, 0.25f);
 					// new Vector3(curSplinePos.x, curSplinePos.y Services.PlayerBehaviour.transform.position.z)
 					//Vector3.Lerp(Services.PlayerBehaviour.transform.position, new Vector3(xPos, yPos, Services.PlayerBehaviour.transform.position.z), 1f)
 					
-					transform.position = new Vector3(targetPos.x, targetPos.y, Services.PlayerBehaviour.transform.position.z + offset.z);
+//					transform.position = new Vector3(targetPos.x, targetPos.y, Services.PlayerBehaviour.transform.position.z + offset.z);
 				// }
 
 				// Vector3 targetPos = Vector3.Lerp(new Vector3 (xPos, yPos, target.position.z + offset.z), target.position + offset, 0.5f);

@@ -197,12 +197,10 @@ public class Point : MonoBehaviour
 	}
 	void Awake()
 	{
-		Points.Add(this);
 		pointClouds = new List<PointCloud>();
 //		stiffness = 1600;
 //		damping = 1000;
 //		mass = 20;
-		Point.pointCount++;
 		activationSprite = GetComponentInChildren<FadeSprite> ();
 		timeOffset = Point.pointCount;
 
@@ -213,13 +211,10 @@ public class Point : MonoBehaviour
 		if(textMesh != null){
 			textMesh.GetComponent<FadeTextOnPoint>().p = this;
 		}
-
-		c = 0;
-		cooldown = 0;
 		SR = GetComponent<SpriteRenderer> ();
-
-		initPos = transform.position;
-		anchorPos = initPos;
+		
+		Points.Add(this);
+		Point.pointCount++;
 	}
 
 	public void TurnOn()
@@ -244,7 +239,8 @@ public class Point : MonoBehaviour
 		initTension = tension;
 		initBias = bias;
 		text = gameObject.name;
-
+		c = 0;
+		cooldown = 0;
 		timesHit = 0;
 		
 		if(defaultToGhost && _neighbours.Count == 2 && pointType == PointTypes.normal){
@@ -426,7 +422,7 @@ public class Point : MonoBehaviour
 	
 	public void OnPointEnter()
 	{
-		
+		proximity = 1;
 		timeOnPoint = 0;
 		timesHit++;
 //		stiffness = Mathf.Clamp(stiffness -100, 100, 10000);
@@ -466,8 +462,8 @@ public class Point : MonoBehaviour
 		
 		switch(pointType){
 			case PointTypes.stop:
-				Services.PlayerBehaviour.boost += boostAmount;
-				Services.PlayerBehaviour.flow += boostAmount * (Services.PlayerBehaviour.boostTimer);
+				Services.PlayerBehaviour.boost += boostAmount * Services.PlayerBehaviour.boostTimer;
+//				Services.PlayerBehaviour.flow += boostAmount * (Services.PlayerBehaviour.boostTimer);
 				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
 				Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.boostTimer + 1 * 5, transform);
 				Services.fx.EmitLinearBurst(50, Services.PlayerBehaviour.boostTimer + 1, transform, Services.PlayerBehaviour.cursorDir);
