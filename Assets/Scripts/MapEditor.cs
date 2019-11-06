@@ -754,7 +754,19 @@ public class MapEditor : MonoBehaviour
                         activePoint.SetPointType(PointTypes.fly);
                     }
 
-
+                    if (Input.GetKeyDown(KeyCode.Backspace))
+                    {
+                        Point pointToDelete = activePoint;
+                        RemoveSelectedPoint(activePoint);
+                        foreach (Spline s in Spline.Splines)
+                        {
+                            if (s.SplinePoints.Contains(pointToDelete))
+                            {
+                                s.SplinePoints.Remove(pointToDelete);
+                            }
+                        }
+                        pointToDelete.Destroy();
+                    }
                 }
                 else
                 {

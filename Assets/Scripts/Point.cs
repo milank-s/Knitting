@@ -191,10 +191,7 @@ public class Point : MonoBehaviour
 		Destroy(gameObject);
 	}
 
-	public void OnDestroy()
-	{
-		Points.Remove(this);
-	}
+
 	void Awake()
 	{
 		pointClouds = new List<PointCloud>();

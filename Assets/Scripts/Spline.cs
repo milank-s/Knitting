@@ -40,6 +40,13 @@ public class Spline : MonoBehaviour
 	[HideInInspector]
 	public VectorLine line;
 
+	public float completion;
+
+	private float _completion
+	{
+		get { return completion / distance; }
+
+	}
 	public float accuracyCoefficient;
 	public float maxSpeed;
 	public float boost;
@@ -204,7 +211,10 @@ public class Spline : MonoBehaviour
 		SplinePoints[index].transform.position = pos;
 	}
 
-	public void SetUpReferences(){
+	public void SetUpReferences()
+	{
+
+		distance = 0;
 		
 			for(int i = 0; i < SplinePoints.Count; i++) {
 				SplinePoints[i].AddSpline(this);
@@ -212,11 +222,18 @@ public class Spline : MonoBehaviour
 					SplinePoints[i].AddPoint(SplinePoints[i-1]);
 					SplinePoints[i-1].AddPoint(SplinePoints[i]);
 				}
+
+				Selected = SplinePoints[i];
+				CalculateDistance();
+				distance += segmentDistance;
 			}
 
 			if(closed){
 				StartPoint.AddPoint (EndPoint);
 				EndPoint.AddPoint(StartPoint);
+				Selected = EndPoint;
+				CalculateDistance();
+				distance += segmentDistance;
 			}
 
 			reactToPlayer = false;
@@ -343,16 +360,19 @@ public class Spline : MonoBehaviour
 	public void DrawSpline(int pointIndex = 0)
 	{
 
+		completion += Time.deltaTime;
+		
 		if (line.GetSegmentNumber() != 0)
 		{
 			drawIndex += 1;
 		}
-
-		float curIndex;
+		
 		if (reactToPlayer || isPlayerOn)
 		{
 			drawIndex = GetPlayerLineSegment(pointIndex);
 		}
+		
+		float curIndex;
 			
 				for (int i = Mathf.Clamp(pointIndex, 0, SplinePoints.Count); i < SplinePoints.Count - (closed ? 0 : 1) ; i++) {
 					for (int k = 0; k <= curveFidelity; k++)
@@ -411,7 +431,7 @@ public class Spline : MonoBehaviour
 		Vector3 v = GetPointAtIndex(pointIndex, step);
 
 		//Add movement Effects of player is on the spline
-
+	
 
 		int indexDiff;
 
@@ -458,6 +478,8 @@ public class Spline : MonoBehaviour
 		{
 			localDistortion = Mathf.Lerp(0, 1, Mathf.Pow(0.5f - Services.PlayerBehaviour.accuracy / 2, 3));
 			v += (distortionVector * UnityEngine.Random.Range(-localDistortion- distortion, localDistortion + distortion) * invertedDistance) * amplitude;
+			v += distortionVector * (Mathf.Sin(Time.time * frequency + phase - segmentIndex) *  _completion * 0.01f * distanceFromPlayer);
+
 		}
 		else
 		{
@@ -467,7 +489,7 @@ public class Spline : MonoBehaviour
 		NewFrequency(newFrequency);
 
 		//get value for sine wave effect
-		float offset = Mathf.Sin(Time.time * frequency + phase + segmentIndex * 0.5f);
+		
 
 		//(direction * offset * Mathf.Clamp01(distanceFromPlayer))
 		
@@ -507,7 +529,7 @@ public class Spline : MonoBehaviour
 //				}
 //				else
 				{
-					Color c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step);
+					Color c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step) + Color.white * _completion;
 					line.SetColor(c, segmentIndex);
 				}
 			}
@@ -701,7 +723,7 @@ public class Spline : MonoBehaviour
 
 	public int GetPlayerLineSegment ( int i)
 	{
-		return (i * curveFidelity) + (int)Mathf.Floor((float)curveFidelity * (float)Services.PlayerBehaviour.progress);
+		return (SplinePoints.IndexOf(Selected) * curveFidelity) + (int)Mathf.Floor((float)curveFidelity * (float)Services.PlayerBehaviour.progress);
 	}
 
 	public Vector3 GetPointAtIndex (int i, float t)
@@ -899,14 +921,13 @@ public class Spline : MonoBehaviour
 		//IDK IF THIS WORKS FORWARD/BACKWARDS
 
 		float step = (1.0f / (float)curveFidelity);
-		distance = 0;
+		segmentDistance = 0;
 
 		for (int k = 0; k < curveFidelity; k++) {
 
 			float t = (float)k / (float)(curveFidelity);
-			distance += Vector3.Distance (GetPoint (t), GetPoint (t + step));
+			segmentDistance += Vector3.Distance (GetPoint (t), GetPoint (t + step));
 		}
-
 	}
 
 	public void SetPoints (List<Point> points)

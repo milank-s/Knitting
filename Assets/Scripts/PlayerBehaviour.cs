@@ -595,9 +595,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 
 				if (goingForward) {
-					progress += (Time.deltaTime * t * flowMult) / curSpline.distance;
+					progress += (Time.deltaTime * t * flowMult) / curSpline.segmentDistance;
 				} else {
-					progress -= (Time.deltaTime * t  * flowMult) / curSpline.distance;
+					progress -= (Time.deltaTime * t  * flowMult) / curSpline.segmentDistance;
 				}
 
 				transform.position = curSpline.GetPoint (progress);
@@ -941,7 +941,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				//
 //			maxSpeed = curSpline.distance * 2;
 
-			if(Mathf.Abs(flow) < curSpline.distance * 100)
+			if(Mathf.Abs(flow) < curSpline.segmentDistance * 100)
 			{
 				flow += Mathf.Pow(accuracy, 2) * acceleration * Time.deltaTime * cursorDir.magnitude;
 				decelerationTimer = Mathf.Clamp01(decelerationTimer - Time.deltaTime * 2f);
@@ -977,7 +977,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (!joystickLocked)
 		{
 			curSpeed = Mathf.Clamp(flow + speed  + boost - (adjustedAccuracy * decelerationTimer), 0, 1000) * cursorDir.magnitude * Mathf.Clamp01((1-decelerationTimer) + accuracyMultiplier);
-			progress += (curSpeed * Time.deltaTime) / curSpline.distance;
+			progress += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
 		}
 
 		boost = Mathf.Lerp (boost, 0, Time.deltaTime * 2);
@@ -1038,9 +1038,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				flow = t;
 
 				if (goingForward) {
-					progress += Time.deltaTime * t / curSpline.distance;
+					progress += Time.deltaTime * t / curSpline.segmentDistance;
 				} else {
-					progress -= Time.deltaTime * t / curSpline.distance;
+					progress -= Time.deltaTime * t / curSpline.segmentDistance;
 				}
 
 				transform.position = curSpline.GetPoint (progress);
@@ -1070,11 +1070,11 @@ public class PlayerBehaviour: MonoBehaviour {
 				flow = t;
 				if (goingForward)
 				{
-					progress += Time.deltaTime * t / curSpline.distance;
+					progress += Time.deltaTime * t / curSpline.segmentDistance;
 				}
 				else
 				{
-					progress -= Time.deltaTime * t / curSpline.distance;
+					progress -= Time.deltaTime * t / curSpline.segmentDistance;
 				}
 
 				transform.position = curSpline.GetPoint(progress);
@@ -1449,9 +1449,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 			else if(f <= s && f >= 0){
 				if(step == 0){
-					velocityLine.points3[i+1] = pos + curSpline.GetDirection(step + 0.01f) * Mathf.Pow((1-Mathf.Abs(f)), 2) * curSpeed * curSpline.distance * (s) * curSpline.curveFidelity/2;
+					velocityLine.points3[i+1] = pos + curSpline.GetDirection(step + 0.01f) * Mathf.Pow((1-Mathf.Abs(f)), 2) * curSpeed * curSpline.segmentDistance * (s) * curSpline.curveFidelity/2;
 				}else{
-				velocityLine.points3[i+1] = pos + curSpline.GetDirection(step) * Mathf.Pow((1-Mathf.Abs(f)), 2) * curSpeed * curSpline.distance * (s - f) * curSpline.curveFidelity/2;
+				velocityLine.points3[i+1] = pos + curSpline.GetDirection(step) * Mathf.Pow((1-Mathf.Abs(f)), 2) * curSpeed * curSpline.segmentDistance * (s - f) * curSpline.curveFidelity/2;
 				}
 			}else{
 				velocityLine.points3[i + 1] = Vector3.Lerp(velocityLine.points3[i + 1], velocityLine.points3[i], Time.deltaTime);
