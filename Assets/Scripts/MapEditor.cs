@@ -347,6 +347,10 @@ public class MapEditor : MonoBehaviour
                         if (Input.GetKeyDown(KeyCode.R))
                         {
                             selectedSpline.RemovePoint((selectedSpline.SplinePoints.IndexOf(activePoint)));
+                            if (selectedSpline.SplinePoints.Count < 2)
+                            {
+                                Destroy(selectedSpline);
+                            }
                         }
 
                         if (Input.GetKeyDown(KeyCode.I))
@@ -763,6 +767,11 @@ public class MapEditor : MonoBehaviour
                             if (s.SplinePoints.Contains(pointToDelete))
                             {
                                 s.SplinePoints.Remove(pointToDelete);
+                            }
+
+                            if (s.SplinePoints.Count < 2)
+                            {
+                                Destroy(s);
                             }
                         }
                         pointToDelete.Destroy();
