@@ -123,6 +123,10 @@ public class MapEditor : MonoBehaviour
             }
             if (Spline.Splines.Count > 0)
             {
+                if (splineindex >= Spline.Splines.Count)
+                {
+                    splineindex = Spline.Splines.Count - 1;
+                }
                 return Spline.Splines[splineindex];
             }
             else
@@ -347,6 +351,8 @@ public class MapEditor : MonoBehaviour
                         if (Input.GetKeyDown(KeyCode.R))
                         {
                             selectedSpline.RemovePoint((selectedSpline.SplinePoints.IndexOf(activePoint)));
+                            selectedSpline.ResetLineLength();
+                            
                             if (selectedSpline.SplinePoints.Count < 2)
                             {
                                 Destroy(selectedSpline);
@@ -581,9 +587,11 @@ public class MapEditor : MonoBehaviour
                                     {
                                         spp.s.transform.parent = splinesParent;
                                         spp.p.transform.parent = pointsParent;
+                                        splineindex = Spline.Splines.IndexOf(spp.s);
+                                         
                                         RemoveSelectedPoint(activePoint);
                                         AddSelectedPoint(hitPoint);
-                                        //ChangeSelectedSpline(Spline.Splines.IndexOf(spp.s));
+                                        ChangeSelectedSpline(Spline.Splines.IndexOf(spp.s));
                                     }
 
 
@@ -617,9 +625,11 @@ public class MapEditor : MonoBehaviour
                                     {
                                         spp.s.transform.parent = splinesParent;
                                         spp.p.transform.parent = pointsParent;
+                                        
+                                        
                                         RemoveSelectedPoint(activePoint);
                                         AddSelectedPoint(newPoint);
-                                        //ChangeSelectedSpline(Spline.Splines.IndexOf(spp.s));
+                                        ChangeSelectedSpline(Spline.Splines.IndexOf(spp.s));
                                     }
 
                                 }
@@ -636,6 +646,11 @@ public class MapEditor : MonoBehaviour
 
                 }
 
+
+                if (Input.GetKeyDown(KeyCode.S))
+                {
+                    Save();
+                }
 
                 int index = 0;
 
@@ -767,6 +782,7 @@ public class MapEditor : MonoBehaviour
                             if (s.SplinePoints.Contains(pointToDelete))
                             {
                                 s.SplinePoints.Remove(pointToDelete);
+                                selectedSpline.ResetLineLength();
                             }
 
                             if (s.SplinePoints.Count < 2)
@@ -791,8 +807,6 @@ public class MapEditor : MonoBehaviour
 
     public void Save()
     {
-
-        Debug.Log("save me");
         
         JSONObject level = new JSONObject();
 
@@ -834,8 +848,20 @@ public class MapEditor : MonoBehaviour
         }
         
         WriteJSONtoFile ("Assets/Resources/Levels", sceneName + ".json", level);
-        
-        levelList.options.Add(new Dropdown.OptionData(sceneName));
+
+        bool contains = false;
+        foreach (Dropdown.OptionData d in levelList.options)
+        {
+            if (d.text == sceneName)
+            {
+                contains = true;
+            }
+        }
+
+        if (!contains)
+        {
+            levelList.options.Add(new Dropdown.OptionData(sceneName));
+        }
     }
     
     static void WriteJSONtoFile(string path, string fileName, JSONObject json){
@@ -949,6 +975,8 @@ public class MapEditor : MonoBehaviour
         {
            points[i].Destroy();
         }
+        
+        StopTyping(sceneName);
     }
     
     void DragCamera()

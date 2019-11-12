@@ -56,7 +56,7 @@ public class Point : MonoBehaviour
 	public static float hitColorLerp;
 	public static int pointCount = 0;
 
-	public static float boostAmount = 1f;
+	public static float boostAmount = 0.5f;
 	
 	[Space(10)]
 	[Header("Curve")]
@@ -460,7 +460,7 @@ public class Point : MonoBehaviour
 		switch(pointType){
 			case PointTypes.stop:
 				Services.PlayerBehaviour.boost += boostAmount * Services.PlayerBehaviour.boostTimer;
-//				Services.PlayerBehaviour.flow += boostAmount * (Services.PlayerBehaviour.boostTimer);
+				Services.PlayerBehaviour.flow += boostAmount * (Services.PlayerBehaviour.boostTimer);
 				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
 				Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.boostTimer + 1 * 5, transform);
 				Services.fx.EmitLinearBurst(50, Services.PlayerBehaviour.boostTimer + 1, transform, Services.PlayerBehaviour.cursorDir);

@@ -162,7 +162,8 @@ public class Main : MonoBehaviour {
 
 					if (!s.locked && !s.reactToPlayer)
 					{
-						//s.DrawSpline();
+						s.DrawSpline();
+						
 					}
 				}
 			}
@@ -171,6 +172,7 @@ public class Main : MonoBehaviour {
 				foreach (Spline s in Spline.Splines)
 				{
 					s.DrawSplineOverride();
+					s.line.Draw3D();
 				}
 			}
 		}

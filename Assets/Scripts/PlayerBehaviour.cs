@@ -1523,6 +1523,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				foreach (Spline s in pointDest._connectedSplines)
 				{
 					s.reactToPlayer = true;
+					s.line.Draw3DAuto();
 				}
 		
 				//this is making it impossible to get off points that are widows. wtf.
@@ -1588,6 +1589,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					foreach (Spline s in curPoint._connectedSplines)
 					{
 						s.reactToPlayer = false;
+						s.line.StopDrawing3DAuto();
 						
 					}
 
@@ -1596,6 +1598,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					foreach (Spline s in pointDest._connectedSplines)
 					{
 						s.reactToPlayer = true;
+						s.line.Draw3DAuto();
 					}
 				}
 				curPoint = pointDest;
