@@ -37,7 +37,6 @@ public class GranulatorUploadSample : MonoBehaviour
 
             if (s != null && s.loadState == AudioDataLoadState.Loaded && !uploaded[currindex])
             {
-                Debug.Log("Uploading sample " + s.name + " to slot " + currindex);
 
                 int numsamples = s.samples;
                 int numchannels = s.channels;

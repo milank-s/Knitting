@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using SimpleJSON;
 using System.IO;
+using System.Linq;
+
 //###################################################
 //###################################################
 
@@ -136,7 +138,7 @@ public class MapEditor : MonoBehaviour
         }
     }
 
-    private int splineindex = 0;
+    private int splineindex = -1;
     //add insert tool. inserts after the currently selected point
     //add delete tool. 
     //
@@ -243,6 +245,29 @@ public class MapEditor : MonoBehaviour
 
                 if (splineindex >= 0 && splineindex < Spline.Splines.Count)
                 {
+                    
+                    if (Input.GetKeyDown(KeyCode.Alpha5))
+                    {
+
+                        selectedSpline.ChangeMaterial(0);
+
+                    }
+                    else if (Input.GetKeyDown(KeyCode.Alpha6))
+                    {
+
+                        selectedSpline.ChangeMaterial(1);
+
+                    }
+                    else if (Input.GetKeyDown(KeyCode.Alpha7))
+                    {
+                        selectedSpline.ChangeMaterial(2);
+
+                    }
+                    else if (Input.GetKeyDown(KeyCode.Alpha8))
+                    {
+                        selectedSpline.ChangeMaterial(3);
+                    }
+                    
                     splineSelectedTip.SetActive(true);
                     if (pointSelected)
                     {
@@ -270,7 +295,7 @@ public class MapEditor : MonoBehaviour
 
                             if (!Input.GetKey(KeyCode.LeftShift))
                             {
-                                Deselect();
+                                DeselectPoints();
                             }
 
                             if (selectedSpline.SplinePoints.Contains(curPoint))
@@ -313,7 +338,7 @@ public class MapEditor : MonoBehaviour
 
                             if (!Input.GetKey(KeyCode.LeftShift))
                             {
-                                Deselect();
+                                DeselectPoints();
                             }
 
                             if (selectedSpline.SplinePoints.Contains(curPoint))
@@ -380,13 +405,19 @@ public class MapEditor : MonoBehaviour
                     {
 
                         i = splineindex - 1;
-                        if (i < 0)
-                        {
-                            i = Spline.Splines.Count - 1;
-                        }
+                       
                     }
 
                     ChangeSelectedSpline(i);
+                    DeselectPoints();
+
+                    if (i != -1)
+                    {
+                        foreach (Point p in selectedSpline.SplinePoints)
+                        {
+                            AddSelectedPoint(p);
+                        }
+                    }
                 }
 
                 Cursor.visible = false;
@@ -410,7 +441,8 @@ public class MapEditor : MonoBehaviour
                 if (Input.GetMouseButtonDown(1))
                 {
                     //RemoveSelectedPoint(hitPoint);
-                    Deselect();
+                    DeselectPoints();
+                    DeselectSpline();
                 }
 
 
@@ -428,6 +460,7 @@ public class MapEditor : MonoBehaviour
                             if (!pointSelected && curTool == Tool.select)
                             {
                                 pointOptions.SetActive(false);
+                                
                             }
                         }
 
@@ -1019,7 +1052,7 @@ public class MapEditor : MonoBehaviour
         {
             if ((!Input.GetKey(KeyCode.LeftShift) && pointSelected) && activePoint != p)
             {
-                Deselect();
+                DeselectPoints();
             }
 
             if (pointSelected && activePoint == p)
@@ -1033,13 +1066,22 @@ public class MapEditor : MonoBehaviour
                     }
                 }else if (curTool == Tool.move)
                 {
-                    Deselect();
+                    DeselectPoints();
                     pointCoords.gameObject.SetActive(true);
                     AddSelectedPoint(p);
                 }
             }else{
                 
                 AddSelectedPoint(p);
+                
+                for (int i = Spline.Splines.Count -1; i >= 0; i--)
+                {
+                    if (Spline.Splines[i].SplinePoints.Contains(activePoint))
+                    {
+                        ChangeSelectedSpline(Spline.Splines.IndexOf(Spline.Splines[i]));
+                        break;
+                    }
+                }
                 
                 if (pointSelected && curTool == Tool.select)
                 {
@@ -1067,25 +1109,25 @@ public class MapEditor : MonoBehaviour
             selectedPoints.Add(p);
         }
 
+            
         biasSlider.value = activePoint.bias;
         tensionSlider.value = activePoint.tension;
         selectedPointIndicator.SetActive(pointSelected);
         
     }
-    
+
     void ChangeSelectedSpline(int i)
     {
-        Deselect();
-        
+
         if (selectedSpline != null)
         {
-            selectedSpline.ChangeMaterial(3);
+            selectedSpline.ChangeMaterial(selectedSpline.lineMaterial);
         }
 
         if (Spline.Splines.Count > 0)
         {
             splineindex = i;
-            if (splineindex < 0)
+            if (splineindex < -1)
             {
                 splineindex = Spline.Splines.Count - 1;
             }
@@ -1094,17 +1136,15 @@ public class MapEditor : MonoBehaviour
                 splineindex = 0;
             }
 
+            if (i != -1)
+            {
                 splineSelectedTip.SetActive(true);
-                selectedSpline.ChangeMaterial(0);
-
-                foreach (Point p in selectedSpline.SplinePoints)
-                {
-                    AddSelectedPoint(p);
-                }
-        }
-        else
-        {
-            splineSelectedTip.SetActive(false);
+                selectedSpline.SwitchMaterial(3);
+            }
+            else
+            {
+                splineSelectedTip.SetActive(false);
+            }
         }
 
     }
@@ -1118,17 +1158,17 @@ public class MapEditor : MonoBehaviour
            }
         
 
-        splineindex = 0;
+        splineindex = -1;
     }
     void RemoveSelectedPoint(Point p)
     {
         if (selectedPoints.Contains(p))
         {
-            
             selectors[selectedPoints.Count - 1].color = Color.clear;
             selectedPoints.Remove(p);
         }
 
+        
         selectedPointIndicator.SetActive(pointSelected);
         pointSelectedTip.SetActive(pointSelected);
     }
@@ -1183,9 +1223,12 @@ public class MapEditor : MonoBehaviour
         }
     }
 
-    void Deselect()
+    void DeselectSpline()
     {
-        
+        ChangeSelectedSpline(-1);
+    }
+    void DeselectPoints()
+    {
         selectedPoints.Clear();
         selectedPointIndicator.SetActive(false);
         pointSelectedTip.SetActive(false);
@@ -1224,7 +1267,7 @@ public class MapEditor : MonoBehaviour
         {
             if (!Input.GetKey(KeyCode.LeftShift))
             {
-                Deselect();
+                DeselectPoints();
             }
             foreach (Collider c in Physics.OverlapBox(center, new Vector3(Mathf.Abs(size.x), Mathf.Abs(size.y), 10) / 2))
             {

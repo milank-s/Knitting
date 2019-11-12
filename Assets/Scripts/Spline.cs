@@ -97,7 +97,7 @@ public class Spline : MonoBehaviour
 	private int drawIndex;
 	private int lowHitPoint = int.MaxValue;
 	private int highHitPoint = -int.MaxValue;
-
+	public int lineMaterial = 0;
 	private float playerProgress{
 		get{return Services.PlayerBehaviour.progress;}
 	}
@@ -245,6 +245,19 @@ public class Spline : MonoBehaviour
 	}
 
 	public void ChangeMaterial(int i)
+	{
+		lineMaterial = i;
+		Material newMat;
+		newMat = Services.Prefabs.lines[i % Services.Prefabs.lines.Length];
+		Texture tex = newMat.mainTexture;
+		float length = newMat.mainTextureScale.x;
+		float height = newMat.mainTextureScale.y;
+		
+		line.texture = tex;
+		line.textureScale = newMat.mainTextureScale.x;
+	}
+
+	public void SwitchMaterial(int i)
 	{
 		Material newMat;
 		newMat = Services.Prefabs.lines[i % Services.Prefabs.lines.Length];

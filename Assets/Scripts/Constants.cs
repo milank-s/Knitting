@@ -45,7 +45,6 @@ public class Constants : MonoBehaviour {
 		UISymbols.Add(flying);
 		UISymbols.Add(buttonPress);
 		UISymbols.Add(canFly);
-		UISymbols.Add(cursorImage);
 		// UISymbols.Add(playerAxis);
 	}
 
@@ -79,7 +78,7 @@ public class Constants : MonoBehaviour {
 		}else{
 			// playerAxis.SetPosition(0, playerVals.transform.position);
 			// playerAxis.SetPosition(1, playerVals.cursorPos);
-			cursorImage.color = Color.Lerp(cursorImage.color, Color.white, Time.deltaTime);
+			//cursorImage.color = Color.Lerp(cursorImage.color, Color.white, Time.deltaTime);
 			reset.enabled = false;
 
 			// accuracyReadout.text = Mathf.Abs (playerVals.accuracy).ToString("F1");

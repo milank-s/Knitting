@@ -111,7 +111,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public TrailRenderer shortTrail;
 	[SerializeField] ParticleSystem sparks;
 	private LineRenderer l;
-	private Image cursorSprite;
+	[SerializeField] SpriteRenderer cursorSprite;
 	private SpriteRenderer playerSprite;
 	private int noteIndex;
 	public LineRenderer cursorOnPoint;
@@ -156,7 +156,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		cursor = Services.Cursor;
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
-		cursorSprite = cursor.GetComponent<Image>();
 		traversedPoints.Add (curPoint);
 		curPoint.OnPointEnter ();
 		
@@ -759,6 +758,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		Point raycastPoint = SplineUtil.RaycastFromCamera(cursorPos, 1f);
 		
+		
 		if (raycastPoint != null && raycastPoint != curPoint && raycastPoint.pointType != PointTypes.ghost && !raycastPoint.locked)
 		{
 			//& !raycastPoint.used
@@ -960,7 +960,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			{
 				decelerationTimer = Mathf.Clamp01(decelerationTimer + Time.deltaTime * (2-accuracy));
 				
-				if (decelerationTimer >=1 )
+				if (decelerationTimer >=1 || flow > curSpline.segmentDistance)
 				{
 					flow -= (0.5f - accuracy / 2f) * Time.deltaTime;
 				}
@@ -1388,9 +1388,9 @@ public class PlayerBehaviour: MonoBehaviour {
 //		Vector3 screenPos = ((Vector3)cursorDir/10f + Vector3.one/2f);
 		Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
 		
-		screenPos += (Vector3) cursorDir / 25f;
+		screenPos += new Vector3(cursorDir.x / Services.mainCam.aspect, cursorDir.y, 0)/25f;
+
 			
-		
 		screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Mathf.Abs(transform.position.z - Services.mainCam.transform.position.z));
 		cursorPos = Services.mainCam.ViewportToWorldPoint(screenPos);
 		cursor.transform.position = cursorPos;
