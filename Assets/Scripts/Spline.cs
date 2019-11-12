@@ -44,7 +44,7 @@ public class Spline : MonoBehaviour
 
 	private float _completion
 	{
-		get { return completion / distance; }
+		get { return completion / SplinePoints.Count; }
 
 	}
 	public float accuracyCoefficient;
