@@ -18,8 +18,8 @@ RenderSettings:
   m_FogColor: {r: 0, g: 0, b: 0, a: 1}
   m_FogMode: 1
   m_FogDensity: 1
-  m_LinearFogStart: 2
-  m_LinearFogEnd: 5
+  m_LinearFogStart: 0
+  m_LinearFogEnd: 2.01
   m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientEquatorColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_AmbientGroundColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
@@ -3038,7 +3038,7 @@ Camera:
     height: 1
   near clip plane: 1.5
   far clip plane: 1000
-  field of view: 40
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: 1
@@ -3780,6 +3780,11 @@ PrefabInstance:
       propertyPath: cursorSprite
       value: 
       objectReference: {fileID: 355773164}
+    - target: {fileID: 114000010318564134, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: acceleration
+      value: 0.025
+      objectReference: {fileID: 0}
     - target: {fileID: 4000011164714548, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2

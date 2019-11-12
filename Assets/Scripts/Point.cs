@@ -164,7 +164,7 @@ public class Point : MonoBehaviour
 			}
 			else
 			{
-				return color + new Color(c, c, c, 1);
+				return new Color(c, c, c, 1);
 			}
 		}
 	}
@@ -252,7 +252,8 @@ public class Point : MonoBehaviour
 		}
 		else
 		{
-			color = Color.black;
+			color = Color.clear;
+			SR.color = Color.white;
 		}
 
 	}
@@ -550,8 +551,15 @@ public class Point : MonoBehaviour
 		c = Mathf.Pow (c, 1);
 		
 //		SR.color = Color.Lerp (color, new Color (1,1,1, c), Time.deltaTime * 5);
-		
-	    SR.color = color + new Color(c, c, c, 1);
+
+		if (visited)
+		{
+			SR.color = color + new Color(1,1,1,c);
+		}
+		else
+		{
+			SR.color = Color.white;
+		}
 	}
 
 	public void PlayerOnPoint(Vector3 direction, float force)

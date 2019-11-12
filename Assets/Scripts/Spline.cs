@@ -44,7 +44,7 @@ public class Spline : MonoBehaviour
 
 	private float _completion
 	{
-		get { return Mathf.Clamp01(completion / distance); }
+		get { return completion / distance; }
 
 	}
 	public float accuracyCoefficient;
@@ -148,7 +148,6 @@ public class Spline : MonoBehaviour
 		isPlayerOn = false;
 		reactToPlayer = false;
 		line.StopDrawing3DAuto();
-
 		// if (curSound != null) {
 		// 	StopCoroutine (curSound);
 		// 	StartCoroutine (FadeNote (sound));
@@ -311,7 +310,7 @@ public class Spline : MonoBehaviour
 		}
 		else
 		{
-			line.color = Color.black;
+			line.color = Color.clear;
 		}
 
 		line.smoothWidth = true;
@@ -384,7 +383,6 @@ public class Spline : MonoBehaviour
 	public void DrawSpline(int pointIndex = 0)
 	{
 
-		completion += Time.deltaTime;
 		
 		if (line.GetSegmentNumber() != 0)
 		{
@@ -398,7 +396,39 @@ public class Spline : MonoBehaviour
 		
 		float curIndex;
 			
-				for (int i = Mathf.Clamp(pointIndex, 0, SplinePoints.Count); i < SplinePoints.Count - (closed ? 0 : 1); i++) {
+				for (int i = Mathf.Clamp(pointIndex, 0, SplinePoints.Count-1); i < SplinePoints.Count - (closed ? 0 : 1); i++) {
+					if (isPlayerOn)
+					{
+//						int indexDiff;
+//
+//						int segmentIndex = i * curveFidelity;
+//						//Find the shortest distance to the player in case of loop
+//						if (closed)
+//						{
+//							int dist1 = Mathf.Abs(-drawIndex);
+//							int dist2;
+//
+//							if (segmentIndex < drawIndex)
+//							{
+//								dist2 = Mathf.Abs((line.GetSegmentNumber() - drawIndex) + segmentIndex);
+//							}
+//							else
+//							{
+//								dist2 = Mathf.Abs((line.GetSegmentNumber() - segmentIndex) + drawIndex);
+//							}
+//
+//							indexDiff = Mathf.Min(dist1, dist2);
+//
+//						}
+//						else
+//						{
+//							indexDiff = Mathf.Abs(drawIndex - segmentIndex);
+//						}
+//
+//						SplinePoints[i].color =
+//							Color.Lerp(Color.white, Color.clear,
+//								(indexDiff / (float)curveFidelity));
+					}
 					for (int k = 0; k < curveFidelity; k++)
 					{
 
@@ -406,7 +436,7 @@ public class Spline : MonoBehaviour
 						float step = (float) k / (float) (curveFidelity-1);
 
 						Vector3 v = Vector3.zero;
-						
+	
 						DrawLine(i, index, step);
 						
 //						else
@@ -443,6 +473,7 @@ public class Spline : MonoBehaviour
 //						 }
 					}
 
+					
 				}
 			 // line.textureOffset -= (Services.PlayerBehaviour.curSpeed / line.textureScale) * Time.deltaTime * 10;
 			 
@@ -499,7 +530,7 @@ public class Spline : MonoBehaviour
 		{
 			localDistortion = Mathf.Lerp(0, 1, Mathf.Pow(0.5f - Services.PlayerBehaviour.accuracy / 2, 3));
 			v += (distortionVector * UnityEngine.Random.Range(-localDistortion- distortion, localDistortion + distortion) * invertedDistance) * amplitude;
-			v += distortionVector * (Mathf.Sin(Time.time * frequency + phase - segmentIndex) *  _completion * 0.01f * Mathf.Clamp01(distanceFromPlayer));
+			//v += distortionVector * (Mathf.Sin(Time.time * frequency + phase - segmentIndex) *  _completion * 0.01f * Mathf.Clamp01(distanceFromPlayer));
 
 		}
 		else
@@ -550,7 +581,21 @@ public class Spline : MonoBehaviour
 //				}
 //				else
 				{
-					Color c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step) + Color.white * _completion;
+//					Color c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step);
+//					(Color.white * (_completion -1))
+					Color c;
+					if (isPlayerOn)
+					{
+						 c = Color.Lerp(Color.white, SplinePoints[j]._color,
+							Mathf.Pow(distanceFromPlayer / Mathf.Clamp(SplinePoints.Count - 1, 1, 3), 2));
+						 
+					}
+					else
+					{
+						c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step);
+					}
+
+					c += (Color.white * Mathf.Clamp01(_completion - 1));
 					line.SetColor(c, segmentIndex);
 				}
 			}
@@ -560,6 +605,7 @@ public class Spline : MonoBehaviour
 				{
 					Color c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step);
 					//c = Color.Lerp(c, Color.white, invertedDistance);
+					c += (Color.white * Mathf.Clamp01(_completion - 1));
 					line.SetColor(c, segmentIndex);
 				}
 			}
@@ -589,14 +635,14 @@ public class Spline : MonoBehaviour
 // 					// if ((reversed && Services.PlayerBehaviour.progress < playerProgress) || (!reversed && Services.PlayerBehaviour.progress > playerProgress)) {
 // 					if(index - activeIndex == 1){
 // 						float difference = 1 - ((t - Services.PlayerBehaviour.progress) * curveFidelity);
-// 						line.SetColor (Color.Lerp (Color.black, Color.white, difference), index);
+// 						line.SetColor (Color.Lerp (Color.clear, Color.white, difference), index);
 // 					}else{
-// 						line.SetColor (Color.black, index);
+// 						line.SetColor (Color.clear, index);s
 // 					}
 //
 // 				}else{
 // 					if(locked){
-// 						line.SetColor (Color.black, index);
+// 						line.SetColor (Color.clear, index);
 // 					}else{
 // 					//why not use Tim's code for indexDiff
 // 						float lerpVal;

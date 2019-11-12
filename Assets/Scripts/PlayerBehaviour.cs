@@ -329,14 +329,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				//should always be drawn
 				if(!s.locked)
 				{
-					if (s != curSpline)
-					{
-					s.DrawSpline( s.SplinePoints.IndexOf(curPoint));
-					}
-					else
-					{
-						s.DrawSpline();
-					}
+					
+				s.DrawSpline( s.SplinePoints.IndexOf(curPoint));
+					
 				}
 			}
 			
@@ -978,6 +973,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			curSpeed = Mathf.Clamp(flow + speed  + boost - (adjustedAccuracy * decelerationTimer), 0, 1000) * cursorDir.magnitude * Mathf.Clamp01((1-decelerationTimer) + accuracyMultiplier);
 			progress += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
+			curSpline.completion += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
 		}
 
 		boost = Mathf.Lerp (boost, 0, Time.deltaTime * 2);
@@ -997,7 +993,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		// if(pointDest != null && pointDest.hasPointcloud){
-		// 	CameraFollow.desiredFOV = Mathf.Lerp(CameraFollow.desiredFOV, pointDest.pointCloud.desiredFOV, pointDest.proximity);
 		// }
 
 

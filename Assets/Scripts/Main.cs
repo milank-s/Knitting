@@ -160,7 +160,7 @@ public class Main : MonoBehaviour {
 				foreach (Spline s in Spline.Splines)
 				{
 
-					if (!s.locked && !s.reactToPlayer)
+					if (!s.locked && !s.reactToPlayer && !s.isPlayerOn)
 					{
 						s.DrawSpline();
 						

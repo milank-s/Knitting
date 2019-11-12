@@ -62,7 +62,7 @@ public class CameraFollow : MonoBehaviour {
 				if(!fixedCamera || (Services.PlayerBehaviour.state != PlayerState.Traversing && Services.PlayerBehaviour.state != PlayerState.Switching)){
 					
 					Vector3 targetPosition = Vector3.SmoothDamp (transform.position,Services.PlayerBehaviour.transform.position, ref velocity, 0.25f);
-
+					
 					transform.position = new Vector3(targetPosition.x, targetPosition.y,  Services.PlayerBehaviour.transform.position.z +  offset.z);
 					//Services.PlayerBehaviour.transform.position.z
 					return;
@@ -160,9 +160,11 @@ public class CameraFollow : MonoBehaviour {
 				{
 					targetPos = new Vector3(target.position.x, target.position.y, 
 						Services.PlayerBehaviour.transform.position.z + offset.z);
+					desiredFOV = Mathf.Clamp(CameraDolly.FOVForHeightAndDistance(height, -offset.z) + 5, 15f, 100);
 				}
 
-//					cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, Mathf.Clamp(CameraDolly.FOVForHeightAndDistance (height, -offset.z) + 5, 25, 100), Time.deltaTime * speed);
+					
+				
 					
 					Vector3 shake = Services.PlayerBehaviour.state == PlayerState.Traversing ? (Vector3)Random.insideUnitCircle.normalized * Mathf.Clamp(Mathf.Pow(1- Services.PlayerBehaviour.accuracy, Services.PlayerBehaviour.accuracyCoefficient) * Services.PlayerBehaviour.flow , 0, 0.5f) : Vector3.zero;
 					transform.position =  Vector3.SmoothDamp (transform.position, new Vector3(targetPos.x, targetPos.y, Services.PlayerBehaviour.transform.position.z +  offset.z) + shake, ref velocity, 0.25f);
