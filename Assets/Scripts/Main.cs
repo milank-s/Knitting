@@ -127,10 +127,14 @@ public class Main : MonoBehaviour {
 	void Update()
 	{
 		
-		Debug.Log(controller);
 		if (Input.GetAxis ("Joy Y") != 0 && !usingJoystick)
 		{
 			usingJoystick = true;
+		}
+
+		foreach (InputDevice d in InputSystem.devices)
+		{
+			Debug.Log(d);
 		}
 //		if (Input.GetKeyDown (KeyCode.R)) {
 //			SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
