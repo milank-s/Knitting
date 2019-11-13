@@ -1,10 +1,7 @@
-﻿using System;
+﻿
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEditor;
 using Vectrosity;
 
 public enum PlayerState{Traversing, Switching, Flying, Animating};
@@ -62,6 +59,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	[HideInInspector]
 	public bool goingForward = true;
 
+	public UnityEngine.InputSystem.Gamepad gamepad;
+	
 	[HideInInspector] public float progress,
 		accuracy,
 		flow,
@@ -94,7 +93,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	[Header("Input")]
 	public bool usingJoystick;
 	public bool joystickLocked;
-	private bool controllerConnected = false;
 	[Space(10)]
 
 	[Header("AV")]
@@ -290,6 +288,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(curSpline != null){
 				SetCursorAlignment ();
 				transform.position = curSpline.GetPoint(progress);
+				
 			}
 
 			PlayerMovement ();
@@ -349,13 +348,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				SwitchState(PlayerState.Animating);
 			}
 		}
-
-
-		#region
-		if (Input.GetAxis ("Joy Y") != 0) {
-			controllerConnected = true;
-		}
-		#endregion
 	}
 	
 	public void PlayerOnPoint(){
@@ -784,7 +776,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			else
 			{
 				//reset here
-				//SwitchState(PlayerState.Flying);
+				SwitchState(PlayerState.Animating);
 			}
 		}
 	
@@ -948,6 +940,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		// if ((curSpeed > 0 && flow < 0) || (curSpeed < 0 && flow > 0)) {
 		// 	curSpeed = 0;
 		// }
+		
+		
 
 		if ((accuracy < 0.5f) || joystickLocked) {
 
@@ -995,7 +989,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		// if(pointDest != null && pointDest.hasPointcloud){
 		// }
 
-
+		if (Main.usingJoystick)
+		{
+			Services.main.controller.SetMotorSpeeds(Mathf.Clamp01(-accuracy), flow);
+		}
 		// GetComponent<Rigidbody> ().velocity = curSpline.GetDirection (progress) * flow;
 
 //		transform.Rotate (0, 0, flow*5);
@@ -1317,7 +1314,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	void CursorInput (){
 
 		Vector3 lastCursorDir = cursorDir;
-		if (controllerConnected) {
+		if (Main.usingJoystick) {
 
 			// DO TURNING SPEED HERE
 
@@ -1476,6 +1473,10 @@ public class PlayerBehaviour: MonoBehaviour {
 			case PlayerState.Traversing:
 				//Services.fx.BakeParticles(sparks, Services.fx.brakeParticleMesh);
 				sparks.Pause();
+				if (Main.usingJoystick)
+				{
+					Services.main.controller.ResetHaptics();
+				}
 				//turn on sparks
 				break;
 			

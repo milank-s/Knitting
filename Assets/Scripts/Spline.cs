@@ -40,7 +40,7 @@ public class Spline : MonoBehaviour
 	[HideInInspector]
 	public VectorLine line;
 
-	public float completion;
+	public float completion;		
 
 	private float _completion
 	{

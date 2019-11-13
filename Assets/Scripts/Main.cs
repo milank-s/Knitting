@@ -3,6 +3,7 @@
 	 using UnityEngine;
 	 using UnityEngine.UI;
 	 using UnityEngine.SceneManagement;
+	 using UnityEngine.InputSystem;
 
 public class Main : MonoBehaviour {
 
@@ -15,6 +16,14 @@ public class Main : MonoBehaviour {
 	public GameObject canvas;
 	public static bool usingJoystick;
 	private string curLevel;
+
+	public Gamepad controller
+	{
+		get
+		{
+			return Gamepad.current;
+		}
+	}
 	
 	public bool _paused
 	{
@@ -38,7 +47,6 @@ public class Main : MonoBehaviour {
 	{
 		
 	}
-	
 
 	public void LoadLevel(string m)
 	{
@@ -119,7 +127,9 @@ public class Main : MonoBehaviour {
 	void Update()
 	{
 		
-		if (Input.GetAxis ("Joy Y") != 0) {
+		Debug.Log(controller);
+		if (Input.GetAxis ("Joy Y") != 0 && !usingJoystick)
+		{
 			usingJoystick = true;
 		}
 //		if (Input.GetKeyDown (KeyCode.R)) {

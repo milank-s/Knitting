@@ -99,7 +99,7 @@ public class SplineUtil : MonoBehaviour {
 	static public Point RaycastFromCamera(Vector3 pos, float distance){
 		//		Ray ray = new Ray (pos + -(Vector3.forward) * 100, Vector3.forward);
 		Ray ray = Camera.main.ScreenPointToRay (Camera.main.WorldToScreenPoint (pos));
-		ray.origin = ray.GetPoint(Vector3.Distance(pos, Services.mainCam.transform.position) - 1);
+		//ray.origin = ray.GetPoint(Vector3.Distance(pos, Services.mainCam.transform.position) - 1);
 		Debug.DrawRay(pos, ray.direction);
 		RaycastHit hit;
 		

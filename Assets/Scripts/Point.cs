@@ -99,7 +99,7 @@ public class Point : MonoBehaviour
 	[HideInInspector]
 	public float proximity = 0;
 
-	private bool _locked;
+	private bool _locked = false;
 
 	[HideInInspector]
 	public bool locked
