@@ -43,6 +43,8 @@ public class Main : MonoBehaviour {
 
 	private bool paused;
 
+	[SerializeField] public string loadFileName;
+	
 	void Init()
 	{
 		
@@ -127,11 +129,11 @@ public class Main : MonoBehaviour {
 	void Update()
 	{
 		
-		Debug.Log(controller);
 		if (Input.GetAxis ("Joy Y") != 0 && !usingJoystick)
 		{
 			usingJoystick = true;
 		}
+
 //		if (Input.GetKeyDown (KeyCode.R)) {
 //			SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
 //		}

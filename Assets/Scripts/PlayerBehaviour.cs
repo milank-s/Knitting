@@ -225,7 +225,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				temp += (Time.deltaTime * lerpSpeed)/distance;
 				lerpSpeed += Time.deltaTime/2;
 				f = Mathf.Clamp01(lerpSpeed);
-				Spline.distortion = 1 - f;
 				//play drone music or whatever
 				yield return null;
 //			}
@@ -373,7 +372,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 			else
 			{
-				canTraverse = false;
 				cursorSprite.sprite = traverseSprite;
 				l.positionCount = 0;
 				cursorOnPoint.positionCount = 0;
@@ -532,6 +530,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		timeOnPoint += Time.deltaTime;
+
 		
 		if(Input.GetButton("Button1")){
 			boostTimer += Time.deltaTime / stopTimer;
@@ -539,6 +538,12 @@ public class PlayerBehaviour: MonoBehaviour {
 		}else{
 			boostTimer = Mathf.Clamp01(boostTimer - Time.deltaTime);
 		}
+		
+		if (curSpline != null)
+		{
+			curSpline.distortion = boostTimer;
+		}
+		
 		curPoint.PlayerOnPoint(cursorDir, flow);
 		l.positionCount = 2;
 		l.SetPosition (0, Vector3.Lerp(transform.position, cursorPos, Easing.QuadEaseOut(boostTimer)));
@@ -991,7 +996,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (Main.usingJoystick)
 		{
-			Services.main.controller.SetMotorSpeeds(Mathf.Clamp01(-accuracy), flow);
+			float hi = Mathf.Pow(Mathf.Clamp01(-accuracy + 1), 3) * curSpeed;
+			float low = Mathf.Clamp01(-accuracy) * flow + Mathf.Clamp01(hi - 1);
+			Services.main.controller.SetMotorSpeeds(low, hi);
+			
 		}
 		// GetComponent<Rigidbody> ().velocity = curSpline.GetDirection (progress) * flow;
 
@@ -1255,21 +1263,27 @@ public class PlayerBehaviour: MonoBehaviour {
 // && (Input.GetButtonDown("Button1")
 			
 			if ((angleFromPoint <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) && splineDest != null) {
-				if(curSpline != null && curSpline != splineDest){
-					
-					curSpline.OnSplineExit();
-				}else{
+				if(curSpline != null){
+
+					if (curSpline != splineDest)
+					{
+						curSpline.OnSplineExit();
+						splineDest.OnSplineEnter(curPoint, pointDest);
+					}
+				}
+				else
+				{
+					splineDest.OnSplineEnter(curPoint, pointDest);
+				}
 					
 //					splineDest.Selected = curPoint;
-					splineDest.OnSplineEnter(curPoint, pointDest);
-					
-				}
-				
 				curSpline = splineDest;
+				
 				return true;
-			}else{
-				return false;
 			}
+				
+			return false;
+			
 		}
 		return false;
 	}
@@ -1504,10 +1518,15 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		LeaveState();
 
+		if (Main.usingJoystick)
+		{
+			Services.main.controller.ResetHaptics();
+		}
 		switch (newState)
 		{
 			case PlayerState.Traversing:
 
+				curSpline.CalculateDistance ();
 				pointDest.TurnOnPointCloud();
 				
 				VectorLine v = velocityLine2;
@@ -1564,10 +1583,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if (curSpline != null)
 				{
-					curSpline.OnSplineExit();
+//					curSpline.OnSplineExit();
+//					idk if this should happen
 				}
 
-				curSpline = null;
 				state = PlayerState.Switching;
 				boostTimer = 0;
 				pointDest.proximity = 1;

@@ -23,7 +23,7 @@ public class LevelEditorInspector : Editor
         if(GUILayout.Button("LOAD"))
         {
             Undo.RecordObject(mapEditor, "savedFile");
-            mapEditor.Load(mapEditor.sceneName);
+            mapEditor.LoadInEditor(mapEditor.sceneName);
         }
         
         

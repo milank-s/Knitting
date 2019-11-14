@@ -184,6 +184,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sample:
   - {fileID: 8300000, guid: 4ff2352994e0247a2ab17df7e4ed1b55, type: 3}
+  - {fileID: 8300000, guid: 4ff2352994e0247a2ab17df7e4ed1b55, type: 3}
+  - {fileID: 8300000, guid: 4ff2352994e0247a2ab17df7e4ed1b55, type: 3}
+  - {fileID: 8300000, guid: 4ff2352994e0247a2ab17df7e4ed1b55, type: 3}
   index: 0
   lowcut: 0
   highcut: 24000
@@ -813,7 +816,7 @@ PrefabInstance:
         type: 3}
       propertyPath: lines.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 632137b06eb306e48bece90ad9621259, type: 2}
+      objectReference: {fileID: 2100000, guid: 7d12424d4f92045f5910793e1f5c0982, type: 2}
     - target: {fileID: 114769404741685902, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
         type: 3}
       propertyPath: lines.Array.data[1]
@@ -828,7 +831,7 @@ PrefabInstance:
         type: 3}
       propertyPath: lines.Array.data[3]
       value: 
-      objectReference: {fileID: 2100000, guid: 7d12424d4f92045f5910793e1f5c0982, type: 2}
+      objectReference: {fileID: 2100000, guid: 632137b06eb306e48bece90ad9621259, type: 2}
     - target: {fileID: 114769404741685902, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
         type: 3}
       propertyPath: pointSprites.Array.data[3]
@@ -896,6 +899,11 @@ PrefabInstance:
       propertyPath: fx
       value: 
       objectReference: {fileID: 1168170317}
+    - target: {fileID: 114228048911152496, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
+        type: 3}
+      propertyPath: loadFileName
+      value: Tangle
+      objectReference: {fileID: 0}
     - target: {fileID: 114448235382618234, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
         type: 3}
       propertyPath: hits.Array.size
@@ -3165,7 +3173,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   stopNaNPropagation: 1
-  finalBlitToCameraTarget: 1
+  finalBlitToCameraTarget: 0
   antialiasingMode: 1
   temporalAntialiasing:
     jitterSpread: 0.75
@@ -3738,12 +3746,12 @@ PrefabInstance:
     - target: {fileID: 114000010318564134, guid: f3a07dc4c57b848e39919d6021024601,
         type: 3}
       propertyPath: acceleration
-      value: 0.05
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 114000010318564134, guid: f3a07dc4c57b848e39919d6021024601,
         type: 3}
       propertyPath: speed
-      value: 1
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 4000011164714548, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
       propertyPath: m_LocalPosition.x

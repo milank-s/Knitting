@@ -28,7 +28,7 @@ using SubjectNerd.Utilities;
 
 public class Spline : MonoBehaviour
 {
-	public static float distortion;
+	public float distortion;
 	public static List<Spline> Splines = new List<Spline> ();
 	public static float drawSpeed = 0.01f;
 	[Reorderable]
@@ -148,6 +148,7 @@ public class Spline : MonoBehaviour
 		isPlayerOn = false;
 		reactToPlayer = false;
 		line.StopDrawing3DAuto();
+		drawTimer = 0;
 		// if (curSound != null) {
 		// 	StopCoroutine (curSound);
 		// 	StartCoroutine (FadeNote (sound));
@@ -155,6 +156,7 @@ public class Spline : MonoBehaviour
 
 	}
 
+	
 	public void OnSplineEnter (Point p1, Point p2)
 	{
 		
@@ -245,6 +247,10 @@ public class Spline : MonoBehaviour
 
 	public void ChangeMaterial(int i)
 	{
+		if (i >= Services.Prefabs.lines.Length)
+		{
+			i %= Services.Prefabs.lines.Length;
+		}
 		lineMaterial = i;
 		Material newMat;
 		newMat = Services.Prefabs.lines[i % Services.Prefabs.lines.Length];
@@ -253,7 +259,8 @@ public class Spline : MonoBehaviour
 		float height = newMat.mainTextureScale.y;
 		
 		line.texture = tex;
-		line.textureScale = newMat.mainTextureScale.x;
+		line.textureScale = length;
+		line.lineWidth = height;
 	}
 
 	public void SwitchMaterial(int i)
@@ -265,7 +272,8 @@ public class Spline : MonoBehaviour
 		float height = newMat.mainTextureScale.y;
 		
 		line.texture = tex;
-		line.textureScale = newMat.mainTextureScale.x;
+		line.textureScale = length;
+		line.lineWidth = height;
 	}
 
 	void Awake ()
@@ -315,6 +323,9 @@ public class Spline : MonoBehaviour
 
 		line.smoothWidth = true;
 		line.smoothColor = true;
+		
+		
+		ChangeMaterial(lineMaterial);
 	}
 
 	public void Reset()
@@ -322,6 +333,7 @@ public class Spline : MonoBehaviour
 		SplinePoints.Clear();
 		closed = false;
 		ResetVectorLine();
+		
 	}
 
 	public void DestroyVectorLine()
@@ -383,7 +395,7 @@ public class Spline : MonoBehaviour
 	public void DrawSpline(int pointIndex = 0)
 	{
 
-		
+		drawTimer += Time.deltaTime;
 		if (line.GetSegmentNumber() != 0)
 		{
 			drawIndex += 1;
@@ -520,22 +532,26 @@ public class Spline : MonoBehaviour
 		float newFrequency = Mathf.Abs(Services.PlayerBehaviour.accuracy * 10);
 
 		//use accuracy to show static
-		float localDistortion = distortion;
 		float amplitude;
 		
 		Vector3 direction = GetVelocityAtIndex(pointIndex, step);
 		Vector3 distortionVector = new Vector3(-direction.y, direction.x, direction.z);
+		distortion = Mathf.Lerp(distortion, 0, Time.deltaTime);
 		amplitude = flow / 5;
 		if (isPlayerOn)
 		{
-			localDistortion = Mathf.Lerp(0, 1, Mathf.Pow(0.5f - Services.PlayerBehaviour.accuracy / 2, 3));
-			v += (distortionVector * UnityEngine.Random.Range(-localDistortion- distortion, localDistortion + distortion) * invertedDistance) * amplitude;
-			//v += distortionVector * (Mathf.Sin(Time.time * frequency + phase - segmentIndex) *  _completion * 0.01f * Mathf.Clamp01(distanceFromPlayer));
+			 float accuracyDistortion = Mathf.Lerp(0, 1, Mathf.Pow(0.5f - Services.PlayerBehaviour.accuracy / 2, 2)) + distortion;
+			v += (distortionVector * UnityEngine.Random.Range(- accuracyDistortion, accuracyDistortion) * invertedDistance) * amplitude;
+			
+			v += distortionVector * (Mathf.Sin(Time.time * 100 * frequency + phase - segmentIndex) *
+				                         Mathf.Clamp01(_completion) * Mathf.Clamp01(distanceFromPlayer) *
+				                         Mathf.Clamp01(drawTimer /2f) * 0.02f);
+			
 
 		}
 		else
 		{
-			v += (distortionVector * UnityEngine.Random.Range(distortion, distortion) * Mathf.Clamp01(-indexDiff + 1)) * amplitude;
+			v += (distortionVector * UnityEngine.Random.Range(-distortion, distortion) * Mathf.Clamp01(-indexDiff + 1)) * amplitude;
 		}
 
 		NewFrequency(newFrequency);
