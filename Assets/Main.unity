@@ -14,13 +14,13 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
-  m_Fog: 1
+  m_Fog: 0
   m_FogColor: {r: 0, g: 0, b: 0, a: 1}
   m_FogMode: 1
   m_FogDensity: 1
   m_LinearFogStart: 0
   m_LinearFogEnd: 2.01
-  m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 1}
+  m_AmbientSkyColor: {r: 1, g: 1, b: 1, a: 1}
   m_AmbientEquatorColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_AmbientGroundColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_AmbientIntensity: 1
@@ -3760,6 +3760,56 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 7727676846810103988, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7727676846810103988, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: VelocityModule.x.minScalar
+      value: -0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7727676846810103988, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: VelocityModule.y.minScalar
+      value: -0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7727676846810103988, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: VelocityModule.z.scalar
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7727676846810103988, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: VelocityModule.z.minScalar
+      value: -0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7727676846810103988, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.atime1
+      value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 7727676846810103988, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key1.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7727676846810103988, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.m_NumAlphaKeys
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7727676846810103988, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key0.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7727676846810103988, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: SizeBySpeedModule.enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 114000010318564134, guid: f3a07dc4c57b848e39919d6021024601,
         type: 3}
       propertyPath: cursorOnPoint
@@ -3972,13 +4022,32 @@ PrefabInstance:
       propertyPath: ColorModule.enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 120499424, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
+      propertyPath: InheritVelocityModule.m_Curve.scalar
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 120499425, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
       propertyPath: m_SortMode
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 120499425, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
       propertyPath: m_VelocityScale
-      value: 0.05
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 7727676846810103989, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7727676846810103989, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7727676846810103979, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: m_VelocityScale
+      value: 0.1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f3a07dc4c57b848e39919d6021024601, type: 3}

@@ -301,8 +301,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			 cursorSprite.sprite = canFlySprite;
 		 }
 			
-			
-			
 
 		}else if(state == PlayerState.Switching)
 		{
@@ -1495,10 +1493,11 @@ public class PlayerBehaviour: MonoBehaviour {
 				break;
 			
 			case PlayerState.Flying:
-				Services.fx.BakeTrail(Services.fx.flyingTrail, Services.fx.flyingTrailMesh);
-				Services.fx.BakeParticleTrail(Services.fx.flyingParticles, Services.fx.flyingParticleTrailMesh);
 				Services.fx.flyingParticles.Pause();
-				Services.fx.BakeParticles(Services.fx.flyingParticles, Services.fx.flyingParticleMesh);
+				Services.fx.BakeTrail(Services.fx.flyingTrail, Services.fx.flyingTrailMesh);
+				//Services.fx.BakeParticleTrail(Services.fx.flyingParticles, Services.fx.flyingParticleTrailMesh);
+				
+				//Services.fx.BakeParticles(Services.fx.flyingParticles, Services.fx.flyingParticleMesh);
 				
 				break;
 			
@@ -1671,7 +1670,7 @@ public class PlayerBehaviour: MonoBehaviour {
 // (accuracy < 0 && flow > 0) || accuracy > 0 && flow <
 			if (state != PlayerState.Switching)
 			{
-				e.rateOverTimeMultiplier = (1 - Mathf.Abs(accuracy)) * Mathf.Abs(flow) * 25;
+				e.rateOverTimeMultiplier = Mathf.Pow((1 - Mathf.Abs(accuracy)), 2) * 100 * Mathf.Abs(flow);
 			}
 			
 		}
