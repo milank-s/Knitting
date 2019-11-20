@@ -1525,6 +1525,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			case PlayerState.Traversing:
 
+				SynthController.sample = 0;
 				curSpline.CalculateDistance ();
 				pointDest.TurnOnPointCloud();
 				
@@ -1556,6 +1557,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Flying:
 
+				SynthController.sample = 1;
 				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
 				Services.PlayerBehaviour.flow += 0.25f;
 				
@@ -1580,6 +1582,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Switching:
 
+				SynthController.sample = 3;
 				if (curSpline != null)
 				{
 //					curSpline.OnSplineExit();
@@ -1636,6 +1639,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				break;
 
 			case PlayerState.Animating:
+				
+				SynthController.sample = 2;
 				//turn off particles
 
 				if (state == PlayerState.Flying)

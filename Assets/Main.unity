@@ -20,7 +20,7 @@ RenderSettings:
   m_FogDensity: 1
   m_LinearFogStart: 0
   m_LinearFogEnd: 2.01
-  m_AmbientSkyColor: {r: 1, g: 1, b: 1, a: 1}
+  m_AmbientSkyColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_AmbientEquatorColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_AmbientGroundColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_AmbientIntensity: 1
@@ -147,10 +147,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 160483989}
-  - component: {fileID: 160483991}
   - component: {fileID: 160483990}
+  - component: {fileID: 160483991}
   m_Layer: 0
-  m_Name: GranularSynth
+  m_Name: GranularController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -184,9 +184,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sample:
   - {fileID: 8300000, guid: 4ff2352994e0247a2ab17df7e4ed1b55, type: 3}
-  - {fileID: 8300000, guid: 4ff2352994e0247a2ab17df7e4ed1b55, type: 3}
-  - {fileID: 8300000, guid: 4ff2352994e0247a2ab17df7e4ed1b55, type: 3}
-  - {fileID: 8300000, guid: 4ff2352994e0247a2ab17df7e4ed1b55, type: 3}
+  - {fileID: 8300000, guid: 915a24eba99840a4fa3537c91fd550a5, type: 3}
+  - {fileID: 8300000, guid: be2f1f50858af4ab287d47dcb257258b, type: 3}
+  - {fileID: 8300000, guid: 7571c0c03adb1ed41ad8f6e0eba4d9c8, type: 3}
   index: 0
   lowcut: 0
   highcut: 24000
@@ -200,11 +200,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 160483988}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67d35e6c0726e40899b099462344fb87, type: 3}
+  m_Script: {fileID: 11500000, guid: c25e2d073fa6e50468cc8872a47386ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   mixer: {fileID: 24100000, guid: 51b07567f1efb4061b5fdfd143cccc7f, type: 2}
   TimeScale: 1
+  snapShots:
+  - {fileID: -5628285889862981284, guid: 51b07567f1efb4061b5fdfd143cccc7f, type: 2}
+  - {fileID: -1035965691298668163, guid: 51b07567f1efb4061b5fdfd143cccc7f, type: 2}
+  - {fileID: -6602813565635674961, guid: 51b07567f1efb4061b5fdfd143cccc7f, type: 2}
+  - {fileID: 3670834691867685995, guid: 51b07567f1efb4061b5fdfd143cccc7f, type: 2}
 --- !u!1 &355773162
 GameObject:
   m_ObjectHideFlags: 0
@@ -944,33 +949,6 @@ MonoBehaviour:
     m_Handle: 2
   Menu:
     m_Handle: 1
---- !u!114 &452133018
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 452133013}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: 0}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: 
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!33 &575104737 stripped
 MeshFilter:
   m_CorrespondingSourceObject: {fileID: 3892519788234261090, guid: 21651267870f18e4cb0042cd9f4e66b1,
