@@ -298,6 +298,8 @@ public class Main : MonoBehaviour {
 		float t = 0;
 		
 		while (t < 1.2f){
+			
+			SynthController.FadeOut(t);
 			PauseScreen.color = Color.Lerp(new Color (0,0,0,0), new Color (0,0,0,1), Easing.QuadEaseIn(t));
 			t += Time.deltaTime * 3;
 			yield return null;

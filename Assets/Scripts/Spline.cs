@@ -149,6 +149,8 @@ public class Spline : MonoBehaviour
 		reactToPlayer = false;
 		line.StopDrawing3DAuto();
 		drawTimer = 0;
+		
+		
 		// if (curSound != null) {
 		// 	StopCoroutine (curSound);
 		// 	StartCoroutine (FadeNote (sound));
@@ -395,7 +397,7 @@ public class Spline : MonoBehaviour
 	public void DrawSpline(int pointIndex = 0)
 	{
 
-		drawTimer += Time.deltaTime;
+		
 		if (line.GetSegmentNumber() != 0)
 		{
 			drawIndex += 1;
@@ -407,8 +409,18 @@ public class Spline : MonoBehaviour
 		}
 		
 		float curIndex;
-			
-				for (int i = Mathf.Clamp(pointIndex, 0, SplinePoints.Count-1); i < SplinePoints.Count - (closed ? 0 : 1); i++) {
+
+		int startIndex;
+		if (isPlayerOn)
+		{
+			startIndex = 0;
+			drawTimer += Time.deltaTime;
+		}
+		else
+		{
+			startIndex = pointIndex;
+		}
+				for (int i = startIndex; i < SplinePoints.Count - (closed ? 0 : 1); i++) {
 					if (isPlayerOn)
 					{
 //						int indexDiff;
@@ -543,9 +555,9 @@ public class Spline : MonoBehaviour
 			 float accuracyDistortion = Mathf.Lerp(0, 1, Mathf.Pow(0.5f - Services.PlayerBehaviour.accuracy / 2, 2)) + distortion;
 			v += (distortionVector * UnityEngine.Random.Range(- accuracyDistortion, accuracyDistortion) * invertedDistance) * amplitude;
 			
-			v += distortionVector * (Mathf.Sin(Time.time * 100 * frequency + phase - segmentIndex) *
+			v += distortionVector * (Mathf.Sin(Time.time * 10 * frequency + phase - segmentIndex) *
 				                         Mathf.Clamp01(_completion) * Mathf.Clamp01(distanceFromPlayer) *
-				                         Mathf.Clamp01(drawTimer /2f) * 0.02f);
+				                         Mathf.Clamp01(drawTimer /5f) * 0.025f);
 			
 
 		}

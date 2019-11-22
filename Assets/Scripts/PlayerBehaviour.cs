@@ -918,7 +918,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //		NEGOTIATE FLOW CANCELLING OUT CURRENT SPEED
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
 		//flow -= Vector3.Dot(Vector3.up, curSpline.GetDirection(progress))/100f;
-		
+		SynthController.instance.TraversingSynth();
 		
 		if (accuracy > 0.5f && !joystickLocked) {
 
@@ -992,7 +992,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		// if(pointDest != null && pointDest.hasPointcloud){
 		// }
 
-		if (Main.usingJoystick)
+		if (Main.usingJoystick && state == PlayerState.Traversing)
 		{
 			float hi = Mathf.Pow(Mathf.Clamp01(-accuracy + 1), 3) * curSpeed;
 			float low = Mathf.Clamp01(-accuracy) * flow + Mathf.Clamp01(hi - 1);
@@ -1573,7 +1573,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				Services.fx.EmitRadialBurst(20,curSpeed, transform);
 				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
-				
 				state = PlayerState.Flying;
 				flyingTrail.emitting = true;
 				

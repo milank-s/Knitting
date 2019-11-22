@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.Audio;
 using System.Collections.Generic;
+using Vectrosity;
 
 public class SynthController : MonoBehaviour
 {
+    
     public AudioMixer mixer;
     public float TimeScale = 1.0f;
     public List<AudioMixerSnapshot> snapShots;
@@ -41,35 +43,26 @@ public class SynthController : MonoBehaviour
     {
         //turn volume to 0
     }
-    
-    void Update()
+
+    public static void FadeOut(float t)
+    {
+        float v;
+        instance.mixer.GetFloat("Volume", out v);
+        instance.mixer.SetFloat("Volume", Mathf.Lerp(v, -80, t));
+    }
+
+    public void TraversingSynth()
     {
         if (Services.PlayerBehaviour.state == PlayerState.Traversing)
         {
-            mixer.SetFloat("Volume", Services.PlayerBehaviour.flow * 5 - 15);
-            mixer.SetFloat("Rate", Services.PlayerBehaviour.flow * 40f);
-            mixer.SetFloat("Speed", Mathf.Lerp(0.75f, 1.25f, Services.PlayerBehaviour.curSpeed));
+            mixer.SetFloat("Volume", Mathf.Clamp(Services.PlayerBehaviour.flow * 10 - 25, -25, 0));
+            mixer.SetFloat("Rate", Services.PlayerBehaviour.flow * 20f);
+            mixer.SetFloat("Speed", Mathf.Lerp(0.7f, 1f, Services.PlayerBehaviour.curSpeed/2));
+         
+            //using accuracy to make chord dissonant 
+//            mixer.SetFloat("Speed", Vector3.Dot(Services.PlayerBehaviour.cursorDir, Vector3.up) / 2 + 1);
 
         }
-        float val;
-        float t = (Time.time - t0) * TimeScale;
-        mixer.SetFloat("WindowLen", Mathf.Clamp(t * 0.1f, 0.5f, 0.5f));
-        //mixer.SetFloat("Offset", 0.2f - 0.2f * Mathf.Cos(t * 0.03f));
-        float rndOffset = 0.2f * (1.5f - Mathf.Sin(t * 0.05f));
-        //mixer.SetFloat("RndOffset", rndOffset);
-        //mixer.SetFloat("RndSpeed", rndOffset + 0.1f - 0.1f * Mathf.Cos(t * 0.04f) * Mathf.Cos(t * 0.37f));
-        
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            play = !play;
-            if (!play)
-            {
-                sample = 1;
-            }
-            else
-            {
-                sample = 0;
-            }
-        }
     }
+
 }

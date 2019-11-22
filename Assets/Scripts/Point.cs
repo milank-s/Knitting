@@ -469,7 +469,7 @@ public class Point : MonoBehaviour
 			break;
 
 			case PointTypes.fly:
-				
+					
 			break;
 
 			case PointTypes.normal:
