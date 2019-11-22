@@ -110,8 +110,9 @@ public class MapEditor : MonoBehaviour
         select,
         move,
         draw,
-        connect,
-        marquee
+        marquee,
+        clone, 
+        rotate
     }
 
 
@@ -367,7 +368,7 @@ public class MapEditor : MonoBehaviour
 
                     if (pointSelected && selectedSpline.SplinePoints.Contains(activePoint))
                     {
-                        if (Input.GetKeyDown(KeyCode.R))
+                        if (Input.GetKeyDown(KeyCode.Minus))
                         {
                             selectedSpline.RemovePoint((selectedSpline.SplinePoints.IndexOf(activePoint)));
                             selectedSpline.ResetLineLength();
@@ -378,7 +379,7 @@ public class MapEditor : MonoBehaviour
                             }
                         }
 
-                        if (Input.GetKeyDown(KeyCode.I))
+                        if (Input.GetKeyDown(KeyCode.Plus))
                         {
                             selectedSpline.AddNewPoint(selectedSpline.SplinePoints.IndexOf(activePoint));
                         }
@@ -490,6 +491,13 @@ public class MapEditor : MonoBehaviour
                 {
                     _curTool = Tool.marquee;
 
+                }else if (Input.GetKeyDown(KeyCode.R))
+                {
+                    _curTool = Tool.rotate;
+                    
+                }else if (Input.GetKeyDown(KeyCode.V))
+                {
+                    _curTool = Tool.clone;
                 }
 
                 if (selectedPoints.Count == 0)
@@ -575,7 +583,14 @@ public class MapEditor : MonoBehaviour
 
                         break;
 
-                    case Tool.connect:
+                    case Tool.clone:
+
+
+
+
+                        break;
+                    
+                    case Tool.rotate:
 
 
 
