@@ -1083,7 +1083,7 @@ public class MapEditor : MonoBehaviour
                 }
             }
             
-            newSpline.closed = json["spline" + i]["closed]"];
+            newSpline.closed = json["spline" + i]["closed"];
             newSpline.transform.parent = splineParent.transform;
         }
 
