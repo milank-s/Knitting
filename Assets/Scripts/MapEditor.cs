@@ -93,6 +93,12 @@ public class MapEditor : MonoBehaviour
     private static float cameraDistance = 2;
     private List<GameObject> text;
 
+    private Vector3 center
+    {
+        get { return Vector3.Lerp(upperRight, lowerLeft, 0.5f); }
+    }
+    private Vector3 upperRight, lowerLeft;
+    
     public static bool typing;
     private bool dragging;
 
@@ -101,10 +107,18 @@ public class MapEditor : MonoBehaviour
         get { return selectedPoints.Count > 0; }
     }
 
+    private Vector3 delta
+    {
+        get
+        {
+           return worldPos - lastPos;
+        }
+    }
     private Vector3 curPos;
     private Vector3 lastPos;
     private Vector3 worldPos;
-
+    private Vector3 rotationPivot;
+    
     public enum Tool
     {
         select,
@@ -505,6 +519,79 @@ public class MapEditor : MonoBehaviour
                     selectedPointIndicator.SetActive(false);
                 }
 
+                
+                int index = 0;
+
+                lowerLeft = new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
+                upperRight = new Vector3(-Mathf.Infinity, -Mathf.Infinity, -Mathf.Infinity);
+
+
+                foreach (Point p in selectedPoints)
+                {
+                    if (p.Pos.x > upperRight.x)
+                    {
+                        upperRight.x = p.Pos.x;
+                    }
+
+                    if (p.Pos.x < lowerLeft.x)
+                    {
+                        lowerLeft.x = p.Pos.x;
+                    }
+
+                    if (p.Pos.y > upperRight.y)
+                    {
+                        upperRight.y = p.Pos.y;
+                    }
+
+                    if (p.Pos.y < lowerLeft.y)
+                    {
+                        lowerLeft.y = p.Pos.y;
+                    }
+
+                    if (p.Pos.z > upperRight.z)
+                    {
+                        upperRight.z = p.Pos.z;
+                    }
+
+                    if (p.Pos.z < lowerLeft.z)
+                    {
+                        lowerLeft.z = p.Pos.z;
+                    }
+
+
+                    selectors[index].transform.Rotate(Vector3.forward);
+                    selectors[index].transform.position = cam.WorldToScreenPoint(p.Pos);
+
+                    if (index == selectedPoints.Count - 1)
+                    {
+                        if (hitPoint == null)
+                        {
+                            selectedPointIndicator.transform.position = cam.WorldToScreenPoint(p.Pos);
+                        }
+                        else
+                        {
+                            if (Input.GetMouseButton(0))
+                            {
+                                selectedPointIndicator.transform.position = cam.WorldToScreenPoint(p.Pos);
+                            }
+                            else
+                            {
+                                selectedPointIndicator.transform.position = cam.WorldToScreenPoint(hitPoint.Pos);
+                            }
+                        }
+
+                        pointOptions.transform.position = cam.WorldToScreenPoint(p.Pos);
+                        pointCoords.position = cam.WorldToScreenPoint(p.Pos);
+                    }
+
+                    index++;
+                }               
+ 
+                
+                if (dragging && Input.GetMouseButtonUp(0))
+                {
+                    dragging = false;
+                }
 
                 switch (curTool)
                 {
@@ -523,7 +610,7 @@ public class MapEditor : MonoBehaviour
                             if (dragging || Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0))
                             {
 
-
+                                MoveSelectedPoints();
 //                                dragging = true;
 //                            if (hitPoint != activePoint)
 //                            {
@@ -531,18 +618,7 @@ public class MapEditor : MonoBehaviour
 //                                selectedPoints.Add(hitPoint);
 //                            }
 
-                                Vector3 pos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
-                                    Mathf.Abs(cam.transform.position.z) - activePoint.Pos.z));
-
-                                Vector3 delta = worldPos - lastPos;
-
-                                foreach (Point p in selectedPoints)
-                                {
-
-                                    p.transform.position += new Vector3(delta.x, delta.y,
-                                        -Input.mouseScrollDelta.y * Time.deltaTime * 10f);
-                                    p.initPos = p.Pos;
-                                }
+                                
                             }
                         }
 
@@ -551,14 +627,6 @@ public class MapEditor : MonoBehaviour
                         {
                             DragCamera();
                         }
-
-
-                        if (dragging && Input.GetMouseButtonUp(0))
-                        {
-                            dragging = false;
-                        }
-
-
 
                         break;
                     case Tool.select:
@@ -585,15 +653,85 @@ public class MapEditor : MonoBehaviour
 
                     case Tool.clone:
 
+                        
+                        if (Input.GetMouseButtonDown(0))
+                        {
+                            dragging = true;
+                            
+                            if (selectedSpline != null)
+                            {
+                                List<int> indexOfPointsAdded = new List<int>();
+                                List<Point> splinePoints = new List<Point>(selectedSpline.SplinePoints.Count);
+                                int i = 0;
+                                foreach (Point p in selectedSpline.SplinePoints)
+                                {
+                                    indexOfPointsAdded.Add(Point.Points.IndexOf(p));
+                                    splinePoints.Add(Instantiate(p.gameObject, pointsParent.transform).GetComponent<Point>());
+                                    i++;
+                                }
 
+                                
+                                Spline newSpline = SplineUtil.CreateSplineFromPoints(splinePoints);
+                                newSpline.closed = selectedSpline.closed;
+                                newSpline.transform.parent = splinesParent;
+                                    
 
+                                    ChangeSelectedSpline(Spline.Splines.IndexOf(newSpline));
+                                    DeselectPoints();
+
+                                    foreach (Point p in splinePoints)
+                                    {
+                                        AddSelectedPoint(p);
+                                    }
+                            }
+
+                            if (Input.GetKeyDown(KeyCode.LeftShift))
+                            {
+                                
+                            }
+                            //do the cloning, repopulate selection with the cloned spline and the cloned points
+                            //cant clone multiple splines? how to do this........................... just clone all splines connected to selected points?
+                           //can I hand cloning by just getting a ref to a spline? probably dicey
+                        }
+
+                        if (dragging)
+                        {
+                            MoveSelectedPoints();   
+                        }
+                        
 
                         break;
                     
                     case Tool.rotate:
 
-
-
+                        if (Input.GetMouseButtonDown(0))
+                        {
+                            if (Input.GetKey(KeyCode.LeftShift))
+                            {
+                                rotationPivot = worldPos;
+                            }
+                            
+                            else
+                            {
+                                rotationPivot = center;
+                            }
+                        }
+                        
+                        if (Input.GetMouseButton(0))
+                        {
+                            cursor.transform.position = cam.WorldToScreenPoint(rotationPivot);
+                            float angle = Mathf.Sign(delta.x) * delta.magnitude * 100f;
+                            cursor.transform.Rotate(0, 0, angle);
+                            
+                            foreach (Point p in selectedPoints)
+                            {
+                                Vector3 pivot = new Vector3(rotationPivot.x, rotationPivot.y, p.Pos.z);
+                               
+                                    p.transform.RotateAround(pivot, Vector3.forward,  angle);
+                              
+                            }
+                           
+                        }
 
                         break;
 
@@ -698,73 +836,6 @@ public class MapEditor : MonoBehaviour
                     Save();
                 }
 
-                int index = 0;
-
-                Vector3 lowerLeft = new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
-                Vector3 upperRight = new Vector3(-Mathf.Infinity, -Mathf.Infinity, -Mathf.Infinity);
-
-
-                foreach (Point p in selectedPoints)
-                {
-                    if (p.Pos.x > upperRight.x)
-                    {
-                        upperRight.x = p.Pos.x;
-                    }
-
-                    if (p.Pos.x < lowerLeft.x)
-                    {
-                        lowerLeft.x = p.Pos.x;
-                    }
-
-                    if (p.Pos.y > upperRight.y)
-                    {
-                        upperRight.y = p.Pos.y;
-                    }
-
-                    if (p.Pos.y < lowerLeft.y)
-                    {
-                        lowerLeft.y = p.Pos.y;
-                    }
-
-                    if (p.Pos.z > upperRight.z)
-                    {
-                        upperRight.z = p.Pos.z;
-                    }
-
-                    if (p.Pos.z < lowerLeft.z)
-                    {
-                        lowerLeft.z = p.Pos.z;
-                    }
-
-
-                    selectors[index].transform.Rotate(Vector3.forward);
-                    selectors[index].transform.position = cam.WorldToScreenPoint(p.Pos);
-
-                    if (index == selectedPoints.Count - 1)
-                    {
-                        if (hitPoint == null)
-                        {
-                            selectedPointIndicator.transform.position = cam.WorldToScreenPoint(p.Pos);
-                        }
-                        else
-                        {
-                            if (Input.GetMouseButton(0))
-                            {
-                                selectedPointIndicator.transform.position = cam.WorldToScreenPoint(p.Pos);
-                            }
-                            else
-                            {
-                                selectedPointIndicator.transform.position = cam.WorldToScreenPoint(hitPoint.Pos);
-                            }
-                        }
-
-                        pointOptions.transform.position = cam.WorldToScreenPoint(p.Pos);
-                        pointCoords.position = cam.WorldToScreenPoint(p.Pos);
-                    }
-
-                    p.proximity = Mathf.Sin(Time.time);
-                    index++;
-                }
 
                 if (!pointSelected && curTool != Tool.marquee)
                 {
@@ -780,7 +851,7 @@ public class MapEditor : MonoBehaviour
 
                     if (Input.GetKeyDown(KeyCode.F))
                     {
-                        Vector3 center = Vector3.Lerp(upperRight, lowerLeft, 0.5f);
+                        
                         cam.transform.position = new Vector3(center.x, center.y, center.z - cameraDistance);
                     }
 
@@ -855,6 +926,20 @@ public class MapEditor : MonoBehaviour
                 }
 
             }
+        }
+    }
+
+    void MoveSelectedPoints()
+    {
+        Vector3 pos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
+            Mathf.Abs(cam.transform.position.z) - activePoint.Pos.z));
+
+        foreach (Point p in selectedPoints)
+        {
+
+            p.transform.position += new Vector3(delta.x, delta.y,
+                -Input.mouseScrollDelta.y * Time.deltaTime * 10f);
+            p.initPos = p.Pos;
         }
     }
 
@@ -1018,7 +1103,7 @@ public class MapEditor : MonoBehaviour
                 }
             }
             
-            newSpline.closed = json["spline" + i]["closed]"];
+            newSpline.closed = json["spline" + i]["closed"];
             newSpline.transform.parent = splinesParent;
         }
 
@@ -1106,7 +1191,6 @@ public class MapEditor : MonoBehaviour
 
 void DragCamera()
     {
-        Vector3 delta = worldPos - lastPos;
         Services.mainCam.transform.position -= delta;
 
         curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
@@ -1292,12 +1376,17 @@ void DragCamera()
                     l.enabled = false;
                 }
 
+                if (curTool != Tool.rotate)
+                {
+                    cursor.transform.rotation = Quaternion.identity;
+                    
+                }
                 if (curTool != Tool.select)
                 {
                     pointOptions.SetActive(false);  
                 }
 
-                if (curTool != Tool.move)
+                if (curTool != Tool.move && curTool != Tool.rotate && curTool != Tool.clone)
                 {
                     pointCoords.gameObject.SetActive(false);
                     cursor.rectTransform.pivot = new Vector3(0f, 0f);
@@ -1349,7 +1438,7 @@ void DragCamera()
             yield return null;
         }
 
-        Vector3 center = Vector3.Lerp(pos, worldPos, 0.5f);
+        Vector3 marQueecenter = Vector3.Lerp(pos, worldPos, 0.5f);
         Vector3 size = worldPos - pos;
         
        
@@ -1360,7 +1449,7 @@ void DragCamera()
             {
                 DeselectPoints();
             }
-            foreach (Collider c in Physics.OverlapBox(center, new Vector3(Mathf.Abs(size.x), Mathf.Abs(size.y), 10) / 2))
+            foreach (Collider c in Physics.OverlapBox(marQueecenter, new Vector3(Mathf.Abs(size.x), Mathf.Abs(size.y), 10) / 2))
             {
                 Point p = c.GetComponent<Point>();
                 if (p != null)

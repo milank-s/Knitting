@@ -14,12 +14,12 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
-  m_Fog: 0
+  m_Fog: 1
   m_FogColor: {r: 0, g: 0, b: 0, a: 1}
   m_FogMode: 1
   m_FogDensity: 1
-  m_LinearFogStart: 0
-  m_LinearFogEnd: 2.01
+  m_LinearFogStart: 2
+  m_LinearFogEnd: 5
   m_AmbientSkyColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_AmbientEquatorColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_AmbientGroundColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
@@ -3273,7 +3273,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1903120638132105}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
   m_Name: 
@@ -3321,7 +3321,7 @@ MonoBehaviour:
       colorBlindnessStrength: 1
   m_Resources: {fileID: 11400000, guid: d82512f9c8e5d4a4d938b575d47f88d4, type: 2}
   m_ShowToolkit: 1
-  m_ShowCustomSorter: 0
+  m_ShowCustomSorter: 1
   breakBeforeColorGrading: 0
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
@@ -3333,7 +3333,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1903120638132105}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
   m_Name: 
@@ -4107,7 +4107,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 120499424, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
       propertyPath: InheritVelocityModule.m_Curve.scalar
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 120499424, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
+      propertyPath: VelocityModule.enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 120499424, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
+      propertyPath: VelocityModule.x.scalar
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 120499425, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
       propertyPath: m_SortMode

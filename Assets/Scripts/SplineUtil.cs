@@ -137,4 +137,14 @@ public class SplineUtil : MonoBehaviour {
 
 		return s;
 	}
+
+		static public Spline CreateSplineFromPoints(List<Point> points)
+		{
+			GameObject newSpline = (GameObject)Instantiate (Resources.Load<GameObject>("Prefabs/Spline"), Vector3.zero, Quaternion.identity);
+
+			Spline s = newSpline.GetComponent<Spline> ();
+			s.SplinePoints = points;
+			return s;
+
+		}
 }
