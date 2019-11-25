@@ -157,6 +157,8 @@ public class MapEditor : MonoBehaviour
         }
     }
 
+    private List<Spline> selectedSplines = new List<Spline>();
+    
     private int splineindex = -1;
     //add insert tool. inserts after the currently selected point
     //add delete tool. 
@@ -417,7 +419,19 @@ public class MapEditor : MonoBehaviour
 
                     }
 
-                    ChangeSelectedSpline(i);
+                    if (i >= Spline.Splines.Count)
+                    {
+                        i = 0;
+                    }
+
+                    if (i < 0)
+                    {
+                        i = Spline.Splines.Count - 1;
+                    }
+                    
+                    AddSelectedSpline(Spline.Splines[i]);
+                    
+
                     DeselectPoints();
 
                     if (i != -1)
@@ -657,41 +671,76 @@ public class MapEditor : MonoBehaviour
                         if (Input.GetMouseButtonDown(0))
                         {
                             dragging = true;
+
                             
-                            if (selectedSpline != null)
-                            {
-                                List<int> indexOfPointsAdded = new List<int>();
-                                List<Point> splinePoints = new List<Point>(selectedSpline.SplinePoints.Count);
-                                int i = 0;
-                                foreach (Point p in selectedSpline.SplinePoints)
+                            
+                            //get all the splines and points you want to copy
+                            //keep track of all the points that are copied to avoid duplicates
+                            
+                                List<Point> pointsToCopy = selectedPoints;
+                                List<Point> newPoints = new List<Point>();
+                                List<Spline> newSplines = new List<Spline>();
+
+
+                                foreach (Spline s in selectedSplines)
                                 {
-                                    indexOfPointsAdded.Add(Point.Points.IndexOf(p));
-                                    splinePoints.Add(Instantiate(p.gameObject, pointsParent.transform).GetComponent<Point>());
-                                    i++;
+                                    List<Point> splinePoints = new List<Point>();
+                                    foreach (Point p in s.SplinePoints)
+                                    {
+                                        Point newPoint = null;
+                                        bool alreadyCopied = false;
+                                        foreach (Point pew in newPoints)
+                                        {
+                                            if (Vector3.Distance(p.Pos, pew.Pos) < 0.05f)
+                                            {
+                                                newPoint = pew;
+                                                alreadyCopied = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if (!alreadyCopied)
+                                        {
+                                            newPoint = Instantiate(p.gameObject, pointsParent.transform)
+                                                .GetComponent<Point>();
+                                            newPoints.Add(newPoint);
+                                            if (pointsToCopy.Contains(p))
+                                            {
+                                                pointsToCopy.Remove(p);
+                                            }
+
+                                        }
+
+                                        splinePoints.Add(newPoint);
+                                    }
+                                    Spline newSpline = SplineUtil.CreateSplineFromPoints(splinePoints);
+                                    newSpline.closed = selectedSpline.closed;
+                                    newSpline.transform.parent = splinesParent;
                                 }
 
-                                
-                                Spline newSpline = SplineUtil.CreateSplineFromPoints(splinePoints);
-                                newSpline.closed = selectedSpline.closed;
-                                newSpline.transform.parent = splinesParent;
-                                    
+                                foreach (Point p in pointsToCopy)
+                                {
+                                    newPoints.Add(Instantiate(p.gameObject, pointsParent.transform)
+                                        .GetComponent<Point>());
+                                }
 
-                                    ChangeSelectedSpline(Spline.Splines.IndexOf(newSpline));
-                                    DeselectPoints();
-
-                                    foreach (Point p in splinePoints)
-                                    {
-                                        AddSelectedPoint(p);
-                                    }
-                            }
-
-                            if (Input.GetKeyDown(KeyCode.LeftShift))
+                            if (!Input.GetKey(KeyCode.LeftShift))
                             {
-                                
+                                DeselectSpline();
+                                DeselectPoints();
                             }
-                            //do the cloning, repopulate selection with the cloned spline and the cloned points
-                            //cant clone multiple splines? how to do this........................... just clone all splines connected to selected points?
-                           //can I hand cloning by just getting a ref to a spline? probably dicey
+
+                            foreach (Spline s in newSplines)
+                            {
+                                AddSelectedSpline(s, true);
+                            }
+
+                            foreach (Point p in newPoints)
+                            {
+                                AddSelectedPoint(p);
+                            }
+                            
+
                         }
 
                         if (dragging)
@@ -775,7 +824,7 @@ public class MapEditor : MonoBehaviour
 
                                         RemoveSelectedPoint(activePoint);
                                         AddSelectedPoint(hitPoint);
-                                        ChangeSelectedSpline(Spline.Splines.IndexOf(spp.s));
+                                        AddSelectedSpline(spp.s);
                                     }
 
 
@@ -813,7 +862,7 @@ public class MapEditor : MonoBehaviour
 
                                         RemoveSelectedPoint(activePoint);
                                         AddSelectedPoint(newPoint);
-                                        ChangeSelectedSpline(Spline.Splines.IndexOf(spp.s));
+                                        AddSelectedSpline(spp.s);
                                     }
 
                                 }
@@ -1253,7 +1302,7 @@ void DragCamera()
                 {
                     if (Spline.Splines[i].SplinePoints.Contains(activePoint))
                     {
-                        ChangeSelectedSpline(Spline.Splines.IndexOf(Spline.Splines[i]));
+                        AddSelectedSpline(Spline.Splines[i]);
                         break;
                     }
                 }
@@ -1291,36 +1340,36 @@ void DragCamera()
         
     }
 
-    void ChangeSelectedSpline(int i)
+    void RemoveSelectedSpline(Spline s)
+    {
+        s.ChangeMaterial(s.lineMaterial);
+        selectedSplines.Remove(s);
+        if (selectedSplines.Count < 1)
+        {
+            splineSelectedTip.SetActive(false);
+        }
+    }
+    void AddSelectedSpline(Spline s, bool add = false)
     {
 
-        if (selectedSpline != null)
+        if (Input.GetKey(KeyCode.LeftShift))
         {
-            selectedSpline.ChangeMaterial(selectedSpline.lineMaterial);
+            add = true;
         }
-
-        if (Spline.Splines.Count > 0)
-        {
-            splineindex = i;
-            if (splineindex < -1)
+            if (!add && selectedSpline != null)
             {
-                splineindex = Spline.Splines.Count - 1;
-            }
-            else if (splineindex >= Spline.Splines.Count)
-            {
-                splineindex = 0;
+                RemoveSelectedSpline(selectedSpline);
             }
 
-            if (i != -1)
+
+            if (!selectedSplines.Contains(s))
             {
-                splineSelectedTip.SetActive(true);
+                splineindex = Spline.Splines.IndexOf(s);
                 selectedSpline.SwitchMaterial(3);
+                selectedSplines.Add(selectedSpline);
+                splineSelectedTip.SetActive(true);
             }
-            else
-            {
-                splineSelectedTip.SetActive(false);
-            }
-        }
+
 
     }
 
@@ -1404,8 +1453,14 @@ void DragCamera()
     }
 
     void DeselectSpline()
-    {
-        ChangeSelectedSpline(-1);
+    {   
+        foreach (Spline s in selectedSplines)
+        {
+            s.ChangeMaterial(s.lineMaterial);
+        }
+        selectedSplines.Clear();
+        splineSelectedTip.SetActive(false);
+        
     }
     void DeselectPoints()
     {
