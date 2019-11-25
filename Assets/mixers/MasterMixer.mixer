@@ -1,5 +1,47 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!244 &-2431359833640121075
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: f913c82a76e9d1a43aa53a3d9a1914bd
+  m_EffectName: SFX Reverb
+  m_MixLevel: b068ab11ddca51e45816b8ff857de6d1
+  m_Parameters:
+  - m_ParameterName: Dry Level
+    m_GUID: f6867294add226d4989776432df3e3a8
+  - m_ParameterName: Room
+    m_GUID: 81750b23918bd344eb6450301366bcca
+  - m_ParameterName: Room HF
+    m_GUID: 9bdabbbe283d2e24697514b0caa2ca39
+  - m_ParameterName: Decay Time
+    m_GUID: 1e5c6e16bd5f9964a8adb94a7851f922
+  - m_ParameterName: Decay HF Ratio
+    m_GUID: 1345984162493ae4e83efe1ecb2145d5
+  - m_ParameterName: Reflections
+    m_GUID: 99b6106fa901bbf4eae31c16bae6abdd
+  - m_ParameterName: Reflect Delay
+    m_GUID: 06c297584d8f4234cb40feb71af055bd
+  - m_ParameterName: Reverb
+    m_GUID: ecbb8f16a62a1f749918091455488a9a
+  - m_ParameterName: Reverb Delay
+    m_GUID: 68ea0e8853b6b1d47998cfea228a553e
+  - m_ParameterName: Diffusion
+    m_GUID: 7c3d4c1603cbbe44bb1401ffe330b169
+  - m_ParameterName: Density
+    m_GUID: 1bedb3264b03a3e41a471a7cc4b88c6a
+  - m_ParameterName: HF Reference
+    m_GUID: 8e65926033851064b913af096ef4f333
+  - m_ParameterName: Room LF
+    m_GUID: e0ac8f96739bd8b458356e9119309867
+  - m_ParameterName: LF Reference
+    m_GUID: fdb54b2f8014fa44095f4bc5eead56d7
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
 --- !u!244 &-1512786471935722680
 AudioMixerEffectController:
   m_ObjectHideFlags: 3
@@ -71,6 +113,7 @@ AudioMixerGroupController:
   m_Send: 00000000000000000000000000000000
   m_Effects:
   - {fileID: 24400004}
+  - {fileID: -2431359833640121075}
   m_UserColorIndex: 0
   m_Mute: 0
   m_Solo: 0

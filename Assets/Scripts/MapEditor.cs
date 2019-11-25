@@ -573,8 +573,12 @@ public class MapEditor : MonoBehaviour
                     }
 
 
-                    selectors[index].transform.Rotate(Vector3.forward);
-                    selectors[index].transform.position = cam.WorldToScreenPoint(p.Pos);
+                    if (index < selectors.Count)
+                    {
+                        selectors[index].transform.Rotate(Vector3.forward);
+                        selectors[index].transform.position = cam.WorldToScreenPoint(p.Pos);
+                    }
+                    
 
                     if (index == selectedPoints.Count - 1)
                     {
@@ -716,6 +720,7 @@ public class MapEditor : MonoBehaviour
                                     Spline newSpline = SplineUtil.CreateSplineFromPoints(splinePoints);
                                     newSpline.closed = selectedSpline.closed;
                                     newSpline.transform.parent = splinesParent;
+                                    newSplines.Add(newSpline);
                                 }
 
                                 foreach (Point p in pointsToCopy)
@@ -1324,7 +1329,7 @@ void DragCamera()
         if (!selectedPoints.Contains(p))
         {
             selectedPoints.Add(p);
-            selectors[selectedPoints.Count - 1].color = Color.white;
+            selectors[Mathf.Clamp(selectedPoints.Count - 1, 0, selectors.Count-1)].color = Color.white;
             
         }
         else
@@ -1388,7 +1393,7 @@ void DragCamera()
     {
         if (selectedPoints.Contains(p))
         {
-            selectors[selectedPoints.Count - 1].color = Color.clear;
+            selectors[Mathf.Clamp(selectedPoints.Count - 1, 0, selectors.Count -1)].color = Color.clear;
             selectedPoints.Remove(p);
         }
 
