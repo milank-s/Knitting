@@ -82,7 +82,7 @@ AudioMixerController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MasterMixer
+  m_Name: GranularSynths
   m_OutputGroup: {fileID: 0}
   m_MasterGroup: {fileID: 24300002}
   m_Snapshots:
@@ -91,7 +91,9 @@ AudioMixerController:
   m_SuspendThreshold: 0
   m_EnableSuspend: 1
   m_UpdateMode: 0
-  m_ExposedParameters: []
+  m_ExposedParameters:
+  - guid: ec3bf9f737437cc46890dd70ee8beb4a
+    name: Distortion
   m_AudioMixerGroupViews:
   - guids:
     - a8082b9af7804bc478f1dfdba95414db
@@ -113,6 +115,7 @@ AudioMixerGroupController:
   m_Send: 00000000000000000000000000000000
   m_Effects:
   - {fileID: 24400004}
+  - {fileID: 7428411013779364187}
   - {fileID: -2431359833640121075}
   m_UserColorIndex: 0
   m_Mute: 0
@@ -152,16 +155,21 @@ AudioMixerSnapshotController:
     a8eece82dbccb24408a3070a580125b9: 1
     50d9dbc22e72aa340a6e6ffd6da544fd: -1.4
     6ed27223ba707ce46b40695c45168e75: -2213
+    81750b23918bd344eb6450301366bcca: -8409
     af4a2863af0d65c479ec6d853e254db0: 315
     487a9983364be4b479f6c68f631686e8: 1.1
     3d6035b308147c7448212dffe575bc25: 0.883
+    f6867294add226d4989776432df3e3a8: -1714
     408a2805e7a843a498240d6b7459d814: 7149.1353
     14222b4585b8a8f4fa4ecbb8689d806c: 0.638
     7d82b165c8f0ec44c9c24da5032c6b63: 59
     3e5887c5bb2288d478b41d7109c5df48: 292
     df25e7c5f6944c445b17277317ebb697: -2434
+    1e5c6e16bd5f9964a8adb94a7851f922: 2.3
+    ecbb8f16a62a1f749918091455488a9a: 522
     4670d186a07acec4b9ab48e85b56392b: -4798
     796bf8572a909034fb9bca85babb3c20: -7847
+    ec3bf9f737437cc46890dd70ee8beb4a: 0
     9e06c318b15265842a95e57a02a99d94: 1213
     c4ced498ddd7c9e409424040402410f4: 1.624
     d008c2095b0c81447b12eacb4aea322e: 9
@@ -174,10 +182,11 @@ AudioMixerSnapshotController:
     31eb1c2b9c745bb43b411eaac10e0a14: 141
     a2d6f7fbf4590f746885d79d451cd9de: 1.2
     097d6c1c1d804e2498f3751dd9b51e98: -6815
-    c7ad924c74695c842a646cc4acabd91b: -6.7
+    c7ad924c74695c842a646cc4acabd91b: -6.8
     62f7638d44a5dd945bebf8171d7fb8f1: 0.102
     a21ff29d7fa6fdd448c288ff2b8bb496: -10
     3074cb1ec4b0bb3469799de366a83812: 1
+    9bdabbbe283d2e24697514b0caa2ca39: -2678
     83c2dd0f0816e4c48b7e8ba8d8f57d0e: 0.243
     1d351e0f6acd521429b227e84c1c9820: 0.259
     7d630a5f9045bc6439750b4fd632eed8: 0.638
@@ -202,6 +211,22 @@ AudioMixerEffectController:
     m_GUID: 83144bc6d68b37c489ad3db4bdfc5b34
   - m_ParameterName: Make up gain
     m_GUID: 9200f49bc6e5678429596b2549ae7ba2
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!244 &7428411013779364187
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: c064d1dc9a5d1d445924b82a80e01d03
+  m_EffectName: Distortion
+  m_MixLevel: 1d15747135669984b8aedc4791dadb76
+  m_Parameters:
+  - m_ParameterName: Level
+    m_GUID: ec3bf9f737437cc46890dd70ee8beb4a
   m_SendTarget: {fileID: 0}
   m_EnableWetMix: 0
   m_Bypass: 0

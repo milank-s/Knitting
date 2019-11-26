@@ -275,6 +275,8 @@ public class Main : MonoBehaviour {
 			t += Time.deltaTime * 3;
 			yield return null;
 		}
+		
+		
 	}
 
 	IEnumerator FadeInOut()

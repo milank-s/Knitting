@@ -918,7 +918,6 @@ public class PlayerBehaviour: MonoBehaviour {
 //		NEGOTIATE FLOW CANCELLING OUT CURRENT SPEED
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
 		//flow -= Vector3.Dot(Vector3.up, curSpline.GetDirection(progress))/100f;
-		GranularSynth.moving.TraversingSynth();
 		
 		if (accuracy > 0.5f && !joystickLocked) {
 
@@ -1495,6 +1494,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			case PlayerState.Flying:
 				Services.fx.flyingParticles.Pause();
 				Services.fx.BakeTrail(Services.fx.flyingTrail, Services.fx.flyingTrailMesh);
+				GranularSynth.flying.TurnOff();
 				//Services.fx.BakeParticleTrail(Services.fx.flyingParticles, Services.fx.flyingParticleTrailMesh);
 				
 				//Services.fx.BakeParticles(Services.fx.flyingParticles, Services.fx.flyingParticleMesh);
@@ -1558,6 +1558,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			case PlayerState.Flying:
 
 				GranularSynth.flying.TurnOn();
+				GranularSynth.moving.TurnOff();
 				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
 				Services.PlayerBehaviour.flow += 0.25f;
 				

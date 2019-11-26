@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Audio;
 using System.Collections.Generic;
+using UnityEditor;
 using Vectrosity;
 
 public class GranularSynth : MonoBehaviour
@@ -12,7 +13,7 @@ public class GranularSynth : MonoBehaviour
     public float TimeScale = 1.0f;
     public List<AudioMixerSnapshot> snapShots;
     public SynthType myType;
-
+    private float curSample;
 
 
     public static List<GranularSynth> synths
@@ -47,8 +48,37 @@ public class GranularSynth : MonoBehaviour
                 rewinding = this;
                 break;
         }
+
+        mixer.SetFloat("Volume", -80);
     }
 
+    void Update()
+    {
+        switch (myType)
+        {
+            case SynthType.Moving:
+                if (Services.PlayerBehaviour.state == PlayerState.Traversing)
+                {
+                    TraversingSynth();
+                }
+
+                
+                break;
+            
+            case SynthType.Flying:
+                
+                break;
+            
+            case SynthType.Stopping:
+                StoppingSynth();
+                break;
+            
+            case SynthType.Rewinding:
+                break;
+            
+            
+        }
+    }
     public void SetSample()
     {
             snapShots[sample].TransitionTo(0.1f);
@@ -57,12 +87,12 @@ public class GranularSynth : MonoBehaviour
 
     public void TurnOn()
     {
-        
+        mixer.SetFloat("Volume", 0);
     }
 
     public void TurnOff()
     {
-        //turn volume to 0
+        mixer.SetFloat("Volume", -80);
     }
 
     public void FadeOut(float t)
@@ -83,6 +113,19 @@ public class GranularSynth : MonoBehaviour
             //using accuracy to make chord dissonant 
 //            mixer.SetFloat("Speed", Vector3.Dot(Services.PlayerBehaviour.cursorDir, Vector3.up) / 2 + 1);
 
+        }
+    }
+
+    public void StoppingSynth()
+    {
+        if (Services.PlayerBehaviour.state == PlayerState.Switching)
+        {
+            mixer.SetFloat("Volume", 0);
+            mixer.SetFloat("Rate", (Services.PlayerBehaviour.flow + Services.PlayerBehaviour.timeOnPoint) * 25f);
+        }
+        else
+        {
+            mixer.SetFloat("Volume", -80);
         }
     }
 
