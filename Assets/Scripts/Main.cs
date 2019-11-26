@@ -128,6 +128,7 @@ public class Main : MonoBehaviour {
 	}
 	void Update()
 	{
+		CameraFollow.instance.uiCam.fieldOfView = CameraFollow.instance.cam.fieldOfView;
 		
 		if (Input.GetAxis ("Joy Y") != 0 && !usingJoystick)
 		{
@@ -297,9 +298,11 @@ public class Main : MonoBehaviour {
 	IEnumerator FadeOut(){
 		float t = 0;
 		
-		while (t < 1.2f){
-			
-			SynthController.FadeOut(t);
+		AudioManager.instance.MuteSynths(true);
+		
+		while (t < 1.2f)
+		{
+
 			PauseScreen.color = Color.Lerp(new Color (0,0,0,0), new Color (0,0,0,1), Easing.QuadEaseIn(t));
 			t += Time.deltaTime * 3;
 			yield return null;

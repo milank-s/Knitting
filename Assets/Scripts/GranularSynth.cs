@@ -3,52 +3,73 @@ using UnityEngine.Audio;
 using System.Collections.Generic;
 using Vectrosity;
 
-public class SynthController : MonoBehaviour
+public class GranularSynth : MonoBehaviour
 {
+    
+    public enum SynthType{Flying, Moving, Stopping, Rewinding}
     
     public AudioMixer mixer;
     public float TimeScale = 1.0f;
     public List<AudioMixerSnapshot> snapShots;
-    
-    public static int sample
-    {
-        set
-        {
-            instance._sample = value;
-            instance.SetSample();
-        }
-        get { return (int) instance._sample; }
-    }
+    public SynthType myType;
 
+
+
+    public static List<GranularSynth> synths
+    {
+        get { return new List<GranularSynth> {flying, moving, stopping, rewinding}; }
+    }
+    
     private float _sample;
-        
+    private int sample;
+    
     private float t0;
     private bool play;
-    public static SynthController instance;
+    public static GranularSynth flying, moving, stopping, rewinding;
     
     void Start()
     {
         t0 = Time.time;
-        instance = this;
+        switch (myType)
+        {
+            case SynthType.Flying:
+                flying = this;
+                break;
+            
+            case SynthType.Moving:
+                moving = this;
+                break;
+            
+            case SynthType.Stopping:
+                stopping = this;
+                break;
+            case SynthType.Rewinding:
+                rewinding = this;
+                break;
+        }
     }
 
     public void SetSample()
     {
-        snapShots[sample].TransitionTo(0.1f);
+            snapShots[sample].TransitionTo(0.1f);
         //change the audiomixer snapshot to the correct one
     }
 
+    public void TurnOn()
+    {
+        
+    }
 
     public void TurnOff()
     {
         //turn volume to 0
     }
 
-    public static void FadeOut(float t)
+    public void FadeOut(float t)
     {
         float v;
-        instance.mixer.GetFloat("Volume", out v);
-        instance.mixer.SetFloat("Volume", Mathf.Lerp(v, -80, t));
+        mixer.GetFloat("Volume", out v);
+        mixer.SetFloat("Volume", Mathf.Lerp(v, -80, t));
     }
 
     public void TraversingSynth()

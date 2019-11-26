@@ -918,7 +918,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //		NEGOTIATE FLOW CANCELLING OUT CURRENT SPEED
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
 		//flow -= Vector3.Dot(Vector3.up, curSpline.GetDirection(progress))/100f;
-		SynthController.instance.TraversingSynth();
+		GranularSynth.moving.TraversingSynth();
 		
 		if (accuracy > 0.5f && !joystickLocked) {
 
@@ -1525,7 +1525,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			case PlayerState.Traversing:
 
-				SynthController.sample = 0;
+				GranularSynth.moving.TurnOn();
 				curSpline.CalculateDistance ();
 				pointDest.TurnOnPointCloud();
 				
@@ -1557,7 +1557,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Flying:
 
-				SynthController.sample = 1;
+				GranularSynth.flying.TurnOn();
 				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
 				Services.PlayerBehaviour.flow += 0.25f;
 				
@@ -1581,7 +1581,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Switching:
 
-				SynthController.sample = 3;
+				GranularSynth.stopping.TurnOn();
 				if (curSpline != null)
 				{
 //					curSpline.OnSplineExit();
@@ -1639,7 +1639,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Animating:
 				
-				SynthController.sample = 2;
+				GranularSynth.rewinding.TurnOn();
 				//turn off particles
 
 				if (state == PlayerState.Flying)

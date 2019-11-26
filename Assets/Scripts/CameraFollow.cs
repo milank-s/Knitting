@@ -7,7 +7,7 @@ public class CameraFollow : MonoBehaviour {
 	public Transform target;
 	private Vector3 velocity = Vector2.zero;
 	public Vector3 offset;
-	private Camera cam;
+	public Camera cam;
 	public static bool fixedCamera;
 	public static float desiredFOV;
 
@@ -42,8 +42,6 @@ public class CameraFollow : MonoBehaviour {
 		// get around them
 
 		cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, desiredFOV, Time.deltaTime * 3);
-		
-		uiCam.fieldOfView = cam.fieldOfView;
 		
 //		transform.position = Vector3.SmoothDamp (transform.position, target.position + offset, ref velocity, speed);
 
