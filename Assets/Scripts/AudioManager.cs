@@ -28,6 +28,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    
     void Update()
     {
         if (Services.PlayerBehaviour.state == PlayerState.Traversing)

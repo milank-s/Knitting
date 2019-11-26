@@ -1557,6 +1557,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Flying:
 
+				Services.Sounds.PlayPointAttack();
 				GranularSynth.flying.TurnOn();
 				GranularSynth.moving.TurnOff();
 				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
@@ -1593,6 +1594,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				boostTimer = 0;
 				pointDest.proximity = 1;
 				pointDest.OnPointEnter();
+				GranularSynth.stopping.StoppingSynth();
 
 				timeOnPoint = 0;
 				
@@ -1714,14 +1716,14 @@ public class PlayerBehaviour: MonoBehaviour {
 			float dot = Vector2.Dot(curSpline.GetDirection (progress), (pointDest.Pos - curPoint.Pos).normalized);
 			float curFreqGain;
 	 //
-			Services.Sounds.master.GetFloat ("CenterFreq", out curFreqGain);
+			//Services.Sounds.master.GetFloat ("CenterFreq", out curFreqGain);
 			float lerpAmount = Services.PlayerBehaviour.goingForward ? Services.PlayerBehaviour.progress : 1 - Services.PlayerBehaviour.progress;
 			sounds.moveSound.volume = Mathf.Lerp(sounds.moveSound.volume, Mathf.Clamp01(curSpeed)/100f, Time.deltaTime);
 //			sounds.moveSound.pitch = Mathf.Pow(accuracy / 2 + 0.5f, 0.5f);
 			sounds.brakingSound.volume = Mathf.Pow(Mathf.Clamp01(0.5f - accuracy)/2, 2) ;
 	 //
-			Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(curSpeed)/2 + 1f);
-			Services.Sounds.master.SetFloat("CenterFreq", Mathf.Lerp(curFreqGain, ((dot/2f + 0.5f) + Mathf.Clamp01(1f/Mathf.Pow(curSpline.segmentDistance, 5))) * (16000f / curFreqGain), lerpAmount));
+			//Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(curSpeed)/2 + 1f);
+			//Services.Sounds.master.SetFloat("CenterFreq", Mathf.Lerp(curFreqGain, ((dot/2f + 0.5f) + Mathf.Clamp01(1f/Mathf.Pow(curSpline.segmentDistance, 5))) * (16000f / curFreqGain), lerpAmount));
 
 			if(pointDest.pointType != PointTypes.ghost){
 				//sounds.pointDestSound.volume = Mathf.Pow(pointDest.proximity, 2)/10f;
@@ -1768,7 +1770,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		//use note to freq script
 
 //		pitch = dot product between the current tangent of the spline and the linear distance between points
-		Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(flow)/2 + 1f);
+//		Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(flow)/2 + 1f);
 	}
 
 	public Vector3 GetCursorDir(){

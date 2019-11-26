@@ -5,8 +5,6 @@ using UnityEngine.Audio;
 
 public class SoundBank : MonoBehaviour {
 
-	public AudioMixer master;
-
 	public List<AudioClip> hits;
 	public List<AudioClip> sustains;
 
