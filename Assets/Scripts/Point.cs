@@ -158,14 +158,7 @@ public class Point : MonoBehaviour
 	{
 		get
 		{
-			if (visited)
-			{
-				return SR.color;
-			}
-			else
-			{
 				return new Color(c, c, c, 1);
-			}
 		}
 	}
 	
@@ -352,10 +345,6 @@ public class Point : MonoBehaviour
 		float f = 0;
 		while (f < 1)
 		{
-			if (proximity == 1)
-			{
-				break;
-			}
 
 			Color startColor = color;
 			color = Color.Lerp(startColor, Color.white, f);
@@ -433,12 +422,14 @@ public class Point : MonoBehaviour
 
 		if (!visited) {
 			visited = true;
+			
 		}
 
 		TurnOnPointCloud();
 		
 		if (!hit)
 		{
+			TurnOn();
 			PointManager.AddPointHit(this);
 			hit = true;
 		}
