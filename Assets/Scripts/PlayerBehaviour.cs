@@ -79,6 +79,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float creationCD = 0.25f;
 	public float creationInterval = 0.25f;
 	private bool canFly;
+	private bool charging;
 	private List<Transform> newPointList;
 	[Space(10)]
 
@@ -96,6 +97,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	[Space(10)]
 
 	[Header("AV")]
+	
 	public Sprite canFlySprite;
 	public Sprite canMoveSprite;
 	public Sprite canConnectSprite;
@@ -110,7 +112,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	[SerializeField] ParticleSystem sparks;
 	private LineRenderer l;
 	[SerializeField] SpriteRenderer cursorSprite;
-	private SpriteRenderer playerSprite;
+	public SpriteRenderer playerSprite;
+	public SpriteRenderer boostIndicator;
+	public SpriteRenderer directionIndicator;
 	private int noteIndex;
 	public LineRenderer cursorOnPoint;
 	private VectorLine velocityLine;
@@ -133,7 +137,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Awake(){
 		joystickLocked = true;
-		playerSprite = GetComponentInChildren<SpriteRenderer>();
 		sound = GetComponent<AudioSource>();
 		
 		pointDest = null;
@@ -249,9 +252,35 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (Input.GetButtonDown("Button1"))
 		{
 			buttonPressed = true;
+			charging = true;
+			boostIndicator.enabled = true;
 			buttonPressedTimer = buttonPressedBuffer;
+			directionIndicator.enabled = true;
 		}
 
+		if (Input.GetButton("Button1"))
+		{
+			if(charging){
+				boostTimer += Time.deltaTime;
+				boostTimer = Mathf.Clamp01(boostTimer);
+			}
+		}
+		
+		boostIndicator.transform.localScale = Vector3.Lerp(Vector3.one, Vector3.one * 0.2f, Services.PlayerBehaviour.boostTimer);
+		
+
+		if (Input.GetButtonUp("Button1"))
+		{
+			charging = false;
+			boostIndicator.enabled = false;
+			if (state == PlayerState.Traversing)
+			{
+				boostTimer = 0;
+			}
+
+			directionIndicator.enabled = false;
+		}
+		
 		buttonPressedTimer -= Time.deltaTime;
 		
 		if (buttonPressedTimer < 0)
@@ -272,6 +301,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			speedCoefficient = 0;
 		}
+		
 		playerSprite.transform.localScale = Vector3.Lerp(playerSprite.transform.localScale, new Vector3(Mathf.Clamp(1 - (speedCoefficient * 2), 0.1f, 0.25f), Mathf.Clamp(speedCoefficient, 0.25f, 0.75f), 0.25f), Time.deltaTime * 10);
 
 		if (connectTime <= 0 && PointManager._pointsHit.Count > 0) {
@@ -318,11 +348,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 			//curSpline.UpdateSpline();
-			ManageSound();
+//			ManageSound();
+
 			if (curPoint.hasPointcloud)
 			{
 				curPoint.UpdatePointClouds();
-				
 			}
 			
 			foreach(Spline s in curPoint._connectedSplines){
@@ -362,7 +392,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				canTraverse = true;
 
 			}
-			else if (!joystickLocked && (boostTimer > 1 || (!Input.GetButton("Button1") && curPoint.pointType != PointTypes.stop) || Input.GetButtonUp("Button1")))
+			else if (!joystickLocked && (boostTimer >= 1 || (!Input.GetButton("Button1") && curPoint.pointType != PointTypes.stop) || Input.GetButtonUp("Button1")))
 			{
 
 				if (curPoint.locked)
@@ -536,10 +566,12 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		if(Input.GetButton("Button1")){
 			boostTimer += Time.deltaTime / stopTimer;
-
+			
 		}else{
-			boostTimer = Mathf.Clamp01(boostTimer - Time.deltaTime);
+			boostTimer -= Time.deltaTime;
 		}
+		
+		boostTimer = Mathf.Clamp01(boostTimer);
 		
 		if (curSpline != null)
 		{
@@ -547,6 +579,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 		
 		curPoint.PlayerOnPoint(cursorDir, flow);
+		
 		l.positionCount = 2;
 		l.SetPosition (0, Vector3.Lerp(transform.position, cursorPos, Easing.QuadEaseOut(boostTimer)));
 		l.SetPosition (1, transform.position);
@@ -1525,6 +1558,13 @@ public class PlayerBehaviour: MonoBehaviour {
 				l.positionCount = 0;
 				curPoint.OnPointExit();
 				connectTime = 1;
+				if (curPoint.pointType != PointTypes.ghost)
+				{
+					charging = false;
+					boostIndicator.enabled = false;
+					boostTimer = 0;
+				}
+
 				break;
 			
 			case PlayerState.Animating:
@@ -1610,8 +1650,10 @@ public class PlayerBehaviour: MonoBehaviour {
 //					idk if this should happen
 				}
 
+				directionIndicator.enabled = false;
+				
 				state = PlayerState.Switching;
-				boostTimer = 0;
+				
 				pointDest.proximity = 1;
 				pointDest.OnPointEnter();
 				GranularSynth.stopping.StoppingSynth();
@@ -1644,7 +1686,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				foreach (Point p in curPoint._neighbours)
 				{
-//			p.velocity = Vector3.Lerp((curPoint.Pos - p.Pos).normalized, curPoint.velocity.normalized, 0.5f) * curPoint.velocity.magnitude / 3f;
+//					p.velocity = Vector3.Lerp((curPoint.Pos - p.Pos).normalized, curPoint.velocity.normalized, 0.5f) * curPoint.velocity.magnitude / 3f;
 //					p.TurnOn();
 				}
 

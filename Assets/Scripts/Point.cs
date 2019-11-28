@@ -450,7 +450,7 @@ public class Point : MonoBehaviour
 		
 		switch(pointType){
 			case PointTypes.stop:
-				Services.PlayerBehaviour.boost += boostAmount * Services.PlayerBehaviour.boostTimer;
+				
 				Services.PlayerBehaviour.flow += boostAmount * (Services.PlayerBehaviour.boostTimer);
 				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
 				Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.boostTimer + 1 * 5, transform);
@@ -460,6 +460,8 @@ public class Point : MonoBehaviour
 
 			case PointTypes.fly:
 					
+				Services.PlayerBehaviour.boost += boostAmount * (Services.PlayerBehaviour.boostTimer);
+				
 			break;
 
 			case PointTypes.normal:
