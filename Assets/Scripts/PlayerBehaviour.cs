@@ -127,6 +127,10 @@ public class PlayerBehaviour: MonoBehaviour {
 	[HideInInspector]
 	public Vector2 cursorDir;
 
+	public Vector2 cursorDir2;
+	public Vector3 cursorPos2;
+	
+
 	public void Awake(){
 		joystickLocked = true;
 		playerSprite = GetComponentInChildren<SpriteRenderer>();
@@ -1329,21 +1333,21 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			// DO TURNING SPEED HERE
 
-			cursorDir = new Vector3(Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
+			cursorDir2 = new Vector3(Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
 			if(usingJoystick){
-				cursorDir = Quaternion.Euler(0,0,90) * cursorDir;
+				cursorDir2 = Quaternion.Euler(0,0,90) * cursorDir2;
 			}
 //			if (cursorDir.magnitude < 0.1f) {
 //				cursorDir = lastCursorDir.normalized/10f;
 //			}
-		if (cursorDir.magnitude <= 0.1f){
+		if (cursorDir2.magnitude <= 0.1f){
 		  joystickLocked = true;
-			cursorDir = Vector3.zero;
+			cursorDir2 = Vector3.zero;
 		}else{
 			joystickLocked = false;
 		}
 
-			cursorDir = Vector3.Lerp (lastCursorDir, cursorDir, (cursorRotateSpeed/(((Mathf.Abs(flow) * 1) + 1)) * Time.deltaTime));
+//			cursorDir = Vector3.Lerp (lastCursorDir, cursorDir, (cursorRotateSpeed/(((Mathf.Abs(flow) * 1) + 1)) * Time.deltaTime));
 			//free movement: transform.position = transform.position + new Vector3 (-Input.GetAxis ("Joy X") / 10, Input.GetAxis ("Joy Y") / 10, 0);
 			//angle to joystick position
 			//zAngle = Mathf.Atan2 (Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y")) * Mathf.Rad2Deg;
@@ -1360,19 +1364,19 @@ public class PlayerBehaviour: MonoBehaviour {
 //				cursorDir = (mousePos - transform.position);
 //			}
 
-			cursorDir += new Vector2(Input.GetAxis ("Mouse X"), Input.GetAxis ("Mouse Y"));
-			if (cursorDir.magnitude <= 0.01f){
+			cursorDir2 += new Vector2(Input.GetAxis ("Mouse X"), Input.GetAxis ("Mouse Y"));
+			if (cursorDir2.magnitude <= 0.01f){
 			  joystickLocked = true;
-				cursorDir = Vector3.zero;
+				cursorDir2 = Vector3.zero;
 			}else{
 				joystickLocked = false;
 			}
-			cursorDir = Vector3.Lerp (lastCursorDir, cursorDir, (cursorRotateSpeed/(Mathf.Abs(flow) + 1) * Time.deltaTime));
+//			cursorDir = Vector3.Lerp (lastCursorDir, cursorDir, (cursorRotateSpeed/(Mathf.Abs(flow) + 1) * Time.deltaTime));
 		}
 
 
-		if (cursorDir.magnitude > 1) {
-			cursorDir.Normalize ();
+		if (cursorDir2.magnitude > 1) {
+			cursorDir2.Normalize ();
 		}
 
 
@@ -1387,18 +1391,34 @@ public class PlayerBehaviour: MonoBehaviour {
 		// float screenWidth = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, Camera.main.nearClipPlane)).y - transform.position.y;
 		// cursorPos = transform.position + ((Vector3)cursorDir * screenWidth);
 		
-		cursorPos = transform.position + (Vector3)cursorDir / (Services.mainCam.fieldOfView * 0.1f);
+	
+		cursorPos = transform.position + (Vector3)cursorDir2 / (Services.mainCam.fieldOfView * 0.1f);
 //		Vector3 screenPos = ((Vector3)cursorDir/10f + Vector3.one/2f);
 		Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
 		
-		screenPos += new Vector3(cursorDir.x / Services.mainCam.aspect, cursorDir.y, 0)/25f;
+		screenPos += new Vector3(cursorDir2.x / Services.mainCam.aspect, cursorDir2.y, 0)/25f;
 
 			
 		screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Mathf.Abs(transform.position.z - Services.mainCam.transform.position.z));
 		cursorPos = Services.mainCam.ViewportToWorldPoint(screenPos);
+		
+		
 		cursor.transform.position = cursorPos;
-		cursor.transform.rotation = Quaternion.Euler(0, 0, (float)(Mathf.Atan2(-cursorDir.x, cursorDir.y) / Mathf.PI) * 180f);
+		cursor.transform.rotation = Quaternion.Euler(0, 0, (float)(Mathf.Atan2(-cursorDir2.x, cursorDir2.y) / Mathf.PI) * 180f);
+		
+		
+		
+		if(Input.GetButton("Button1") && state == PlayerState.Traversing)
+		{
+		
+		}
+		else
+		{
+			cursorDir = cursorDir2;
+		}
+
 		playerSprite.transform.up = cursorDir;
+		
 		l.positionCount = 2;	
 		// l.SetPosition(0, transform.position);
 		// l.SetPosition(1, cursorPos);

@@ -29,7 +29,7 @@ public class Constants : MonoBehaviour {
 	public Sprite connectSprite;
 	public Sprite buttonPressSprite;
 	public Sprite brakeSprite;
-
+	public SpriteRenderer directionSprite;
 
 	Color gray = new Color(0.1f, 0.1f, 0.1f, 0f);
 	Color white = new Color(1,1,1);
@@ -139,8 +139,11 @@ public class Constants : MonoBehaviour {
 
 		if (Input.GetButton ("Button1")) {
 			buttonPress.enabled = true;
+			directionSprite.enabled = true;
 			buttonPress.color = Color.white;
-		} else {
+		} else
+		{
+			directionSprite.enabled = false;
 			buttonPress.color = Color.Lerp (buttonPress.color, gray, Time.deltaTime * 3);
 		}
 
