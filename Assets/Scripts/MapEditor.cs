@@ -431,16 +431,14 @@ public class MapEditor : MonoBehaviour
                     
                     AddSelectedSpline(Spline.Splines[i]);
                     
-
                     DeselectPoints();
 
-                    if (i != -1)
-                    {
+                 
                         foreach (Point p in selectedSpline.SplinePoints)
                         {
                             AddSelectedPoint(p);
                         }
-                    }
+                    
                 }
 
                 Cursor.visible = false;
@@ -1019,7 +1017,7 @@ public class MapEditor : MonoBehaviour
             //record if its closed
             splineData["closed"].AsBool = Spline.Splines[j].closed;
             splineData["numPoints"] = Spline.Splines[j].SplinePoints.Count;
-
+            splineData["lineTexture"] = Spline.Splines[j].lineMaterial;
             JSONObject pointIndices = new JSONObject();
 
             int pi = 0;
@@ -1156,7 +1154,8 @@ public class MapEditor : MonoBehaviour
                     newSpline.SplinePoints.Add(newPoints[json["spline" + i]["points"]["p" + k]]);
                 }
             }
-            
+
+            newSpline.lineMaterial = json["lineTexture"];
             newSpline.closed = json["spline" + i]["closed"];
             newSpline.transform.parent = splinesParent;
         }

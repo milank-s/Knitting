@@ -436,7 +436,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			else if (TryToFly())
 				{
 					cursorSprite.sprite = canFlySprite;
-					if (Input.GetButton("Button1") || boostTimer >= 1)
+					if (Input.GetButton("Button1"))
 					{
 						SwitchState(PlayerState.Flying);
 						return;
@@ -566,9 +566,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		if(Input.GetButton("Button1")){
 			boostTimer += Time.deltaTime / stopTimer;
-			
+			boostIndicator.enabled = true;
 		}else{
 			boostTimer -= Time.deltaTime;
+			boostIndicator.enabled = false;
 		}
 		
 		boostTimer = Mathf.Clamp01(boostTimer);
@@ -969,7 +970,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if(Mathf.Abs(flow) < curSpline.segmentDistance * 100)
 			{
-				flow += Mathf.Pow(accuracy, 2) * acceleration * Time.deltaTime * cursorDir.magnitude;
+				if (curSpline.type == Spline.SplineType.moving)
+				{
+					flow += Mathf.Pow(accuracy, 2) * curSpline.acceleration * Time.deltaTime * cursorDir.magnitude;
+				}
+
 				decelerationTimer = Mathf.Clamp01(decelerationTimer - Time.deltaTime * 2f);
 			}
 
@@ -1562,6 +1567,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				{
 					charging = false;
 					boostIndicator.enabled = false;
+					
+					Services.fx.EmitLinearBurst((int)(boostTimer * 5), boostTimer * 2,transform, cursorDir2);
 					boostTimer = 0;
 				}
 

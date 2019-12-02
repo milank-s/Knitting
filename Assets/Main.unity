@@ -807,7 +807,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: fbc80ac532519d74cb1ec188e4a2ce45,
     type: 2}
-  m_audioClip: {fileID: 1560559469}
+  m_audioClip: {fileID: 791620257}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -1015,7 +1015,7 @@ PrefabInstance:
     - target: {fileID: 114769404741685902, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
         type: 3}
       propertyPath: lines.Array.size
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 114769404741685902, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
         type: 3}
@@ -1358,6 +1358,16 @@ PrefabInstance:
       propertyPath: fx
       value: 
       objectReference: {fileID: 1168170317}
+    - target: {fileID: 114769404741685902, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
+        type: 3}
+      propertyPath: lines.Array.data[4]
+      value: 
+      objectReference: {fileID: 2100000, guid: e9b9014490e13934aac703fbf860caf0, type: 2}
+    - target: {fileID: 114769404741685902, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
+        type: 3}
+      propertyPath: lines.Array.data[5]
+      value: 
+      objectReference: {fileID: 2100000, guid: 5c975e8e085095842b4b1ec485766776, type: 2}
     - target: {fileID: 114228048911152496, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
         type: 3}
       propertyPath: Cursor
@@ -1406,7 +1416,7 @@ PrefabInstance:
     - target: {fileID: 114228048911152496, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
         type: 3}
       propertyPath: loadFileName
-      value: Tangle
+      value: Tutorial
       objectReference: {fileID: 0}
     - target: {fileID: 114448235382618234, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
         type: 3}
@@ -1722,6 +1732,34 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 790160194}
   m_PrefabAsset: {fileID: 0}
+--- !u!83 &791620257
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!33 &811018316 stripped
 MeshFilter:
   m_CorrespondingSourceObject: {fileID: 3892519788234261090, guid: 21651267870f18e4cb0042cd9f4e66b1,
@@ -2825,34 +2863,6 @@ ParticleSystem:
     type: 3}
   m_PrefabInstance: {fileID: 1158388273}
   m_PrefabAsset: {fileID: 0}
---- !u!83 &1560559469
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!1 &1577432097
 GameObject:
   m_ObjectHideFlags: 0
@@ -4063,7 +4073,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1903120638132105}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2, y: 0, z: -2}
+  m_LocalPosition: {x: 0, y: 0, z: -2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4224847537683091}
@@ -4891,6 +4901,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 597226892, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 869662897, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 114000010318564134, guid: f3a07dc4c57b848e39919d6021024601,
         type: 3}
       propertyPath: boostIndicator
@@ -4906,9 +4924,29 @@ PrefabInstance:
       propertyPath: directionIndicator
       value: 
       objectReference: {fileID: 597226892}
+    - target: {fileID: 114000010318564134, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: acceleration
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010318564134, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: boostAmount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010318564134, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: flowAmount
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010318564134, guid: f3a07dc4c57b848e39919d6021024601,
+        type: 3}
+      propertyPath: StopAngleDiff
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 4000011164714548, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4000011164714548, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
       propertyPath: m_LocalPosition.y
@@ -4970,14 +5008,6 @@ PrefabInstance:
     - target: {fileID: 597226891, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 597226892, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 869662897, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
-      propertyPath: m_Enabled
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f3a07dc4c57b848e39919d6021024601, type: 3}

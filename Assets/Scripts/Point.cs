@@ -269,6 +269,7 @@ public class Point : MonoBehaviour
 
 			case PointTypes.connect:
 				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.connect];
+				defaultToGhost = false;
 				break;
 
 			case PointTypes.ghost:
@@ -451,7 +452,8 @@ public class Point : MonoBehaviour
 		switch(pointType){
 			case PointTypes.stop:
 				
-				Services.PlayerBehaviour.flow += boostAmount * (Services.PlayerBehaviour.boostTimer);
+				Services.PlayerBehaviour.flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
+				Services.PlayerBehaviour.boost += boostAmount * (Services.PlayerBehaviour.boostTimer);
 				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
 				Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.boostTimer + 1 * 5, transform);
 				Services.fx.EmitLinearBurst(50, Services.PlayerBehaviour.boostTimer + 1, transform, Services.PlayerBehaviour.cursorDir);
@@ -467,7 +469,7 @@ public class Point : MonoBehaviour
 			case PointTypes.normal:
 				
 				Services.PlayerBehaviour.boost += boostAmount * (Services.PlayerBehaviour.boostTimer);
-				
+				Services.PlayerBehaviour.flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
 				if(!hit){
 					
 				}

@@ -28,10 +28,19 @@ using SubjectNerd.Utilities;
 
 public class Spline : MonoBehaviour
 {
+	
+	public enum SplineType{normal, moving}
+
+	public SplineType type = SplineType.normal;
+	
+	
+	[HideInInspector]
 	public float distortion;
 	public static List<Spline> Splines = new List<Spline> ();
 	public static float drawSpeed = 0.01f;
-	[Reorderable]
+	
+	
+	[HideInInspector]
 	public List<Point> SplinePoints;
 
 	[HideInInspector]
@@ -40,6 +49,7 @@ public class Spline : MonoBehaviour
 	[HideInInspector]
 	public VectorLine line;
 
+	[HideInInspector]
 	public float completion;		
 
 	private float _completion
@@ -47,18 +57,20 @@ public class Spline : MonoBehaviour
 		get { return completion / SplinePoints.Count; }
 
 	}
-	public float accuracyCoefficient;
-	public float maxSpeed;
-	public float boost;
-	public float acceleration;
+	private float accuracyCoefficient;
+	
+	[HideInInspector]
+	public float maxSpeed, boost, acceleration;
 	
 	public static Spline Select;
 	[Space(15)]
 	
-	[SerializeField]
+	[HideInInspector]
 	public bool closed = false;
 
 	private bool _locked;
+	
+	
 	public bool locked
 	{
 		get { return _locked; }
@@ -68,18 +80,11 @@ public class Spline : MonoBehaviour
 			_locked = value;
 		}
 	}
-
-	[Space(15)]
-	public float unlockSpeed;
-
-
-	[Space(20)]
-	public int curveFidelity = 10;
-	[Space(20)]
-
+	
 	[HideInInspector]
-	public bool isPlayerOn = false;
-	public bool reactToPlayer = false;
+	public int curveFidelity = 10;
+
+	[Space(20)] [HideInInspector] public bool isPlayerOn, reactToPlayer;
 	
 	[HideInInspector]
 	public bool draw = true;
@@ -97,6 +102,7 @@ public class Spline : MonoBehaviour
 	private int drawIndex;
 	private int lowHitPoint = int.MaxValue;
 	private int highHitPoint = -int.MaxValue;
+	
 	public int lineMaterial = 0;
 	private float playerProgress{
 		get{return Services.PlayerBehaviour.progress;}
@@ -104,12 +110,14 @@ public class Spline : MonoBehaviour
 
 	private float stepSize;
 
+	
 	public bool isSelect {
 		get {
 			return this == Spline.Select;
 		}
 	}
 
+	
 	public Point EndPoint{
 		get {
 			return SplinePoints[SplinePoints.Count - 1];
@@ -221,7 +229,9 @@ public class Spline : MonoBehaviour
 
 	public void SetUpReferences()
 	{
-
+		SetSplineType();
+		ResetVectorLine();
+		
 		distance = 0;
 		
 			for(int i = 0; i < SplinePoints.Count; i++) {
@@ -297,8 +307,17 @@ public class Spline : MonoBehaviour
 	public void Initialize()
 	{	
 		ResetVectorLine();
+		
 	}
 
+	public void SetSplineType()
+	{
+		if (type == SplineType.moving)
+		{
+			lineMaterial = 3;
+			acceleration = 0.25f;
+		}
+	}
 	
 	public void ResetVectorLine()
 	{
@@ -310,7 +329,7 @@ public class Spline : MonoBehaviour
 		{
 			pointCount -= curveFidelity;
 		}
-		Debug.Log(SplinePoints.Count);
+		
 		List<Vector3> linePoints =  new List<Vector3> (pointCount);
 		
 		line = new VectorLine (name, linePoints, 1, LineType.Continuous, Vectrosity.Joins.Weld);
@@ -403,6 +422,7 @@ public class Spline : MonoBehaviour
 			drawIndex += 1;
 		}
 		
+		
 		if (reactToPlayer || isPlayerOn)
 		{
 			drawIndex = GetPlayerLineSegment(pointIndex);
@@ -410,6 +430,10 @@ public class Spline : MonoBehaviour
 		
 		float curIndex;
 
+		if (type == SplineType.moving)
+		{
+			line.textureOffset -= Time.deltaTime * 10;
+		}
 		int startIndex;
 		if (isPlayerOn)
 		{

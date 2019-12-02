@@ -38,10 +38,17 @@ public class SplineEditor : Editor {
 
     public override void OnInspectorGUI()
     {
+	  
+	    
         spline = (Spline)target;
 
         GetTarget.Update();
 
+        
+	    
+        DrawDefaultInspector();
+        GUILayout.Space(25);
+        
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("Insert",GUILayout.Width(50));
         PointInsert = (Point)EditorGUILayout.ObjectField(PointInsert, typeof(Point), true,GUILayout.Width(140));
@@ -96,6 +103,7 @@ public class SplineEditor : Editor {
         }
 
         GetTarget.ApplyModifiedProperties();
+
     }
 
 
