@@ -21,7 +21,7 @@ using UnityEngine.Experimental.PlayerLoop;
 //###################################################
 //###################################################
 
-public enum PointTypes{normal, fly, ghost, stop, connect}
+public enum PointTypes{normal, fly, ghost, stop, connect, start}
 public class Point : MonoBehaviour
 {
 
@@ -82,7 +82,7 @@ public class Point : MonoBehaviour
 	public Vector3 initPos;
 	[Space(10)]
 
-	[HideInInspector]
+
 	public string text;
 	public TextMesh textMesh;
 	public List<PointCloud> pointClouds;
@@ -221,14 +221,16 @@ public class Point : MonoBehaviour
 		_neighbours.Clear();
 		_connectedSplines.Clear();
 	}
-	public void Initialize(){
-		
+	public void Initialize()
+	{
+
+		gameObject.name = text;
 		initPos = transform.position;
 		anchorPos = initPos;
 		initContinuity = continuity;
 		initTension = tension;
 		initBias = bias;
-		text = gameObject.name;
+	
 		c = 0;
 		cooldown = 0;
 		timesHit = 0;
@@ -279,6 +281,11 @@ public class Point : MonoBehaviour
 			case PointTypes.normal:
 				
 				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.normal];
+				break;
+			
+			case PointTypes.start :
+				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.start];
+				
 				break;
 		}
 	}

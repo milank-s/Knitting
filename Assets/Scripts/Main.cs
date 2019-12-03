@@ -138,7 +138,6 @@ public class Main : MonoBehaviour {
 				if (SceneManager.GetSceneAt(i).name != "Menu" && SceneManager.GetSceneAt(i).name != "Main")
 				{
 					curLevel = SceneManager.GetSceneAt(i).name;
-					Debug.Log(curLevel);
 				}
 			}
 		}

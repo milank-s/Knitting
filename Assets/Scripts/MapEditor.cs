@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using SimpleJSON;
 using System.IO;
 using System.Linq;
+using UnityEditor;
 
 //###################################################
 //###################################################
@@ -66,12 +67,14 @@ public class MapEditor : MonoBehaviour
     [Space(25)] public Transform pointsParent;
     public Transform splinesParent;
 
+    public  Image textCursor;
     public static bool editing = false;
     public GameObject selector;
     public Transform canvas;
     public GameObject selectedPointIndicator;
     public GameObject pointOptions;
     private List<Image> selectors;
+    
     private LineRenderer l;
     private Camera cam;
     public Slider tensionSlider;
@@ -98,10 +101,12 @@ public class MapEditor : MonoBehaviour
         get { return Vector3.Lerp(upperRight, lowerLeft, 0.5f); }
     }
     private Vector3 upperRight, lowerLeft;
+
+    private Point hitPoint;
     
     public static bool typing;
     private bool dragging;
-
+    private string pointText;
     private bool pointSelected
     {
         get { return selectedPoints.Count > 0; }
@@ -126,7 +131,8 @@ public class MapEditor : MonoBehaviour
         draw,
         marquee,
         clone, 
-        rotate
+        rotate,
+        text
     }
 
 
@@ -238,301 +244,478 @@ public class MapEditor : MonoBehaviour
 
     }
 
+    void TogglePlayMode()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (pointSelected)
+            {
+                Services.StartPoint = activePoint;
+            }
+
+            editing = !editing;
+            canvas.gameObject.SetActive(editing);
+//            cam.enabled = editing;
+            Services.main.EnterEditMode(editing);
+        }
+    }
+
+    void HideUI()
+    {
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+
+            foreach (GameObject t in text)
+            {
+                t.SetActive(!t.activeSelf);
+            }
+        }
+    }
+
+    void EditSelectedSpline()
+    {
+        if (splineindex >= 0 && splineindex < Spline.Splines.Count)
+        {
+
+
+            if (Input.GetKeyDown(KeyCode.Alpha5))
+            {
+
+                selectedSpline.ChangeMaterial(selectedSpline.lineMaterial + 1);
+            }
+
+            splineSelectedTip.SetActive(true);
+
+            if (pointSelected)
+            {
+                splinePointTip.SetActive(true);
+            }
+
+
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                selectedSpline.ReverseSpline();
+            }
+
+
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                selectedSpline.closed = !selectedSpline.closed;
+            }
+
+
+
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                if (pointSelected)
+                {
+
+                    Point curPoint = activePoint;
+
+                    if (!Input.GetKey(KeyCode.LeftShift))
+                    {
+                        DeselectPoints();
+                    }
+
+                    if (selectedSpline.SplinePoints.Contains(curPoint))
+                    {
+                        int pointIndex = (selectedSpline.SplinePoints.IndexOf(curPoint) - 1) %
+                                         selectedSpline.SplinePoints.Count;
+
+
+
+                        if (pointIndex < 0)
+                        {
+                            AddSelectedPoint(selectedSpline.EndPoint);
+                        }
+                        else
+                        {
+                            AddSelectedPoint(selectedSpline.SplinePoints[pointIndex]);
+                        }
+
+                    }
+                    else
+                    {
+
+
+                        AddSelectedPoint(selectedSpline.EndPoint);
+                    }
+                }
+                else
+                {
+
+                    AddSelectedPoint(selectedSpline.EndPoint);
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+
+                if (pointSelected)
+                {
+
+                    Point curPoint = activePoint;
+
+                    if (!Input.GetKey(KeyCode.LeftShift))
+                    {
+                        DeselectPoints();
+                    }
+
+                    if (selectedSpline.SplinePoints.Contains(curPoint))
+                    {
+
+                        int pointIndex = (selectedSpline.SplinePoints.IndexOf(curPoint) + 1) %
+                                         selectedSpline.SplinePoints.Count;
+
+                        if (pointIndex >= selectedSpline.SplinePoints.Count)
+                        {
+                            AddSelectedPoint(selectedSpline.StartPoint);
+                        }
+                        else
+                        {
+                            AddSelectedPoint(selectedSpline.SplinePoints[pointIndex]);
+                        }
+
+                    }
+                    else
+                    {
+
+
+                        AddSelectedPoint(selectedSpline.StartPoint);
+                    }
+                }
+                else
+                {
+
+                    AddSelectedPoint(selectedSpline.StartPoint);
+                }
+            }
+
+            if (pointSelected && selectedSpline.SplinePoints.Contains(activePoint))
+            {
+                if (Input.GetKeyDown(KeyCode.Minus))
+                {
+                    selectedSpline.RemovePoint((selectedSpline.SplinePoints.IndexOf(activePoint)));
+                    selectedSpline.ResetLineLength();
+
+                    if (selectedSpline.SplinePoints.Count < 2)
+                    {
+                        Destroy(selectedSpline);
+                    }
+                }
+
+                if (Input.GetKeyDown(KeyCode.Equals))
+                {
+                    selectedSpline.AddNewPoint(selectedSpline.SplinePoints.IndexOf(activePoint));
+                }
+            }
+
+        }
+    }
+
+    void ChangeSelectedSpline()
+    {
+        if ((Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)) &&
+            Spline.Splines.Count > 0)
+        {
+
+            int i = 0;
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                i = splineindex + 1;
+            }
+            else if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+
+                i = splineindex - 1;
+
+            }
+
+            if (i >= Spline.Splines.Count)
+            {
+                i = 0;
+            }
+
+            if (i < 0)
+            {
+                i = Spline.Splines.Count - 1;
+            }
+
+            AddSelectedSpline(Spline.Splines[i]);
+
+            DeselectPoints();
+
+
+            foreach (Point p in selectedSpline.SplinePoints)
+            {
+                AddSelectedPoint(p);
+            }
+
+        }
+    }
+
+    void SetCursorPosition()
+    {
+        if (Input.GetMouseButton(0))
+        {
+            PanCamera();
+        }
+
+        cam.fieldOfView = Mathf.Clamp(cam.fieldOfView - Input.mouseScrollDelta.y * Time.deltaTime * 100f, 10,
+            160);
+
+        lastPos = worldPos;
+        curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
+        worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
+            cameraDistance));
+        cursor.transform.position = curPos;
+    }
+
+    void DeselectAll()
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            //RemoveSelectedPoint(hitPoint);
+            DeselectPoints();
+            DeselectSpline();
+        }
+    }
+
+    void RaycastFromCursor()
+    {
+        hitPoint = null;
+
+        Ray r = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(r.origin, r.direction, out hit))
+        {
+            hitPoint = hit.transform.GetComponent<Point>();
+
+            if (hitPoint != null)
+            {
+                if (Input.GetMouseButtonDown(1))
+                {
+                    RemoveSelectedPoint(hitPoint);
+
+                    if (!pointSelected && curTool == Tool.select)
+                    {
+                        pointOptions.SetActive(false);
+
+                    }
+                }
+
+
+            }
+        }
+    }
+
+    void TryChangeTool()
+    {
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+
+            _curTool = Tool.select;
+            if (pointSelected)
+            {
+                pointOptions.SetActive(true);
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.W))
+        {
+            _curTool = Tool.move;
+
+        }
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
+            _curTool = Tool.draw;
+            l.enabled = true;
+        }
+        else if (Input.GetKeyDown(KeyCode.M))
+        {
+            _curTool = Tool.marquee;
+
+        }
+        else if (Input.GetKeyDown(KeyCode.R))
+        {
+            _curTool = Tool.rotate;
+
+        }
+        else if (Input.GetKeyDown(KeyCode.V))
+        {
+            _curTool = Tool.clone;
+        }
+        else if (Input.GetKeyDown(KeyCode.T))
+        {
+            _curTool = Tool.text;
+        }
+    }
+
     void Update()
     {
 
         if (!typing)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            TogglePlayMode();
+        }
+
+        if (editing)
             {
-                if (pointSelected)
-                {
-                    Services.StartPoint = activePoint;
-                }
-
-                editing = !editing;
-                canvas.gameObject.SetActive(editing);
-//            cam.enabled = editing;
-                Services.main.EnterEditMode(editing);
-            }
-
-            if (editing)
-            {
-                if (Input.GetKeyDown(KeyCode.H))
-                {
-
-                    foreach (GameObject t in text)
-                    {
-                        t.SetActive(!t.activeSelf);
-                    }
-                }
-
-
-                if (splineindex >= 0 && splineindex < Spline.Splines.Count)
-                {
-
-                    if (Input.GetKeyDown(KeyCode.Alpha5))
-                    {
-
-                        selectedSpline.ChangeMaterial(selectedSpline.lineMaterial + 1);
-
-                    }
-
-
-                    splineSelectedTip.SetActive(true);
-                    if (pointSelected)
-                    {
-                        splinePointTip.SetActive(true);
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.X))
-                    {
-                        selectedSpline.ReverseSpline();
-                    }
-
-
-                    if (Input.GetKeyDown(KeyCode.C))
-                    {
-                        selectedSpline.closed = !selectedSpline.closed;
-                    }
-
-
-                    if (Input.GetKeyDown(KeyCode.LeftArrow))
-                    {
-                        if (pointSelected)
-                        {
-
-                            Point curPoint = activePoint;
-
-                            if (!Input.GetKey(KeyCode.LeftShift))
-                            {
-                                DeselectPoints();
-                            }
-
-                            if (selectedSpline.SplinePoints.Contains(curPoint))
-                            {
-                                int pointIndex = (selectedSpline.SplinePoints.IndexOf(curPoint) - 1) %
-                                                 selectedSpline.SplinePoints.Count;
-
-
-
-                                if (pointIndex < 0)
-                                {
-                                    AddSelectedPoint(selectedSpline.EndPoint);
-                                }
-                                else
-                                {
-                                    AddSelectedPoint(selectedSpline.SplinePoints[pointIndex]);
-                                }
-
-                            }
-                            else
-                            {
-
-
-                                AddSelectedPoint(selectedSpline.EndPoint);
-                            }
-                        }
-                        else
-                        {
-
-                            AddSelectedPoint(selectedSpline.EndPoint);
-                        }
-                    }
-                    else if (Input.GetKeyDown(KeyCode.RightArrow))
-                    {
-
-                        if (pointSelected)
-                        {
-
-                            Point curPoint = activePoint;
-
-                            if (!Input.GetKey(KeyCode.LeftShift))
-                            {
-                                DeselectPoints();
-                            }
-
-                            if (selectedSpline.SplinePoints.Contains(curPoint))
-                            {
-
-                                int pointIndex = (selectedSpline.SplinePoints.IndexOf(curPoint) + 1) %
-                                                 selectedSpline.SplinePoints.Count;
-
-                                if (pointIndex >= selectedSpline.SplinePoints.Count)
-                                {
-                                    AddSelectedPoint(selectedSpline.StartPoint);
-                                }
-                                else
-                                {
-                                    AddSelectedPoint(selectedSpline.SplinePoints[pointIndex]);
-                                }
-
-                            }
-                            else
-                            {
-
-
-                                AddSelectedPoint(selectedSpline.StartPoint);
-                            }
-                        }
-                        else
-                        {
-
-                            AddSelectedPoint(selectedSpline.StartPoint);
-                        }
-                    }
-
-                    if (pointSelected && selectedSpline.SplinePoints.Contains(activePoint))
-                    {
-                        if (Input.GetKeyDown(KeyCode.Minus))
-                        {
-                            selectedSpline.RemovePoint((selectedSpline.SplinePoints.IndexOf(activePoint)));
-                            selectedSpline.ResetLineLength();
-
-                            if (selectedSpline.SplinePoints.Count < 2)
-                            {
-                                Destroy(selectedSpline);
-                            }
-                        }
-
-                        if (Input.GetKeyDown(KeyCode.Plus))
-                        {
-                            selectedSpline.AddNewPoint(selectedSpline.SplinePoints.IndexOf(activePoint));
-                        }
-                    }
-
-                }
-
-                if ((Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)) &&
-                    Spline.Splines.Count > 0)
-                {
-
-                    int i = 0;
-                    if (Input.GetKeyDown(KeyCode.UpArrow))
-                    {
-                        i = splineindex + 1;
-                    }
-                    else if (Input.GetKeyDown(KeyCode.DownArrow))
-                    {
-
-                        i = splineindex - 1;
-
-                    }
-
-                    if (i >= Spline.Splines.Count)
-                    {
-                        i = 0;
-                    }
-
-                    if (i < 0)
-                    {
-                        i = Spline.Splines.Count - 1;
-                    }
-                    
-                    AddSelectedSpline(Spline.Splines[i]);
-                    
-                    DeselectPoints();
-
-                 
-                        foreach (Point p in selectedSpline.SplinePoints)
-                        {
-                            AddSelectedPoint(p);
-                        }
-                    
-                }
 
                 Cursor.visible = false;
-                Point hitPoint = null;
-
-                if (Input.GetMouseButton(0))
+                SetCursorPosition();
+                
+                if (!typing)
                 {
-                    PanCamera();
-                }
-
-
-                cam.fieldOfView = Mathf.Clamp(cam.fieldOfView - Input.mouseScrollDelta.y * Time.deltaTime * 100f, 10,
-                    160);
-
-                lastPos = worldPos;
-                curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
-                worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
-                    cameraDistance));
-                cursor.transform.position = curPos;
-
-
-                Ray r = cam.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-
-                if (Input.GetMouseButtonDown(1))
-                {
-                    //RemoveSelectedPoint(hitPoint);
-                    DeselectPoints();
-                    DeselectSpline();
-                }
-
-
-
-                if (Physics.Raycast(r.origin, r.direction, out hit))
-                {
-                    hitPoint = hit.transform.GetComponent<Point>();
-
-                    if (hitPoint != null)
-                    {
-                        if (Input.GetMouseButtonDown(1))
-                        {
-                            RemoveSelectedPoint(hitPoint);
-
-                            if (!pointSelected && curTool == Tool.select)
-                            {
-                                pointOptions.SetActive(false);
-
-                            }
-                        }
-
-
-                    }
-                }
-//            Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 2));
-
-                if (Input.GetKeyDown(KeyCode.Q))
-                {
-
-                    _curTool = Tool.select;
-                    if (pointSelected)
-                    {
-                        pointOptions.SetActive(true);
-                    }
-                }
-                else if (Input.GetKeyDown(KeyCode.W))
-                {
-                    _curTool = Tool.move;
-
-                }
-                else if (Input.GetKeyDown(KeyCode.D))
-                {
-                    _curTool = Tool.draw;
-                    l.enabled = true;
-                }
-                else if (Input.GetKeyDown(KeyCode.M))
-                {
-                    _curTool = Tool.marquee;
-
-                }else if (Input.GetKeyDown(KeyCode.R))
-                {
-                    _curTool = Tool.rotate;
                     
-                }else if (Input.GetKeyDown(KeyCode.V))
-                {
-                    _curTool = Tool.clone;
+                    HideUI();
+
+                    if (curTool != Tool.text)
+                    {
+                        EditSelectedSpline();
+                    }
+                    
+                    ChangeSelectedSpline();
+                    TryChangeTool();
+                    
+                    if (Input.GetKeyDown(KeyCode.S))
+                    {
+                        Save();
+                    }
+                    
                 }
 
+                DeselectAll();
+                RaycastFromCursor();
+
+
+                if (curTool != Tool.clone && curTool != Tool.rotate)
+                {
+                    SelectPoint(hitPoint);
+                }
+                
+
+                //update point selection UI
                 if (selectedPoints.Count == 0)
                 {
                     selectedPointIndicator.SetActive(false);
                 }
 
+
+                ManageSelectionUI();
+
+
+                if (dragging && Input.GetMouseButtonUp(0))
+                {
+                    dragging = false;
+                }
+
+
+                if (!typing)
+                {
+                    if (!pointSelected && curTool != Tool.marquee)
+                    {
+                        if (Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftShift))
+                        {
+                            StartCoroutine(MarqueeSelect(worldPos));
+                        }
+                    }
+                    
+                    EditSelectedPoint();
+                }
                 
-                int index = 0;
+                UseTool();
+            }
+        }
+
+
+    void EditSelectedPoint()
+    {
+        if (pointSelected)
+        {
+
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                cam.transform.position = new Vector3(center.x, center.y, center.z - cameraDistance);
+            }
+
+            marqueeTip.SetActive(false);
+            deselectTip.SetActive(true);
+            pointSelectedTip.SetActive(true);
+
+
+            if (Input.GetKeyDown(KeyCode.Z))
+            {
+
+                foreach (Point p in selectedPoints)
+                {
+                    p.tension = Mathf.PingPong(p.tension + 1, 1);
+                }
+            }
+
+//                string input = Input.inputString;
+            pointType.text = "Type - " + activePoint.pointType.ToString();
+            xPos.text = "x  " + activePoint.Pos.x.ToString("F2");
+            yPos.text = "y  " + activePoint.Pos.y.ToString("F2");
+            zPos.text = "z  " + activePoint.Pos.z.ToString("F2");
+
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+
+                activePoint.SetPointType(PointTypes.normal);
+
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+
+                activePoint.SetPointType(PointTypes.stop);
+
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                activePoint.SetPointType(PointTypes.connect);
+
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                activePoint.SetPointType(PointTypes.fly);
+            }
+
+            else if (Input.GetKeyDown(KeyCode.Alpha0))
+            {
+                activePoint.SetPointType(PointTypes.start);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Backspace))
+            {
+                Point pointToDelete = activePoint;
+                RemoveSelectedPoint(activePoint);
+                foreach (Spline s in Spline.Splines)
+                {
+                    if (s.SplinePoints.Contains(pointToDelete))
+                    {
+                        s.SplinePoints.Remove(pointToDelete);
+                        selectedSpline.ResetLineLength();
+                    }
+
+                    if (s.SplinePoints.Count < 2)
+                    {
+                        Destroy(s);
+                    }
+                }
+
+                pointToDelete.Destroy();
+            }
+        }
+        else
+        {
+            marqueeTip.SetActive(true);
+            deselectTip.SetActive(false);
+        }
+    }
+
+    void ManageSelectionUI()
+    {
+        int index = 0;
 
                 lowerLeft = new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
                 upperRight = new Vector3(-Mathf.Infinity, -Mathf.Infinity, -Mathf.Infinity);
@@ -576,7 +759,7 @@ public class MapEditor : MonoBehaviour
                         selectors[index].transform.Rotate(Vector3.forward);
                         selectors[index].transform.position = cam.WorldToScreenPoint(p.Pos);
                     }
-                    
+
 
                     if (index == selectedPoints.Count - 1)
                     {
@@ -601,386 +784,8 @@ public class MapEditor : MonoBehaviour
                     }
 
                     index++;
-                }               
- 
-                
-                if (dragging && Input.GetMouseButtonUp(0))
-                {
-                    dragging = false;
                 }
-
-                switch (curTool)
-                {
-
-                    case Tool.move:
-
-                        SelectPoint(hitPoint);
-
-                        if (pointSelected)
-                        {
-                            if (hitPoint != null && Input.GetMouseButtonDown(0))
-                            {
-                                dragging = true;
-                            }
-
-                            if (dragging || Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0))
-                            {
-
-                                MoveSelectedPoints();
-//                                dragging = true;
-//                            if (hitPoint != activePoint)
-//                            {
-//                                selectedPoints.Remove(hitPoint);
-//                                selectedPoints.Add(hitPoint);
-//                            }
-
-                                
-                            }
-                        }
-
-                        if (!dragging && hitPoint == null && Input.GetMouseButton(0) &&
-                            !Input.GetKey(KeyCode.LeftShift))
-                        {
-                            DragCamera();
-                        }
-
-                        break;
-                    case Tool.select:
-
-                        SelectPoint(hitPoint);
-
-
-                        Vector3 screenPos = cam.WorldToViewportPoint(lastPos);
-                        Vector3 viewPortPos = cam.ScreenToViewportPoint(curPos);
-                        if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftShift))
-                        {
-                            if (pointSelected)
-                            {
-                                biasSlider.value += (viewPortPos.x - screenPos.x) * 1000 * Time.deltaTime;
-                                tensionSlider.value += (viewPortPos.y - screenPos.y) * 1000 * Time.deltaTime;
-                            }
-                        }
-                        else if (Input.GetMouseButton(0))
-                        {
-                            DragCamera();
-                        }
-
-                        break;
-
-                    case Tool.clone:
-
-                        
-                        if (Input.GetMouseButtonDown(0))
-                        {
-                            dragging = true;
-
-                            
-                            
-                            //get all the splines and points you want to copy
-                            //keep track of all the points that are copied to avoid duplicates
-                            
-                                List<Point> pointsToCopy = selectedPoints;
-                                List<Point> newPoints = new List<Point>();
-                                List<Spline> newSplines = new List<Spline>();
-
-
-                                foreach (Spline s in selectedSplines)
-                                {
-                                    List<Point> splinePoints = new List<Point>();
-                                    foreach (Point p in s.SplinePoints)
-                                    {
-                                        Point newPoint = null;
-                                        bool alreadyCopied = false;
-                                        foreach (Point pew in newPoints)
-                                        {
-                                            if (Vector3.Distance(p.Pos, pew.Pos) < 0.05f)
-                                            {
-                                                newPoint = pew;
-                                                alreadyCopied = true;
-                                                break;
-                                            }
-                                        }
-
-                                        if (!alreadyCopied)
-                                        {
-                                            newPoint = Instantiate(p.gameObject, pointsParent.transform)
-                                                .GetComponent<Point>();
-                                            newPoints.Add(newPoint);
-                                            if (pointsToCopy.Contains(p))
-                                            {
-                                                pointsToCopy.Remove(p);
-                                            }
-
-                                        }
-
-                                        splinePoints.Add(newPoint);
-                                    }
-                                    Spline newSpline = SplineUtil.CreateSplineFromPoints(splinePoints);
-                                    newSpline.closed = selectedSpline.closed;
-                                    newSpline.transform.parent = splinesParent;
-                                    newSplines.Add(newSpline);
-                                }
-
-                                foreach (Point p in pointsToCopy)
-                                {
-                                    newPoints.Add(Instantiate(p.gameObject, pointsParent.transform)
-                                        .GetComponent<Point>());
-                                }
-
-                            if (!Input.GetKey(KeyCode.LeftShift))
-                            {
-                                DeselectSpline();
-                                DeselectPoints();
-                            }
-
-                            foreach (Spline s in newSplines)
-                            {
-                                AddSelectedSpline(s, true);
-                            }
-
-                            foreach (Point p in newPoints)
-                            {
-                                AddSelectedPoint(p);
-                            }
-                            
-
-                        }
-
-                        if (dragging)
-                        {
-                            MoveSelectedPoints();   
-                        }
-                        
-
-                        break;
-                    
-                    case Tool.rotate:
-
-                        if (Input.GetMouseButtonDown(0))
-                        {
-                            if (Input.GetKey(KeyCode.LeftShift))
-                            {
-                                rotationPivot = worldPos;
-                            }
-                            
-                            else
-                            {
-                                rotationPivot = center;
-                            }
-                        }
-                        
-                        if (Input.GetMouseButton(0))
-                        {
-                            cursor.transform.position = cam.WorldToScreenPoint(rotationPivot);
-                            float angle = Mathf.Sign(delta.x) * delta.magnitude * 100f;
-                            cursor.transform.Rotate(0, 0, angle);
-                            
-                            foreach (Point p in selectedPoints)
-                            {
-                                Vector3 pivot = new Vector3(rotationPivot.x, rotationPivot.y, p.Pos.z);
-                               
-                                    p.transform.RotateAround(pivot, Vector3.forward,  angle);
-                              
-                            }
-                           
-                        }
-
-                        break;
-
-                    case Tool.marquee:
-
-                        if (pointSelected && Input.GetMouseButtonDown(0))
-                        {
-                            StartCoroutine(MarqueeSelect(worldPos));
-                        }
-
-                        break;
-
-                    case Tool.draw:
-
-                        if (pointSelected)
-                        {
-                            l.SetPosition(0, selectedPoints[selectedPoints.Count - 1].transform.position);
-                            l.SetPosition(1, worldPos);
-                        }
-                        else
-                        {
-                            l.SetPosition(0, Vector3.one * 1000);
-                            l.SetPosition(1, Vector3.one * 1000);
-                        }
-
-                        if (hitPoint != null)
-                        {
-
-                            if (pointSelected)
-                            {
-                                l.SetPosition(1, hitPoint.Pos);
-                                if (Input.GetMouseButtonDown(0) && hitPoint != activePoint)
-                                {
-                                    SplinePointPair spp = SplineUtil.ConnectPoints(selectedSpline,
-                                        activePoint, hitPoint);
-                                    if (spp.s != null)
-                                    {
-                                        spp.s.transform.parent = splinesParent;
-                                        spp.p.transform.parent = pointsParent;
-                                        splineindex = Spline.Splines.IndexOf(spp.s);
-
-                                        RemoveSelectedPoint(activePoint);
-                                        AddSelectedPoint(hitPoint);
-                                        AddSelectedSpline(spp.s);
-                                    }
-
-
-                                }
-                            }
-                            else
-                            {
-                                if (Input.GetMouseButtonDown(0))
-                                {
-                                    AddSelectedPoint(hitPoint);
-                                }
-                            }
-                        }
-                        else if (hitPoint == null)
-                        {
-                            if (Input.GetMouseButtonDown(0))
-                            {
-                                if (selectedPoints.Count > 0)
-                                {
-                                    Point newPoint = SplineUtil.CreatePoint(worldPos);
-                                    if (Input.GetKey(KeyCode.LeftShift))
-                                    {
-                                        newPoint.tension = 1;
-                                    }
-
-                                    newPoint.transform.parent = pointsParent;
-
-                                    SplinePointPair spp = SplineUtil.ConnectPoints(selectedSpline,
-                                        activePoint, newPoint);
-                                    if (spp.s != null)
-                                    {
-                                        spp.s.transform.parent = splinesParent;
-                                        spp.p.transform.parent = pointsParent;
-
-
-                                        RemoveSelectedPoint(activePoint);
-                                        AddSelectedPoint(newPoint);
-                                        AddSelectedSpline(spp.s);
-                                    }
-
-                                }
-                                else
-                                {
-                                    Point newPoint = SplineUtil.CreatePoint(worldPos);
-                                    newPoint.transform.parent = pointsParent;
-                                    AddSelectedPoint(newPoint);
-                                }
-                            }
-                        }
-
-                        break;
-
-                }
-
-
-                if (Input.GetKeyDown(KeyCode.S))
-                {
-                    Save();
-                }
-
-
-                if (!pointSelected && curTool != Tool.marquee)
-                {
-                    if (Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftShift))
-                    {
-                        StartCoroutine(MarqueeSelect(worldPos));
-                    }
-                }
-
-
-                if (pointSelected)
-                {
-
-                    if (Input.GetKeyDown(KeyCode.F))
-                    {
-                        
-                        cam.transform.position = new Vector3(center.x, center.y, center.z - cameraDistance);
-                    }
-
-                    marqueeTip.SetActive(false);
-                    deselectTip.SetActive(true);
-                    pointSelectedTip.SetActive(true);
-
-
-                    if (Input.GetKeyDown(KeyCode.T))
-                    {
-
-                        foreach (Point p in selectedPoints)
-                        {
-                            p.tension = Mathf.PingPong(p.tension + 1, 1);
-                        }
-                    }
-
-//                string input = Input.inputString;
-                    pointType.text = "Type - " + activePoint.pointType.ToString();
-                    xPos.text = "x  " + activePoint.Pos.x.ToString("F2");
-                    yPos.text = "y  " + activePoint.Pos.y.ToString("F2");
-                    zPos.text = "z  " + activePoint.Pos.z.ToString("F2");
-
-                    if (Input.GetKeyDown(KeyCode.Alpha1))
-                    {
-
-                        activePoint.SetPointType(PointTypes.normal);
-
-                    }
-                    else if (Input.GetKeyDown(KeyCode.Alpha2))
-                    {
-
-                        activePoint.SetPointType(PointTypes.stop);
-
-                    }
-                    else if (Input.GetKeyDown(KeyCode.Alpha3))
-                    {
-                        activePoint.SetPointType(PointTypes.connect);
-
-                    }
-                    else if (Input.GetKeyDown(KeyCode.Alpha4))
-                    {
-                        activePoint.SetPointType(PointTypes.fly);
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.Backspace))
-                    {
-                        Point pointToDelete = activePoint;
-                        RemoveSelectedPoint(activePoint);
-                        foreach (Spline s in Spline.Splines)
-                        {
-                            if (s.SplinePoints.Contains(pointToDelete))
-                            {
-                                s.SplinePoints.Remove(pointToDelete);
-                                selectedSpline.ResetLineLength();
-                            }
-
-                            if (s.SplinePoints.Count < 2)
-                            {
-                                Destroy(s);
-                            }
-                        }
-
-                        pointToDelete.Destroy();
-                    }
-                }
-                else
-                {
-                    marqueeTip.SetActive(true);
-                    deselectTip.SetActive(false);
-
-                }
-
-            }
-        }
     }
-
     void MoveSelectedPoints()
     {
         Vector3 pos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
@@ -1377,6 +1182,377 @@ void DragCamera()
 
     }
 
+    void UseTool()
+    {
+        switch (curTool)
+        {
+
+            case Tool.move:
+
+                
+
+                if (pointSelected)
+                {
+                    if (hitPoint != null && Input.GetMouseButtonDown(0))
+                    {
+                        dragging = true;
+                    }
+
+                    if (dragging || Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0))
+                    {
+
+                        MoveSelectedPoints();
+//                                dragging = true;
+//                            if (hitPoint != activePoint)
+//                            {
+//                                selectedPoints.Remove(hitPoint);
+//                                selectedPoints.Add(hitPoint);
+//                            }
+
+
+                    }
+                }
+
+                if (!dragging && hitPoint == null && Input.GetMouseButton(0) &&
+                    !Input.GetKey(KeyCode.LeftShift))
+                {
+                    DragCamera();
+                }
+
+                break;
+            case Tool.select:
+
+
+
+                Vector3 screenPos = cam.WorldToViewportPoint(lastPos);
+                Vector3 viewPortPos = cam.ScreenToViewportPoint(curPos);
+                if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftShift))
+                {
+                    if (pointSelected)
+                    {
+                        biasSlider.value += (viewPortPos.x - screenPos.x) * 1000 * Time.deltaTime;
+                        tensionSlider.value += (viewPortPos.y - screenPos.y) * 1000 * Time.deltaTime;
+                    }
+                }
+                else if (Input.GetMouseButton(0))
+                {
+                    DragCamera();
+                }
+
+                break;
+
+            case Tool.clone:
+
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    dragging = true;
+
+
+
+                    //get all the splines and points you want to copy
+                    //keep track of all the points that are copied to avoid duplicates
+
+                    List<Point> pointsToCopy = selectedPoints;
+                    List<Point> newPoints = new List<Point>();
+                    List<Spline> newSplines = new List<Spline>();
+
+
+                    foreach (Spline s in selectedSplines)
+                    {
+                        List<Point> splinePoints = new List<Point>();
+                        foreach (Point p in s.SplinePoints)
+                        {
+                            Point newPoint = null;
+                            bool alreadyCopied = false;
+                            foreach (Point pew in newPoints)
+                            {
+                                if (Vector3.Distance(p.Pos, pew.Pos) < 0.05f)
+                                {
+                                    newPoint = pew;
+                                    alreadyCopied = true;
+                                    break;
+                                }
+                            }
+
+                            if (!alreadyCopied)
+                            {
+                                newPoint = Instantiate(p.gameObject, pointsParent.transform)
+                                    .GetComponent<Point>();
+                                newPoints.Add(newPoint);
+                                if (pointsToCopy.Contains(p))
+                                {
+                                    pointsToCopy.Remove(p);
+                                }
+
+                            }
+
+                            splinePoints.Add(newPoint);
+                        }
+
+                        Spline newSpline = SplineUtil.CreateSplineFromPoints(splinePoints);
+                        newSpline.closed = selectedSpline.closed;
+                        newSpline.transform.parent = splinesParent;
+                        newSplines.Add(newSpline);
+                    }
+
+                    foreach (Point p in pointsToCopy)
+                    {
+                        newPoints.Add(Instantiate(p.gameObject, pointsParent.transform)
+                            .GetComponent<Point>());
+                    }
+
+                    if (!Input.GetKey(KeyCode.LeftShift))
+                    {
+                        DeselectSpline();
+                        DeselectPoints();
+                    }
+
+                    foreach (Spline s in newSplines)
+                    {
+                        AddSelectedSpline(s, true);
+                    }
+
+                    foreach (Point p in newPoints)
+                    {
+                        AddSelectedPoint(p);
+                    }
+
+
+                }
+
+                if (dragging)
+                {
+                    MoveSelectedPoints();
+                }
+
+
+                break;
+
+            case Tool.rotate:
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    if (Input.GetKey(KeyCode.LeftShift))
+                    {
+                        rotationPivot = worldPos;
+                    }
+
+                    else
+                    {
+                        rotationPivot = center;
+                    }
+                }
+
+                if (Input.GetMouseButton(0))
+                {
+                    cursor.transform.position = cam.WorldToScreenPoint(rotationPivot);
+                    float angle = Mathf.Sign(delta.x) * delta.magnitude * 100f;
+                    cursor.transform.Rotate(0, 0, angle);
+
+                    foreach (Point p in selectedPoints)
+                    {
+                        Vector3 pivot = new Vector3(rotationPivot.x, rotationPivot.y, p.Pos.z);
+
+                        p.transform.RotateAround(pivot, Vector3.forward, angle);
+
+                    }
+
+                }
+
+                break;
+
+            case Tool.marquee:
+
+                if (pointSelected && Input.GetMouseButtonDown(0))
+                {
+                    StartCoroutine(MarqueeSelect(worldPos));
+                }
+
+                break;
+
+            case Tool.draw:
+
+                if (pointSelected)
+                {
+                    l.SetPosition(0, selectedPoints[selectedPoints.Count - 1].transform.position);
+                    l.SetPosition(1, worldPos);
+                }
+                else
+                {
+                    l.SetPosition(0, Vector3.one * 1000);
+                    l.SetPosition(1, Vector3.one * 1000);
+                }
+
+                if (hitPoint != null)
+                {
+
+                    if (pointSelected)
+                    {
+                        l.SetPosition(1, hitPoint.Pos);
+                        if (Input.GetMouseButtonDown(0) && hitPoint != activePoint)
+                        {
+                            SplinePointPair spp = SplineUtil.ConnectPoints(selectedSpline,
+                                activePoint, hitPoint);
+                            if (spp.s != null)
+                            {
+                                spp.s.transform.parent = splinesParent;
+                                spp.p.transform.parent = pointsParent;
+                                splineindex = Spline.Splines.IndexOf(spp.s);
+
+                                RemoveSelectedPoint(activePoint);
+                                AddSelectedPoint(hitPoint);
+                                AddSelectedSpline(spp.s);
+                            }
+
+
+                        }
+                    }
+                    else
+                    {
+                        if (Input.GetMouseButtonDown(0))
+                        {
+                            AddSelectedPoint(hitPoint);
+                        }
+                    }
+                }
+                else if (hitPoint == null)
+                {
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        if (selectedPoints.Count > 0)
+                        {
+                            Point newPoint = SplineUtil.CreatePoint(worldPos);
+                            if (Input.GetKey(KeyCode.LeftShift))
+                            {
+                                newPoint.tension = 1;
+                            }
+
+                            newPoint.transform.parent = pointsParent;
+
+                            SplinePointPair spp = SplineUtil.ConnectPoints(selectedSpline,
+                                activePoint, newPoint);
+                            if (spp.s != null)
+                            {
+                                spp.s.transform.parent = splinesParent;
+                                spp.p.transform.parent = pointsParent;
+
+
+                                RemoveSelectedPoint(activePoint);
+                                AddSelectedPoint(newPoint);
+                                AddSelectedSpline(spp.s);
+                            }
+
+                        }
+                        else
+                        {
+                            Point newPoint = SplineUtil.CreatePoint(worldPos);
+                            newPoint.transform.parent = pointsParent;
+                            AddSelectedPoint(newPoint);
+                        }
+                    }
+                }
+
+                break;
+
+            case Tool.text:
+
+                if (pointSelected)
+                {
+                    
+                    pointText = activePoint.text;
+                    
+                    bool stopTyping = false;
+
+                    if (!typing && Input.GetMouseButtonDown(0))
+                    {
+                        typing = true;
+
+                    }else if (typing && Input.GetMouseButtonDown(0) && hitPoint == null)
+                    {
+                        dragging = true;
+                    }
+
+                    if (activePoint.textMesh == null && typing)
+                    {
+                        GameObject newText = Instantiate(Services.Prefabs.spawnedText,
+                            activePoint.transform);
+                        newText.transform.position = worldPos;
+                        activePoint.textMesh = newText.GetComponent<TextMesh>();
+                    }
+
+                    if (typing)
+                    {
+                        textCursor.transform.position = cam.WorldToScreenPoint(activePoint.textMesh.transform.position);
+
+                        textCursor.enabled = Mathf.PingPong(Time.time, 0.5f) > 0.25f;
+                        
+                        foreach (char c in Input.inputString)
+                        {
+                            if (c == '\b') // has backspace/delete been pressed?
+                            {
+                                if (pointText.Length != 0)
+                                {
+                                    pointText = pointText.Substring(0, pointText.Length - 1);
+                                }
+                                else
+                                {
+                                    activePoint.text = "";
+                                    GameObject textToDestroy = activePoint.textMesh.gameObject;
+                                    activePoint.textMesh = null;
+                                    Destroy(textToDestroy);
+                                    typing = false;
+                                }
+                            }
+                            else if ((c == '\n') || (c == '\r'))
+                            {
+                                typing = false;
+                                
+                                return;
+                            }
+                            else
+                            {
+                                pointText += Input.inputString;
+                            }
+                        }
+                        activePoint.text = pointText;
+                        activePoint.textMesh.text = pointText;
+                        
+                    }
+                    else
+                    {
+                        textCursor.enabled = false;
+                        
+                        if (Input.GetKeyDown(KeyCode.Equals))
+                        {
+                            Debug.Log("Im not insane");
+                            activePoint.textMesh.transform.localScale += Vector3.one * 0.1f;
+                        }
+
+                        if (Input.GetKeyDown(KeyCode.Minus) || Input.GetKeyDown(KeyCode.KeypadMinus))
+                        {
+                            activePoint.textMesh.transform.localScale -= Vector3.one * 0.1f;
+                        }
+                    }
+
+                    if (dragging)
+                    {
+                        activePoint.textMesh.transform.position = worldPos;
+                    }
+                    
+                    
+
+                }
+                else
+                {
+                    typing = false;
+
+                }
+
+                break;
+
+        }
+    }
     void ClearSelection()
     {
 
@@ -1444,11 +1620,18 @@ void DragCamera()
                     pointCoords.gameObject.SetActive(false);
                     cursor.rectTransform.pivot = new Vector3(0f, 0f);
                     dragging = false;
-                }
-                else
+                }else
                 {
                     cursor.rectTransform.pivot = new Vector3(0.5f, 0.5f);
                 }
+                
+
+                if (curTool == Tool.text)
+                {
+                    textCursor.enabled = false;
+                }
+                
+                
                 
                 tools[i].color = Color.gray;
                 tooltips[i].SetActive(false);
@@ -1538,6 +1721,5 @@ void DragCamera()
         l.enabled = false;
 
     }
-    // Update is called once per frame
    
 }

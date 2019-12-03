@@ -37,26 +37,36 @@ public class FadeTextOnPoint: MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if(hasPoint)
+		if (MapEditor.editing)
 		{
-			if (stayOn)
-			{
-				if (p.hit)
-				{
-					t.color = new Color(1, 1, 1, 1);
-				}
+			t.color = new Color(1, 1, 1, 1);
+		}
+		else
+		{
 
-			}
-			else
+			if (hasPoint)
 			{
-				alpha = Mathf.Clamp01(alpha - Time.deltaTime);
+				if (stayOn)
+				{
+					if (p.hit)
+					{
+						t.color = new Color(1, 1, 1, 1);
+					}
+
+				}
+				else
+				{
+					alpha = Mathf.Clamp01(alpha - Time.deltaTime);
+					t.color = new Color(1, 1, 1, alpha);
+				}
+			}
+			else if (!startOn)
+			{
+				alpha = Mathf.Clamp01(alpha - Time.deltaTime / 3);
 				t.color = new Color(1, 1, 1, alpha);
 			}
-		}else if(!startOn){
-			alpha = Mathf.Clamp01(alpha - Time.deltaTime/3);
-			t.color = new Color(1,1,1, alpha);
 		}
-		
+
 		// if (alpha <= 0) {
 		// 	Destroy (gameObject);
 		// }
