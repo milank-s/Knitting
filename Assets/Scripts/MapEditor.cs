@@ -1486,7 +1486,7 @@ void DragCamera()
                         textCursor.transform.position = cam.WorldToScreenPoint(activePoint.textMesh.transform.position);
 
                         textCursor.enabled = Mathf.PingPong(Time.time, 0.5f) > 0.25f;
-                        
+                        textCursor.transform.localScale = new Vector3(0.1f, 1, 1) * (activePoint.textMesh.fontSize /64f);
                         foreach (char c in Input.inputString)
                         {
                             if (c == '\b') // has backspace/delete been pressed?
@@ -1502,6 +1502,7 @@ void DragCamera()
                                     activePoint.textMesh = null;
                                     Destroy(textToDestroy);
                                     typing = false;
+                                    return;
                                 }
                             }
                             else if ((c == '\n') || (c == '\r'))
@@ -1525,13 +1526,13 @@ void DragCamera()
                         
                         if (Input.GetKeyDown(KeyCode.Equals))
                         {
-                            Debug.Log("Im not insane");
-                            activePoint.textMesh.transform.localScale += Vector3.one * 0.1f;
+                            activePoint.textMesh.fontSize = Mathf.Clamp((int)(activePoint.textMesh.fontSize * 1.5f), 24, 712);
                         }
 
                         if (Input.GetKeyDown(KeyCode.Minus) || Input.GetKeyDown(KeyCode.KeypadMinus))
                         {
-                            activePoint.textMesh.transform.localScale -= Vector3.one * 0.1f;
+                            activePoint.textMesh.fontSize =
+                                Mathf.Clamp((int) (activePoint.textMesh.fontSize / 1.5f), 24, 712);
                         }
                     }
 
@@ -1615,7 +1616,8 @@ void DragCamera()
                     pointOptions.SetActive(false);  
                 }
 
-                if (curTool != Tool.move && curTool != Tool.rotate && curTool != Tool.clone)
+
+                if (curTool == Tool.draw || curTool == Tool.select)
                 {
                     pointCoords.gameObject.SetActive(false);
                     cursor.rectTransform.pivot = new Vector3(0f, 0f);

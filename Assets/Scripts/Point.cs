@@ -187,6 +187,8 @@ public class Point : MonoBehaviour
 
 	void Awake()
 	{
+		SR = GetComponent<SpriteRenderer> ();
+		
 		pointClouds = new List<PointCloud>();
 //		stiffness = 1600;
 //		damping = 1000;
@@ -201,7 +203,7 @@ public class Point : MonoBehaviour
 		if(textMesh != null){
 			textMesh.GetComponent<FadeTextOnPoint>().p = this;
 		}
-		SR = GetComponent<SpriteRenderer> ();
+		
 		
 		Points.Add(this);
 		Point.pointCount++;
@@ -344,8 +346,8 @@ public class Point : MonoBehaviour
 		tension = initTension;
 		continuity = initContinuity;
 		timesHit = 0;
-		SR.enabled = true;
 		color = Color.white;
+		SR.enabled = true;
 	}
 
 	IEnumerator LightUp()
