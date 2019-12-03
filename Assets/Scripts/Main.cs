@@ -50,6 +50,11 @@ public class Main : MonoBehaviour {
 		
 	}
 
+	public void ReloadScene()
+	{
+		LoadLevel(curLevel);
+	}
+
 	public void LoadLevel(string m)
 	{
 		StartCoroutine(LoadTransition(m));
@@ -59,7 +64,6 @@ public class Main : MonoBehaviour {
 		StartCoroutine(FadeOut());
 		
 		yield return new WaitForSeconds(1);
-		
 		
 		if (curLevel != "")
 		{
@@ -90,8 +94,11 @@ public class Main : MonoBehaviour {
 			Cursor.visible = true;
 		}
 
-		SceneManager.UnloadSceneAsync("Menu");
-		
+		if (SceneManager.GetSceneByName("Menu").isLoaded)
+		{
+			SceneManager.UnloadSceneAsync("Menu");
+		}
+
 		_paused = false;
 		StartCoroutine(FadeIn());
 	}
@@ -123,8 +130,19 @@ public class Main : MonoBehaviour {
 	#if UNITY_STANDALONE
 		SceneManager.LoadScene(1, LoadSceneMode.Additive);
 	#endif
-		
-		
+
+		if (SceneManager.sceneCount > 1)
+		{
+			for (int i = 0; i < SceneManager.sceneCount; i++)
+			{
+				if (SceneManager.GetSceneAt(i).name != "Menu" && SceneManager.GetSceneAt(i).name != "Main")
+				{
+					curLevel = SceneManager.GetSceneAt(i).name;
+					Debug.Log(curLevel);
+				}
+			}
+		}
+
 	}
 	void Update()
 	{

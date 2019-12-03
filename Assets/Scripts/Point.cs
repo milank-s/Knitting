@@ -234,7 +234,7 @@ public class Point : MonoBehaviour
 		timesHit = 0;
 		
 		if(defaultToGhost && _neighbours.Count == 2 && pointType == PointTypes.normal){
-			pointType = PointTypes.ghost;
+//			pointType = PointTypes.ghost;
 		}
 		
 		SetPointType(pointType);
@@ -467,8 +467,8 @@ public class Point : MonoBehaviour
 			break;
 
 			case PointTypes.normal:
-				
-				Services.PlayerBehaviour.boost += boostAmount * (Services.PlayerBehaviour.boostTimer);
+
+				Services.PlayerBehaviour.boost += boostAmount;
 				Services.PlayerBehaviour.flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
 				if(!hit){
 					

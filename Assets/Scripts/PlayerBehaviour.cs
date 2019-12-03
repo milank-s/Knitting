@@ -216,9 +216,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		float lerpSpeed = 1;
 		float distance;
 			
-		Point p = SplineUtil.CreatePoint(transform.position);
-		p.pointType = PointTypes.connect;
-		p.Initialize();
+//		Point p = SplineUtil.CreatePoint(transform.position);
+//		p.pointType = PointTypes.connect;
+//		p.Initialize();
 		
 		for (int i = positions.Length -1; i >= 0; i--)
 		{
@@ -970,6 +970,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if(Mathf.Abs(flow) < curSpline.segmentDistance * 100)
 			{
+				flow += Mathf.Pow(accuracy, 2) * acceleration * Time.deltaTime * cursorDir.magnitude;
+				
 				if (curSpline.type == Spline.SplineType.moving)
 				{
 					flow += Mathf.Pow(accuracy, 2) * curSpline.acceleration * Time.deltaTime * cursorDir.magnitude;
@@ -1711,19 +1713,20 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Animating:
 				
-				GranularSynth.rewinding.TurnOn();
-				//turn off particles
-
-				if (state == PlayerState.Flying)
-				{
-					StartCoroutine(RetraceTrail());
-				}
-				else
-				{
-					StartCoroutine(Unwind());
-
-				}
-
+//				GranularSynth.rewinding.TurnOn();
+//				//turn off particles
+//
+//				if (state == PlayerState.Flying)
+//				{
+//					StartCoroutine(RetraceTrail());
+//				}
+//				else
+//				{
+//					StartCoroutine(Unwind());
+//
+//				}
+				state = PlayerState.Animating;
+				Services.main.ReloadScene();
 				break;
 		}
 	}
