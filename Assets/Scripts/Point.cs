@@ -454,7 +454,7 @@ public class Point : MonoBehaviour
 	public void AddBoost()
 	{
 		Services.PlayerBehaviour.flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
-		Services.PlayerBehaviour.boost += boostAmount * (Services.PlayerBehaviour.boostTimer);
+		Services.PlayerBehaviour.boost += boostAmount + Services.PlayerBehaviour.boostTimer;
 		Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
 		Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.boostTimer + 1 * 5, transform);
 		Services.fx.EmitLinearBurst(50, Services.PlayerBehaviour.boostTimer + 1, transform, Services.PlayerBehaviour.cursorDir);
@@ -474,13 +474,13 @@ public class Point : MonoBehaviour
 
 			case PointTypes.fly:
 					
-				Services.PlayerBehaviour.boost += boostAmount * (Services.PlayerBehaviour.boostTimer);
+				Services.PlayerBehaviour.boost += boostAmount + Services.PlayerBehaviour.boostTimer;
 				
 			break;
 
 			case PointTypes.normal:
 
-				Services.PlayerBehaviour.boost += boostAmount;
+				Services.PlayerBehaviour.boost += boostAmount + Services.PlayerBehaviour.boostTimer;
 				Services.PlayerBehaviour.flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
 				if(!hit){
 					
@@ -578,10 +578,7 @@ public class Point : MonoBehaviour
 
 	public void PlayerOnPoint(Vector3 direction, float force)
 	{
-		if (timeOnPoint == 0)
-		{
-			velocity += (Vector3)Services.PlayerBehaviour.cursorDir * Mathf.Abs(Services.PlayerBehaviour.flow);
-		}
+		
 		timeOnPoint += Time.deltaTime;
 		//anchorPos = initPos + ((Vector3)Random.insideUnitCircle / 10f * Services.PlayerBehaviour.flow *  Mathf.Clamp01(timeOnPoint));
 		//velocity += (Vector3)Random.insideUnitCircle / Mathf.Pow(1 + timeOnPoint, 2);

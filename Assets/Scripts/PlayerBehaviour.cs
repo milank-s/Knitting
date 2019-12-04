@@ -341,7 +341,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			transform.position = curPoint.Pos;
 			gravity = 0;
-//			curSpeed = 0;
 			PlayerOnPoint();
 		}
 
@@ -441,7 +440,8 @@ public class PlayerBehaviour: MonoBehaviour {
 						SwitchState(PlayerState.Flying);
 						return;
 					}
-				}else if (curPoint.pointType == PointTypes.end)
+				}
+			else if (curPoint.pointType == PointTypes.end)
 			{
 				if (Input.GetButtonUp("Button1"))
 				{
@@ -577,7 +577,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			boostTimer -= Time.deltaTime;
 			boostIndicator.enabled = false;
 		}
-		
+
 		boostTimer = Mathf.Clamp01(boostTimer);
 		
 		if (curSpline != null)
@@ -1022,7 +1022,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			curSpline.completion += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
 		}
 
-		boost = Mathf.Lerp (boost, 0, Time.deltaTime * 2);
+		boost = Mathf.Lerp (boost, 0, Time.deltaTime );
 		//set player position to a point along the curve
 
 		if (curPoint == curSpline.Selected) {
@@ -1554,6 +1554,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				{
 					Services.main.controller.ResetHaptics();
 				}
+				
 				//turn on sparks
 				break;
 			
@@ -1636,12 +1637,13 @@ public class PlayerBehaviour: MonoBehaviour {
 				GranularSynth.flying.TurnOn();
 				GranularSynth.moving.TurnOff();
 				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
-				flow = curSpeed;
 				
 				curPoint.used = true;
 				pointDest = null;
 				l.positionCount = 0;
 
+				flow = curSpeed;
+				
 				curPoint.OnPointExit();
 				curPoint.proximity = 0;
 
@@ -1731,6 +1733,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //
 //				}
 				state = PlayerState.Animating;
+				Services.main.WarpPlayerToNewPoint(Services.StartPoint);
 				Services.main.WarpPlayerToNewPoint(Services.StartPoint);
 				break;
 		}
