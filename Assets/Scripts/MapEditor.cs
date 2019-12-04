@@ -687,6 +687,13 @@ public class MapEditor : MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.Alpha0))
             {
                 activePoint.SetPointType(PointTypes.start);
+            }else if (Input.GetKeyDown(KeyCode.Alpha9))
+            {
+                activePoint.SetPointType(PointTypes.end);
+                
+            }else if (Input.GetKeyDown(KeyCode.Alpha8))
+            {
+                activePoint.SetPointType(PointTypes.blink);
             }
 
             if (Input.GetKeyDown(KeyCode.Backspace))

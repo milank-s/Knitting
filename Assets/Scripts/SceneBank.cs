@@ -20,6 +20,6 @@ public class SceneBank : MonoBehaviour
     // Update is called once per frame
     public void LoadScene(int m)
     {
-        Services.main.LoadLevel(sceneDictionary[m]);
+        Services.main.LoadLevelDelayed(sceneDictionary[m]);
     }
 }

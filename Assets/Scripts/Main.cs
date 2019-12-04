@@ -52,10 +52,10 @@ public class Main : MonoBehaviour {
 
 	public void ReloadScene()
 	{
-		LoadLevel(curLevel);
+		LoadLevelDelayed(curLevel);
 	}
 
-	public void LoadLevel(string m)
+	public void LoadLevelDelayed(string m)
 	{
 		StartCoroutine(LoadTransition(m));
 	}
@@ -64,7 +64,13 @@ public class Main : MonoBehaviour {
 		StartCoroutine(FadeOut());
 		
 		yield return new WaitForSeconds(1);
-		
+
+		LoadLevel(i);
+		StartCoroutine(FadeIn());
+	}
+
+	public void LoadLevel(string i)
+	{
 		if (curLevel != "")
 		{
 			
@@ -100,7 +106,6 @@ public class Main : MonoBehaviour {
 		}
 
 		_paused = false;
-		StartCoroutine(FadeIn());
 	}
 	void Awake ()
 	{
@@ -208,6 +213,17 @@ public class Main : MonoBehaviour {
 		}
 	}
 
+	public void WarpPlayerToNewPoint(Point p)
+	{
+		Services.StartPoint = p;
+		float curSpeed = Services.PlayerBehaviour.curSpeed;
+		float flow = Services.PlayerBehaviour.flow;
+		Services.PlayerBehaviour.Initialize();
+		Services.mainCam.GetComponent<CameraFollow>().WarpToPlayer();
+		Services.PlayerBehaviour.flow = flow;
+		Services.PlayerBehaviour.curSpeed = curSpeed;
+	}
+	
 	public void InitializeLevel()
 	{
 		for (int i = Point.Points.Count - 1; i >= 0; i--)

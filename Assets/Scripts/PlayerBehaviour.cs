@@ -1726,7 +1726,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //
 //				}
 				state = PlayerState.Animating;
-				Services.main.ReloadScene();
+				Services.main.WarpPlayerToNewPoint(Services.StartPoint);
 				break;
 		}
 	}

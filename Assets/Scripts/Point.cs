@@ -21,7 +21,7 @@ using UnityEngine.Experimental.PlayerLoop;
 //###################################################
 //###################################################
 
-public enum PointTypes{normal, fly, ghost, stop, connect, start}
+public enum PointTypes{normal, fly, ghost, stop, connect, start, end, blink}
 public class Point : MonoBehaviour
 {
 
@@ -203,14 +203,14 @@ public class Point : MonoBehaviour
 		if(textMesh != null){
 			textMesh.GetComponent<FadeTextOnPoint>().p = this;
 		}
-		
-		
+	
 		Points.Add(this);
 		Point.pointCount++;
 	}
 
 	public void TurnOn()
 	{
+		
 		if (pointType != PointTypes.ghost)
 		{
 			StartCoroutine(LightUp());
@@ -260,19 +260,19 @@ public class Point : MonoBehaviour
 		
 		SR.enabled = true;
 		pointType = t;
-		
+		SR.sprite = SR.sprite = Services.Prefabs.pointSprites[(int)t];
 		switch(t){
 
 			case PointTypes.fly:
-				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.fly];
+				
 				break;
 
 			case PointTypes.stop:
-				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.stop];
+				
 				break;
 
 			case PointTypes.connect:
-				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.connect];
+				
 				defaultToGhost = false;
 				break;
 
@@ -282,12 +282,10 @@ public class Point : MonoBehaviour
 			
 			case PointTypes.normal:
 				
-				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.normal];
 				break;
 			
-			case PointTypes.start :
-				SR.sprite = Services.Prefabs.pointSprites[(int)PointTypes.start];
-				
+			case PointTypes.start:
+		
 				break;
 		}
 	}
@@ -449,6 +447,12 @@ public class Point : MonoBehaviour
 				GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
 				fx.transform.parent = transform;
 				Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, transform);
+		}
+
+		if (pointType == PointTypes.end)
+		{
+			Services.main.WarpPlayerToNewPoint(Services.StartPoint);
+			OnPointExit();
 		}
 		
 	}
