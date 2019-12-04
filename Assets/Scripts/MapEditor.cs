@@ -442,7 +442,11 @@ public class MapEditor : MonoBehaviour
 
             AddSelectedSpline(Spline.Splines[i]);
 
-            DeselectPoints();
+
+            if (!Input.GetKey(KeyCode.LeftShift))
+            {
+                DeselectPoints();
+            }
 
 
             foreach (Point p in selectedSpline.SplinePoints)
