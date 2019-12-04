@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.InputSystem.LowLevel;
 using Vectrosity;
 
 public enum PlayerState{Traversing, Switching, Flying, Animating};
@@ -201,7 +202,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversedPoints.Clear();
 		shortTrail.Clear();
 		t.Clear();
-		Services.main.fx.Reset();
+		
 		flow = 0;
 		pointDest = null;
 		lastPoint = null;
@@ -392,9 +393,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				canTraverse = true;
 
 			}
-			else if (!joystickLocked && (boostTimer >= 1 || (!Input.GetButton("Button1") && curPoint.pointType != PointTypes.stop) || Input.GetButtonUp("Button1")))
+			else if (!joystickLocked && (boostTimer >= 1 || (!Input.GetButton("Button1") && (curPoint.pointType != PointTypes.stop && curPoint.pointType != PointTypes.start) || Input.GetButtonUp("Button1"))))
 			{
-
 				if (curPoint.locked)
 				{
 					curPoint.locked = false;
@@ -436,12 +436,18 @@ public class PlayerBehaviour: MonoBehaviour {
 			else if (TryToFly())
 				{
 					cursorSprite.sprite = canFlySprite;
-					if (Input.GetButton("Button1"))
+					if (Input.GetButtonUp("Button1"))
 					{
 						SwitchState(PlayerState.Flying);
 						return;
 					}
+				}else if (curPoint.pointType == PointTypes.end)
+			{
+				if (Input.GetButtonUp("Button1"))
+				{
+					curPoint.OnPointExit();
 				}
+			}
 				else{
 					l.positionCount = 0;
 		 			cursorOnPoint.positionCount = 0;
@@ -1630,7 +1636,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				GranularSynth.flying.TurnOn();
 				GranularSynth.moving.TurnOff();
 				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
-				Services.PlayerBehaviour.flow += 0.25f;
+				flow = curSpeed;
 				
 				curPoint.used = true;
 				pointDest = null;
@@ -1638,7 +1644,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				curPoint.OnPointExit();
 				curPoint.proximity = 0;
-				flow += 0.1f;
 
 				Services.fx.flyingParticles.Play();
 

@@ -592,6 +592,10 @@ public class MapEditor : MonoBehaviour
                 RaycastFromCursor();
 
 
+                
+                UseTool();
+
+                
                 if (curTool != Tool.clone && curTool != Tool.rotate)
                 {
                     SelectPoint(hitPoint);
@@ -604,6 +608,7 @@ public class MapEditor : MonoBehaviour
                     selectedPointIndicator.SetActive(false);
                 }
 
+                
 
                 ManageSelectionUI();
 
@@ -627,7 +632,6 @@ public class MapEditor : MonoBehaviour
                     EditSelectedPoint();
                 }
                 
-                UseTool();
             }
         }
 
@@ -691,9 +695,6 @@ public class MapEditor : MonoBehaviour
             {
                 activePoint.SetPointType(PointTypes.end);
                 
-            }else if (Input.GetKeyDown(KeyCode.Alpha8))
-            {
-                activePoint.SetPointType(PointTypes.blink);
             }
 
             if (Input.GetKeyDown(KeyCode.Backspace))
@@ -1412,8 +1413,9 @@ void DragCamera()
                                 splineindex = Spline.Splines.IndexOf(spp.s);
 
                                 RemoveSelectedPoint(activePoint);
-                                AddSelectedPoint(hitPoint);
                                 AddSelectedSpline(spp.s);
+                                AddSelectedPoint(hitPoint);
+                                
                             }
 
 

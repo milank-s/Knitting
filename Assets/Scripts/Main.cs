@@ -261,6 +261,7 @@ public class Main : MonoBehaviour {
 		}
 		
 		Services.mainCam.GetComponent<CameraFollow>().WarpToPlayer();
+		Services.main.fx.Reset();
 	}
 	
 	public void EnterEditMode(bool enter)

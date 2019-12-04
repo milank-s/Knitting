@@ -21,7 +21,7 @@ using UnityEngine.Experimental.PlayerLoop;
 //###################################################
 //###################################################
 
-public enum PointTypes{normal, fly, ghost, stop, connect, start, end, blink}
+public enum PointTypes{normal, fly, ghost, stop, connect, start, end}
 public class Point : MonoBehaviour
 {
 
@@ -448,15 +448,18 @@ public class Point : MonoBehaviour
 				fx.transform.parent = transform;
 				Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, transform);
 		}
-
-		if (pointType == PointTypes.end)
-		{
-			Services.main.WarpPlayerToNewPoint(Services.StartPoint);
-			OnPointExit();
-		}
 		
 	}
 
+	public void AddBoost()
+	{
+		Services.PlayerBehaviour.flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
+		Services.PlayerBehaviour.boost += boostAmount * (Services.PlayerBehaviour.boostTimer);
+		Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
+		Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.boostTimer + 1 * 5, transform);
+		Services.fx.EmitLinearBurst(50, Services.PlayerBehaviour.boostTimer + 1, transform, Services.PlayerBehaviour.cursorDir);
+	}
+	
 	public void OnPointExit(){
 
 	
@@ -465,11 +468,7 @@ public class Point : MonoBehaviour
 		switch(pointType){
 			case PointTypes.stop:
 				
-				Services.PlayerBehaviour.flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
-				Services.PlayerBehaviour.boost += boostAmount * (Services.PlayerBehaviour.boostTimer);
-				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
-				Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.boostTimer + 1 * 5, transform);
-				Services.fx.EmitLinearBurst(50, Services.PlayerBehaviour.boostTimer + 1, transform, Services.PlayerBehaviour.cursorDir);
+				AddBoost();
 //				Services.PlayerBehaviour.flow += 0.1f;
 			break;
 
@@ -487,6 +486,14 @@ public class Point : MonoBehaviour
 					
 				}
 			break;
+			
+			case PointTypes.start:
+				AddBoost();
+				break;
+			
+			case PointTypes.end:
+				Services.main.WarpPlayerToNewPoint(Services.StartPoint);
+				break;
 		}
 
 		if(pointType != PointTypes.ghost){
