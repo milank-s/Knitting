@@ -175,6 +175,30 @@ public class Point : MonoBehaviour
 		data["continuity"].AsFloat = continuity;
 		data["index"].AsInt = i;
 		data["pointType"].AsInt = (int) pointType;
+
+		data["word"] = text;
+		
+		JSONObject pointText = new JSONObject();
+		
+		if (textMesh != null)
+		{
+			pointText["x"] = textMesh.transform.position.x;
+			pointText["y"] = textMesh.transform.position.y;
+			pointText["z"] = textMesh.transform.position.z;
+			pointText["font"].AsInt = Services.Prefabs.FindFontIndex(textMesh.font);
+			pointText["fontSize"].AsInt = textMesh.fontSize;
+		}
+		else
+		{
+			pointText["x"].AsFloat = Pos.x + 0.5f;
+			pointText["y"].AsFloat = Pos.y;
+			pointText["z"].AsFloat = Pos.z;
+			pointText["font"].AsInt = 0;
+			pointText["fontSize"].AsInt = 48;
+		}
+
+		data["text"] = pointText;
+
 		return data;
 	}
 

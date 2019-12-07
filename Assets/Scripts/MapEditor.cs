@@ -824,6 +824,7 @@ public class MapEditor : MonoBehaviour
         for (int i = 0; i < Point.Points.Count; i++)
         {
             level["p" + i] = Point.Points[i].Save(i);
+            
         }
 
         level["splineCount"].AsInt = Spline.Splines.Count;
@@ -931,6 +932,30 @@ public class MapEditor : MonoBehaviour
                 //make new Point
                 newPoint = SplineUtil.CreatePoint(spawnPos);
             }
+            
+            if (json["p" + i]["word"] != "")
+            {
+                TextMesh newText;
+                    
+                Vector3 textPos = new Vector3(json["p" + i]["text"]["x"], json["p" + i]["text"]["y"],
+                    json["p" + i]["text"]["z"]);
+                if (newPoint.textMesh == null)
+                {
+                     newText = Instantiate(Services.Prefabs.spawnedText, newPoint.transform)
+                        .GetComponent<TextMesh>();
+                }
+                else
+                {
+                    newText = newPoint.textMesh;
+                }
+                newPoint.textMesh = newText;
+                newText.transform.position = textPos;
+                Services.Prefabs.SetFont(newText, json["p" + i]["text"]["font"]);
+                newText.fontSize = json["p" + i]["text"]["fontSize"];
+            }else if (newPoint.textMesh != null)
+            {
+                newPoint.textMesh.text = "";   
+            }
 
             newPoint.tension = json["p" + i]["tension"];
             newPoint.bias = json["p" + i]["bias"];
@@ -1014,15 +1039,28 @@ public class MapEditor : MonoBehaviour
             
             Vector3 spawnPos = new Vector3(json["p" + i]["x"],json["p" + i]["y"],json["p" + i]["z"]);
             
+            
             Point newPoint;
             newPoint = SplineUtil.CreatePoint(spawnPos);
-            
 
+
+            if (json["p" + i]["word"] != "")
+            {
+                Vector3 textPos = new Vector3(json["p" + i]["text"]["x"], json["p" + i]["text"]["y"],
+                    json["p" + i]["text"]["z"]);
+                TextMesh newText = Instantiate(Services.Prefabs.spawnedText, newPoint.transform).GetComponent<TextMesh>();
+                newText.transform.position = textPos;
+                Services.Prefabs.SetFont(newText, json["p" + i]["text"]["font"]);
+                newText.fontSize = json["p" + i]["text"]["fontSize"];
+                newPoint.textMesh = newText;
+            }
+            
             newPoint.tension = json["p" + i]["tension"];
             newPoint.bias = json["p" + i]["bias"];
             newPoint.continuity = json["p" + i]["continuity"];
             int t = json["p" + i]["pointType"];
             newPoint.pointType = (PointTypes)t;
+            
             
             if(i == 0)
             {

@@ -55,6 +55,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float LineAngleDiff = 30;
 	public float StopAngleDiff = 60;
 	float angleToSpline = Mathf.Infinity;
+	private float flyingSpeed;
 	[Space(10)]
 
 	[HideInInspector]
@@ -202,7 +203,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversedPoints.Clear();
 		shortTrail.Clear();
 		t.Clear();
-		
+		boost = 0;
 		flow = 0;
 		pointDest = null;
 		lastPoint = null;
@@ -318,6 +319,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			return;
 		}
 
+		boost = Mathf.Lerp (boost, 0, Time.deltaTime * 2f);
+		
 		if (state == PlayerState.Traversing) {
 			if(curSpline != null){
 				SetCursorAlignment ();
@@ -459,17 +462,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (canTraverse)
 		{
 			// pointInfo.GetComponent<Text>().text = "";
-
 			SwitchState(PlayerState.Traversing);
-
-
 		}
 		else{
-			
 			StayOnPoint();
-			
 		}
-		
 	}
 
 	public void SetCursorAlignment(){
@@ -814,10 +811,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 		else
 		{
-			if (flow > 0)
+			if (flyingSpeed > 0)
 			{
-				flow -= Time.deltaTime/3;
-				Vector3 inertia = cursorDir * flow;
+				flyingSpeed -= Time.deltaTime/2f;
+				Vector3 inertia = cursorDir * flyingSpeed;
 				transform.position += inertia * Time.deltaTime;
 			}
 			else
@@ -1022,7 +1019,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			curSpline.completion += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
 		}
 
-		boost = Mathf.Lerp (boost, 0, Time.deltaTime );
 		//set player position to a point along the curve
 
 		if (curPoint == curSpline.Selected) {
@@ -1562,6 +1558,13 @@ public class PlayerBehaviour: MonoBehaviour {
 				Services.fx.flyingParticles.Pause();
 				Services.fx.BakeTrail(Services.fx.flyingTrail, Services.fx.flyingTrailMesh);
 				GranularSynth.flying.TurnOff();
+				if (flow > flyingSpeed)
+				{
+					flow = flyingSpeed;
+				}
+
+				
+				boost = 0;
 				//Services.fx.BakeParticleTrail(Services.fx.flyingParticles, Services.fx.flyingParticleTrailMesh);
 				
 				//Services.fx.BakeParticles(Services.fx.flyingParticles, Services.fx.flyingParticleMesh);
@@ -1641,8 +1644,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				curPoint.used = true;
 				pointDest = null;
 				l.positionCount = 0;
-
-				flow = curSpeed;
+				
+				flyingSpeed = curSpeed;
 				
 				curPoint.OnPointExit();
 				curPoint.proximity = 0;

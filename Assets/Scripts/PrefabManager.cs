@@ -16,12 +16,30 @@ public class PrefabManager : MonoBehaviour {
 	public Sprite[] symbols;
 	public Material[] lines;
 	public Sprite[] pointSprites;
-	
+	public Material[] fontMaterials;
+	public Font[] fonts;
 
 	void Awake(){
 		LoadResources ();
 	}
 
+	public void SetFont(TextMesh t, int i)
+	{
+		t.font = fonts[i];
+		//do I need to also update the renderers material?
+	}
+	public int FindFontIndex(Font f)
+	{
+		for (int i = 0; i < fonts.Length; i++)
+		{
+			if (f == fonts[i])
+			{
+				return i;
+			}
+		}
+
+		return 0;
+	}
 	public AudioSource CreateSoundEffect(AudioClip clip, Vector3 pos){
 		GameObject newSound = (GameObject)Instantiate (soundEffectObject, pos, Quaternion.Euler (0, 0, 0));
 		newSound.GetComponent<AudioSource> ().clip = clip;
