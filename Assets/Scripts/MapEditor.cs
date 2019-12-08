@@ -583,6 +583,7 @@ public class MapEditor : MonoBehaviour
                     
                     if (Input.GetKeyDown(KeyCode.S))
                     {
+                        PlaySavedEffect();
                         Save();
                     }
                     
@@ -636,6 +637,11 @@ public class MapEditor : MonoBehaviour
         }
 
 
+    void PlaySavedEffect()
+    {
+        Services.main.ShowWord("SAVED");
+    }
+
     void EditSelectedPoint()
     {
         if (pointSelected)
@@ -688,13 +694,16 @@ public class MapEditor : MonoBehaviour
                 activePoint.SetPointType(PointTypes.fly);
             }
 
-            else if (Input.GetKeyDown(KeyCode.Alpha0))
+            else if (Input.GetKeyDown(KeyCode.Alpha9))
             {
                 activePoint.SetPointType(PointTypes.start);
-            }else if (Input.GetKeyDown(KeyCode.Alpha9))
+            }else if (Input.GetKeyDown(KeyCode.Alpha0))
             {
                 activePoint.SetPointType(PointTypes.end);
                 
+            }else if (Input.GetKeyDown(KeyCode.O))
+            {
+                activePoint.SetPointType(PointTypes.ghost);
             }
 
             if (Input.GetKeyDown(KeyCode.Backspace))
@@ -904,10 +913,12 @@ public class MapEditor : MonoBehaviour
         //Delete everything already in the scene
         //take care of any local variables in here that reference shit in the scene
 
-        Spline[] splines = splinesParent.GetComponentsInChildren<Spline>();
-        Point[] points = pointsParent.GetComponentsInChildren<Point>();
+        //ClearSelection();
+        
+        List<Spline> splines = Spline.Splines;
+        List<Point> points = Point.Points;
 
-        ClearSelection();
+        
 
         JSONNode json = ReadJSONFromFile("Assets/Resources/Levels", fileName + ".json");
         
@@ -921,7 +932,7 @@ public class MapEditor : MonoBehaviour
             Vector3 spawnPos = new Vector3(json["p" + i]["x"],json["p" + i]["y"],json["p" + i]["z"]);
             
             Point newPoint;
-            if (i < points.Length)
+            if (i < points.Count)
             {
                 newPoint = points[i];
                 newPoint.Clear();
@@ -952,6 +963,9 @@ public class MapEditor : MonoBehaviour
                 newText.transform.position = textPos;
                 Services.Prefabs.SetFont(newText, json["p" + i]["text"]["font"]);
                 newText.fontSize = json["p" + i]["text"]["fontSize"];
+                newText.text = json["p" + i]["word"];
+                newPoint.text = newText.text;
+
             }else if (newPoint.textMesh != null)
             {
                 newPoint.textMesh.text = "";   
@@ -974,7 +988,7 @@ public class MapEditor : MonoBehaviour
 
             Spline newSpline;
                 
-            if (i < splines.Length)
+            if (i < splines.Count)
             {
                 newSpline = splines[i];
                 newSpline.Reset();
@@ -1002,12 +1016,12 @@ public class MapEditor : MonoBehaviour
             newSpline.transform.parent = splinesParent;
         }
 
-        for (int i = splines.Length - 1; i >= json["splineCount"]; i--)
+        for (int i = splines.Count - 1; i >= json["splineCount"]; i--)
         {
             Destroy(splines[i]);
         }
 
-        for (int i = points.Length - 1; i >= json["pointCount"]; i--)
+        for (int i = points.Count - 1; i >= json["pointCount"]; i--)
         {
             points[i].Destroy();
         }
@@ -1017,19 +1031,124 @@ public class MapEditor : MonoBehaviour
 
     public static void Load(string fileName)
     {
+        List<Spline> splines = Spline.Splines;
+        List<Point> points = Point.Points;
 
-        GameObject parent = new GameObject();
-        GameObject pointsParent = new GameObject();
-        pointsParent.name = "Points";
-        GameObject splineParent = new GameObject();
-        splineParent.name = "Splines";
+       
+        JSONNode json = ReadJSONFromFile("Assets/Resources/Levels", fileName + ".json");
+        
+        List<Point> newPoints = new List<Point>();
+        
+        for (int i = 0; i < json["pointCount"]; i++)
+        {
+            
+            Vector3 spawnPos = new Vector3(json["p" + i]["x"],json["p" + i]["y"],json["p" + i]["z"]);
+            
+            Point newPoint;
+            if (i < points.Count)
+            {
+                newPoint = points[i];
+                newPoint.Clear();
+                newPoint.transform.position = spawnPos;
+            }    
+            else
+            {
+                //make new Point
+                newPoint = SplineUtil.CreatePoint(spawnPos);
+            }
+            
+            if (json["p" + i]["word"] != "")
+            {
+                TextMesh newText;
+                    
+                Vector3 textPos = new Vector3(json["p" + i]["text"]["x"], json["p" + i]["text"]["y"],
+                    json["p" + i]["text"]["z"]);
+                if (newPoint.textMesh == null)
+                {
+                     newText = Instantiate(Services.Prefabs.spawnedText, newPoint.transform)
+                        .GetComponent<TextMesh>();
+                }
+                else
+                {
+                    newText = newPoint.textMesh;
+                }
+                newPoint.textMesh = newText;
+                newText.transform.position = textPos;
+                Services.Prefabs.SetFont(newText, json["p" + i]["text"]["font"]);
+                newText.fontSize = json["p" + i]["text"]["fontSize"];
+                newText.text = json["p" + i]["word"];
+                newPoint.text = newText.text;
 
-        pointsParent.transform.parent = parent.transform;
-        splineParent.transform.parent = parent.transform;
+            }else if (newPoint.textMesh != null)
+            {
+                newPoint.textMesh.text = "";   
+            }
+
+            newPoint.tension = json["p" + i]["tension"];
+            newPoint.bias = json["p" + i]["bias"];
+            newPoint.continuity = json["p" + i]["continuity"];
+            int t = json["p" + i]["pointType"];
+            newPoint.pointType = (PointTypes)t;
+            newPoint.transform.parent = Services.main.pointParent;
+            newPoints.Add(newPoint);
+        }
+
+        
+        for (int i = 0; i < json["splineCount"]; i++)
+        {    
+            Point p1 = newPoints[json["spline" + i]["points"]["p" + 0]];
+            Point p2 = newPoints[json["spline" + i]["points"]["p" + 1]];
+
+            Spline newSpline;
+                
+            if (i < splines.Count)
+            {
+                newSpline = splines[i];
+                newSpline.Reset();
+                newSpline.SplinePoints.Add(p1);
+                newSpline.SplinePoints.Add(p2);
+            }
+            else
+            {
+                newSpline = SplineUtil.CreateSpline(p1, p2);
+            }
+
+            
+            int numPoints = json["spline" + i]["numPoints"];
+            
+            if (json["spline" + i]["numPoints"] > 2)
+            {
+                for (int k = 2; k < numPoints; k++)
+                {
+                    newSpline.SplinePoints.Add(newPoints[json["spline" + i]["points"]["p" + k]]);
+                }
+            }
+
+            newSpline.lineMaterial = json["lineTexture"];
+            newSpline.closed = json["spline" + i]["closed"];
+            newSpline.transform.parent = Services.main.splineParent;
+        }
+
+        for (int i = splines.Count - 1; i >= json["splineCount"]; i--)
+        {
+            Destroy(splines[i]);
+        }
+
+        for (int i = points.Count - 1; i >= json["pointCount"]; i--)
+        {
+            points[i].Destroy();
+        }
+    }
+    
+    public static void LoadOld(string fileName)
+    {
+
+        GameObject pointsParent = Services.main.pointParent.gameObject;
+        GameObject splineParent = Services.main.splineParent.gameObject;
         
         JSONNode json = ReadJSONFromFile("Assets/Resources/Levels", fileName + ".json");
 
-        parent.name = json["name"];
+//        parent.name = json["name"];
         
         List<Point> newPoints = new List<Point>();
         
@@ -1053,6 +1172,7 @@ public class MapEditor : MonoBehaviour
                 Services.Prefabs.SetFont(newText, json["p" + i]["text"]["font"]);
                 newText.fontSize = json["p" + i]["text"]["fontSize"];
                 newPoint.textMesh = newText;
+                newText.text = json["p" + i]["word"];
             }
             
             newPoint.tension = json["p" + i]["tension"];
@@ -1064,7 +1184,7 @@ public class MapEditor : MonoBehaviour
             
             if(i == 0)
             {
-                parent.transform.position = newPoint.transform.position;
+                //parent.transform.position = newPoint.transform.position;
             }
             
             newPoint.transform.parent = pointsParent.transform;
@@ -1679,7 +1799,7 @@ void DragCamera()
                 }
                 
 
-                if (curTool == Tool.text)
+                if (curTool != Tool.text)
                 {
                     textCursor.enabled = false;
                 }

@@ -224,9 +224,13 @@ public class Point : MonoBehaviour
 		_connectedSplines = new List<Spline> ();
 
 		textMesh = GetComponentInChildren<TextMesh>();
+		
+		
 		if(textMesh != null){
 			textMesh.GetComponent<FadeTextOnPoint>().p = this;
 		}
+		
+		
 	
 		Points.Add(this);
 		Point.pointCount++;
@@ -309,7 +313,7 @@ public class Point : MonoBehaviour
 				break;
 			
 			case PointTypes.start:
-		
+				Services.StartPoint = this;
 				break;
 		}
 	}
@@ -472,7 +476,12 @@ public class Point : MonoBehaviour
 				fx.transform.parent = transform;
 				Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, transform);
 		}
-		
+
+		if (pointType == PointTypes.end)
+		{
+			Services.main.WarpPlayerToNewPoint(Services.StartPoint);
+			SceneSettings.instance.LoadNextLevel();
+		}
 	}
 
 	public void AddBoost()
@@ -516,7 +525,7 @@ public class Point : MonoBehaviour
 				break;
 			
 			case PointTypes.end:
-				Services.main.WarpPlayerToNewPoint(Services.StartPoint);
+				
 				break;
 		}
 

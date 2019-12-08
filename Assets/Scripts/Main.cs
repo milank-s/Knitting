@@ -15,6 +15,8 @@ public class Main : MonoBehaviour {
 	public FXManager fx;
 	public GameObject canvas;
 	public static bool usingJoystick;
+	public Transform pointParent;
+	public Transform splineParent;
 	private string curLevel;
 
 	public Gamepad controller
@@ -107,6 +109,8 @@ public class Main : MonoBehaviour {
 
 		_paused = false;
 	}
+	
+	
 	void Awake ()
 	{
 		curLevel = "";
@@ -254,7 +258,11 @@ public class Main : MonoBehaviour {
 		{
 			Point.Points[i].Initialize();
 		}
-		
+
+		if (Services.StartPoint == null)
+		{
+			Services.StartPoint = Point.Points[0];
+		}
 		if (Services.StartPoint != null && !MapEditor.editing)
 		{
 			Services.PlayerBehaviour.Initialize();
@@ -330,6 +338,25 @@ public class Main : MonoBehaviour {
 			yield return null;
 		}
 		
+	}
+
+	public void ShowWord(string m)
+	{
+		StartCoroutine(FlashWord(m));
+	}
+
+	IEnumerator FlashWord(string m)
+	{
+		
+		float t = 0;
+		Word.color = Color.white;
+		Word.text = m;
+		while (t < 1)
+		{
+			Word.color = Color.Lerp(Color.white, Color.clear, t);
+			t += Time.deltaTime * 2;
+			yield return null;
+		} 
 	}
 	IEnumerator FadeOut(){
 		float t = 0;

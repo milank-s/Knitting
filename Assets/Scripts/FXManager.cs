@@ -26,6 +26,7 @@ public class FXManager : MonoBehaviour
       for (int i = 0; i < 12; i++)
       {
           GameObject newFX = Instantiate(fxPrefab, Vector3.up * 1000, Quaternion.identity);
+          newFX.transform.parent = transform;
           fxInstances.Add(newFX.GetComponent<Animator>());   
       }
       
