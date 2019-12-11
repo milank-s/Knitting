@@ -1,19 +1,20 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class SceneBank : MonoBehaviour
 {
-
-    [SerializeField]public List<string> sceneDictionary;
-   
-    // Update is called once per frame
-    public void LoadScene(int m)
+    
+    
+    // Start is called before the first frame update
+    void Start()
     {
-        Services.main.LoadLevelDelayed(sceneDictionary[m]);
+        
     }
-    
-    
+
+    public void LoadLevel(string levelName)
+    {
+        Services.main.LoadLevelDelayed(levelName);
+    }
 }

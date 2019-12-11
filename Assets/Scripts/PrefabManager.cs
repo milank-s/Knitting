@@ -25,7 +25,8 @@ public class PrefabManager : MonoBehaviour {
 
 	public void SetFont(TextMesh t, int i)
 	{
-		t.font = fonts[i];
+		t.font = fonts[i % fonts.Length];
+		t.GetComponent<MeshRenderer>().material = t.font.material;
 		//do I need to also update the renderers material?
 	}
 	public int FindFontIndex(Font f)

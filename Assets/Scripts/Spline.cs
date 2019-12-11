@@ -230,7 +230,6 @@ public class Spline : MonoBehaviour
 	public void SetUpReferences()
 	{
 		SetSplineType();
-		ResetVectorLine();
 		
 		distance = 0;
 		
@@ -306,8 +305,10 @@ public class Spline : MonoBehaviour
 
 	public void Initialize()
 	{	
-		ResetVectorLine();
 		
+		SetUpReferences();
+		ResetVectorLine();
+		completion = 0;
 	}
 
 	public void SetSplineType()

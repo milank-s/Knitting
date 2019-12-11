@@ -18,7 +18,10 @@ public class Main : MonoBehaviour {
 	public Transform pointParent;
 	public Transform splineParent;
 	private string curLevel;
+	public MapEditor editor;
 
+	[SerializeField]
+	private float fadeLength = 0.1f;
 	public Gamepad controller
 	{
 		get
@@ -57,22 +60,53 @@ public class Main : MonoBehaviour {
 		LoadLevelDelayed(curLevel);
 	}
 
+	public void LoadFile(string m, bool fade)
+	{
+		Time.timeScale = 1;
+		if (fade)
+		{
+			StartCoroutine(LoadFileTransition(m));
+		}
+		else
+		{
+			LoadLevelFile(m);
+		}
+	}
+	public IEnumerator LoadFileTransition(string m)
+	{
+		
+		StartCoroutine(FadeOut());
+		yield return new WaitForSeconds(fadeLength);
+		LoadLevelFile(m);
+		
+		StartCoroutine(FadeIn());
+	}
+
+	public void LoadLevelFile(string m)
+	{
+		MapEditor.Load(m);
+		InitializeLevel();
+	}
+	
 	public void LoadLevelDelayed(string m)
 	{
 		StartCoroutine(LoadTransition(m));
 	}
+	
 	IEnumerator LoadTransition(string i)
 	{
+		Time.timeScale = 1;
 		StartCoroutine(FadeOut());
 		
-		yield return new WaitForSeconds(1);
+		yield return new WaitForSeconds(fadeLength);
 
 		LoadLevel(i);
 		StartCoroutine(FadeIn());
 	}
-
+	
 	public void LoadLevel(string i)
 	{
+		
 		if (curLevel != "")
 		{
 			
@@ -113,6 +147,7 @@ public class Main : MonoBehaviour {
 	
 	void Awake ()
 	{
+		
 		curLevel = "";
 		Point.Points = new List<Point>();
 		Spline.Splines = new List<Spline>();
@@ -151,7 +186,11 @@ public class Main : MonoBehaviour {
 			}
 		}
 
+		ToggleEditMode(false);
+		Cursor.lockState = CursorLockMode.None;
 	}
+	
+	
 	void Update()
 	{
 		CameraFollow.instance.uiCam.fieldOfView = CameraFollow.instance.cam.fieldOfView;
@@ -173,16 +212,27 @@ public class Main : MonoBehaviour {
 				SceneManager.LoadScene(1, LoadSceneMode.Additive);
 				Cursor.lockState = CursorLockMode.None;
 				Cursor.visible = true;
+				Time.timeScale = 0;
 			}
 			else
 			{
+				Time.timeScale = 1;
 				SceneManager.UnloadSceneAsync(1);
 				
-				if (curLevel != "Editor")
+				if (curLevel != "Editor") 
 				{
 					Cursor.visible = false;
 					Cursor.lockState = CursorLockMode.Locked;
 				}
+			}
+		}
+		
+		if(Input.GetKeyDown(KeyCode.Space))
+		{
+			if (!MapEditor.typing)
+			{
+				MapEditor.editing = !MapEditor.editing;
+				ToggleEditMode(MapEditor.editing);
 			}
 		}
 
@@ -250,7 +300,7 @@ public class Main : MonoBehaviour {
 			}
 			else
 			{	
-				Spline.Splines[i].SetUpReferences();
+				Spline.Splines[i].Initialize();
 			}
 		}
 		
@@ -259,11 +309,13 @@ public class Main : MonoBehaviour {
 			Point.Points[i].Initialize();
 		}
 
-		if (Services.StartPoint == null)
+		if (Services.StartPoint == null && Point.Points.Count > 0)
 		{
 			Services.StartPoint = Point.Points[0];
 		}
-		if (Services.StartPoint != null && !MapEditor.editing)
+		
+		
+		if (!MapEditor.editing)
 		{
 			Services.PlayerBehaviour.Initialize();
 		}
@@ -272,33 +324,37 @@ public class Main : MonoBehaviour {
 		Services.main.fx.Reset();
 	}
 	
-	public void EnterEditMode(bool enter)
+	public void ToggleEditMode(bool enter)
 	{
-		canvas.SetActive(!enter);
-		Player.SetActive(!enter);
-		Services.mainCam.GetComponent<CameraFollow>().enabled = !enter;
-		RenderSettings.fog = !enter;
-		//Services.mainCam.GetComponentInChildren<Camera>().enabled = !enter;
-		if (!enter)
-		{
+			editor.gameObject.SetActive(MapEditor.editing);
 			
-			InitializeLevel();
-			
-			Cursor.lockState = CursorLockMode.Locked;
-		}
-		else
-		{
-			foreach (Point p in Point.Points)
+			canvas.SetActive(!enter);
+			Player.SetActive(!enter);
+			Services.mainCam.GetComponent<CameraFollow>().enabled = !enter;
+			RenderSettings.fog = !enter;
+			//Services.mainCam.GetComponentInChildren<Camera>().enabled = !enter;
+			if (enter)
 			{
-				p.Reset();
-			}
 
-			foreach (Spline s in Spline.Splines)
-			{
-				s.ResetVectorLine();
+				foreach (Point p in Point.Points)
+				{
+					p.Reset();
+				}
+
+				foreach (Spline s in Spline.Splines)
+				{
+					s.ResetVectorLine();
+				}
+
+				Cursor.lockState = CursorLockMode.None;
 			}
-			Cursor.lockState = CursorLockMode.None;
-		}
+			else
+			{
+				editor.DeselectPoints();
+				editor.DeselectSpline();
+				editor.TogglePlayMode();
+			}
+		
 	}
 
 	public void LeaveEditMode()
@@ -312,32 +368,14 @@ public class Main : MonoBehaviour {
 	IEnumerator FadeIn(){
 		float t = 0;
 		yield return new WaitForSeconds(0.01f);
-		while (t < 1.2f){
-			PauseScreen.color = Color.Lerp(new Color (0,0,0,1), new Color (0,0,0,0), Easing.QuadEaseIn(t));
-			t += Time.deltaTime * 3;
+		
+		while (t < fadeLength){
+			PauseScreen.color = Color.Lerp(Color.black, Color.clear, Easing.QuadEaseIn(t/fadeLength));
+			t += Time.deltaTime;
 			yield return null;
 		}
 		
-		
-	}
-
-	IEnumerator FadeInOut()
-	{
-		float t = 0;
-		while (t < 1.2f){
-			PauseScreen.color = Color.Lerp(new Color (0,0,0,1), new Color (0,0,0,0), Easing.QuadEaseIn(t));
-			t += Time.deltaTime * 3;
-			yield return null;
-		}
-		t = 0;
-		yield return new WaitForSeconds(0.05f);
-		
-		while (t < 1.2f){
-			PauseScreen.color = Color.Lerp(new Color (0,0,0,0), new Color (0,0,0,1), Easing.QuadEaseIn(t));
-			t += Time.deltaTime * 3;
-			yield return null;
-		}
-		
+		PauseScreen.color = Color.clear;
 	}
 
 	public void ShowWord(string m)
@@ -363,13 +401,15 @@ public class Main : MonoBehaviour {
 		
 		AudioManager.instance.MuteSynths(true);
 		
-		while (t < 1.2f)
+		while (t < fadeLength)
 		{
 
-			PauseScreen.color = Color.Lerp(new Color (0,0,0,0), new Color (0,0,0,1), Easing.QuadEaseIn(t));
-			t += Time.deltaTime * 3;
+			PauseScreen.color = Color.Lerp(Color.clear, Color.black, Easing.QuadEaseIn(t/fadeLength));
+			t += Time.deltaTime;
 			yield return null;
 		}
+
+		PauseScreen.color = Color.black;
 	}
 
 }

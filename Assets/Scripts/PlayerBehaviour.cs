@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine.InputSystem.LowLevel;
 using Vectrosity;
 
@@ -160,13 +161,17 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Initialize()
 	{
+		
+		Reset();
+
 		cursor = Services.Cursor;
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
 		traversedPoints.Add (curPoint);
 		curPoint.OnPointEnter ();
-		
-		Reset();
+		shortTrail.Clear();
+        t.Clear();
+        		
 //		Material newMat;
 //		newMat = Services.Prefabs.lines[3];
 //		Texture tex = newMat.mainTexture;
@@ -201,8 +206,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		state = PlayerState.Switching;
 		curSpline = null;
 		traversedPoints.Clear();
-		shortTrail.Clear();
-		t.Clear();
+		
 		boost = 0;
 		flow = 0;
 		pointDest = null;
@@ -319,7 +323,11 @@ public class PlayerBehaviour: MonoBehaviour {
 			return;
 		}
 
-		boost = Mathf.Lerp (boost, 0, Time.deltaTime * 2f);
+		boost -= Time.deltaTime * 2f;
+		if (boost < 0)
+		{
+			boost = 0;
+		}
 		
 		if (state == PlayerState.Traversing) {
 			if(curSpline != null){
@@ -347,7 +355,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			PlayerOnPoint();
 		}
 
-		if (state != PlayerState.Animating && curPoint.HasSplines () && curSpline != null) {
+		if (state != PlayerState.Animating && state != PlayerState.Flying && curPoint.HasSplines () && curSpline != null) {
 
 
 			//curSpline.UpdateSpline();
@@ -377,7 +385,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 			}
 			
-			if (traversedPoints.Count >= 2 && Input.GetButton("Button2")) {
+			if (traversedPoints.Count >= 2 && (Input.GetButton("Button2") || curSpeed <= 0.01f)) {
 				// && Mathf.Abs (flow) <= 0)
 				SwitchState(PlayerState.Animating);
 			}
@@ -449,6 +457,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				if (Input.GetButtonUp("Button1"))
 				{
 					curPoint.OnPointExit();
+					SwitchState(PlayerState.Animating);
 				}
 			}
 				else{
@@ -843,7 +852,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			// 	Destroy(curPoint.gameObject);
 			// 	curPoint = drawnPoint;
 			// 	curSpline.Selected = drawnPoint;
-			// 	Debug.Log("I have no idea why I'm doing this");
 			// 	// SplinePointPair spp = SplineUtil.ConnectPoints(curSpline, drawnPoint, overPoint);
 			// 	// curSpline = spp.s;
 			// 	// drawnPoint = spp.p;
@@ -1049,9 +1057,12 @@ public class PlayerBehaviour: MonoBehaviour {
 //		transform.Rotate (0, 0, flow*5);
 	}
 
-	public IEnumerator Unwind(){
+	public IEnumerator Unwind()
+	{
 
-		float t = 0;
+		bool finishedLevel = curPoint.pointType == PointTypes.end;
+		
+		float t = curSpeed;
 		bool moving = true;
 		int pIndex = traversedPoints.Count -1;
 		bool moveToLastPoint = false;
@@ -1111,6 +1122,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				t += Time.deltaTime;
 				t = Mathf.Clamp(t, 0f, 9f);
 				flow = t;
+				
 				if (goingForward)
 				{
 					progress += Time.deltaTime * t / curSpline.segmentDistance;
@@ -1139,6 +1151,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversedPoints.Clear ();
 		traversedPoints.Add (curPoint);
 		state = PlayerState.Switching;
+		if (finishedLevel)
+		{
+			SceneSettings.instance.LoadNextLevel(true);
+		}
 		Initialize();
 	}
 
@@ -1675,6 +1691,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				pointDest.proximity = 1;
 				pointDest.OnPointEnter();
+				
 				GranularSynth.stopping.StoppingSynth();
 
 				timeOnPoint = 0;
@@ -1686,6 +1703,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				else if (curPoint != pointDest)
 				{
 					traversedPoints.Add(pointDest);
+					
 					foreach (Spline s in curPoint._connectedSplines)
 					{
 						s.reactToPlayer = false;
@@ -1726,18 +1744,19 @@ public class PlayerBehaviour: MonoBehaviour {
 //				GranularSynth.rewinding.TurnOn();
 //				//turn off particles
 //
-//				if (state == PlayerState.Flying)
-//				{
-//					StartCoroutine(RetraceTrail());
-//				}
-//				else
-//				{
-//					StartCoroutine(Unwind());
-//
-//				}
-				state = PlayerState.Animating;
-				Services.main.WarpPlayerToNewPoint(Services.StartPoint);
-				Services.main.WarpPlayerToNewPoint(Services.StartPoint);
+				
+				if (state == PlayerState.Flying)
+				{
+					Initialize();
+				}
+				else
+				{
+					
+					state = PlayerState.Animating;
+					StartCoroutine(Unwind());
+
+				}
+				
 				break;
 		}
 	}

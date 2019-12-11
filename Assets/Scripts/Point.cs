@@ -479,8 +479,8 @@ public class Point : MonoBehaviour
 
 		if (pointType == PointTypes.end)
 		{
-			Services.main.WarpPlayerToNewPoint(Services.StartPoint);
-			SceneSettings.instance.LoadNextLevel();
+//			Services.PlayerBehaviour.Reset();
+//			SceneSettings.instance.LoadNextLevel();
 		}
 	}
 
@@ -605,7 +605,7 @@ public class Point : MonoBehaviour
 		}
 		else
 		{
-			SR.color = Color.white;
+			SR.color = Color.gray;
 		}
 	}
 

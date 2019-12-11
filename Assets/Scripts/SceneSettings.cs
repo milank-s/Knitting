@@ -22,18 +22,23 @@ public class SceneSettings : MonoBehaviour
             Services.main.InitializeLevel();
         }else if (levels.Count > 0)
         {
-            LoadNextLevel();
+            LoadNextLevel(false);
         }
 
     }
 
     public static SceneSettings instance;
-    public void LoadNextLevel()
+    public void LoadNextLevel(bool fade)
     {
         if(curLevel < levels.Count){
-            MapEditor.Load(levels[curLevel]);
             
-            Services.main.InitializeLevel();            
+            //MapEditor.Load(levels[curLevel]);
+
+          Services.main.LoadFile(levels[curLevel], fade);
+            
+      
+
+            //Services.main.InitializeLevel();            
             //Services.PlayerBehaviour.Reset();
             curLevel++;
         }

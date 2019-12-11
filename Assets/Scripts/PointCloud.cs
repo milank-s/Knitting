@@ -121,12 +121,12 @@ foreach(Spline s in GetComponentsInChildren<Spline>()){
 				if (isComplete)
 				{
 					List<Vector3> positions = new List<Vector3>();
-					foreach (Point p in _points)
-					{
-
-						
-						//p.Contract();
-					}
+//					foreach (Point p in _points)
+//					{
+//
+//						
+//						//p.Contract();
+//					}
 
 					Services.fx.DrawLine();
 				}
