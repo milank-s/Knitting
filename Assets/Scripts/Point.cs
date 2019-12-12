@@ -477,6 +477,7 @@ public class Point : MonoBehaviour
 
 		TurnOnPointCloud();
 		
+		
 		if (!hit)
 		{
 			TurnOn();

@@ -13,7 +13,7 @@ public static class PointManager{
 //	}
 
 	public static bool PointsHit(){
-		if (_pointsHit.Count >= _connectedPoints.Count) {
+		if (_pointsHit.Count >= Point.Points.Count) {
 			return true;
 		} else {
 			return false;
@@ -25,18 +25,19 @@ public static class PointManager{
 
 		_pointsHit.Add (p);
 
-		if (p.Pos.y > CameraDolly.topBound) {
-			CameraDolly.topBound = p.Pos.y;
-		}
-		if (p.Pos.y < CameraDolly.bottomBound) {
-			CameraDolly.bottomBound = p.Pos.y;
-		}
-		if (p.Pos.x > CameraDolly.rightBound) {
-			CameraDolly.rightBound = p.Pos.x;
-		}
-		if (p.Pos.x < CameraDolly.leftBound) {
-			CameraDolly.leftBound = p.Pos.x;
-		}
+		Debug.Log("hit = " + _pointsHit.Count + " total = " + Point.Points.Count);
+//		if (p.Pos.y > CameraDolly.topBound) {
+//			CameraDolly.topBound = p.Pos.y;
+//		}
+//		if (p.Pos.y < CameraDolly.bottomBound) {
+//			CameraDolly.bottomBound = p.Pos.y;
+//		}
+//		if (p.Pos.x > CameraDolly.rightBound) {
+//			CameraDolly.rightBound = p.Pos.x;
+//		}
+//		if (p.Pos.x < CameraDolly.leftBound) {
+//			CameraDolly.leftBound = p.Pos.x;
+//		}
 
 		_connectedPoints.Add (p);
 	}

@@ -161,6 +161,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void Initialize()
 	{
 		
+		PointManager.ResetPoints ();
 		Reset();
 		
 		cursor = Services.Cursor;
@@ -173,7 +174,6 @@ public class PlayerBehaviour: MonoBehaviour {
         flyingTrail.Clear();
         flyingTrail.emitting = false;
         t.emitting = true;
-
 
 //		Material newMat;
 //		newMat = Services.Prefabs.lines[3];
@@ -311,10 +311,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		playerSprite.transform.localScale = Vector3.Lerp(playerSprite.transform.localScale, new Vector3(Mathf.Clamp(1 - (speedCoefficient * 2), 0.1f, 0.25f), Mathf.Clamp(speedCoefficient, 0.25f, 0.75f), 0.25f), Time.deltaTime * 10);
 
-		if (connectTime <= 0 && PointManager._pointsHit.Count > 0) {
-			PointManager.ResetPoints ();
-			connectTime = 1;
-		}
+//		if (connectTime <= 0 && PointManager._pointsHit.Count > 0) {
+//			PointManager.ResetPoints ();
+//			connectTime = 1;
+//		}
 
 		CursorInput();
 		Effects ();
@@ -457,8 +457,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			{
 				if (Input.GetButtonUp("Button1"))
 				{
-					curPoint.OnPointExit();
-					SwitchState(PlayerState.Animating);
+//					curPoint.OnPointExit();
+//					SwitchState(PlayerState.Animating);
 				}
 			}
 				else{
@@ -1063,7 +1063,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	public IEnumerator Unwind()
 	{
 
-		bool finishedLevel = curPoint.pointType == PointTypes.end;
+		bool finishedLevel = PointManager.PointsHit();
+		Debug.Log(finishedLevel);
 		
 		float t = curSpeed;
 		bool moving = true;
@@ -1154,10 +1155,14 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversedPoints.Clear ();
 		traversedPoints.Add (curPoint);
 		state = PlayerState.Switching;
+		
 		if (finishedLevel)
 		{
-			SceneSettings.instance.LoadNextLevel(true);
+			
+			PointManager.ResetPoints ();
+			SceneSettings.instance.LoadNextLevel(true);	
 		}
+		
 		Initialize();
 	}
 
