@@ -158,7 +158,13 @@ public class Point : MonoBehaviour
 	{
 		get
 		{
-				return new Color(c, c, c, 1);
+			if (visited)
+			{
+				return new Color(c, c, c, 1) + Color.white * (Mathf.Sin(3 * (Time.time + timeOffset)) / 10 + 0.2f);
+				
+			}
+			
+			return new Color(c, c, c, 1);
 		}
 	}
 	
@@ -239,10 +245,9 @@ public class Point : MonoBehaviour
 	public void TurnOn()
 	{
 		
-		if (pointType != PointTypes.ghost)
-		{
-			StartCoroutine(LightUp());
-		}
+	
+		StartCoroutine(LightUp());
+		
 
 	}
 	
@@ -372,7 +377,6 @@ public class Point : MonoBehaviour
 		tension = initTension;
 		continuity = initContinuity;
 		timesHit = 0;
-		color = Color.white;
 		SR.enabled = true;
 		if (textMesh != null)
 		{
@@ -390,12 +394,15 @@ public class Point : MonoBehaviour
 		{
 
 			Color startColor = color;
-			color = Color.Lerp(startColor, Color.white, f);
-			f += Time.deltaTime * 3f;
+			color = Color.Lerp(startColor, Color.white * 0.5f, f);
+			f += Time.deltaTime;
 			yield return null;
 		}
-		
-		Services.fx.PlayAnimationAtPosition(FXManager.FXType.rotate, transform);
+
+		if (pointType != PointTypes.ghost)
+		{
+			Services.fx.PlayAnimationAtPosition(FXManager.FXType.rotate, transform);
+		}
 	}
 
 	public float NeighbourCount(){
@@ -608,12 +615,14 @@ public class Point : MonoBehaviour
 
 		if (visited)
 		{
-			SR.color = color + new Color(1,1,1,c);
+			SR.color = _color + color;
 		}
 		else
 		{
-			SR.color = Color.gray;
-		}
+			SR.color = _color + Color.white/8f;
+		} 
+
+//		SR.color += Color.white * Mathf.Sin(3 * (Time.time + timeOffset)) / 10;
 	}
 
 	public void PlayerOnPoint(Vector3 direction, float force)

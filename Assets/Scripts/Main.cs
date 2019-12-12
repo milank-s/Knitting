@@ -57,15 +57,19 @@ public class Main : MonoBehaviour {
 
 	public void Reset()
 	{
+		
+		editor.DeselectPoints();
+		editor.DeselectSpline();
+		
 		//should probably save player made stellation here
-		for (int i = 0; i <Spline.Splines.Count; i++)
+		for (int i = Spline.Splines.Count-1; i >= 0; i--)
 		{
 			Destroy(Spline.Splines[i]);
 		}
 		
-		for (int i = 0; i <Point.Points.Count; i++)
+		for (int i = Point.Points.Count - 1 ; i >= 0; i--)
 		{
-			Destroy(Point.Points[i]);
+			Point.Points[i].Destroy();
 		}
 		
 		Point.Points.Clear();
@@ -120,7 +124,11 @@ public class Main : MonoBehaviour {
 		yield return new WaitForSeconds(fadeLength);
 
 		LoadLevel(i);
+		
 		StartCoroutine(FadeIn());
+
+		
+		
 	}
 	
 	public void LoadLevel(string i)
@@ -141,7 +149,6 @@ public class Main : MonoBehaviour {
 		if (i != "")
 		{
 			SceneManager.LoadScene(i, LoadSceneMode.Additive);
-			
 		}
 		else
 		{
@@ -197,9 +204,10 @@ public class Main : MonoBehaviour {
 	void Start()
 	{
 		paused = true;
-	#if UNITY_STANDALONE
-		SceneManager.LoadScene(1, LoadSceneMode.Additive);
-	#endif
+		
+//	#if UNITY_STANDALONE
+//		SceneManager.LoadScene(1, LoadSceneMode.Additive);
+//	#endif
 
 		if (SceneManager.sceneCount > 1)
 		{
@@ -352,7 +360,6 @@ public class Main : MonoBehaviour {
 			Services.StartPoint = Point.Points[0];
 		}
 		
-		
 		if (!MapEditor.editing)
 		{
 			Services.PlayerBehaviour.Initialize();
@@ -388,8 +395,6 @@ public class Main : MonoBehaviour {
 			}
 			else
 			{
-				editor.DeselectPoints();
-				editor.DeselectSpline();
 				editor.TogglePlayMode();
 			}
 		
@@ -414,6 +419,14 @@ public class Main : MonoBehaviour {
 		}
 		
 		PauseScreen.color = Color.clear;
+
+		if (curLevel == "")
+		{
+			if (curLevel == "")
+			{
+				Services.main.OpenMenu();
+			}
+		}
 	}
 
 	public void ShowWord(string m)

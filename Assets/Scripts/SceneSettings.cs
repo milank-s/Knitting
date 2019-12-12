@@ -55,7 +55,6 @@ public class SceneSettings : MonoBehaviour
         }
         else
         {
-            Debug.Log("hey");
             Services.main.LoadLevelDelayed("");
         }
     }

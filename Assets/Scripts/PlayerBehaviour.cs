@@ -55,6 +55,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float StopAngleDiff = 60;
 	float angleToSpline = Mathf.Infinity;
 	private float flyingSpeed;
+	private bool hasFlown = false;
 	[Space(10)]
 
 	[HideInInspector]
@@ -161,7 +162,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		
 		Reset();
-
+		
 		cursor = Services.Cursor;
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
@@ -169,7 +170,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		curPoint.OnPointEnter ();
 		shortTrail.Clear();
         t.Clear();
-        		
+        flyingTrail.Clear();
+        flyingTrail.emitting = false;
+        t.emitting = true;
+
+
 //		Material newMat;
 //		newMat = Services.Prefabs.lines[3];
 //		Texture tex = newMat.mainTexture;
@@ -204,7 +209,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		state = PlayerState.Switching;
 		curSpline = null;
 		traversedPoints.Clear();
-		
+		hasFlown = false;
 		boost = 0;
 		flow = 0;
 		pointDest = null;
@@ -213,7 +218,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public IEnumerator RetraceTrail()
 	{
-		state = PlayerState.Animating;
 		Vector3[] positions = new Vector3[flyingTrail.positionCount];
 		flyingTrail.GetPositions(positions);
 		float f = 0;
@@ -243,8 +247,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			//bake the mesh out after this and copy it before clearing the trail renderer
 		}
 
-		flyingTrail.time = 0;
-		flyingTrail.Clear();
+		Services.fx.BakeTrail(Services.fx.flyingTrail, Services.fx.flyingTrailMesh);
 		
 		state = PlayerState.Switching;
 		StartCoroutine(Unwind());
@@ -383,7 +386,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 			}
 			
-			if (traversedPoints.Count >= 2 && (Input.GetButton("Button2") || curSpeed <= 0.01f)) {
+			if (traversedPoints.Count >= 2 && (Input.GetButton("Button2") || flow <= 0.01f)) {
 				// && Mathf.Abs (flow) <= 0)
 				SwitchState(PlayerState.Animating);
 			}
@@ -813,6 +816,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 			if (Vector3.Distance(transform.position, pointDest.Pos) < 0.025f)
 			{
+				hasFlown = true;
+				Services.fx.BakeTrail(Services.fx.flyingTrail, Services.fx.flyingTrailMesh);
 				SwitchState(PlayerState.Switching);
 			}
 		}
@@ -1570,8 +1575,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			
 			case PlayerState.Flying:
 				Services.fx.flyingParticles.Pause();
-				Services.fx.BakeTrail(Services.fx.flyingTrail, Services.fx.flyingTrailMesh);
+				
 				GranularSynth.flying.TurnOff();
+				
 				if (flow > flyingSpeed)
 				{
 					flow = flyingSpeed;
@@ -1650,6 +1656,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Flying:
 
+				
 				Services.Sounds.PlayPointAttack();
 				GranularSynth.flying.TurnOn();
 				GranularSynth.moving.TurnOff();
@@ -1665,7 +1672,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				curPoint.proximity = 0;
 
 				Services.fx.flyingParticles.Play();
-
+				flyingTrail.Clear();
+				
 				Services.fx.EmitRadialBurst(20,curSpeed, transform);
 				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
 				state = PlayerState.Flying;
@@ -1745,13 +1753,27 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				if (state == PlayerState.Flying)
 				{
-					Initialize();
+					if (!hasFlown)
+					{
+						StartCoroutine(RetraceTrail());
+						state = PlayerState.Animating;
+					}
+					else
+					{
+						Initialize();
+					}
 				}
 				else
 				{
-					
-					state = PlayerState.Animating;
-					StartCoroutine(Unwind());
+					if (!hasFlown)
+					{
+						state = PlayerState.Animating;
+						StartCoroutine(Unwind());
+					}
+					else
+					{
+						Initialize();
+					}
 
 				}
 				

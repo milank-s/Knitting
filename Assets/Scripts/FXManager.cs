@@ -51,6 +51,7 @@ public class FXManager : MonoBehaviour
       flyingTrailMesh.mesh = new Mesh();
       playerTrailMesh.mesh = new Mesh();
       brakeParticleMesh.mesh = new Mesh();
+      flyingTrail.emitting = false;
       
       VectorLine.Destroy(ref line);
       

@@ -639,7 +639,7 @@ public class Spline : MonoBehaviour
 					Color c;
 					if (isPlayerOn)
 					{
-						 c = Color.Lerp(Color.white, SplinePoints[j]._color,
+						 c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color,
 							Mathf.Pow(distanceFromPlayer / Mathf.Clamp(SplinePoints.Count - 1, 1, 3), 2));
 						 
 					}
