@@ -27,6 +27,18 @@ public class SceneSettings : MonoBehaviour
 
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftCurlyBracket))
+        {
+            
+        }
+        
+        if (Input.GetKeyDown(KeyCode.Period))
+        {
+            LoadNextLevel(true);
+        }
+    }
     public static SceneSettings instance;
     public void LoadNextLevel(bool fade)
     {
@@ -37,10 +49,14 @@ public class SceneSettings : MonoBehaviour
           Services.main.LoadFile(levels[curLevel], fade);
             
       
-
             //Services.main.InitializeLevel();            
             //Services.PlayerBehaviour.Reset();
             curLevel++;
+        }
+        else
+        {
+            Debug.Log("hey");
+            Services.main.LoadLevelDelayed("");
         }
     }
     // Update is called once per frame

@@ -55,6 +55,25 @@ public class Main : MonoBehaviour {
 		
 	}
 
+	public void Reset()
+	{
+		//should probably save player made stellation here
+		for (int i = 0; i <Spline.Splines.Count; i++)
+		{
+			Destroy(Spline.Splines[i]);
+		}
+		
+		for (int i = 0; i <Point.Points.Count; i++)
+		{
+			Destroy(Point.Points[i]);
+		}
+		
+		Point.Points.Clear();
+		Spline.Splines.Clear();
+		Services.PlayerBehaviour.Reset();
+		Services.fx.Reset();
+	}
+	
 	public void ReloadScene()
 	{
 		LoadLevelDelayed(curLevel);
@@ -109,7 +128,6 @@ public class Main : MonoBehaviour {
 		
 		if (curLevel != "")
 		{
-			
 			SceneManager.UnloadSceneAsync(curLevel);
 		}
 
@@ -120,7 +138,15 @@ public class Main : MonoBehaviour {
 		
 		Services.PlayerBehaviour.Reset();
 
-		SceneManager.LoadScene(i, LoadSceneMode.Additive);
+		if (i != "")
+		{
+			SceneManager.LoadScene(i, LoadSceneMode.Additive);
+			
+		}
+		else
+		{
+			Reset();
+		}
 
 		curLevel = i;
 
@@ -189,7 +215,29 @@ public class Main : MonoBehaviour {
 		ToggleEditMode(false);
 		Cursor.lockState = CursorLockMode.None;
 	}
-	
+
+	public void OpenMenu()
+	{
+		SceneManager.LoadScene(1, LoadSceneMode.Additive);
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
+		Time.timeScale = 0;
+		paused = true;
+	}
+
+	public void CloseMenu()
+	{
+		Time.timeScale = 1;
+		SceneManager.UnloadSceneAsync(1);
+				
+		if (curLevel != "Editor") 
+		{
+			Cursor.visible = false;
+			Cursor.lockState = CursorLockMode.Locked;
+		}
+
+		paused = false;
+	}
 	
 	void Update()
 	{
@@ -209,21 +257,11 @@ public class Main : MonoBehaviour {
 			_paused = !paused;
 			if (paused)
 			{
-				SceneManager.LoadScene(1, LoadSceneMode.Additive);
-				Cursor.lockState = CursorLockMode.None;
-				Cursor.visible = true;
-				Time.timeScale = 0;
+				OpenMenu();
 			}
 			else
 			{
-				Time.timeScale = 1;
-				SceneManager.UnloadSceneAsync(1);
-				
-				if (curLevel != "Editor") 
-				{
-					Cursor.visible = false;
-					Cursor.lockState = CursorLockMode.Locked;
-				}
+				CloseMenu();	
 			}
 		}
 		

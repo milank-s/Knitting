@@ -374,6 +374,13 @@ public class Point : MonoBehaviour
 		timesHit = 0;
 		color = Color.white;
 		SR.enabled = true;
+		if (textMesh != null)
+		{
+			Destroy(textMesh.gameObject);
+			textMesh = null;
+		}
+
+		text = "";
 	}
 
 	IEnumerator LightUp()

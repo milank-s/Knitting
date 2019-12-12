@@ -2,8 +2,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditorInternal;
-using UnityEngine.InputSystem.LowLevel;
 using Vectrosity;
 
 public enum PlayerState{Traversing, Switching, Flying, Animating};
@@ -1672,7 +1670,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
 				state = PlayerState.Flying;
 				flyingTrail.emitting = true;
-				
+				curSpeed = 0;
 
 				break;
 
