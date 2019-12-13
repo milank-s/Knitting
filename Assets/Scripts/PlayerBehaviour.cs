@@ -406,10 +406,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 			else if (!joystickLocked && (boostTimer >= 1 || (!Input.GetButton("Button1") && (curPoint.pointType != PointTypes.stop && curPoint.pointType != PointTypes.start) || Input.GetButtonUp("Button1"))))
 			{
-				if (curPoint.locked)
-				{
-					curPoint.locked = false;
-				}
+				//something about locking was here
 				
 				canTraverse = true;
 			}
@@ -599,19 +596,19 @@ public class PlayerBehaviour: MonoBehaviour {
 		l.SetPosition (1, transform.position);
 		
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
-		if (connectTime < 0) {
-			if (flow > 0) {
-				flow -= decay * Time.deltaTime;
-				if (flow < 0) {
-					flow = 0;
-				}
-			} else if (flow < 0) {
-				flow += decay * Time.deltaTime;
-				if (flow > 0) {
-					flow = 0;
-				}
-			}
-		}
+//		if (connectTime < 0) {
+//			if (flow > 0) {
+//				flow -= decay * Time.deltaTime;
+//				if (flow < 0) {
+//					flow = 0;
+//				}
+//			} else if (flow < 0) {
+//				flow += decay * Time.deltaTime;
+//				if (flow > 0) {
+//					flow = 0;
+//				}
+//			}
+//		}
 	}
 
 	public IEnumerator ReturnToLastPoint(){
@@ -800,7 +797,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		Point raycastPoint = SplineUtil.RaycastFromCamera(cursorPos, 1f);
 		
 		
-		if (raycastPoint != null && raycastPoint != curPoint && raycastPoint.pointType != PointTypes.ghost && !raycastPoint.locked)
+		if (raycastPoint != null && raycastPoint != curPoint && raycastPoint.pointType != PointTypes.ghost && raycastPoint.state != Point.PointState.locked)
 		{
 			//& !raycastPoint.used
 			pointDest = raycastPoint;
@@ -1064,7 +1061,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 
 		bool finishedLevel = PointManager.PointsHit();
-		Debug.Log(finishedLevel);
 		
 		float t = curSpeed;
 		bool moving = true;
@@ -1667,7 +1663,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				GranularSynth.moving.TurnOff();
 				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
 				
-				curPoint.used = true;
+				curPoint.usedToFly = true;
 				pointDest = null;
 				l.positionCount = 0;
 				

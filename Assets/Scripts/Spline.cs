@@ -30,7 +30,9 @@ public class Spline : MonoBehaviour
 {
 	
 	public enum SplineType{normal, moving}
-
+	public enum SplineState{locked, on, done}
+	public SplineState state;
+	
 	public SplineType type = SplineType.normal;
 	
 	
@@ -374,7 +376,7 @@ public class Spline : MonoBehaviour
 					
 			if (p != null && p._connectedSplines.Count <= 1)
 			{
-				p.locked = b;
+				p.state = Point.PointState.locked;
 			}
 		}
 	}

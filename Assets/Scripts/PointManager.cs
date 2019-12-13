@@ -25,7 +25,6 @@ public static class PointManager{
 
 		_pointsHit.Add (p);
 
-		Debug.Log("hit = " + _pointsHit.Count + " total = " + Point.Points.Count);
 //		if (p.Pos.y > CameraDolly.topBound) {
 //			CameraDolly.topBound = p.Pos.y;
 //		}
@@ -49,7 +48,7 @@ public static class PointManager{
 //		CameraDolly.bottomBound = CameraDolly.topBound;
 
 		for(int i = _pointsHit.Count-1; i >= 0; i--) {
-			_pointsHit [i].hit = false;
+			_pointsHit [i].state = Point.PointState.off;
 			_pointsHit.Remove (_pointsHit [i]);
 		}
 	}

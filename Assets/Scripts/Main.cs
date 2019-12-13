@@ -198,7 +198,7 @@ public class Main : MonoBehaviour {
 		Services.main = this;
 		PauseScreen.color = new Color(0,0,0,0);
 		PauseMenu.SetActive(false);
-		StartCoroutine(FadeIn()); 
+		OpenMenu();
 	}
 
 	void Start()

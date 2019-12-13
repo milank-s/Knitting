@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using SimpleJSON;
+using UnityEditorInternal;
 using UnityEngine.Experimental.PlayerLoop;
 
 
@@ -27,12 +28,15 @@ public class Point : MonoBehaviour
 
 	#region
 
+	public enum PointState{locked, off, on}
+	public PointState state = PointState.off;
+	
 	public bool canFly
 	{
 		get
 		{
 			if (pointType == PointTypes.fly)
-//				&& !used
+//				
 			{
 				return true;
 			}
@@ -43,8 +47,6 @@ public class Point : MonoBehaviour
 		}
 	}
 
-	public bool used = false;
-	public bool visited = false;
 	public PointTypes pointType = PointTypes.normal;
 	[Space(10)]
 
@@ -67,8 +69,8 @@ public class Point : MonoBehaviour
 	private float initTension;
 	private float initBias;
 	private float initContinuity;
-	[Space(10)]
-
+	[Space(10)] 
+	public bool usedToFly;
 	public bool isKinematic;
 	public bool defaultToGhost = true;
 	[HideInInspector]
@@ -91,31 +93,12 @@ public class Point : MonoBehaviour
 	[Space(10)]
 
 	[Header("Interaction")]
-	public bool hit = false;
-	public float lockAmount;
 	private float cooldown;
 	[HideInInspector]
 	public float timeOffset;
 	[HideInInspector]
 	public float proximity = 0;
-
-	private bool _locked = false;
-
-	[HideInInspector]
-	public bool locked
-	{
-		get { return _locked; }
-		set
-		{
-			_locked = value;
-
-			if (!value)
-			{
-				TurnOn();
-			}
-			
-		}
-	}
+	
 
 	[HideInInspector]
 	public Color color;
@@ -158,7 +141,7 @@ public class Point : MonoBehaviour
 	{
 		get
 		{
-			if (visited)
+			if (state == PointState.on)
 			{
 				return new Color(c, c, c, 1) + Color.white * (Mathf.Sin(3 * (Time.time + timeOffset)) / 10 + 0.2f);
 				
@@ -244,11 +227,7 @@ public class Point : MonoBehaviour
 
 	public void TurnOn()
 	{
-		
-	
 		StartCoroutine(LightUp());
-		
-
 	}
 	
 	public void Clear()
@@ -369,21 +348,19 @@ public class Point : MonoBehaviour
 
 	public void Reset()
 	{
+		usedToFly = false;
 		anchorPos = initPos;
-		used = false;
-		visited = false;
-		hit = false;
+		state = PointState.off;
 		bias = initBias;
 		tension = initTension;
 		continuity = initContinuity;
 		timesHit = 0;
-		SR.enabled = true;
 		if (textMesh != null)
 		{
 			Destroy(textMesh.gameObject);
 			textMesh = null;
 		}
-
+		
 		text = "";
 	}
 
@@ -456,6 +433,30 @@ public class Point : MonoBehaviour
 			}
 		}
 	}
+
+	public void SwitchState(PointState s)
+	{
+		if (s != state)
+		{
+			switch (s)
+			{
+				case PointState.locked:
+					
+					break;
+
+				case PointState.off:
+					break;
+
+				case PointState.on:
+					TurnOn();
+					PointManager.AddPointHit(this);
+
+					break;
+			}
+		}
+
+		state = s;
+	}
 	
 	public void OnPointEnter()
 	{
@@ -470,20 +471,10 @@ public class Point : MonoBehaviour
 			Services.Word.text = textMesh.text.ToUpper();
 		}
 
-		if (!visited) {
-			visited = true;
-			
-		}
+		SwitchState(PointState.on);
 
 		TurnOnPointCloud();
 		
-		
-		if (!hit)
-		{
-			TurnOn();
-			PointManager.AddPointHit(this);
-			hit = true;
-		}
 
 		if(pointType != PointTypes.ghost){
 			
@@ -530,9 +521,7 @@ public class Point : MonoBehaviour
 
 				Services.PlayerBehaviour.boost += boostAmount + Services.PlayerBehaviour.boostTimer;
 				Services.PlayerBehaviour.flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
-				if(!hit){
-					
-				}
+
 			break;
 			
 			case PointTypes.start:
@@ -586,12 +575,9 @@ public class Point : MonoBehaviour
 		return _neighbours.Contains (n);
 	}
 
-	public List<Spline> GetSplines(){
+	public List<Spline> GetSplines()
+	{
 		return _connectedSplines;
-	}
-
-	public bool IsOffCooldown(){
-		return !hit;
 	}
 
 	public float GetCooldown(){
@@ -614,14 +600,18 @@ public class Point : MonoBehaviour
 		
 //		SR.color = Color.Lerp (color, new Color (1,1,1, c), Time.deltaTime * 5);
 
-		if (visited)
+		if (state == PointState.on)
 		{
 			SR.color = _color + color;
 		}
-		else
+		else if (state == PointState.locked)
 		{
-			SR.color = _color + Color.white/8f;
-		} 
+			SR.color = Color.clear;
+			
+		}else if (state == PointState.off)
+		{
+			SR.color = _color + Color.white / 8f;
+		}
 
 //		SR.color += Color.white * Mathf.Sin(3 * (Time.time + timeOffset)) / 10;
 	}
@@ -634,13 +624,7 @@ public class Point : MonoBehaviour
 		//velocity += (Vector3)Random.insideUnitCircle / Mathf.Pow(1 + timeOnPoint, 2);
 	}
 	
-	void SetSprite(){
-		if(locked && PointManager._pointsHit.Count < lockAmount){
-			SR.sprite = Services.Prefabs.pointSprites[1];
-		}else{
-			SR.sprite = Services.Prefabs.pointSprites[0];
-		}
-	}
+	
 
 	// public void SetDirectionalArrows(){
 	// 	int index = 0;

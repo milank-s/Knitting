@@ -48,7 +48,7 @@ public class FadeTextOnPoint: MonoBehaviour {
 			{
 				if (stayOn)
 				{
-					if (p.hit)
+					if (p.state == Point.PointState.on)
 					{
 						t.color = new Color(1, 1, 1, 1);
 					}
