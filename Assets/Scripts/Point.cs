@@ -262,7 +262,6 @@ public class Point : MonoBehaviour
 		else
 		{
 			color = Color.clear;
-			SR.color = Color.white;
 		}
 
 	}
@@ -369,16 +368,10 @@ public class Point : MonoBehaviour
 		float f = 0;
 		while (f < 1)
 		{
-
 			Color startColor = color;
 			color = Color.Lerp(startColor, Color.white * 0.5f, f);
 			f += Time.deltaTime;
 			yield return null;
-		}
-
-		if (pointType != PointTypes.ghost)
-		{
-			Services.fx.PlayAnimationAtPosition(FXManager.FXType.rotate, transform);
 		}
 	}
 
@@ -474,7 +467,7 @@ public class Point : MonoBehaviour
 		SwitchState(PointState.on);
 
 		TurnOnPointCloud();
-		
+		SynthController.instance.noteySynth.NoteOn(24, 1, 1);
 
 		if(pointType != PointTypes.ghost){
 			
@@ -485,9 +478,15 @@ public class Point : MonoBehaviour
 
 		if (pointType == PointTypes.end)
 		{
+			
+			Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed * 10f, transform);
+			Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
+			Services.fx.ShowUnfinished();
+			
 //			Services.PlayerBehaviour.Reset();
 //			SceneSettings.instance.LoadNextLevel();
 		}
+		
 	}
 
 	public void AddBoost()

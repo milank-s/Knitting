@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class FXManager : MonoBehaviour
 {
-    public enum FXType{fizzle, burst, rotate, pulse, cross}
+    public enum FXType{fizzle, burst, rotate, pulse, cross, glitch}
 
     public ParticleSystem popParticles, flyingParticles, speedParticles, trailParticles;
     public TrailRenderer playerTrail, flyingTrail;
@@ -44,6 +44,28 @@ public class FXManager : MonoBehaviour
       
   }
 
+  public void ShowUnfinished()
+  {
+      StartCoroutine(ShowUnfinishedPoints());
+  }
+
+  IEnumerator ShowUnfinishedPoints()
+  {
+      Transform glitchfx = PlayAnimationAtPosition(FXType.glitch, Services.Player.transform);
+      foreach (Point p in Point.Points)
+      {
+          if (p.pointType != PointTypes.ghost)
+          {
+               if(p.state == Point.PointState.off)
+              {
+                 glitchfx.transform.position = p.Pos;
+              }
+
+              yield return new WaitForSeconds(0.1f);
+          }
+
+      }
+  }
   public void Reset()
   {
       flyingParticleMesh.mesh = new Mesh();
@@ -107,12 +129,13 @@ public class FXManager : MonoBehaviour
       p.Clear();
   }
 
-  public void PlayAnimationAtPosition(FXType type, Transform t)
+  public Transform PlayAnimationAtPosition(FXType type, Transform t)
   {
       Animator fx = fxInstances[index];
       fx.SetTrigger(type.ToString());
       fx.transform.position = t.position;
       index = (index + 1) % fxInstances.Count;
+      return fx.transform;
   }
 
   public void PlayAnimationOnPlayer(FXType type)

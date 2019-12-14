@@ -1096,15 +1096,18 @@ public class PlayerBehaviour: MonoBehaviour {
 				} else {
 					progress -= Time.deltaTime * t / curSpline.segmentDistance;
 				}
-
+				curSpline.completion = Mathf.Lerp(curSpline.completion, 0, t);
+				curSpline.distortion = Mathf.Sin(t * Mathf.PI);
+				
 				transform.position = curSpline.GetPoint (progress);
 
 				if (progress > 1 || progress < 0) {
 					moving = false;
 				}
+				
 				yield return null;
 			}
-			curSpline.draw = false;
+			curSpline.DrawSpline();
 			
 		}
 
@@ -1114,11 +1117,16 @@ public class PlayerBehaviour: MonoBehaviour {
 			curPoint = nextPoint;
 			nextPoint = traversedPoints[i];
 			curSpline = curPoint.GetConnectingSpline(nextPoint);
+			
 			SetPlayerAtStart(curSpline, nextPoint);
 			moving = true;
 
 			while (moving)
 			{
+				curSpline.DrawSpline();
+				
+				curSpline.completion = Mathf.Lerp(curSpline.completion, 0, t);
+				curSpline.distortion = Mathf.Sin(t * Mathf.PI);
 				t += Time.deltaTime;
 				t = Mathf.Clamp(t, 0f, 9f);
 				flow = t;
@@ -1152,7 +1160,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversedPoints.Add (curPoint);
 		state = PlayerState.Switching;
 		
-		if (finishedLevel)
+		if (finishedLevel && SceneSettings.instance != null)
 		{
 			
 			PointManager.ResetPoints ();
