@@ -467,10 +467,21 @@ public class Point : MonoBehaviour
 		SwitchState(PointState.on);
 
 		TurnOnPointCloud();
-		SynthController.instance.noteySynth.NoteOn(24, 1, 1);
+//		SynthController.instance.noteySynth.NoteOn(24, 1, 1);
 
 		if(pointType != PointTypes.ghost){
-			
+
+			switch (pointType)
+			{
+				case PointTypes.normal:
+					Services.Sounds.PlayPointAttack(Services.PlayerBehaviour.clampedSpeed/10);
+					break;
+				
+				case PointTypes.end:
+//					SynthController.instance.bassySynth.NoteOn(29, 1, 1);
+					break;
+			}
+				
 				GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
 				fx.transform.parent = transform;
 				Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, transform);
@@ -525,6 +536,7 @@ public class Point : MonoBehaviour
 			
 			case PointTypes.start:
 				AddBoost();
+				Services.Sounds.PlayPointAttack(0.5f);
 				break;
 			
 			case PointTypes.end:

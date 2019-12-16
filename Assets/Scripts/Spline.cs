@@ -419,7 +419,6 @@ public class Spline : MonoBehaviour
 	public void DrawSpline(int pointIndex = 0)
 	{
 
-		
 		if (line.GetSegmentNumber() != 0)
 		{
 			drawIndex += 1;
@@ -442,6 +441,7 @@ public class Spline : MonoBehaviour
 		{
 			startIndex = 0;
 			drawTimer += Time.deltaTime;
+			distortion = Services.PlayerBehaviour.decelerationTimer;
 		}
 		else
 		{

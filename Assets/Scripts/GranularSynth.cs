@@ -83,15 +83,18 @@ public class GranularSynth : MonoBehaviour
         mixer.SetFloat("Volume", 0);
         while (Services.PlayerBehaviour.state == PlayerState.Switching)
         {
-            mixer.SetFloat("Rate", (Services.PlayerBehaviour.flow + Services.PlayerBehaviour.timeOnPoint) * 25f);
+            if (Services.PlayerBehaviour.boostTimer == 0)
+            {
+                mixer.SetFloat("Volume", -80);
+            }
+            else
+            {
+                mixer.SetFloat("Volume", Services.PlayerBehaviour.boostTimer * 20 - 25);
+                mixer.SetFloat("Speed", Mathf.Clamp(Services.PlayerBehaviour.boostTimer/2f + 0.25f, 0.25f, .75f));
+            }
+
             yield return null;
         }
-
-        float wait;
-        mixer.GetFloat("Rate", out wait);
-        yield return new WaitForSeconds(1/wait);
-        mixer.SetFloat("Volume", -80);
-
     }
     
     public void SetSample()
@@ -121,18 +124,21 @@ public class GranularSynth : MonoBehaviour
     {
         if (Services.PlayerBehaviour.state == PlayerState.Traversing)
         {
-            mixer.SetFloat("Volume", Mathf.Clamp(Services.PlayerBehaviour.flow * 10 - 25, -25, 0));
-            mixer.SetFloat("Rate", Services.PlayerBehaviour.flow * 20f);
-            mixer.SetFloat("Speed", Mathf.Lerp(0.7f, 1f, Services.PlayerBehaviour.curSpeed/2));
+            mixer.SetFloat("Volume", Mathf.Clamp(Services.PlayerBehaviour.flow * 20 - 50, -50, 0));
+            mixer.SetFloat("Rate", Mathf.Clamp(Services.PlayerBehaviour.clampedSpeed * 20f, 0, 50f));
             //using accuracy to make chord dissonant 
 //            mixer.SetFloat("Speed", Vector3.Dot(Services.PlayerBehaviour.cursorDir, Vector3.up) / 2 + 1);
 
         }else if (Services.PlayerBehaviour.state == PlayerState.Switching)
         {
-            float speed;
-            mixer.GetFloat("Rate", out speed);
-            mixer.SetFloat("Rate", speed + Time. deltaTime * 10);
         }
+        
+        float speed;
+        mixer.GetFloat("Speed", out speed);
+        speed = Mathf.Lerp(speed,
+            (-Mathf.Pow(Services.PlayerBehaviour.decelerationTimer, 3) / 10) +
+            Mathf.Clamp01(Services.PlayerBehaviour.boostTimer / 2)/10f + 0.25f, Time.deltaTime * 5f);
+        mixer.SetFloat("Speed", speed);
     }
 
     public void StoppingSynth()

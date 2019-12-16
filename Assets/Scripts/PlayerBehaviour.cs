@@ -39,12 +39,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	[Space(10)] [Header("Movement Tuning")]
 	public float speed;
-	public float maxSpeed;
 	public float acceleration;
 	public float decay;
 	public float accuracyCoefficient;
 	public float flowAmount = 0.1f;
-	public float boostAmount = 0.1f;
 	public float stopTimer = 2f;
 	[Space(10)]
 
@@ -53,6 +51,11 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float cursorRotateSpeed = 1;
 	public float LineAngleDiff = 30;
 	public float StopAngleDiff = 60;
+
+	public float clampedSpeed
+	{
+		get { return Mathf.Clamp01(curSpeed / 2); }
+	}
 	float angleToSpline = Mathf.Infinity;
 	private float flyingSpeed;
 	private bool hasFlown = false;
@@ -60,8 +63,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	[HideInInspector]
 	public bool goingForward = true;
-
-	public UnityEngine.InputSystem.Gamepad gamepad;
 	
 	[HideInInspector] public float progress,
 		accuracy,
@@ -105,9 +106,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public Sprite canConnectSprite;
 	public Sprite brakeSprite;
 	public Sprite traverseSprite;
-	public AudioSource brakingSound;
 	private PlayerSounds sounds;
-	private AudioSource sound;
 	public TrailRenderer t;
 	public TrailRenderer flyingTrail;
 	public TrailRenderer shortTrail;
@@ -139,14 +138,12 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Awake(){
 		joystickLocked = true;
-		sound = GetComponent<AudioSource>();
 		
 		pointDest = null;
 		traversedPoints = new List<Point> ();
 		
 		connectTimeCoefficient = 1;
 		state = PlayerState.Switching;
-		sounds = GetComponent<PlayerSounds> ();
 		l = GetComponent<LineRenderer> ();
 		t = GetComponentInChildren<TrailRenderer> ();
 
@@ -571,6 +568,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			curPoint.velocity += (Vector3)cursorDir * Mathf.Abs(flow);
 		}
 
+		decelerationTimer = Mathf.Lerp(decelerationTimer, 0, Time.deltaTime * 2);
 		timeOnPoint += Time.deltaTime;
 
 		
@@ -999,7 +997,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		// }
 		
 		
-
+		
 		if ((accuracy < 0.5f) || joystickLocked) {
 
 			if (flow > 0)
@@ -1022,7 +1020,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		// (adjustedAccuracy + 0.1f)
 		if (!joystickLocked)
 		{
-			curSpeed = Mathf.Clamp(flow + speed  + boost - (adjustedAccuracy * decelerationTimer), 0, 1000) * cursorDir.magnitude * Mathf.Clamp01((1-decelerationTimer) + accuracyMultiplier);
+			curSpeed = Mathf.Clamp(flow + speed + boost - (adjustedAccuracy * decelerationTimer), 0, 1000) *
+			           cursorDir.magnitude;// * Mathf.Clamp01((1-decelerationTimer) + accuracyMultiplier);
 			progress += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
 			curSpline.completion += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
 		}
@@ -1096,18 +1095,20 @@ public class PlayerBehaviour: MonoBehaviour {
 				} else {
 					progress -= Time.deltaTime * t / curSpline.segmentDistance;
 				}
+				
 				curSpline.completion = Mathf.Lerp(curSpline.completion, 0, t);
-				curSpline.distortion = Mathf.Sin(t * Mathf.PI);
+//				curSpline.distortion = Mathf.Lerp(curSpline.distortion, 1, progress);
 				
 				transform.position = curSpline.GetPoint (progress);
 
 				if (progress > 1 || progress < 0) {
 					moving = false;
 				}
+				curSpline.DrawSpline();
 				
 				yield return null;
 			}
-			curSpline.DrawSpline();
+			
 			
 		}
 
@@ -1175,7 +1176,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (progress > 1 || progress < 0) {
 
 // THIS IS KINDA SHITTY. DO IT BETTER
-			accuracy = 1;
+			//accuracy = 1;
 			
 			Point PreviousPoint = curPoint;
 			progressRemainder = progress - 1;
@@ -1659,14 +1660,13 @@ public class PlayerBehaviour: MonoBehaviour {
 				//PlayerMovement ();
 				
 				sparks.Play();
-				t.emitting = true; 
+				t.emitting = true;
 				
 				break;
 
 			case PlayerState.Flying:
 
-				
-				Services.Sounds.PlayPointAttack();
+		
 				GranularSynth.flying.TurnOn();
 				GranularSynth.moving.TurnOff();
 				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
@@ -1693,7 +1693,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Switching:
 
-				GranularSynth.stopping.TurnOn();
 				if (curSpline != null)
 				{
 //					curSpline.OnSplineExit();
@@ -1706,10 +1705,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				pointDest.proximity = 1;
 				pointDest.OnPointEnter();
-				
-				GranularSynth.stopping.StoppingSynth();
 
 				timeOnPoint = 0;
+				curSpeed = 0;
 				
 				if (curPoint == null)
 				{
@@ -1831,42 +1829,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //			l.SetPosition(1, transform.position + cursorDir/2);
 //			GetComponentInChildren<Camera>().farClipPlane = Mathf.Lerp(GetComponentInChildren<Camera>().farClipPlane,  flow + 12, Time.deltaTime * 10);
 		}
-	}
-
-
-
-	public void ManageSound ()
-	{
-
-		//
-		// pointdest is null some of the time
-		if(state != PlayerState.Switching){
-		// sounds.curPointSound.volume =  Mathf.Pow(curPoint.proximity, 3)/5f;
-			// sounds.pointDestSound.volume = Mathf.Sin(pointDest.proximity * Mathf.PI)
-
-			float dot = Vector2.Dot(curSpline.GetDirection (progress), (pointDest.Pos - curPoint.Pos).normalized);
-			float curFreqGain;
-	 //
-			//Services.Sounds.master.GetFloat ("CenterFreq", out curFreqGain);
-			float lerpAmount = Services.PlayerBehaviour.goingForward ? Services.PlayerBehaviour.progress : 1 - Services.PlayerBehaviour.progress;
-			sounds.moveSound.volume = Mathf.Lerp(sounds.moveSound.volume, Mathf.Clamp01(curSpeed)/100f, Time.deltaTime);
-//			sounds.moveSound.pitch = Mathf.Pow(accuracy / 2 + 0.5f, 0.5f);
-			sounds.brakingSound.volume = Mathf.Pow(Mathf.Clamp01(0.5f - accuracy)/2, 2) ;
-	 //
-			//Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(curSpeed)/2 + 1f);
-			//Services.Sounds.master.SetFloat("CenterFreq", Mathf.Lerp(curFreqGain, ((dot/2f + 0.5f) + Mathf.Clamp01(1f/Mathf.Pow(curSpline.segmentDistance, 5))) * (16000f / curFreqGain), lerpAmount));
-
-			if(pointDest.pointType != PointTypes.ghost){
-				//sounds.pointDestSound.volume = Mathf.Pow(pointDest.proximity, 2)/10f;
-			}else{
-				sounds.pointDestSound.volume = 0;
-			}
-		}else{
-			sounds.pointDestSound.volume = 0;
-			sounds.moveSound.volume = Mathf.Lerp(sounds.moveSound.volume, 0, Time.deltaTime);
-			sounds.brakingSound.volume = 0;
-		}
-
+	
 
 
 // 		switch(state){

@@ -16,13 +16,13 @@ public class SoundBank : MonoBehaviour {
 	Point p1;
 	Point p2;
 
-	public void PlayPointAttack ()
+	public void PlayPointAttack (float volume)
 	{
 		GameObject newSound = Instantiate(Services.Prefabs.soundEffectObject, Services.Player.transform.position, Quaternion.identity);
 		newSound.GetComponent<AudioSource>().clip = hits[Random.Range(0, hits.Count)];
 		newSound.GetComponent<AudioSource>().Play();
 		newSound.GetComponent<PlaySound>().enabled = true;
-		newSound.GetComponent<AudioSource>().volume = 0.025f;
+		newSound.GetComponent<AudioSource>().volume = volume;
 	}
 	
 }

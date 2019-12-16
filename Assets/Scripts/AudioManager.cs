@@ -33,7 +33,7 @@ public class AudioManager : MonoBehaviour
     {
         if (Services.PlayerBehaviour.state == PlayerState.Traversing)
         {
-            SynthMaster.SetFloat("Distortion", Mathf.Clamp(0.5f - (Services.PlayerBehaviour.accuracy / 2f), 0, 0.9f));
+            SynthMaster.SetFloat("Distortion", Mathf.Clamp(0.5f - (Services.PlayerBehaviour.accuracy / 2f), 0, 0.5f));
         }
         else
         {
