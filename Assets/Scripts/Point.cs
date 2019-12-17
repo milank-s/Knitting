@@ -493,15 +493,25 @@ public class Point : MonoBehaviour
 			
 			if (PointManager.PointsHit())
 			{
+				
 				Services.Sounds.PlayPointAttack(0.5f);
 				Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed * 10f, transform);
 				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
+				
+				if (PointManager.PointsHit() && SceneSettings.instance != null)
+				{
+					PointManager.ResetPoints ();
+					SceneSettings.instance.LoadNextLevel(true);	
+				}
+				
 			}
 			else
 			{
 				
 				Services.PlayerBehaviour.SwitchState(PlayerState.Animating);
+//				Services.main.WarpPlayerToNewPoint(Services.StartPoint);
 				Services.fx.ShowUnfinished();
+				
 			}
 
 //			Services.PlayerBehaviour.Reset();

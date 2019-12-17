@@ -22,6 +22,7 @@ public class CameraFollow : MonoBehaviour {
 		CameraDolly.topBound = float.NegativeInfinity;
 		CameraDolly.bottomBound = float.PositiveInfinity;
 		desiredFOV = cam.fieldOfView;
+		fixedCamera = true;
 	}
 	
 	public void WarpToPosition(Vector3 pos)

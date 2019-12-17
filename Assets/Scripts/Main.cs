@@ -97,6 +97,7 @@ public class Main : MonoBehaviour {
 	}
 	public IEnumerator LoadFileTransition(string m)
 	{
+		yield return new WaitForSeconds(1);
 		
 		StartCoroutine(FadeOut());
 		yield return new WaitForSeconds(fadeLength);
@@ -113,12 +114,16 @@ public class Main : MonoBehaviour {
 	
 	public void LoadLevelDelayed(string m)
 	{
+		
 		StartCoroutine(LoadTransition(m));
 	}
 	
 	IEnumerator LoadTransition(string i)
 	{
 		Time.timeScale = 1;
+		
+		yield return new WaitForSeconds(1);
+		
 		StartCoroutine(FadeOut());
 		
 		yield return new WaitForSeconds(fadeLength);

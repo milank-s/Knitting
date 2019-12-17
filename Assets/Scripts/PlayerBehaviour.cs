@@ -528,7 +528,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	bool TryToFly(){
-		if ((Mathf.Abs(flow) >= flyingSpeedThreshold && curPoint.canFly) || curPoint.pointType == PointTypes.end)
+		if ((Mathf.Abs(flow) >= flyingSpeedThreshold && curPoint.canFly))
 		{
 			l.positionCount = 2;
 			l.SetPosition (0, cursorPos);
@@ -1175,7 +1175,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			SceneSettings.instance.LoadNextLevel(true);	
 		}
 		
-		Initialize();
 	}
 
 		void CheckProgress(){
@@ -1791,7 +1790,12 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 					else
 					{
-						Initialize();
+						if (PointManager.PointsHit() && SceneSettings.instance != null)
+						{
+			
+							PointManager.ResetPoints ();
+							SceneSettings.instance.LoadNextLevel(true);	
+						}
 					}
 
 				}
