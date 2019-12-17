@@ -400,6 +400,7 @@ public class MapEditor : MonoBehaviour
 
                     if (selectedSpline.SplinePoints.Count < 2)
                     {
+                        DeselectSpline();
                         Destroy(selectedSpline);
                     }
                 }
@@ -701,7 +702,7 @@ public class MapEditor : MonoBehaviour
                 activePoint.SetPointType(PointTypes.ghost);
             }
 
-            if (Input.GetKeyDown(KeyCode.Backspace))
+            if (Input.GetKeyDown(KeyCode.Backspace) && curTool != Tool.text)
             {
                 Point pointToDelete = activePoint;
                 RemoveSelectedPoint(activePoint);
@@ -715,6 +716,10 @@ public class MapEditor : MonoBehaviour
 
                     if (s.SplinePoints.Count < 2)
                     {
+                        if (selectedSplines.Contains(s))
+                        {
+                            selectedSplines.Remove(s);
+                        }
                         Destroy(s);
                     }
                 }
@@ -940,6 +945,7 @@ public class MapEditor : MonoBehaviour
             if (i < points.Count)
             {
                 newPoint = points[i];
+                newPoint.Reset();
                 newPoint.Clear();
                 newPoint.transform.position = spawnPos;
             }    

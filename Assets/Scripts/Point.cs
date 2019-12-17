@@ -354,6 +354,7 @@ public class Point : MonoBehaviour
 		tension = initTension;
 		continuity = initContinuity;
 		timesHit = 0;
+		
 		if (textMesh != null)
 		{
 			Destroy(textMesh.gameObject);
@@ -490,10 +491,19 @@ public class Point : MonoBehaviour
 		if (pointType == PointTypes.end)
 		{
 			
-			Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed * 10f, transform);
-			Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
-			Services.fx.ShowUnfinished();
-			
+			if (PointManager.PointsHit())
+			{
+				Services.Sounds.PlayPointAttack(0.5f);
+				Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed * 10f, transform);
+				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
+			}
+			else
+			{
+				
+				Services.PlayerBehaviour.SwitchState(PlayerState.Animating);
+				Services.fx.ShowUnfinished();
+			}
+
 //			Services.PlayerBehaviour.Reset();
 //			SceneSettings.instance.LoadNextLevel();
 		}
@@ -540,7 +550,7 @@ public class Point : MonoBehaviour
 				break;
 			
 			case PointTypes.end:
-				
+				Services.PlayerBehaviour.boost += boostAmount + Services.PlayerBehaviour.boostTimer;
 				break;
 		}
 

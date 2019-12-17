@@ -46,22 +46,27 @@ public class FXManager : MonoBehaviour
 
   public void ShowUnfinished()
   {
+      
       StartCoroutine(ShowUnfinishedPoints());
   }
 
   IEnumerator ShowUnfinishedPoints()
   {
       Transform glitchfx = PlayAnimationAtPosition(FXType.glitch, Services.Player.transform);
+      yield return new WaitForSeconds(0.1f);
+      
       foreach (Point p in Point.Points)
       {
           if (p.pointType != PointTypes.ghost)
           {
                if(p.state == Point.PointState.off)
               {
+                  
                  glitchfx.transform.position = p.Pos;
+                 yield return new WaitForSeconds(0.1f);
               }
 
-              yield return new WaitForSeconds(0.1f);
+              
           }
 
       }

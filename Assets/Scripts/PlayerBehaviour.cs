@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.InputSystem.LowLevel;
 using Vectrosity;
 
 public enum PlayerState{Traversing, Switching, Flying, Animating};
@@ -157,7 +158,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Initialize()
 	{
-		
 		PointManager.ResetPoints ();
 		Reset();
 		
@@ -218,7 +218,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		Vector3[] positions = new Vector3[flyingTrail.positionCount];
 		flyingTrail.GetPositions(positions);
 		float f = 0;
-		float lerpSpeed = 1;
+		float lerpSpeed = 0;
 		float distance;
 			
 //		Point p = SplineUtil.CreatePoint(transform.position);
@@ -230,16 +230,16 @@ public class PlayerBehaviour: MonoBehaviour {
 			float temp = 0;
 			Vector3 tempPos = transform.position;
 			distance = Vector3.Distance(tempPos, positions[i]);
-//			while (temp < 1)
-//			{
-//				transform.position = Vector3.Lerp(tempPos, positions[i], temp);
-				transform.position = positions[i];
+			while (temp < 1)
+			{
+				transform.position = Vector3.Lerp(tempPos, positions[i], temp);
+//				transform.position = positions[i];
 				temp += (Time.deltaTime * lerpSpeed)/distance;
-				lerpSpeed += Time.deltaTime/2;
+				lerpSpeed += Time.deltaTime;
 				f = Mathf.Clamp01(lerpSpeed);
 				//play drone music or whatever
 				yield return null;
-//			}
+			}
 
 			//bake the mesh out after this and copy it before clearing the trail renderer
 		}
@@ -247,6 +247,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		Services.fx.BakeTrail(Services.fx.flyingTrail, Services.fx.flyingTrailMesh);
 		
 		state = PlayerState.Switching;
+		curSpeed = lerpSpeed;
 		StartCoroutine(Unwind());
 	}
 	public void Step () {
@@ -383,7 +384,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 			}
 			
-			if (traversedPoints.Count >= 2 && (Input.GetButton("Button2") || flow <= 0.01f)) {
+			if ((Input.GetButton("Button2") || (flow <= 0.01f && state == PlayerState.Traversing))) {
 				// && Mathf.Abs (flow) <= 0)
 				SwitchState(PlayerState.Animating);
 			}
@@ -447,14 +448,14 @@ public class PlayerBehaviour: MonoBehaviour {
 						return;
 					}
 				}
-			else if (curPoint.pointType == PointTypes.end)
-			{
-				if (Input.GetButtonUp("Button1"))
-				{
-//					curPoint.OnPointExit();
-//					SwitchState(PlayerState.Animating);
-				}
-			}
+//			else if (curPoint.pointType == PointTypes.end)
+//			{
+//				if (Input.GetButtonUp("Button1"))
+//				{
+////					curPoint.OnPointExit();
+////					SwitchState(PlayerState.Animating);
+//				}
+//			}
 				else{
 					l.positionCount = 0;
 		 			cursorOnPoint.positionCount = 0;
@@ -527,7 +528,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	bool TryToFly(){
-		if (Mathf.Abs(flow) >= flyingSpeedThreshold && curPoint.canFly)
+		if ((Mathf.Abs(flow) >= flyingSpeedThreshold && curPoint.canFly) || curPoint.pointType == PointTypes.end)
 		{
 			l.positionCount = 2;
 			l.SetPosition (0, cursorPos);
@@ -1020,9 +1021,14 @@ public class PlayerBehaviour: MonoBehaviour {
 		// (adjustedAccuracy + 0.1f)
 		if (!joystickLocked)
 		{
-			curSpeed = Mathf.Clamp(flow + speed + boost - (adjustedAccuracy * decelerationTimer), 0, 1000) *
-			           cursorDir.magnitude;// * Mathf.Clamp01((1-decelerationTimer) + accuracyMultiplier);
+			float relaxedAccuracy = (adjustedAccuracy * decelerationTimer);
+			if (progress >= 0.9f && accuracy < 0.5f)
+			{
+				relaxedAccuracy = 0;
+			}
+			curSpeed = Mathf.Clamp(flow + speed + boost, 0, 1000) * cursorDir.magnitude * Mathf.Clamp01(1- relaxedAccuracy);
 			progress += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
+			
 			curSpline.completion += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
 		}
 
@@ -1060,6 +1066,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 
 		bool finishedLevel = PointManager.PointsHit();
+		
 		
 		float t = curSpeed;
 		bool moving = true;
@@ -1591,8 +1598,10 @@ public class PlayerBehaviour: MonoBehaviour {
 				if (flow > flyingSpeed)
 				{
 					flow = flyingSpeed;
+					
 				}
 
+				curSpeed = flyingSpeed;
 				
 				boost = 0;
 				//Services.fx.BakeParticleTrail(Services.fx.flyingParticles, Services.fx.flyingParticleTrailMesh);
@@ -1622,7 +1631,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}	
 	}
 
-	void SwitchState(PlayerState newState)
+	public void SwitchState(PlayerState newState)
 	{
 		LeaveState();
 
@@ -1675,7 +1684,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				pointDest = null;
 				l.positionCount = 0;
 				
-				flyingSpeed = curSpeed;
+				//flyingSpeed = curSpeed;
 				
 				curPoint.OnPointExit();
 				curPoint.proximity = 0;
@@ -1703,10 +1712,10 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				state = PlayerState.Switching;
 				
-				pointDest.proximity = 1;
-				pointDest.OnPointEnter();
+				
 
 				timeOnPoint = 0;
+				flyingSpeed = curSpeed;
 				curSpeed = 0;
 				
 				if (curPoint == null)
@@ -1740,6 +1749,9 @@ public class PlayerBehaviour: MonoBehaviour {
 //					p.TurnOn();
 				}
 
+				pointDest.proximity = 1;
+				pointDest.OnPointEnter();
+				
 				//checkpoint shit
 				if (curPoint.pointType == PointTypes.stop)
 				{

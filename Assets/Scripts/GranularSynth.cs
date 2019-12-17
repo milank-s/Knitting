@@ -15,7 +15,7 @@ public class GranularSynth : MonoBehaviour
     public List<AudioMixerSnapshot> snapShots;
     public SynthType myType;
     private float curSample;
-
+    private float initVolume;
 
     public static List<GranularSynth> synths
     {
@@ -31,6 +31,8 @@ public class GranularSynth : MonoBehaviour
     
     void Start()
     {
+       mixer.GetFloat("Volume", out initVolume);
+       
         t0 = Time.time;
         switch (myType)
         {
@@ -105,9 +107,20 @@ public class GranularSynth : MonoBehaviour
 
     public void TurnOn()
     {
-        mixer.SetFloat("Volume", 0);
+        mixer.SetFloat("Volume", initVolume);
     }
 
+    IEnumerator FadeIn()
+    {
+        float t = 0;
+        
+        while (t < 1)
+        {
+            t += Time.deltaTime;
+            mixer.SetFloat("Volume", Mathf.Lerp(-80, 0, t));
+            yield return null;
+        }
+    }
     public void TurnOff()
     {
         mixer.SetFloat("Volume", -80);
