@@ -980,7 +980,9 @@ public class MapEditor : MonoBehaviour
                 
             }else if (newPoint.textMesh != null)
             {
-                newPoint.textMesh.text = "";   
+                
+                newPoint.CleanText();
+                
             }
 
             newPoint.tension = json["p" + i]["tension"];
@@ -1025,7 +1027,7 @@ public class MapEditor : MonoBehaviour
                 }
             }
 
-            newSpline.lineMaterial = json["lineTexture"];
+            newSpline.lineMaterial = json["spline" + i]["lineTexture"];
             newSpline.closed = json["spline" + i]["closed"];
             newSpline.transform.parent = Services.main.splineParent;
         }

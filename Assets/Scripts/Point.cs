@@ -263,6 +263,8 @@ public class Point : MonoBehaviour
 		{
 			color = Color.clear;
 		}
+		
+		
 
 	}
 
@@ -354,14 +356,16 @@ public class Point : MonoBehaviour
 		tension = initTension;
 		continuity = initContinuity;
 		timesHit = 0;
-		
+		text = "";
+	}
+
+	public void CleanText()
+	{
 		if (textMesh != null)
 		{
 			Destroy(textMesh.gameObject);
 			textMesh = null;
 		}
-		
-		text = "";
 	}
 
 	IEnumerator LightUp()
@@ -494,7 +498,7 @@ public class Point : MonoBehaviour
 			if (PointManager.PointsHit())
 			{
 				
-				Services.Sounds.PlayPointAttack(0.5f);
+				//Services.Sounds.PlayPointAttack(0.5f);
 				Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed * 10f, transform);
 				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
 				
@@ -543,6 +547,10 @@ public class Point : MonoBehaviour
 
 			case PointTypes.fly:
 					
+				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
+				Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.boostTimer + 1 * 5, transform);
+				Services.fx.EmitLinearBurst(50, Services.PlayerBehaviour.boostTimer + 1, transform, Services.PlayerBehaviour.cursorDir);
+				Services.Sounds.PlayPointAttack(0.5f);
 				Services.PlayerBehaviour.boost += boostAmount + Services.PlayerBehaviour.boostTimer;
 				
 			break;

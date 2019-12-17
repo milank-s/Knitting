@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Experimental.PlayerLoop;
 using UnityEngine.InputSystem.LowLevel;
 using Vectrosity;
 
@@ -1174,7 +1175,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			PointManager.ResetPoints ();
 			SceneSettings.instance.LoadNextLevel(true);	
 		}
-		
+
+		Initialize();
+
 	}
 
 		void CheckProgress(){
