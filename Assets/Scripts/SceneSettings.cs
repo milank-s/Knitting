@@ -51,8 +51,6 @@ public class SceneSettings : MonoBehaviour
             Services.main.LoadFile(levels[curLevel], delay);
             
 
-
-
             //Services.main.InitializeLevel();            
             //Services.PlayerBehaviour.Reset();
             curLevel++;

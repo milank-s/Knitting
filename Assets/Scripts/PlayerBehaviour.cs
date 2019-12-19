@@ -405,7 +405,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				canTraverse = true;
 
 			}
-			else if (!joystickLocked && (boostTimer >= 1 || (!Input.GetButton("Button1") && (curPoint.pointType != PointTypes.stop && curPoint.pointType != PointTypes.start) || Input.GetButtonUp("Button1"))))
+			
+			//boostTimer >= 1 ||  if you wnna fuck with ppl
+			else if (!joystickLocked && ((!Input.GetButton("Button1") && (curPoint.pointType != PointTypes.stop && curPoint.pointType != PointTypes.start) || Input.GetButtonUp("Button1"))))
 			{
 				//something about locking was here
 				

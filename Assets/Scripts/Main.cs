@@ -19,7 +19,8 @@ public class Main : MonoBehaviour {
 	public Transform splineParent;
 	private string curLevel;
 	public MapEditor editor;
-
+	public Camera mainCam;
+	
 	[SerializeField]
 	private float fadeLength = 0.1f;
 	public Gamepad controller
@@ -192,7 +193,7 @@ public class Main : MonoBehaviour {
 		Spline.Splines = new List<Spline>();
 		Services.GameUI = canvas;
 		Services.Word = Word;
-		Services.mainCam = Camera.main;
+		Services.mainCam = mainCam;
 		Services.Prefabs = GetComponent<PrefabManager>();
 		Services.Player = Player;
 		Services.fx = fx;
@@ -204,16 +205,12 @@ public class Main : MonoBehaviour {
 		Services.main = this;
 		PauseScreen.color = new Color(0,0,0,0);
 		PauseMenu.SetActive(false);
-		OpenMenu();
+		
 	}
 
 	void Start()
 	{
 		paused = true;
-		
-//	#if UNITY_STANDALONE
-//		SceneManager.LoadScene(1, LoadSceneMode.Additive);
-//	#endif
 
 		if (SceneManager.sceneCount > 1)
 		{
@@ -228,6 +225,8 @@ public class Main : MonoBehaviour {
 
 		ToggleEditMode(false);
 		Cursor.lockState = CursorLockMode.None;
+		
+		OpenMenu();
 	}
 
 	public void OpenMenu()
@@ -237,6 +236,7 @@ public class Main : MonoBehaviour {
 		Cursor.visible = true;
 //		Time.timeScale = 0;
 		paused = true;
+		
 	}
 
 	public void CloseMenu()

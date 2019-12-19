@@ -229,11 +229,21 @@ public class MapEditor : MonoBehaviour
         {
             tooltips[i].SetActive(false);
         }
-
-        UnityEngine.Object[] files = Resources.LoadAll("Levels");
-        for (int i = 0; i < files.Length; i++)
+        
+        DirectoryInfo directoryInfo = new DirectoryInfo(Application.streamingAssetsPath + "/Levels");
+        FileInfo[] allFiles = directoryInfo.GetFiles("*.*");
+        
+        foreach (FileInfo file in allFiles)
         {
-            levelList.options.Add(new Dropdown.OptionData(files[i].name));
+            if (file.Name.Contains("meta"))
+            {
+                
+            }
+            else
+            {
+                string fileName = Path.GetFileNameWithoutExtension(file.ToString());
+                levelList.options.Add(new Dropdown.OptionData(fileName));
+            }
         }
 
         _curTool = Tool.select;
@@ -865,7 +875,7 @@ public class MapEditor : MonoBehaviour
             level["spline" + j] = splineData;
         }
 
-        WriteJSONtoFile("Assets/Resources/Levels", sceneName + ".json", level);
+        WriteJSONtoFile(Application.streamingAssetsPath + "/Levels", sceneName + ".json", level);
 
         bool contains = false;
         foreach (Dropdown.OptionData d in levelList.options)
@@ -932,7 +942,7 @@ public class MapEditor : MonoBehaviour
         List<Point> points = Point.Points;
 
        
-        JSONNode json = ReadJSONFromFile("Assets/Resources/Levels", fileName + ".json");
+        JSONNode json = ReadJSONFromFile(Application.streamingAssetsPath + "/Levels", fileName + ".json");
         
         List<Point> newPoints = new List<Point>();
         
