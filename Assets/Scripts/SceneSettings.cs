@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using SimpleJSON;
+using UnityEditor;
 using UnityEngine;
 
 public class SceneSettings : MonoBehaviour
@@ -22,7 +23,7 @@ public class SceneSettings : MonoBehaviour
             Services.main.InitializeLevel();
         }else if (levels.Count > 0)
         {
-            LoadNextLevel(false);
+            LoadNextLevel(0);
         }
 
     }
@@ -36,26 +37,29 @@ public class SceneSettings : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Period))
         {
-            LoadNextLevel(true);
+            LoadNextLevel(0);
         }
     }
     public static SceneSettings instance;
-    public void LoadNextLevel(bool fade)
+    public void LoadNextLevel(float delay = 0)
     {
         if(curLevel < levels.Count){
             
             //MapEditor.Load(levels[curLevel]);
 
-          Services.main.LoadFile(levels[curLevel], fade);
+
+            Services.main.LoadFile(levels[curLevel], delay);
             
-      
+
+
+
             //Services.main.InitializeLevel();            
             //Services.PlayerBehaviour.Reset();
             curLevel++;
         }
         else
         {
-            Services.main.LoadLevelDelayed("");
+            Services.main.LoadLevelDelayed("", 2);
         }
     }
     // Update is called once per frame

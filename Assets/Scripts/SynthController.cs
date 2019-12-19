@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SynthController : MonoBehaviour
 {
-    public HelmController bassySynth;
+    public HelmController movementSynth;
     public HelmController noiseySynth;
     // Start is called before the first frame update
 
@@ -26,9 +26,16 @@ public class SynthController : MonoBehaviour
         noiseySynth.SetParameterValue(Param.kVolume, Mathf.Clamp(Mathf.Lerp(0, Services.PlayerBehaviour.curSpeed + 1f, Services.PlayerBehaviour.decelerationTimer),0, 1f));
         noiseySynth.SetParameterValue(Param.kDistortionMix, Services.PlayerBehaviour.decelerationTimer + Services.PlayerBehaviour.boostTimer);
 
+        movementSynth.SetParameterValue(Param.kVolume, Mathf.Clamp01(Mathf.Lerp(movementSynth.GetParameterValue(Param.kVolume),
+            Services.PlayerBehaviour.curSpeed, Time.deltaTime * 3)));
+        
+        movementSynth.SetParameterValue(Param.kDistortionMix, Mathf.Clamp(Mathf.Lerp(0, Services.PlayerBehaviour.curSpeed + 1f, Services.PlayerBehaviour.decelerationTimer),0, 1f));
+        
         if (!hasStartedNoise && Services.PlayerBehaviour.state == PlayerState.Traversing)
         {
             noiseySynth.FrequencyOn( 261.6f);
+            movementSynth.FrequencyOn( 261.6f * 5f);
+            
             hasStartedNoise = true;
         }
         
@@ -37,46 +44,46 @@ public class SynthController : MonoBehaviour
 
 //        if (Services.PlayerBehaviour.curSpeed > 0.25f && !a)
 //        {
-//            bassySynth.FrequencyOn( 261.6f, 0.5f);
+//            movementSynth.FrequencyOn( 261.6f, 0.5f);
 //            a = true;
 //            
 //        }else if ((Services.PlayerBehaviour.curSpeed < 0.25f || Services.PlayerBehaviour.boostTimer > 0) && a)
 //        {
-//            bassySynth.FrequencyOff(261.6f);
+//            movementSynth.FrequencyOff(261.6f);
 //            a = false;
 //        }
 //        
 //        if (Services.PlayerBehaviour.curSpeed > 0.75f && !b)
 //        {
-//            bassySynth.FrequencyOn( 261.6f * 1.5f, 0.5f);
+//            movementSynth.FrequencyOn( 261.6f * 1.5f, 0.5f);
 //            b = true;
 //            
 //        }else if ((Services.PlayerBehaviour.curSpeed < 0.75f || Services.PlayerBehaviour.boostTimer > 0) && b)
 //        
 //        {
-//            bassySynth.FrequencyOff(261.6f * 1.5f);
+//            movementSynth.FrequencyOff(261.6f * 1.5f);
 //            b = false;
 //        }
 //        
 //        if (Services.PlayerBehaviour.curSpeed > 1.5f && !c)
 //        {
-//            bassySynth.FrequencyOn( 261.6f * 1.5f * 1.5f, 0.5f);
+//            movementSynth.FrequencyOn( 261.6f * 1.5f * 1.5f, 0.5f);
 //            c = true;
 //            
 //        }else if ((Services.PlayerBehaviour.curSpeed < 1.5f || Services.PlayerBehaviour.boostTimer > 0) && c)
 //        {
-//            bassySynth.FrequencyOff(261.6f * 1.5f * 1.5f);
+//            movementSynth.FrequencyOff(261.6f * 1.5f * 1.5f);
 //            c = false;
 //        }
 //        
 //        if (Services.PlayerBehaviour.boostTimer > 0 && !d)
 //        {
-//            bassySynth.NoteOn(24, 1, 1);
+//            movementSynth.NoteOn(24, 1, 1);
 //            d = true;
 //            
 //        }else if (Services.PlayerBehaviour.boostTimer == 0 && d)
 //        {
-//            bassySynth.NoteOff(24);
+//            movementSynth.NoteOff(24);
 //            d = false;
 //        }
     }

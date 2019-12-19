@@ -80,24 +80,25 @@ public class Main : MonoBehaviour {
 	
 	public void ReloadScene()
 	{
-		LoadLevelDelayed(curLevel);
+		LoadLevelDelayed(curLevel, 0);
 	}
 
-	public void LoadFile(string m, bool fade)
+	public void LoadFile(string m, float delay = 0)
 	{
 		Time.timeScale = 1;
-		if (fade)
+		if (delay != 0)
 		{
-			StartCoroutine(LoadFileTransition(m));
+			StartCoroutine(LoadFileTransition(m, delay));
 		}
 		else
 		{
 			LoadLevelFile(m);
 		}
 	}
-	public IEnumerator LoadFileTransition(string m)
+
+	public IEnumerator LoadFileTransition(string m, float delay = 0)
 	{
-		yield return new WaitForSeconds(1);
+		yield return new WaitForSeconds(delay);
 		
 		StartCoroutine(FadeOut());
 		yield return new WaitForSeconds(fadeLength);
@@ -112,17 +113,17 @@ public class Main : MonoBehaviour {
 		InitializeLevel();
 	}
 	
-	public void LoadLevelDelayed(string m)
+	public void LoadLevelDelayed(string m, float f)
 	{
 		
-		StartCoroutine(LoadTransition(m));
+		StartCoroutine(LoadTransition(m,f));
 	}
 	
-	IEnumerator LoadTransition(string i)
+	IEnumerator LoadTransition(string i, float delay = 0)
 	{
 		Time.timeScale = 1;
 		
-		yield return new WaitForSeconds(1);
+		yield return new WaitForSeconds(delay);
 		
 		StartCoroutine(FadeOut());
 		
@@ -234,7 +235,7 @@ public class Main : MonoBehaviour {
 		SceneManager.LoadScene(1, LoadSceneMode.Additive);
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
-		Time.timeScale = 0;
+//		Time.timeScale = 0;
 		paused = true;
 	}
 
@@ -291,7 +292,15 @@ public class Main : MonoBehaviour {
 		{
 			if (!MapEditor.editing)
 			{
-				CameraFollow.instance.FollowPlayer();
+				if (!PointManager.PointsHit())
+				{
+					CameraFollow.instance.FollowPlayer();
+				}
+				else
+				{
+					CameraFollow.desiredFOV += Time.deltaTime * 5;
+				}
+
 				if (Services.PlayerBehaviour.curPoint != null)
 				{
 					Services.PlayerBehaviour.Step();
@@ -385,7 +394,11 @@ public class Main : MonoBehaviour {
 			//Services.mainCam.GetComponentInChildren<Camera>().enabled = !enter;
 			if (enter)
 			{
-
+				if (paused)
+				{
+					CloseMenu();
+					_paused = false;
+				}
 				foreach (Point p in Point.Points)
 				{
 					p.Reset();

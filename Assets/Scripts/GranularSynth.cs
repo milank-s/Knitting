@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine.Experimental.XR.Interaction;
 using Vectrosity;
 
 public class GranularSynth : MonoBehaviour
@@ -24,7 +25,8 @@ public class GranularSynth : MonoBehaviour
     
     private float _sample;
     private int sample;
-    
+
+    private bool isOn;
     private float t0;
     private bool play;
     public static GranularSynth flying, moving, stopping, rewinding;
@@ -61,8 +63,6 @@ public class GranularSynth : MonoBehaviour
         {
             case SynthType.Moving:
                TraversingSynth();
-                
-
                 
                 break;
             
@@ -107,7 +107,7 @@ public class GranularSynth : MonoBehaviour
 
     public void TurnOn()
     {
-        mixer.SetFloat("Volume", initVolume);
+        isOn = true;
     }
 
     IEnumerator FadeIn()
@@ -123,7 +123,8 @@ public class GranularSynth : MonoBehaviour
     }
     public void TurnOff()
     {
-        mixer.SetFloat("Volume", -80);
+        isOn = false;
+        mixer.SetFloat("Volume", -80f);
     }
 
     public void FadeOut(float t)
@@ -137,9 +138,18 @@ public class GranularSynth : MonoBehaviour
     {
         if (Services.PlayerBehaviour.state == PlayerState.Traversing)
         {
-            mixer.SetFloat("Volume", Mathf.Clamp(Services.PlayerBehaviour.flow * 20 - 50, -50, 0));
-            mixer.SetFloat("Rate", Mathf.Clamp(Services.PlayerBehaviour.clampedSpeed * 20f, 0, 50f));
-            //using accuracy to make chord dissonant 
+            float curVolume;
+
+            if (isOn)
+            {
+                mixer.GetFloat("Volume", out curVolume);
+                mixer.SetFloat("Volume",
+                    Mathf.Lerp(curVolume, Mathf.Clamp(Services.PlayerBehaviour.flow * 20 - 50, -50, -15),
+                        Time.deltaTime * 5));
+            }
+            
+            //mixer.SetFloat("Rate", Mathf.Clamp(Services.PlayerBehaviour.clampedSpeed * 20f, 0, 50f));
+             //using accuracy to make chord dissonant 
 //            mixer.SetFloat("Speed", Vector3.Dot(Services.PlayerBehaviour.cursorDir, Vector3.up) / 2 + 1);
 
         }else if (Services.PlayerBehaviour.state == PlayerState.Switching)

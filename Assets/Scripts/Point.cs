@@ -147,7 +147,7 @@ public class Point : MonoBehaviour
 				
 			}
 			
-			return new Color(c, c, c, 1);
+			return new Color(c, c, c, 1) + (Color.white * 0.1f);
 		}
 	}
 	
@@ -498,14 +498,14 @@ public class Point : MonoBehaviour
 			if (PointManager.PointsHit())
 			{
 				
+				Services.fx.SpawnSprite(0, transform);
 				//Services.Sounds.PlayPointAttack(0.5f);
-				Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed * 10f, transform);
+				Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed + 10, transform);
 				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
 				
 				if (PointManager.PointsHit() && SceneSettings.instance != null)
 				{
-					PointManager.ResetPoints ();
-					SceneSettings.instance.LoadNextLevel(true);	
+					SceneSettings.instance.LoadNextLevel( 1);	
 				}
 				
 			}

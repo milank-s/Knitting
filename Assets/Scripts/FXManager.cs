@@ -13,7 +13,8 @@ public class FXManager : MonoBehaviour
     public MeshFilter flyingParticleMesh, flyingParticleTrailMesh, flyingTrailMesh, playerTrailMesh, brakeParticleMesh;
     public GameObject MeshPrefab;
     public Text readout;
-    
+    public GameObject[] spawnableSprites;
+    public List<GameObject> spawnedSprites;
     private int lineIndex;
     private VectorLine line;
     [SerializeField] private GameObject fxPrefab;
@@ -78,7 +79,16 @@ public class FXManager : MonoBehaviour
       flyingTrailMesh.mesh = new Mesh();
       playerTrailMesh.mesh = new Mesh();
       brakeParticleMesh.mesh = new Mesh();
+      flyingParticles.Clear();
+      speedParticles.Clear();
       flyingTrail.emitting = false;
+      
+      for (int i = spawnedSprites.Count - 1; i >= 0; i--)
+      {
+          Destroy(spawnedSprites[i]);
+      }
+      
+      spawnedSprites.Clear();
       
       VectorLine.Destroy(ref line);
       
@@ -101,6 +111,57 @@ public class FXManager : MonoBehaviour
       //c[0].transform = flyingParticles.transform.localToWorldMatrix;
       f.mesh.CombineMeshes(c, true, false);
      t.Clear();
+  }
+
+  public void SpawnSprite(int i, Transform t)
+  {
+
+      GameObject newSprite = GameObject.Instantiate(spawnableSprites[i], t.position, Quaternion.identity);
+      spawnedSprites.Add(newSprite);
+
+      //StartCoroutine(ScaleObject(newSprite.transform));
+      StartCoroutine(FlashSprite(newSprite.transform));
+  }
+
+  IEnumerator FlashSprite(Transform tr)
+  {
+      SpriteRenderer[] sprites = tr.GetComponentsInChildren<SpriteRenderer>();
+      float t = 0;
+      while (t < 1)
+      {
+          if (tr != null)
+          {
+              foreach (SpriteRenderer r in sprites)
+              {
+                  r.color = Color.Lerp(Color.clear, Color.white, Easing.QuintEaseIn(1-t));
+                  
+              }
+              t += Time.deltaTime;
+              yield return null;
+          }
+          else
+          {
+              yield break;
+          }
+      }
+  }
+  
+  IEnumerator ScaleObject(Transform tr)
+  {
+      float t = 0.1f;
+      while (t < 1)
+      {
+          if (tr != null)
+          {
+              tr.localScale = Vector3.one * Easing.QuadEaseIn(t) * 0.5f;
+              t += Time.deltaTime;
+              yield return null;
+          }
+          else
+          {
+              yield break;
+          }
+      }
   }
   
   public void BakeParticleTrail(ParticleSystem p, MeshFilter f)

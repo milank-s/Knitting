@@ -159,7 +159,7 @@ public class CameraFollow : MonoBehaviour {
 				{
 					targetPos = new Vector3(target.position.x, target.position.y, 
 						Services.PlayerBehaviour.transform.position.z + offset.z);
-					desiredFOV = Mathf.Clamp(CameraDolly.FOVForHeightAndDistance(height, -offset.z) + 5, 15f, 100);
+					//desiredFOV = Mathf.Clamp(CameraDolly.FOVForHeightAndDistance(height, -offset.z) + 5, 15f, 100);
 				}
 
 					

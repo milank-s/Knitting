@@ -162,12 +162,14 @@ public class PlayerBehaviour: MonoBehaviour {
 		PointManager.ResetPoints ();
 		Reset();
 		
+		Services.fx.Reset();
 		cursor = Services.Cursor;
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
 		traversedPoints.Add (curPoint);
 		curPoint.OnPointEnter ();
 		shortTrail.Clear();
+		
         t.Clear();
         flyingTrail.Clear();
         flyingTrail.emitting = false;
@@ -529,7 +531,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	bool TryToFly(){
-		if ((Mathf.Abs(flow) >= flyingSpeedThreshold && curPoint.canFly))
+		if ((Mathf.Abs(flow) >= 0 && curPoint.canFly))
 		{
 			l.positionCount = 2;
 			l.SetPosition (0, cursorPos);
@@ -967,6 +969,10 @@ public class PlayerBehaviour: MonoBehaviour {
 //		NEGOTIATE FLOW CANCELLING OUT CURRENT SPEED
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
 		//flow -= Vector3.Dot(Vector3.up, curSpline.GetDirection(progress))/100f;
+		if (curSpeed < flyingSpeedThreshold && Services.fx.flyingParticles.isPlaying)
+		{
+			Services.fx.flyingParticles.Pause();
+		}
 		
 		if (accuracy > 0.5f && !joystickLocked) {
 
@@ -1168,13 +1174,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversedPoints.Clear ();
 		traversedPoints.Add (curPoint);
 		state = PlayerState.Switching;
-		
-		if (finishedLevel && SceneSettings.instance != null)
-		{
-			
-			PointManager.ResetPoints ();
-			SceneSettings.instance.LoadNextLevel(true);	
-		}
+
 
 		Initialize();
 
@@ -1645,6 +1645,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			case PlayerState.Traversing:
 
+				
 				GranularSynth.moving.TurnOn();
 				curSpline.CalculateDistance ();
 				pointDest.TurnOnPointCloud();
@@ -1672,7 +1673,11 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				sparks.Play();
 				t.emitting = true;
-				
+				if (curSpeed > flyingSpeedThreshold)
+				{
+					Services.fx.flyingParticles.Play();
+				}
+
 				break;
 
 			case PlayerState.Flying:
@@ -1781,24 +1786,22 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 					else
 					{
+						PointManager.ResetPoints ();
 						Initialize();
 					}
 				}
 				else
 				{
+					state = PlayerState.Animating;
 					if (!hasFlown)
 					{
-						state = PlayerState.Animating;
 						StartCoroutine(Unwind());
 					}
 					else
 					{
-						if (PointManager.PointsHit() && SceneSettings.instance != null)
-						{
-			
-							PointManager.ResetPoints ();
-							SceneSettings.instance.LoadNextLevel(true);	
-						}
+						PointManager.ResetPoints();
+						Initialize();
+						
 					}
 
 				}
