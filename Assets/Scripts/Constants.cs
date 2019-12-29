@@ -152,9 +152,9 @@ public class Constants : MonoBehaviour {
 		if(playerVals.state == PlayerState.Flying){
 			// playerAxis.color = gray;
 			flying.color = white;
-			flying.enabled = true;
+//			flying.enabled = true;
 		}else{
-			flying.enabled = false;
+//			flying.enabled = false;
 			flying.color = Color.Lerp (flying.color, gray, Time.deltaTime * 3);
 		}
 

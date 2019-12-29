@@ -4,44 +4,33 @@ using SimpleJSON;
 using UnityEditor;
 using UnityEngine;
 
-public class SceneSettings : MonoBehaviour
+public class SceneController : MonoBehaviour
 {
     // Start is called before the first frame update
 
     public Point startPoint;
+    public List<StellationController> activeScenes;
     public List<string> levels;
-    private int curLevel;
-    void Start()
+    
+    public int curLevel;
+    void Awake()
     {
-        
+        activeScenes = new List<StellationController>();
         instance = this;
         curLevel = 0;
-        
-        if (startPoint != null)
-        {
-            Services.StartPoint = startPoint;
-            Services.main.InitializeLevel();
-        }else if (levels.Count > 0)
-        {
-            LoadNextLevel(0);
-        }
-
+      
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftCurlyBracket))
-        {
-            
-        }
-        
         if (Input.GetKeyDown(KeyCode.Period))
         {
-            LoadNextLevel(0);
+            LoadNextStellation(0);
         }
     }
-    public static SceneSettings instance;
-    public void LoadNextLevel(float delay = 0)
+    public static SceneController instance;
+
+    public void LoadNextStellation(float delay = 0)
     {
         if(curLevel < levels.Count){
             
@@ -60,6 +49,7 @@ public class SceneSettings : MonoBehaviour
             Services.main.LoadLevelDelayed("", 2);
         }
     }
+
     // Update is called once per frame
 
 }

@@ -205,6 +205,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Reset()
 	{
+		cursorSprite.enabled = true;
 		progress = 0;
 		state = PlayerState.Switching;
 		curSpline = null;
@@ -363,9 +364,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			//curSpline.UpdateSpline();
 //			ManageSound();
 
-			if (curPoint.hasPointcloud)
+			if (curPoint.hasController)
 			{
-				curPoint.UpdatePointClouds();
+				curPoint.Updatecontrollers();
 			}
 			
 			foreach(Spline s in curPoint._connectedSplines){
@@ -1074,8 +1075,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	public IEnumerator Unwind()
 	{
 
-		bool finishedLevel = PointManager.PointsHit();
-		
 		
 		float t = curSpeed;
 		bool moving = true;
@@ -1631,6 +1630,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			
 			case PlayerState.Animating:
 
+				cursorSprite.enabled = true;
 				break;
 		}	
 	}
@@ -1650,7 +1650,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				GranularSynth.moving.TurnOn();
 				curSpline.CalculateDistance ();
-				pointDest.TurnOnPointCloud();
+				pointDest.TurnOnController();
 				
 				VectorLine v = velocityLine2;
 				velocityLine2 = velocityLine;
@@ -1778,6 +1778,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //				GranularSynth.rewinding.TurnOn();
 //				//turn off particles
 //
+				cursorSprite.enabled = false; 
 				
 				if (state == PlayerState.Flying)
 				{

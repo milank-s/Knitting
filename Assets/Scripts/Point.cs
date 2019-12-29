@@ -83,12 +83,11 @@ public class Point : MonoBehaviour
 	public Vector3 initPos;
 	[Space(10)]
 
-
 	public string text;
 	public TextMesh textMesh;
-	public List<PointCloud> pointClouds;
+	public StellationController controller;
 	[HideInInspector]
-	public bool hasPointcloud;
+	public bool hasController;
 	[Space(10)]
 
 	[Header("Interaction")]
@@ -200,8 +199,8 @@ public class Point : MonoBehaviour
 	void Awake()
 	{
 		SR = GetComponent<SpriteRenderer> ();
-		
-		pointClouds = new List<PointCloud>();
+
+		controller = null;
 //		stiffness = 1600;
 //		damping = 1000;
 //		mass = 20;
@@ -248,9 +247,6 @@ public class Point : MonoBehaviour
 		cooldown = 0;
 		timesHit = 0;
 		
-		if(defaultToGhost && _neighbours.Count == 2 && pointType == PointTypes.normal){
-//			pointType = PointTypes.ghost;
-		}
 		
 		SetPointType(pointType);
 
@@ -397,37 +393,27 @@ public class Point : MonoBehaviour
 	}
 
 
-	public void UpdatePointClouds()
+	public void Updatecontrollers()
 	{
-		foreach(PointCloud p in pointClouds)
-		{
-
-			p.Step();
-		}
+		controller.Step();
+		
 	}
 	
-	public void TurnOnPointCloud()
+	public void TurnOnController()
 	{
-		if(hasPointcloud){
-			foreach(PointCloud p in pointClouds){
-				
-				p.isOn = true;
-				
-				p.TryToUnlock();
-			}
-		}
-	}
-	
-	public void TurnOffPointCloud()
-	{
-		if(hasPointcloud){
-			foreach(PointCloud p in pointClouds)
-			{
-				p.isOn = false;
+		if(hasController){
 			
-				Services.fx.trailParticles.Pause();
-				
-			}
+				controller.isOn = true;	
+				controller.TryToUnlock();
+			
+		}
+	}
+	
+	public void TurnOffController()
+	{
+		if(hasController){
+			controller.isOn = false;
+			Services.fx.trailParticles.Pause();
 		}
 	}
 
@@ -470,7 +456,7 @@ public class Point : MonoBehaviour
 
 		SwitchState(PointState.on);
 
-		TurnOnPointCloud();
+		TurnOnController();
 //		SynthController.instance.noteySynth.NoteOn(24, 1, 1);
 
 		if(pointType != PointTypes.ghost){
@@ -494,7 +480,7 @@ public class Point : MonoBehaviour
 		if (pointType == PointTypes.end)
 		{
 			
-			if (PointManager.PointsHit())
+			if (controller.CheckCompleteness())
 			{
 				
 				Services.fx.SpawnSprite(0, transform);
@@ -502,9 +488,9 @@ public class Point : MonoBehaviour
 				Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed + 10, transform);
 				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
 				
-				if (PointManager.PointsHit() && SceneSettings.instance != null)
+				if (controller.CheckCompleteness() && SceneController.instance != null)
 				{
-					SceneSettings.instance.LoadNextLevel( 1);	
+					SceneController.instance.LoadNextStellation( 1);	
 				}
 				
 			}
@@ -518,7 +504,7 @@ public class Point : MonoBehaviour
 			}
 
 //			Services.PlayerBehaviour.Reset();
-//			SceneSettings.instance.LoadNextLevel();
+//			SceneController.instance.LoadNextLevel();
 		}
 		
 	}
@@ -535,7 +521,7 @@ public class Point : MonoBehaviour
 	public void OnPointExit(){
 
 	
-		TurnOffPointCloud();
+		TurnOffController();
 		
 		switch(pointType){
 			case PointTypes.stop:

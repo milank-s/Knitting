@@ -7,6 +7,9 @@
 
 public class Main : MonoBehaviour {
 
+	public enum GameState {playing, paused, editing}
+
+	public GameState state;
 	public GameObject cursor;
 	public GameObject Player;
 	public Image PauseScreen;
@@ -51,13 +54,11 @@ public class Main : MonoBehaviour {
 
 	[SerializeField] public string loadFileName;
 	
-	void Init()
-	{
-		
-	}
 
 	public void Reset()
 	{
+		SceneController.instance.curLevel = 0;
+		SceneController.instance.activeScenes.Clear();
 		
 		editor.DeselectPoints();
 		editor.DeselectSpline();
@@ -87,14 +88,9 @@ public class Main : MonoBehaviour {
 	public void LoadFile(string m, float delay = 0)
 	{
 		Time.timeScale = 1;
-		if (delay != 0)
-		{
-			StartCoroutine(LoadFileTransition(m, delay));
-		}
-		else
-		{
-			LoadLevelFile(m);
-		}
+		StartCoroutine(LoadFileTransition(m, delay));
+		
+		
 	}
 
 	public IEnumerator LoadFileTransition(string m, float delay = 0)
@@ -103,20 +99,27 @@ public class Main : MonoBehaviour {
 		
 		StartCoroutine(FadeOut());
 		yield return new WaitForSeconds(fadeLength);
-		LoadLevelFile(m);
+		
+		StellationController c = MapEditor.Load(m);
+		if (!MapEditor.editing)
+		{
+			SceneController.instance.activeScenes.Add(c);
+		}
+		else
+		{
+			
+		}
+
+		yield return null;
+
+		InitializeLevel();
+		
 		
 		StartCoroutine(FadeIn());
 	}
 
-	public void LoadLevelFile(string m)
-	{
-		MapEditor.Load(m);
-		InitializeLevel();
-	}
-	
 	public void LoadLevelDelayed(string m, float f)
 	{
-		
 		StartCoroutine(LoadTransition(m,f));
 	}
 	
@@ -133,9 +136,6 @@ public class Main : MonoBehaviour {
 		LoadLevel(i);
 		
 		StartCoroutine(FadeIn());
-
-		
-		
 	}
 	
 	public void LoadLevel(string i)
@@ -146,11 +146,6 @@ public class Main : MonoBehaviour {
 			SceneManager.UnloadSceneAsync(curLevel);
 		}
 
-		if (curLevel == "Editor")
-		{
-			LeaveEditMode();
-		}
-		
 		Services.PlayerBehaviour.Reset();
 
 		if (i != "")
@@ -160,28 +155,24 @@ public class Main : MonoBehaviour {
 		else
 		{
 			Reset();
+			OpenMenu();
 		}
 
 		curLevel = i;
 
-		if (curLevel != "Editor")
-		{
-			Cursor.visible = false;
-			Cursor.lockState = CursorLockMode.Locked;
-		}
-		else
-		{
-			
-			Cursor.lockState = CursorLockMode.None;
-			Cursor.visible = true;
-		}
-
-		if (SceneManager.GetSceneByName("Menu").isLoaded)
-		{
-			SceneManager.UnloadSceneAsync("Menu");
-		}
+//		if (curLevel != "Editor")
+//		{
+//			Cursor.visible = false;
+//			Cursor.lockState = CursorLockMode.Locked;
+//		}
+//		else
+//		{
+//			Cursor.lockState = CursorLockMode.None;
+//			Cursor.visible = true;
+//		}
 
 		_paused = false;
+	
 	}
 	
 	
@@ -205,11 +196,13 @@ public class Main : MonoBehaviour {
 		Services.main = this;
 		PauseScreen.color = new Color(0,0,0,0);
 		PauseMenu.SetActive(false);
-		
+		MapEditor.editing = true;
+		ToggleEditMode();
 	}
 
 	void Start()
 	{
+		MapEditor.editing = false;
 		paused = true;
 
 		if (SceneManager.sceneCount > 1)
@@ -223,7 +216,6 @@ public class Main : MonoBehaviour {
 			}
 		}
 
-		ToggleEditMode(false);
 		Cursor.lockState = CursorLockMode.None;
 		
 		OpenMenu();
@@ -283,8 +275,8 @@ public class Main : MonoBehaviour {
 		{
 			if (!MapEditor.typing)
 			{
-				MapEditor.editing = !MapEditor.editing;
-				ToggleEditMode(MapEditor.editing);
+				ToggleEditMode();
+			
 			}
 		}
 
@@ -292,18 +284,11 @@ public class Main : MonoBehaviour {
 		{
 			if (!MapEditor.editing)
 			{
-				if (!PointManager.PointsHit())
-				{
-					CameraFollow.instance.FollowPlayer();
-				}
-				else
-				{
-					CameraFollow.desiredFOV += Time.deltaTime * 5;
-				}
 
 				if (Services.PlayerBehaviour.curPoint != null)
 				{
 					Services.PlayerBehaviour.Step();
+					CameraFollow.instance.FollowPlayer();
 				}
 				
 				foreach (Spline s in Spline.Splines)
@@ -363,10 +348,22 @@ public class Main : MonoBehaviour {
 				Spline.Splines[i].Initialize();
 			}
 		}
+
 		
-		for (int i = Point.Points.Count - 1; i >= 0; i--)
+		foreach (StellationController c in SceneController.instance.activeScenes)
 		{
-			Point.Points[i].Initialize();
+			
+			if (c == SceneController.instance.activeScenes[SceneController.instance.activeScenes.Count-1])
+			{
+				c.MoveUp(SceneController.instance.activeScenes.Count);
+			}
+			
+			for (int i = c._points.Count - 1; i >= 0; i--)
+			{
+				c._points[i].Initialize();
+			}
+
+			
 		}
 
 		if (Services.StartPoint == null && Point.Points.Count > 0)
@@ -381,10 +378,13 @@ public class Main : MonoBehaviour {
 		
 		Services.mainCam.GetComponent<CameraFollow>().WarpToPlayer();
 		Services.main.fx.Reset();
+		
 	}
 	
-	public void ToggleEditMode(bool enter)
+	public void ToggleEditMode()
 	{
+			MapEditor.editing = !MapEditor.editing;
+			bool enter = MapEditor.editing;
 			editor.gameObject.SetActive(MapEditor.editing);
 			
 			canvas.SetActive(!enter);
@@ -394,10 +394,10 @@ public class Main : MonoBehaviour {
 			//Services.mainCam.GetComponentInChildren<Camera>().enabled = !enter;
 			if (enter)
 			{
+				state = GameState.editing;
 				if (paused)
 				{
 					CloseMenu();
-					_paused = false;
 				}
 				foreach (Point p in Point.Points)
 				{
@@ -413,9 +413,12 @@ public class Main : MonoBehaviour {
 			}
 			else
 			{
+				state = GameState.playing;
 				editor.TogglePlayMode();
 			}
-		
+
+			
+			
 	}
 
 	public void LeaveEditMode()
@@ -437,14 +440,6 @@ public class Main : MonoBehaviour {
 		}
 		
 		PauseScreen.color = Color.clear;
-
-		if (curLevel == "")
-		{
-			if (curLevel == "")
-			{
-				Services.main.OpenMenu();
-			}
-		}
 	}
 
 	public void ShowWord(string m)

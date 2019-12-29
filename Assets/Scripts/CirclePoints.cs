@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class CirclePoints : MonoBehaviour {
 
-	PointCloud c;
+	StellationController c;
 	List<Vector3> pointVectors;
 	private List<float> distance;
 	void Start ()
 	{
 		distance = new List<float>();
 		pointVectors = new List<Vector3> ();
-		c = GetComponent<PointCloud> ();
+		c = GetComponent<StellationController> ();
 		for(int i = 0; i < c._points.Count; i++){
 			Vector3 diff =  c._points[i].transform.position - transform.position;
 			pointVectors.Add(Vector3.Cross(diff, Quaternion.Euler(Vector3.up * 90) * diff));

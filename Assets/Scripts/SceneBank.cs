@@ -10,8 +10,7 @@ public class SceneBank : MonoBehaviour
     // Start is called before the first frame update
     public void LoadEditor()
     {
-        MapEditor.editing = !MapEditor.editing;
-        Services.main.ToggleEditMode(MapEditor.editing);
+        Services.main.ToggleEditMode();
 
         if (!MapEditor.editing)
         {
@@ -22,6 +21,14 @@ public class SceneBank : MonoBehaviour
 
     public void LoadLevel(string levelName)
     {
-        Services.main.LoadLevelDelayed(levelName, 0);
+        Services.main.Reset();
+        //add logic for a set of levels
+        if (MapEditor.editing)
+        {
+            Services.main.ToggleEditMode();
+        }
+
+        SceneController.instance.LoadNextStellation();
+        Services.main.CloseMenu();
     }
 }

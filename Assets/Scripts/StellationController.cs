@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.XR.WSA;
 
-public class PointCloud : MonoBehaviour {
+public class StellationController : MonoBehaviour {
 
 	public enum UnlockType{laps, speed}
 	public enum UnlockMechanism{unlockSpline, turnOnSpline, unlockPoints, switchPointTypes}
@@ -34,7 +35,7 @@ public class PointCloud : MonoBehaviour {
 	[Header("Visuals")]
 	public TextMesh title;
 	public SpriteRenderer image;
-	public bool fixedCam = true;
+	public bool fixedCam = false;
 	public float desiredFOV = 30;
 	public TextAsset text;
 	[Space(10)]
@@ -52,7 +53,10 @@ public class PointCloud : MonoBehaviour {
 		return words[(wordIndex-1) % (words.Length)];
 	}
 
-	public void Start(){
+	public void Start()
+	{
+		
+			
 		if(unlock){
 			unlock.LockSpline(true);
 			hasUnlock = true;
@@ -78,15 +82,18 @@ public class PointCloud : MonoBehaviour {
 			words = text.text.Split (new char[] { ' ' });
 		}
 
-foreach(Spline s in GetComponentsInChildren<Spline>()){
-		foreach(Point p in s.SplinePoints){
-			p.hasPointcloud = true;
-			p.pointClouds.Add(this);
+		foreach(Point p in GetComponentsInChildren<Point>()){
+			p.hasController = true;
+			p.controller = this;
 			_points.Add(p);
 		}
-	}
-}
 	
+}
+
+	public void MoveUp(float z)
+	{
+		transform.position -= Vector3.forward * z * 0.5f;
+	}
 	public bool CheckCompleteness()
 	{
 

@@ -136,7 +136,7 @@ public class MapEditor : MonoBehaviour
     }
 
 
-    private List<Point> selectedPoints;
+    private List<Point> selectedPoints = new List<Point>();
 
     private Spline selectedSpline
     {
@@ -181,7 +181,7 @@ public class MapEditor : MonoBehaviour
 
     void Awake()
     {
-
+        
         sceneName = "Stellation 1";
 
         text = new List<GameObject>();
@@ -204,6 +204,7 @@ public class MapEditor : MonoBehaviour
         selectedPoints = new List<Point>();
 
         l = GetComponent<LineRenderer>();
+        
     }
 
     public void Typing()
@@ -923,25 +924,27 @@ public class MapEditor : MonoBehaviour
         //Delete everything already in the scene
         //take care of any local variables in here that reference shit in the scene
 
-        ClearSelection();
+        Services.main.Reset();
 
         Load(fileName);
         
         sceneName = fileName;
         sceneTitle.text = sceneName;
-        List<Point> newPoints = new List<Point>();
-      
-        Load(fileName);
         
         StopTyping(sceneName);
     }
 
-    public static void Load(string fileName, bool recycle = true)
+    public static StellationController Load(string fileName, bool recycle = true)
     {
+        
         List<Spline> splines = Spline.Splines;
         List<Point> points = Point.Points;
 
-       
+        GameObject parent = new GameObject();
+        GameObject pointParent = new GameObject();
+        parent.transform.parent = Services.main.splineParent;
+        pointParent.transform.parent = parent.transform;
+        
         JSONNode json = ReadJSONFromFile(Application.streamingAssetsPath + "/Levels", fileName + ".json");
         
         List<Point> newPoints = new List<Point>();
@@ -952,7 +955,9 @@ public class MapEditor : MonoBehaviour
             Vector3 spawnPos = new Vector3(json["p" + i]["x"],json["p" + i]["y"],json["p" + i]["z"]);
             
             Point newPoint;
-            if (i < points.Count)
+            
+            //I no longer want to recycle
+            if (false && i < points.Count)
             {
                 newPoint = points[i];
                 newPoint.Reset();
@@ -1002,7 +1007,7 @@ public class MapEditor : MonoBehaviour
 
             newPoint.SetPointType((PointTypes)t);
             
-            newPoint.transform.parent = Services.main.pointParent;
+            newPoint.transform.parent = pointParent.transform;
             newPoints.Add(newPoint);
         }
 
@@ -1014,7 +1019,8 @@ public class MapEditor : MonoBehaviour
 
             Spline newSpline;
                 
-            if (i < splines.Count)
+            //I no longer want to recycle
+            if (false && i < splines.Count)
             {
                 newSpline = splines[i];
                 newSpline.Reset();
@@ -1039,18 +1045,25 @@ public class MapEditor : MonoBehaviour
 
             newSpline.lineMaterial = json["spline" + i]["lineTexture"];
             newSpline.closed = json["spline" + i]["closed"];
-            newSpline.transform.parent = Services.main.splineParent;
+            newSpline.transform.parent = parent.transform;
+            
         }
 
-        for (int i = splines.Count - 1; i >= json["splineCount"]; i--)
-        {
-            Destroy(splines[i]);
-        }
+        //I no longer want to clean house
+        
+//        for (int i = splines.Count - 1; i >= json["splineCount"]; i--)
+//        {
+//            Destroy(splines[i]);
+//        }
+//
+//        for (int i = points.Count - 1; i >= json["pointCount"]; i--)
+//        {
+//            points[i].Destroy();
+//        }
 
-        for (int i = points.Count - 1; i >= json["pointCount"]; i--)
-        {
-            points[i].Destroy();
-        }
+        return parent.AddComponent<StellationController>();
+        
+
     }
     
     
