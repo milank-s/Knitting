@@ -43,7 +43,6 @@ public class SceneController : MonoBehaviour
 
             if (activeScenes.Count > 0)
             {
-                
                 UnloadScene(activeScenes[0]);
             }
 

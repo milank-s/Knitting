@@ -318,7 +318,6 @@ public class Main : MonoBehaviour {
 		float curSpeed = Services.PlayerBehaviour.curSpeed;
 		float flow = Services.PlayerBehaviour.flow;
 		Services.PlayerBehaviour.Initialize();
-		Services.mainCam.GetComponent<CameraFollow>().WarpToPlayer();
 		Services.PlayerBehaviour.flow = flow;
 		Services.PlayerBehaviour.curSpeed = curSpeed;
 	}
@@ -374,7 +373,6 @@ public class Main : MonoBehaviour {
 			Services.PlayerBehaviour.Initialize();
 		}
 		
-		Services.mainCam.GetComponent<CameraFollow>().WarpToPlayer();
 		Services.main.fx.Reset();
 		
 	}

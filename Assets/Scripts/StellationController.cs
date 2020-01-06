@@ -56,7 +56,6 @@ public class StellationController : MonoBehaviour {
 	public void Start()
 	{
 		
-			
 		if(unlock){
 			unlock.LockSpline(true);
 			hasUnlock = true;
@@ -87,7 +86,8 @@ public class StellationController : MonoBehaviour {
 			p.controller = this;
 			_points.Add(p);
 		}
-	
+		
+		SetCameraBounds();
 }
 
 	public void MoveUp(float z)
@@ -138,8 +138,6 @@ public class StellationController : MonoBehaviour {
 					Services.fx.DrawLine();
 				}
 				
-				CameraFollow.fixedCamera = fixedCam;
-				CameraFollow.desiredFOV = desiredFOV;
 			
 				if(title != null){
 					title.color = Color.Lerp(title.color, new Color (1, 1, 1, 1), Time.deltaTime);
@@ -192,11 +190,66 @@ public class StellationController : MonoBehaviour {
 				}
 				isComplete = true;
 			}
-
-			
 		}
 	
 	}
+
+	public void SetCameraBounds()
+	{
+		
+			int index = 0;
+
+			Vector3 lowerLeft = new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
+			Vector3 upperRight = new Vector3(-Mathf.Infinity, -Mathf.Infinity, -Mathf.Infinity);
+
+			foreach (Point p in _points)
+			{
+				if (p.Pos.x > upperRight.x)
+				{
+					upperRight.x = p.Pos.x;
+				}
+
+				if (p.Pos.x < lowerLeft.x)
+				{
+					lowerLeft.x = p.Pos.x;
+				}
+
+				if (p.Pos.y > upperRight.y)
+				{
+					upperRight.y = p.Pos.y;
+				}
+
+				if (p.Pos.y < lowerLeft.y)
+				{
+					lowerLeft.y = p.Pos.y;
+				}
+
+				if (p.Pos.z > upperRight.z)
+				{
+					upperRight.z = p.Pos.z;
+				}
+
+				if (p.Pos.z < lowerLeft.z)
+				{
+					lowerLeft.z = p.Pos.z;
+				}
+			}
+
+			Vector3 center = Vector3.Lerp(lowerLeft, upperRight, 0.5f);
+			Debug.Log(center);
+			float height = Mathf.Abs(upperRight.y - lowerLeft.y);
+			float fov = CameraDolly.FOVForHeightAndDistance(height, -CameraFollow.instance.offset.z) + 10f;
+
+			fixedCam = true;
+			desiredFOV = fov;
+			
+			CameraFollow.desiredFOV = fov;
+			CameraFollow.fixedCamera = fixedCam;
+			CameraFollow.instance.WarpToPosition(center);
+			
+			//get center position and fov
+	}
+	
 	public bool CheckSpeed()
 	{
 		if (Services.PlayerBehaviour.flow > speedRequired)
