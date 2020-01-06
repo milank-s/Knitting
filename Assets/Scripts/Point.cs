@@ -247,7 +247,6 @@ public class Point : MonoBehaviour
 		cooldown = 0;
 		timesHit = 0;
 		
-		
 		SetPointType(pointType);
 
 		if (MapEditor.editing)
@@ -258,8 +257,11 @@ public class Point : MonoBehaviour
 		{
 			color = Color.clear;
 		}
-		
-		
+
+		if (text != "" && textMesh != null)
+		{
+			textMesh.color = Color.black;
+		}
 
 	}
 

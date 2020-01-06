@@ -362,8 +362,6 @@ public class Main : MonoBehaviour {
 			{
 				c._points[i].Initialize();
 			}
-
-			
 		}
 
 		if (Services.StartPoint == null && Point.Points.Count > 0)
@@ -415,18 +413,7 @@ public class Main : MonoBehaviour {
 			{
 				state = GameState.playing;
 				editor.TogglePlayMode();
-			}
-
-			
-			
-	}
-
-	public void LeaveEditMode()
-	{
-		Services.mainCam.GetComponent<CameraFollow>().enabled = true;
-		canvas.SetActive(true);
-		Player.SetActive(true);
-		MapEditor.editing = false;
+			}		
 	}
 	
 	IEnumerator FadeIn(){

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SimpleJSON;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SceneController : MonoBehaviour
 {
@@ -36,9 +37,15 @@ public class SceneController : MonoBehaviour
             
             //MapEditor.Load(levels[curLevel]);
 
-
+            
             Services.main.LoadFile(levels[curLevel], delay);
             
+
+            if (activeScenes.Count > 0)
+            {
+                
+                UnloadScene(activeScenes[0]);
+            }
 
             //Services.main.InitializeLevel();            
             //Services.PlayerBehaviour.Reset();
@@ -50,6 +57,15 @@ public class SceneController : MonoBehaviour
         }
     }
 
+    public void UnloadScene(StellationController s)
+    {
+        activeScenes.Remove(s);
+        Destroy(s.gameObject);
+    }
+    
+    
+    //Function for transition between levels. With text and image???
+    
     // Update is called once per frame
 
 }
