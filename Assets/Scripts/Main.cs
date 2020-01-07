@@ -349,18 +349,23 @@ public class Main : MonoBehaviour {
 		}
 
 		
-		foreach (StellationController c in SceneController.instance.activeScenes)
+//		foreach (StellationController c in SceneController.instance.activeScenes)
+//		{
+//			
+//			if (c == SceneController.instance.activeScenes[SceneController.instance.activeScenes.Count-1])
+//			{
+//				c.MoveUp(SceneController.instance.activeScenes.Count);
+//			}
+//			
+//			for (int i = c._points.Count - 1; i >= 0; i--)
+//			{
+//				c._points[i].Initialize();
+//			}
+//		}
+
+		foreach (Point p in Point.Points)
 		{
-			
-			if (c == SceneController.instance.activeScenes[SceneController.instance.activeScenes.Count-1])
-			{
-				c.MoveUp(SceneController.instance.activeScenes.Count);
-			}
-			
-			for (int i = c._points.Count - 1; i >= 0; i--)
-			{
-				c._points[i].Initialize();
-			}
+			p.Initialize();
 		}
 
 		if (Services.StartPoint == null && Point.Points.Count > 0)

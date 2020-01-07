@@ -348,6 +348,7 @@ public class Point : MonoBehaviour
 	{
 		usedToFly = false;
 		anchorPos = initPos;
+		transform.position = initPos;
 		state = PointState.off;
 		bias = initBias;
 		tension = initTension;
@@ -490,7 +491,7 @@ public class Point : MonoBehaviour
 				Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed + 10, transform);
 				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
 				
-				if (controller.CheckCompleteness() && SceneController.instance != null)
+				if (controller.CheckCompleteness() && SceneController.instance != null && !MapEditor.editing)
 				{
 					SceneController.instance.LoadNextStellation( 1);	
 				}
