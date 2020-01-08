@@ -15,6 +15,7 @@ public class Main : MonoBehaviour {
 	public Image PauseScreen;
 	public GameObject PauseMenu;
 	public Text Word;
+	public Image image;
 	public FXManager fx;
 	public GameObject canvas;
 	public static bool usingJoystick;
@@ -23,6 +24,7 @@ public class Main : MonoBehaviour {
 	private string curLevel;
 	public MapEditor editor;
 	public Camera mainCam;
+	public GameObject menu;
 	
 	[SerializeField]
 	private float fadeLength = 0.1f;
@@ -89,8 +91,6 @@ public class Main : MonoBehaviour {
 	{
 		Time.timeScale = 1;
 		StartCoroutine(LoadFileTransition(m, delay));
-		
-		
 	}
 
 	public IEnumerator LoadFileTransition(string m, float delay = 0)
@@ -223,7 +223,7 @@ public class Main : MonoBehaviour {
 
 	public void OpenMenu()
 	{
-		SceneManager.LoadScene(1, LoadSceneMode.Additive);
+		menu.SetActive(true);
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
 //		Time.timeScale = 0;
@@ -234,7 +234,7 @@ public class Main : MonoBehaviour {
 	public void CloseMenu()
 	{
 		Time.timeScale = 1;
-		SceneManager.UnloadSceneAsync(1);
+		menu.SetActive(false);
 				
 		if (curLevel != "Editor") 
 		{
@@ -419,7 +419,7 @@ public class Main : MonoBehaviour {
 			}		
 	}
 	
-	IEnumerator FadeIn(){
+	public IEnumerator FadeIn(){
 		float t = 0;
 		yield return new WaitForSeconds(0.01f);
 		
@@ -432,32 +432,107 @@ public class Main : MonoBehaviour {
 		PauseScreen.color = Color.clear;
 	}
 
-	public void ShowWord(string m)
+	public void ShowWord(string m,  bool show = true)
 	{
-		StartCoroutine(FlashWord(m));
+		Word.text = m;
+		if (show)
+		{
+			Word.color = Color.white;
+		}
+		else
+		{
+			Word.color = Color.clear;
+		}
+	}
+	
+	public void ShowImage(Sprite s, bool show = true)
+	{
+		image.sprite = s;
+		if (show)
+		{
+			image.color = Color.white;
+		}
+		else
+		{
+			image.color = Color.clear;
+			
+		}
 	}
 
-	IEnumerator FlashWord(string m)
+
+	public IEnumerator FlashImage(bool fadeIn = false)
+	{
+		float t = 0;
+		while (t < 1)
+		{
+			if (!fadeIn)
+			{
+				image.color = Color.Lerp(Color.white, Color.clear, t);
+			}
+			else
+			{
+				image.color = Color.Lerp(Color.white, Color.clear, 1-t);
+			}
+			t += Time.deltaTime/2;
+			yield return null;
+		} 
+	}
+
+	public IEnumerator FlashWord(bool fadeIn = false)
 	{
 		
 		float t = 0;
-		Word.color = Color.white;
-		Word.text = m;
 		while (t < 1)
 		{
-			Word.color = Color.Lerp(Color.white, Color.clear, t);
+			if (!fadeIn)
+			{
+				Word.color = Color.Lerp(Color.white, Color.clear, t);
+			}
+			else
+			{
+				Word.color = Color.Lerp(Color.white, Color.clear, 1-t);
+			}
+
 			t += Time.deltaTime * 2;
 			yield return null;
 		} 
 	}
-	IEnumerator FadeOut(){
+	
+	public IEnumerator LevelIntro(LevelSet l)
+	{
+		
+		StartCoroutine(FadeOut());
+		
+		yield return new WaitForSeconds(fadeLength);
+		ShowWord(l.title);
+		ShowImage(l.image);
+		yield return new WaitForSeconds(2);
+	
+		
+		SceneController.instance.LoadNextStellation();
+		
+		
+		yield return new WaitForSeconds(0.5f);
+		
+		ShowWord("", false);
+		
+		yield return new WaitForSeconds(0.1f);
+		
+		ShowImage(null, false);
+		
+		
+		
+		
+	}
+	
+	
+	public IEnumerator FadeOut(){
 		float t = 0;
 		
 		AudioManager.instance.MuteSynths(true);
 		
 		while (t < fadeLength)
 		{
-
 			PauseScreen.color = Color.Lerp(Color.clear, Color.black, Easing.QuadEaseIn(t/fadeLength));
 			t += Time.deltaTime;
 			yield return null;

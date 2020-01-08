@@ -11,7 +11,9 @@ public class SceneController : MonoBehaviour
 
     public Point startPoint;
     public List<StellationController> activeScenes;
-    public List<string> levels;
+
+    private LevelSet curLevelSet;
+    public List<LevelSet> levelSets;
     
     public int curLevel;
     void Awake()
@@ -29,16 +31,51 @@ public class SceneController : MonoBehaviour
             LoadNextStellation(0);
         }
     }
+    
+    public void OpenEditor()
+    {
+       
+        Services.main.CloseMenu();
+
+        if (!MapEditor.editing)
+        {
+            Services.main.ToggleEditMode();
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+    }
+    
     public static SceneController instance;
 
+    public void LoadLevelSet(int i)
+    {
+        
+        Services.main.Reset();
+        Services.main.CloseMenu();
+        
+        if (MapEditor.editing)
+        {
+            Services.main.ToggleEditMode();
+        }
+        
+        curLevelSet = levelSets[i];
+        //play level intro. 
+        StartCoroutine(Services.main.LevelIntro(curLevelSet));
+        
+    }
+    
     public void LoadNextStellation(float delay = 0)
     {
-        if(curLevel < levels.Count){
+        if (curLevelSet == null)
+        {
+            return;
+        }
+        if(curLevel < curLevelSet.levels.Count){
             
             //MapEditor.Load(levels[curLevel]);
 
             
-            Services.main.LoadFile(levels[curLevel], delay);
+            Services.main.LoadFile(curLevelSet.levels[curLevel], delay);
             
 
             if (activeScenes.Count > 0)
@@ -53,6 +90,7 @@ public class SceneController : MonoBehaviour
         else
         {
             Services.main.LoadLevelDelayed("", 2);
+            curLevelSet = null;
         }
     }
 

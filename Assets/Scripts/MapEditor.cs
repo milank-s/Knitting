@@ -647,6 +647,7 @@ public class MapEditor : MonoBehaviour
     void PlaySavedEffect()
     {
         Services.main.ShowWord("SAVED");
+        StartCoroutine(Services.main.FlashWord());
     }
 
     void EditSelectedPoint()

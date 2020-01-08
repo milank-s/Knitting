@@ -454,7 +454,6 @@ public class Point : MonoBehaviour
 		
 		if(textMesh != null){
 			textMesh.GetComponent<FadeTextOnPoint>().alpha = 1;
-			Services.Word.text = textMesh.text.ToUpper();
 		}
 
 		SwitchState(PointState.on);

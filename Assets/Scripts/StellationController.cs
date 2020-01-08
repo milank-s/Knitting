@@ -236,7 +236,7 @@ public class StellationController : MonoBehaviour {
 			}
 
 			Vector3 center = Vector3.Lerp(lowerLeft, upperRight, 0.5f);
-			Debug.Log(center);
+
 			float height = Mathf.Abs(upperRight.y - lowerLeft.y);
 			float fov = CameraDolly.FOVForHeightAndDistance(height, -CameraFollow.instance.offset.z) + 10f;
 
