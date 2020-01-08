@@ -506,7 +506,7 @@ public class Main : MonoBehaviour {
 		yield return new WaitForSeconds(fadeLength);
 		ShowWord(l.title);
 		ShowImage(l.image);
-		yield return new WaitForSeconds(2);
+		yield return new WaitForSeconds(1);
 	
 		
 		SceneController.instance.LoadNextStellation();

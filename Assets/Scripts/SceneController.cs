@@ -4,6 +4,7 @@ using SimpleJSON;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class SceneController : MonoBehaviour
 {
@@ -12,7 +13,14 @@ public class SceneController : MonoBehaviour
     public Point startPoint;
     public List<StellationController> activeScenes;
 
-    private LevelSet curLevelSet;
+    public int curSetIndex;
+
+    private LevelSet curLevelSet
+    {
+        get { return levelSets[curSetIndex]; }
+    }
+    
+    [SerializeField] Text levelSelect;
     public List<LevelSet> levelSets;
     
     public int curLevel;
@@ -21,7 +29,7 @@ public class SceneController : MonoBehaviour
         activeScenes = new List<StellationController>();
         instance = this;
         curLevel = 0;
-      
+       SelectLevelSet();
     }
 
     void Update()
@@ -30,6 +38,7 @@ public class SceneController : MonoBehaviour
         {
             LoadNextStellation(0);
         }
+        
     }
     
     public void OpenEditor()
@@ -47,7 +56,37 @@ public class SceneController : MonoBehaviour
     
     public static SceneController instance;
 
-    public void LoadLevelSet(int i)
+    public void SelectNextLevel(bool increment)
+    {
+        if (increment)
+        {
+            curSetIndex++;
+            if (curSetIndex >= levelSets.Count)
+            {
+                curSetIndex = 0;
+            }
+         
+        }
+        else
+        {
+            curSetIndex--;
+            if (curSetIndex < 0)
+            {
+                curSetIndex = levelSets.Count - 1;
+            }
+        }
+        
+        SelectLevelSet();
+    }
+    public void SelectLevelSet()
+    {
+        
+        Services.main.ShowImage(curLevelSet.image);
+        levelSelect.text = curLevelSet.title;
+        
+    }
+    
+    public void LoadLevelSet()
     {
         
         Services.main.Reset();
@@ -58,7 +97,6 @@ public class SceneController : MonoBehaviour
             Services.main.ToggleEditMode();
         }
         
-        curLevelSet = levelSets[i];
         //play level intro. 
         StartCoroutine(Services.main.LevelIntro(curLevelSet));
         
@@ -66,10 +104,7 @@ public class SceneController : MonoBehaviour
     
     public void LoadNextStellation(float delay = 0)
     {
-        if (curLevelSet == null)
-        {
-            return;
-        }
+        
         if(curLevel < curLevelSet.levels.Count){
             
             //MapEditor.Load(levels[curLevel]);
@@ -90,7 +125,6 @@ public class SceneController : MonoBehaviour
         else
         {
             Services.main.LoadLevelDelayed("", 2);
-            curLevelSet = null;
         }
     }
 
