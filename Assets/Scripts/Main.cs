@@ -50,6 +50,8 @@ public class Main : MonoBehaviour {
 				PauseMenu.SetActive(false);
 			}
 		}
+
+		get { return paused; }
 	}
 
 	private bool paused;
@@ -228,7 +230,7 @@ public class Main : MonoBehaviour {
 		Cursor.visible = true;
 //		Time.timeScale = 0;
 		paused = true;
-		
+		SceneController.instance.SelectLevelSet();
 	}
 
 	public void CloseMenu()
@@ -242,6 +244,8 @@ public class Main : MonoBehaviour {
 			Cursor.lockState = CursorLockMode.Locked;
 		}
 
+		ShowWord("", false);
+		ShowImage(null, false);
 		paused = false;
 	}
 	
@@ -501,18 +505,14 @@ public class Main : MonoBehaviour {
 	public IEnumerator LevelIntro(LevelSet l)
 	{
 		
-		StartCoroutine(FadeOut());
-		
-		yield return new WaitForSeconds(fadeLength);
 		ShowWord(l.title);
 		ShowImage(l.image);
-		yield return new WaitForSeconds(1);
-	
+		
 		
 		SceneController.instance.LoadNextStellation();
 		
 		
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.25f);
 		
 		ShowWord("", false);
 		

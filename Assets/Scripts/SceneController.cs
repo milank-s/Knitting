@@ -1,11 +1,7 @@
-﻿using System.Collections;
+﻿
 using System.Collections.Generic;
-using SimpleJSON;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-
+using UnityEngine.InputSystem;
 public class SceneController : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -20,7 +16,6 @@ public class SceneController : MonoBehaviour
         get { return levelSets[curSetIndex]; }
     }
     
-    [SerializeField] Text levelSelect;
     public List<LevelSet> levelSets;
     
     public int curLevel;
@@ -30,6 +25,8 @@ public class SceneController : MonoBehaviour
         instance = this;
         curLevel = 0;
        SelectLevelSet();
+   
+       
     }
 
     void Update()
@@ -39,11 +36,26 @@ public class SceneController : MonoBehaviour
             LoadNextStellation(0);
         }
         
+        
+    }
+
+    public void OnLeft()
+    {
+        Debug.Log("cmon");
+        SelectNextLevel(false);
+    }
+
+    public void OnRight()
+    {
+        SelectNextLevel(true);
     }
     
     public void OpenEditor()
     {
-       
+
+        Services.main.Word.text = "";
+        Services.main.ShowImage(null, false);
+        
         Services.main.CloseMenu();
 
         if (!MapEditor.editing)
@@ -82,25 +94,29 @@ public class SceneController : MonoBehaviour
     {
         
         Services.main.ShowImage(curLevelSet.image);
-        levelSelect.text = curLevelSet.title;
+        Services.main.ShowWord(curLevelSet.title);
         
     }
-    
+
     public void LoadLevelSet()
     {
+
+        if (Services.main._paused)
+        {
         
+
         Services.main.Reset();
         Services.main.CloseMenu();
-        
+
         if (MapEditor.editing)
         {
             Services.main.ToggleEditMode();
         }
-        
+
         //play level intro. 
         StartCoroutine(Services.main.LevelIntro(curLevelSet));
-        
-    }
+        }
+}
     
     public void LoadNextStellation(float delay = 0)
     {
