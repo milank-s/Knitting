@@ -231,6 +231,11 @@ public class Main : MonoBehaviour {
 //		Time.timeScale = 0;
 		paused = true;
 		SceneController.instance.SelectLevelSet();
+
+		if (MapEditor.editing)
+		{
+			ToggleEditMode();
+		}
 	}
 
 	public void CloseMenu()
@@ -404,7 +409,7 @@ public class Main : MonoBehaviour {
 				{
 					CloseMenu();
 				}
-				foreach (Point p in Point.Points)
+				foreach (Point p in Point.Points)	
 				{
 					p.Reset();
 				}
