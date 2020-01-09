@@ -14,7 +14,7 @@ public class CameraFollow : MonoBehaviour {
 	
 	public static CameraFollow instance;
 	// Use this for initialization
-	void Start ()
+	void Awake()
 	{
 		instance = this;
 		cam = GetComponent<Camera> ();

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using SimpleJSON;
 using System.IO;
 using System.Linq;
+using AudioHelm;
 using UnityEditor;
 
 //###################################################
@@ -96,6 +97,11 @@ public class MapEditor : MonoBehaviour
     private static float cameraDistance = 2;
     private List<GameObject> text;
 
+    [SerializeField]
+    private StellationController controller;
+
+    public static MapEditor instance;
+
     private Vector3 center
     {
         get { return Vector3.Lerp(upperRight, lowerLeft, 0.5f); }
@@ -181,7 +187,8 @@ public class MapEditor : MonoBehaviour
 
     void Awake()
     {
-        
+
+        instance = this;
         sceneName = "Stellation 1";
 
         text = new List<GameObject>();
@@ -267,7 +274,7 @@ public class MapEditor : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         
-         
+      controller.Initialize();
       canvas.gameObject.SetActive(!editing);
         
     }
@@ -941,12 +948,21 @@ public class MapEditor : MonoBehaviour
         List<Spline> splines = Spline.Splines;
         List<Point> points = Point.Points;
 
-        GameObject parent = new GameObject();
-        GameObject pointParent = new GameObject();
-        parent.transform.parent = Services.main.splineParent;
-        pointParent.transform.parent = parent.transform;
+        GameObject parent;
+        GameObject pointParent;
         
         JSONNode json = ReadJSONFromFile(Application.streamingAssetsPath + "/Levels", fileName + ".json");
+        
+   
+            parent = new GameObject();
+            pointParent = new GameObject();
+            parent.transform.parent = Services.main.splineParent;
+            pointParent.transform.parent = parent.transform;
+            pointParent.name = "points";
+            parent.name = json["name"];
+
+            instance.pointsParent = pointParent.transform;
+            instance.splinesParent = parent.transform;
         
         List<Point> newPoints = new List<Point>();
         
@@ -1047,7 +1063,7 @@ public class MapEditor : MonoBehaviour
             newSpline.lineMaterial = json["spline" + i]["lineTexture"];
             newSpline.closed = json["spline" + i]["closed"];
             newSpline.transform.parent = parent.transform;
-            
+            newSpline.gameObject.name = "spline " + i;
         }
 
         //I no longer want to clean house
@@ -1061,10 +1077,10 @@ public class MapEditor : MonoBehaviour
 //        {
 //            points[i].Destroy();
 //        }
-
-        return parent.AddComponent<StellationController>();
-        
-
+        StellationController c = parent.AddComponent<StellationController>();
+        c.Initialize();
+        instance.controller = c;
+        return c;
     }
     
     
@@ -1255,7 +1271,7 @@ void DragCamera()
                         tensionSlider.value += (viewPortPos.y - screenPos.y) * 1000 * Time.deltaTime;
                     }
                 }
-                else if (Input.GetMouseButton(0))
+                else if (Input.GetMouseButton(0) && hitPoint == null && !dragging)
                 {
                     DragCamera();
                 }
@@ -1264,13 +1280,10 @@ void DragCamera()
 
             case Tool.clone:
 
-
                 if (Input.GetMouseButtonDown(0))
                 {
                     dragging = true;
-
-
-
+                    
                     //get all the splines and points you want to copy
                     //keep track of all the points that are copied to avoid duplicates
 
@@ -1305,7 +1318,7 @@ void DragCamera()
                                 {
                                     pointsToCopy.Remove(p);
                                 }
-
+                                
                             }
 
                             splinePoints.Add(newPoint);

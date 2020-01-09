@@ -68,14 +68,19 @@ public class Main : MonoBehaviour {
 		editor.DeselectSpline();
 		
 		//should probably save player made stellation here
-		for (int i = Spline.Splines.Count-1; i >= 0; i--)
+//		for (int i = Spline.Splines.Count-1; i >= 0; i--)
+//		{
+//			Destroy(Spline.Splines[i]);
+//		}
+//		
+//		for (int i = Point.Points.Count - 1 ; i >= 0; i--)
+//		{
+//			Point.Points[i].Destroy();
+//		}
+
+		foreach (StellationController s in splineParent.GetComponentsInChildren<StellationController>())
 		{
-			Destroy(Spline.Splines[i]);
-		}
-		
-		for (int i = Point.Points.Count - 1 ; i >= 0; i--)
-		{
-			Point.Points[i].Destroy();
+			Destroy(s.gameObject);
 		}
 		
 		Point.Points.Clear();

@@ -53,8 +53,27 @@ public class StellationController : MonoBehaviour {
 		return words[(wordIndex-1) % (words.Length)];
 	}
 
-	public void Start()
+	public void Awake()
 	{
+		_points = new List<Point>();
+	}
+	public void Initialize()
+	{	
+		foreach(Point p in GetComponentsInChildren<Point>()){
+			
+			//expensive but easy
+			if (!_points.Contains(p))
+			{
+				p.hasController = true;
+				p.controller = this;
+				_points.Add(p);
+			}
+		}
+
+		if (_points.Count == 0)
+		{
+			return;
+		}
 		
 		if(unlock){
 			unlock.LockSpline(true);
@@ -75,18 +94,15 @@ public class StellationController : MonoBehaviour {
 		}
 
 		_pointshit = new List<Point>();
-		_points = new List<Point>();
+
+		//ffs
+		
 		wordIndex = 0;
 		if(text != null){
 			words = text.text.Split (new char[] { ' ' });
 		}
 
-		foreach(Point p in GetComponentsInChildren<Point>()){
-			p.hasController = true;
-			p.controller = this;
-			_points.Add(p);
-		}
-		
+		Debug.Log(_points.Count);
 		SetCameraBounds();
 }
 

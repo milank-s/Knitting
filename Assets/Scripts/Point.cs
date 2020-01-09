@@ -200,7 +200,7 @@ public class Point : MonoBehaviour
 	{
 		SR = GetComponent<SpriteRenderer> ();
 
-		controller = null;
+		
 //		stiffness = 1600;
 //		damping = 1000;
 //		mass = 20;
@@ -354,7 +354,6 @@ public class Point : MonoBehaviour
 		tension = initTension;
 		continuity = initContinuity;
 		timesHit = 0;
-		text = "";
 	}
 
 	public void CleanText()
@@ -398,8 +397,7 @@ public class Point : MonoBehaviour
 
 	public void Updatecontrollers()
 	{
-		controller.Step();
-		
+		controller.Step();	
 	}
 	
 	public void TurnOnController()
@@ -407,8 +405,8 @@ public class Point : MonoBehaviour
 		if(hasController){
 			
 				controller.isOn = true;	
-				controller.TryToUnlock();
-			
+		controller.TryToUnlock();
+	
 		}
 	}
 	
