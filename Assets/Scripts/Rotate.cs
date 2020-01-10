@@ -5,14 +5,9 @@ using UnityEngine;
 
 public class Rotate : MonoBehaviour
 {
-    // Start is called before the first frame update
-    public Vector3 speed;
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
+    public Vector3 speed;
+    
     void Update()
     {
         Vector3 s = speed * Time.deltaTime;
