@@ -26,7 +26,9 @@ public class Main : MonoBehaviour {
 	public GameObject editorUI;
 	public Camera mainCam;
 	public GameObject menu;
-	
+	public GameObject settings;
+	private bool settingsOpen;
+		
 	[SerializeField]
 	private float fadeLength = 0.1f;
 	public Gamepad controller
@@ -39,8 +41,18 @@ public class Main : MonoBehaviour {
 	
 
 	[SerializeField] public string loadFileName;
-	
 
+
+	public void OpenSettings()
+	{
+		settingsOpen = !settingsOpen;
+		settings.SetActive(settingsOpen);
+	}
+
+	public void Quit()
+	{
+		Application.Quit();
+	}
 	public void Reset()
 	{
 		SceneController.instance.curLevel = 0;
@@ -249,6 +261,11 @@ public class Main : MonoBehaviour {
 			Cursor.lockState = CursorLockMode.Locked;
 		}
 
+		if (settingsOpen)
+		{
+			OpenSettings();
+		}
+		
 		ShowWord("", false);
 		ShowImage(null, false);
 	}
