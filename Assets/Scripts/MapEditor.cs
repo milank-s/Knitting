@@ -77,7 +77,6 @@ public class MapEditor : MonoBehaviour
     private List<Image> selectors;
 
     private bool raycastNull;
-    private LineRenderer l;
     private Camera cam;
     public Slider tensionSlider;
     public Slider biasSlider;
@@ -101,6 +100,8 @@ public class MapEditor : MonoBehaviour
     [SerializeField]
     private StellationController controller;
 
+    [SerializeField] private LineRenderer l;
+    
     public static MapEditor instance;
 
     private Vector3 center
@@ -202,10 +203,8 @@ public class MapEditor : MonoBehaviour
         pointOptions.SetActive(false);
         selectors = new List<Image>();
         
-
         selectedPoints = new List<Point>();
 
-        l = GetComponent<LineRenderer>();
         
     }
 
@@ -281,7 +280,7 @@ public class MapEditor : MonoBehaviour
         
       controller.Initialize();
       canvas.gameObject.SetActive(!editing);
-        
+      
     }
 
     void HideUI()
@@ -587,11 +586,10 @@ public class MapEditor : MonoBehaviour
         }
     }
 
-    void Update()
+     public void Step()
     {
         if (editing)
             {
-
                 Cursor.visible = false;
                 SetCursorPosition();
                 

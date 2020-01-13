@@ -10,7 +10,8 @@ public class SceneController : MonoBehaviour
     public List<StellationController> activeScenes;
 
     public int curSetIndex;
-
+    public int unlockedIndex;
+    
     private LevelSet curLevelSet
     {
         get { return levelSets[curSetIndex]; }
@@ -21,6 +22,9 @@ public class SceneController : MonoBehaviour
     public int curLevel;
     void Awake()
     {
+        
+        //read from json file to set unlocked index; 
+        unlockedIndex = levelSets.Count;
         activeScenes = new List<StellationController>();
         instance = this;
         curLevel = 0;
@@ -80,6 +84,7 @@ public class SceneController : MonoBehaviour
         if (increment)
         {
             curSetIndex++;
+            curSetIndex = Mathf.Clamp(curSetIndex, 0, unlockedIndex);
             if (curSetIndex >= levelSets.Count)
             {
                 curSetIndex = 0;
@@ -91,7 +96,7 @@ public class SceneController : MonoBehaviour
             curSetIndex--;
             if (curSetIndex < 0)
             {
-                curSetIndex = levelSets.Count - 1;
+                curSetIndex = Mathf.Clamp(levelSets.Count - 1, 0, unlockedIndex);
             }
         }
         

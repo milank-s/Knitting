@@ -102,8 +102,10 @@ public class StellationController : MonoBehaviour {
 			words = text.text.Split (new char[] { ' ' });
 		}
 
-		Debug.Log(_points.Count);
 		SetCameraBounds();
+		
+		Services.main.state = Main.GameState.playing;
+		
 }
 
 	public void MoveUp(float z)

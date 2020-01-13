@@ -23,6 +23,7 @@ public class Main : MonoBehaviour {
 	public Transform splineParent;
 	private string curLevel;
 	public MapEditor editor;
+	public GameObject editorUI;
 	public Camera mainCam;
 	public GameObject menu;
 	
@@ -99,11 +100,7 @@ public class Main : MonoBehaviour {
 		{
 			SceneController.instance.activeScenes.Add(c);
 		}
-		else
-		{
-			
-		}
-
+		
 		yield return null;
 
 		InitializeLevel();
@@ -179,6 +176,7 @@ public class Main : MonoBehaviour {
 	
 	void Awake ()
 	{
+		MapEditor.editing = true;
 		
 		curLevel = "";
 		Point.Points = new List<Point>();
@@ -197,13 +195,12 @@ public class Main : MonoBehaviour {
 		Services.main = this;
 		PauseScreen.color = new Color(0,0,0,0);
 		PauseMenu.SetActive(false);
-		MapEditor.editing = true;
+		
 		ToggleEditMode();
 	}
 
 	void Start()
 	{
-		MapEditor.editing = false;
 		state = GameState.menu;
 
 		if (SceneManager.sceneCount > 1)
@@ -228,13 +225,17 @@ public class Main : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
 //		Time.timeScale = 0;
-		state = GameState.menu;
+
+		
+		
 		SceneController.instance.SelectLevelSet();
 
 		if (MapEditor.editing)
 		{
 			ToggleEditMode();
 		}
+		
+		state = GameState.menu;
 	}
 
 	public void CloseMenu()
@@ -336,6 +337,8 @@ public class Main : MonoBehaviour {
 			}
 			else
 			{
+				editor.Step();
+				
 				foreach (Spline s in Spline.Splines)
 				{
 					s.DrawSplineOverride();
@@ -419,8 +422,7 @@ public class Main : MonoBehaviour {
 	{
 			MapEditor.editing = !MapEditor.editing;
 			bool enter = MapEditor.editing;
-			editor.gameObject.SetActive(MapEditor.editing);
-			
+			editorUI.SetActive(enter);
 			canvas.SetActive(!enter);
 			Player.SetActive(!enter);
 			Services.mainCam.GetComponent<CameraFollow>().enabled = !enter;
@@ -443,13 +445,12 @@ public class Main : MonoBehaviour {
 				}
 
 				
-				state = GameState.editing;
+				state = GameState.playing;
 				
 				Cursor.lockState = CursorLockMode.None;
 			}
 			else
 			{
-				state = GameState.playing;
 				editor.TogglePlayMode();
 			}		
 	}
