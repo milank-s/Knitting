@@ -83,10 +83,7 @@ public class Main : MonoBehaviour {
 		Services.PlayerBehaviour.Reset();
 		Services.fx.Reset();
 
-		if (MapEditor.editing)
-		{
-			ToggleEditMode();
-		}
+	
 	}
 	
 	public void ReloadScene()
@@ -234,12 +231,6 @@ public class Main : MonoBehaviour {
 	public void OpenMenu()
 	{
 		menu.SetActive(true);
-		Cursor.lockState = CursorLockMode.None;
-		Cursor.visible = true;
-//		Time.timeScale = 0;
-
-		
-		
 		SceneController.instance.SelectLevelSet();
 
 		if (MapEditor.editing)
@@ -247,6 +238,8 @@ public class Main : MonoBehaviour {
 			ToggleEditMode();
 		}
 		
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
 		state = GameState.menu;
 	}
 
@@ -444,9 +437,12 @@ public class Main : MonoBehaviour {
 			Player.SetActive(!enter);
 			Services.mainCam.GetComponent<CameraFollow>().enabled = !enter;
 			RenderSettings.fog = !enter;
+			editor.l.enabled = enter;
 			//Services.mainCam.GetComponentInChildren<Camera>().enabled = !enter;
 			if (enter)
 			{
+				
+				
 				if (state == GameState.menu)
 				{
 					CloseMenu();
@@ -468,7 +464,10 @@ public class Main : MonoBehaviour {
 			}
 			else
 			{
-				editor.TogglePlayMode();
+				if (state != GameState.menu)
+				{
+					editor.TogglePlayMode();
+				}
 			}		
 	}
 	

@@ -75,7 +75,7 @@ public class MapEditor : MonoBehaviour
     public GameObject selectedPointIndicator;
     public GameObject pointOptions;
     private List<Image> selectors;
-
+    public Transform container;
     private bool raycastNull;
     private Camera cam;
     public Slider tensionSlider;
@@ -100,7 +100,7 @@ public class MapEditor : MonoBehaviour
     [SerializeField]
     private StellationController controller;
 
-    [SerializeField] private LineRenderer l;
+    public LineRenderer l;
     
     public static MapEditor instance;
 
@@ -258,7 +258,7 @@ public class MapEditor : MonoBehaviour
             Image newSelector = Instantiate(selector, Vector3.one * 1000, Quaternion.identity).GetComponent<Image>();
             selectors.Add(newSelector);
             newSelector.color = Color.clear;
-            newSelector.transform.SetParent(canvas, false);
+            newSelector.transform.SetParent(container, false);
             yield return null;
         }
     }

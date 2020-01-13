@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class StartScreen : MonoBehaviour
 {
     public Mandala mandala;
-    private bool goNext = false;
+    public bool goNext = false;
     public GameObject word;
 
     public GameObject name;
@@ -26,8 +26,9 @@ public class StartScreen : MonoBehaviour
     {
         sprite.color = Color.black;
     }
-    IEnumerator Start()
+    IEnumerator Initialize()
     {
+        sprite.gameObject.SetActive(true);
         
         yield return new WaitForSeconds(0.25f);
         
@@ -99,7 +100,7 @@ public class StartScreen : MonoBehaviour
 
     IEnumerator LoadNext(float delay, bool fade)
     {
-//        
+        sprite.gameObject.SetActive(true);
 //        mandala.shutItDown = true;
         yield return new WaitForSeconds(delay);
         word.SetActive(false);
