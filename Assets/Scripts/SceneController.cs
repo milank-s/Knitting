@@ -140,7 +140,10 @@ public class SceneController : MonoBehaviour
         }
         else
         {
-            Services.main.LoadLevelDelayed("", 2);
+            //Services.main.LoadLevelDelayed("", 2);
+            
+            //reopen menu, empty scene;
+            Services.main.Reset();
         }
     }
 

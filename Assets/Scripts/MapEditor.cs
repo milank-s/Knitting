@@ -200,13 +200,7 @@ public class MapEditor : MonoBehaviour
         selectedPointIndicator.SetActive(false);
         pointOptions.SetActive(false);
         selectors = new List<Image>();
-        for (int i = 0; i < 50; i++)
-        {
-            Image newSelector = Instantiate(selector, Vector3.one * 1000, Quaternion.identity).GetComponent<Image>();
-            selectors.Add(newSelector);
-            newSelector.color = Color.clear;
-            newSelector.transform.SetParent(canvas, false);
-        }
+        
 
         selectedPoints = new List<Point>();
 
@@ -225,7 +219,7 @@ public class MapEditor : MonoBehaviour
         sceneName = name;
     }
 
-    void Start()
+    IEnumerator Start()
     {
         cam = Services.mainCam;
         l.enabled = false;
@@ -233,10 +227,6 @@ public class MapEditor : MonoBehaviour
         curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
         worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
             cameraDistance));
-        for (int i = 0; i < tooltips.Length; i++)
-        {
-            tooltips[i].SetActive(false);
-        }
         
         DirectoryInfo directoryInfo = new DirectoryInfo(Application.streamingAssetsPath + "/Levels");
         FileInfo[] allFiles = directoryInfo.GetFiles("*.*");
@@ -257,6 +247,20 @@ public class MapEditor : MonoBehaviour
         _curTool = Tool.select;
         _curTool = Tool.draw;
 
+        for (int i = 0; i < tooltips.Length; i++)
+        {
+            tooltips[i].SetActive(false);
+        
+        }
+        
+        for (int i = 0; i < 50; i++)
+        {
+            Image newSelector = Instantiate(selector, Vector3.one * 1000, Quaternion.identity).GetComponent<Image>();
+            selectors.Add(newSelector);
+            newSelector.color = Color.clear;
+            newSelector.transform.SetParent(canvas, false);
+            yield return null;
+        }
     }
 
     public  void TogglePlayMode()

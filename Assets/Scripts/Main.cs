@@ -82,7 +82,8 @@ public class Main : MonoBehaviour {
 		{
 			Destroy(s.gameObject);
 		}
-		
+
+		SceneController.instance.activeScenes.Clear();
 		Point.Points.Clear();
 		Spline.Splines.Clear();
 		Services.PlayerBehaviour.Reset();

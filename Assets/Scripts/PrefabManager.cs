@@ -19,9 +19,6 @@ public class PrefabManager : MonoBehaviour {
 	public Material[] fontMaterials;
 	public Font[] fonts;
 
-	void Awake(){
-		LoadResources ();
-	}
 
 	public void SetFont(TextMesh t, int i)
 	{
@@ -46,9 +43,5 @@ public class PrefabManager : MonoBehaviour {
 		newSound.GetComponent<AudioSource> ().clip = clip;
 		return newSound.GetComponent<AudioSource> ();
 	}
-
-	public void LoadResources(){
-		symbols = Resources.LoadAll<Sprite> ("Symbols");
-		lines = Resources.LoadAll <Material>("Lines");
-	}
+	
 }

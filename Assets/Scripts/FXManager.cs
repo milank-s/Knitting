@@ -22,15 +22,16 @@ public class FXManager : MonoBehaviour
  
   private List<Animator> fxInstances = new List<Animator>();
  
-  void Start()
+  IEnumerator Start()
   {
+      
       for (int i = 0; i < 12; i++)
       {
           GameObject newFX = Instantiate(fxPrefab, Vector3.up * 1000, Quaternion.identity);
           newFX.transform.parent = transform;
-          fxInstances.Add(newFX.GetComponent<Animator>());   
+          fxInstances.Add(newFX.GetComponent<Animator>());
+          yield return null;
       }
-      
       
       line = new VectorLine (name, new List<Vector3> (20), 2, LineType.Continuous, Vectrosity.Joins.Weld);
       line.color = new Color(1,1,1,0.25f);
