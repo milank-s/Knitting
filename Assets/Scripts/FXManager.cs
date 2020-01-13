@@ -83,6 +83,8 @@ public class FXManager : MonoBehaviour
       flyingParticles.Clear();
       speedParticles.Clear();
       flyingTrail.emitting = false;
+      flyingTrail.Clear();
+      
       
       for (int i = spawnedSprites.Count - 1; i >= 0; i--)
       {
