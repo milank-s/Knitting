@@ -155,7 +155,7 @@ public class SceneController : MonoBehaviour
             //Services.main.LoadLevelDelayed("", 2);
             
             //reopen menu, empty scene;
-            Services.main.Reset();
+            Services.main.QuitLevel();
         }
     }
 

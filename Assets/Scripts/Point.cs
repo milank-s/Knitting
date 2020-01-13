@@ -310,7 +310,6 @@ public class Point : MonoBehaviour
 				Movement();
 			}
 
-
 		}
 		else
 		{
