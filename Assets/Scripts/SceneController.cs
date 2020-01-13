@@ -55,9 +55,16 @@ public class SceneController : MonoBehaviour
 
         Services.main.Word.text = "";
         Services.main.ShowImage(null, false);
-        
-        Services.main.CloseMenu();
+        if (Services.main.state == Main.GameState.menu)
+        {
+            Services.main.CloseMenu();
+        }
 
+        if (Services.main.state == Main.GameState.paused)
+        {
+            Services.main.Pause(false);
+        }
+        
         if (!MapEditor.editing)
         {
             Services.main.ToggleEditMode();
@@ -101,10 +108,9 @@ public class SceneController : MonoBehaviour
     public void LoadLevelSet()
     {
 
-        if (Services.main._paused)
+        if (Services.main.state == Main.GameState.menu)
         {
-        
-
+      
         Services.main.Reset();
         Services.main.CloseMenu();
 
@@ -115,6 +121,7 @@ public class SceneController : MonoBehaviour
 
         //play level intro. 
         StartCoroutine(Services.main.LevelIntro(curLevelSet));
+        
         }
 }
     

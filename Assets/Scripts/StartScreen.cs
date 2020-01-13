@@ -67,7 +67,7 @@ public class StartScreen : MonoBehaviour
             StartCoroutine(LoadNext(0, true));
         }
 
-        if (Services.main._paused)
+        if (Services.main.state == Main.GameState.playing)
         {
             timer += Time.deltaTime;
         }
@@ -87,7 +87,7 @@ public class StartScreen : MonoBehaviour
             }
         }
 
-        if (timer > 60f && !idling && Services.main._paused)
+        if (timer > 60f && !idling && Services.main.state == Main.GameState.playing)
         {
             sprite.gameObject.SetActive(true);
             idling = true;

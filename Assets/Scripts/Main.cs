@@ -7,7 +7,7 @@
 
 public class Main : MonoBehaviour {
 
-	public enum GameState {playing, paused, editing}
+	public enum GameState {playing, paused, editing, menu}
 
 	public GameState state;
 	public GameObject cursor;
@@ -36,25 +36,6 @@ public class Main : MonoBehaviour {
 		}
 	}
 	
-	public bool _paused
-	{
-		set
-		{
-			paused = value;
-			if (value)
-			{
-				PauseMenu.SetActive(true);
-			}
-			else
-			{
-				PauseMenu.SetActive(false);
-			}
-		}
-
-		get { return paused; }
-	}
-
-	private bool paused;
 
 	[SerializeField] public string loadFileName;
 	
@@ -88,6 +69,11 @@ public class Main : MonoBehaviour {
 		Spline.Splines.Clear();
 		Services.PlayerBehaviour.Reset();
 		Services.fx.Reset();
+
+		if (MapEditor.editing)
+		{
+			ToggleEditMode();
+		}
 	}
 	
 	public void ReloadScene()
@@ -145,6 +131,13 @@ public class Main : MonoBehaviour {
 		
 		StartCoroutine(FadeIn());
 	}
+
+	public void QuitLevel()
+	{
+		Pause(false);
+		Reset();
+		OpenMenu();
+	}
 	
 	public void LoadLevel(string i)
 	{
@@ -179,8 +172,8 @@ public class Main : MonoBehaviour {
 //			Cursor.visible = true;
 //		}
 
-		_paused = false;
-	
+		state = GameState.playing;
+
 	}
 	
 	
@@ -211,7 +204,7 @@ public class Main : MonoBehaviour {
 	void Start()
 	{
 		MapEditor.editing = false;
-		paused = true;
+		state = GameState.menu;
 
 		if (SceneManager.sceneCount > 1)
 		{
@@ -235,7 +228,7 @@ public class Main : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
 //		Time.timeScale = 0;
-		paused = true;
+		state = GameState.menu;
 		SceneController.instance.SelectLevelSet();
 
 		if (MapEditor.editing)
@@ -246,9 +239,9 @@ public class Main : MonoBehaviour {
 
 	public void CloseMenu()
 	{
-		Time.timeScale = 1;
 		menu.SetActive(false);
-				
+		state = GameState.playing;		
+		
 		if (curLevel != "Editor") 
 		{
 			Cursor.visible = false;
@@ -257,7 +250,31 @@ public class Main : MonoBehaviour {
 
 		ShowWord("", false);
 		ShowImage(null, false);
-		paused = false;
+	}
+
+	public void Pause(bool pause)
+	{
+		PauseMenu.SetActive(pause);
+		if (pause)
+		{
+			
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = true;
+			state = GameState.paused;
+		}
+		else
+		{
+			if (!MapEditor.editing)
+			{
+				Cursor.lockState = CursorLockMode.Locked;
+			}
+
+			Cursor.visible = false;
+			state = GameState.playing;
+		}
+		
+		Time.timeScale = pause ? 0 : 1;
+		
 	}
 	
 	void Update()
@@ -273,16 +290,17 @@ public class Main : MonoBehaviour {
 //			SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
 //		}
 		
-		if (Input.GetKeyDown(KeyCode.P) && !MapEditor.typing)
+		if (Input.GetKeyDown(KeyCode.Escape) && !MapEditor.typing)
 		{
-			_paused = !paused;
-			if (paused)
+			
+			if (state == GameState.paused)
 			{
-				OpenMenu();
+				Pause(false);
+				
 			}
-			else
+			else if(state != GameState.menu)
 			{
-				CloseMenu();	
+				Pause(true);
 			}
 		}
 		
@@ -295,7 +313,7 @@ public class Main : MonoBehaviour {
 			}
 		}
 
-		if (!paused)
+		if (state == GameState.playing)
 		{
 			if (!MapEditor.editing)
 			{
@@ -305,7 +323,7 @@ public class Main : MonoBehaviour {
 					Services.PlayerBehaviour.Step();
 					CameraFollow.instance.FollowPlayer();
 				}
-				
+					
 				foreach (Spline s in Spline.Splines)
 				{
 
@@ -410,8 +428,7 @@ public class Main : MonoBehaviour {
 			//Services.mainCam.GetComponentInChildren<Camera>().enabled = !enter;
 			if (enter)
 			{
-				state = GameState.editing;
-				if (paused)
+				if (state == GameState.menu)
 				{
 					CloseMenu();
 				}
@@ -425,6 +442,9 @@ public class Main : MonoBehaviour {
 					s.ResetVectorLine();
 				}
 
+				
+				state = GameState.editing;
+				
 				Cursor.lockState = CursorLockMode.None;
 			}
 			else

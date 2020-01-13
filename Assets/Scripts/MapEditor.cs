@@ -75,7 +75,8 @@ public class MapEditor : MonoBehaviour
     public GameObject selectedPointIndicator;
     public GameObject pointOptions;
     private List<Image> selectors;
-    
+
+    private bool raycastNull;
     private LineRenderer l;
     private Camera cam;
     public Slider tensionSlider;
@@ -534,7 +535,15 @@ public class MapEditor : MonoBehaviour
 
 
             }
+
+            raycastNull = false;
         }
+        else
+        {    
+            
+            raycastNull = true;
+        }
+
     }
 
     void TryChangeTool()
@@ -1459,7 +1468,7 @@ void DragCamera()
                 {
                     if (Input.GetMouseButtonDown(0))
                     {
-                        if (selectedPoints.Count > 0)
+                        if (selectedPoints.Count > 0 && raycastNull)
                         {
                             Point newPoint = SplineUtil.CreatePoint(worldPos);
                             if (Input.GetKey(KeyCode.LeftShift))
