@@ -176,7 +176,6 @@ public class Main : MonoBehaviour {
 	
 	void Awake ()
 	{
-		MapEditor.editing = true;
 		
 		curLevel = "";
 		Point.Points = new List<Point>();
@@ -196,6 +195,7 @@ public class Main : MonoBehaviour {
 		PauseScreen.color = new Color(0,0,0,0);
 		PauseMenu.SetActive(false);
 		
+		MapEditor.editing = true;
 		ToggleEditMode();
 	}
 
