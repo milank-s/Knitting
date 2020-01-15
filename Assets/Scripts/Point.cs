@@ -192,6 +192,12 @@ public class Point : MonoBehaviour
 	public void Destroy()
 	{
 		Points.Remove(this);
+		
+		if (hasController)
+		{
+			controller._points.Remove(this);
+		}
+		
 		Destroy(gameObject);
 	}
 

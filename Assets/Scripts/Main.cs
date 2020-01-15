@@ -140,8 +140,10 @@ public class Main : MonoBehaviour {
 
 	public void QuitLevel()
 	{
+		
 		Pause(false);
 		Reset();
+		
 		OpenMenu();
 	}
 	
@@ -233,6 +235,9 @@ public class Main : MonoBehaviour {
 		menu.SetActive(true);
 		SceneController.instance.SelectLevelSet();
 
+		
+		state = GameState.menu;
+		
 		if (MapEditor.editing)
 		{
 			ToggleEditMode();
@@ -240,7 +245,6 @@ public class Main : MonoBehaviour {
 		
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
-		state = GameState.menu;
 	}
 
 	public void CloseMenu()

@@ -810,7 +810,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (pointDest != null)
 		{
-			transform.position += (pointDest.transform.position - transform.position).normalized * Time.deltaTime;
+			flyingSpeed += Time.deltaTime;
+			transform.position += (pointDest.transform.position - transform.position).normalized * Time.deltaTime * flyingSpeed;
 
 			foreach (Spline p in pointDest._connectedSplines)
 			{
