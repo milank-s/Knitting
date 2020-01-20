@@ -54,12 +54,15 @@ public class MapEditor : MonoBehaviour
     {
         set
         {
+            
             int dummy = (int) curTool;
             curTool = value;
             if (dummy != (int) value)
             {
                 ChangeTool();
             }
+                
+//            tooltips[(int)value].SetActive(true);   
         }
 
         get { return curTool; }
@@ -547,7 +550,7 @@ public class MapEditor : MonoBehaviour
 
     void TryChangeTool()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKey(KeyCode.Q))
         {
 
             _curTool = Tool.select;
@@ -556,31 +559,31 @@ public class MapEditor : MonoBehaviour
                 pointOptions.SetActive(true);
             }
         }
-        else if (Input.GetKeyDown(KeyCode.W))
+        else if (Input.GetKey(KeyCode.W))
         {
             _curTool = Tool.move;
 
         }
-        else if (Input.GetKeyDown(KeyCode.D))
+        else if (Input.GetKey(KeyCode.D))
         {
             _curTool = Tool.draw;
             l.enabled = true;
         }
-        else if (Input.GetKeyDown(KeyCode.M))
+        else if (Input.GetKey(KeyCode.M))
         {
             _curTool = Tool.marquee;
 
         }
-        else if (Input.GetKeyDown(KeyCode.R))
+        else if (Input.GetKey(KeyCode.R))
         {
             _curTool = Tool.rotate;
 
         }
-        else if (Input.GetKeyDown(KeyCode.V))
+        else if (Input.GetKey(KeyCode.V))
         {
             _curTool = Tool.clone;
         }
-        else if (Input.GetKeyDown(KeyCode.T))
+        else if (Input.GetKey(KeyCode.T))
         {
             _curTool = Tool.text;
         }
@@ -604,6 +607,10 @@ public class MapEditor : MonoBehaviour
                     }
                     
                     ChangeSelectedSpline();
+                    
+                    
+                    tooltips[(int)curTool].SetActive(false);
+                    
                     TryChangeTool();
                     
                     if (Input.GetKeyDown(KeyCode.S))
@@ -1646,7 +1653,6 @@ void DragCamera()
             if (i == (int) curTool)
             {
                 tools[i].color = Color.white;
-                tooltips[i].SetActive(true);
                 cursor.sprite = cursors[i];
             }
             else

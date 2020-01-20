@@ -53,7 +53,17 @@ public class SceneController : MonoBehaviour
     {
         SelectNextLevel(true);
     }
-    
+
+    public void Reset()
+    {
+        foreach (StellationController s in Services.main.GetComponentsInChildren<StellationController>())
+        {
+            Destroy(s.gameObject);
+        }
+
+        instance.activeScenes.Clear();
+        instance.curLevel = 0;   
+    }
     public void OpenEditor()
     {
 
@@ -75,6 +85,8 @@ public class SceneController : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
+
+        Services.main.state = Main.GameState.playing;
     }
     
     public static SceneController instance;
@@ -107,22 +119,19 @@ public class SceneController : MonoBehaviour
         
         Services.main.ShowImage(curLevelSet.image);
         Services.main.ShowWord(curLevelSet.title);
-        
+
     }
 
     public void LoadLevelSet()
     {
-
+//        curLevel = 0;
+        
         if (Services.main.state == Main.GameState.menu)
         {
       
         Services.main.Reset();
         Services.main.CloseMenu();
 
-        if (MapEditor.editing)
-        {
-            Services.main.ToggleEditMode();
-        }
 
         //play level intro. 
         StartCoroutine(Services.main.LevelIntro(curLevelSet));

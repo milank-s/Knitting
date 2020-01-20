@@ -33,6 +33,7 @@ public class SynthController : MonoBehaviour
         
         if (!hasStartedNoise && Services.PlayerBehaviour.state == PlayerState.Traversing)
         {
+            
             noiseySynth.FrequencyOn( 261.6f);
             movementSynth.FrequencyOn( 261.6f * 5f);
             

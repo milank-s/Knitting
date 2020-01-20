@@ -15,6 +15,7 @@ public class Main : MonoBehaviour {
 	public Image PauseScreen;
 	public GameObject PauseMenu;
 	public Text Word;
+	public Text description;
 	public Image image;
 	public FXManager fx;
 	public GameObject canvas;
@@ -55,29 +56,14 @@ public class Main : MonoBehaviour {
 	}
 	public void Reset()
 	{
-		SceneController.instance.curLevel = 0;
-		SceneController.instance.activeScenes.Clear();
+		
+		
+		SceneController.instance.Reset();
 		
 		editor.DeselectPoints();
 		editor.DeselectSpline();
+
 		
-		//should probably save player made stellation here
-//		for (int i = Spline.Splines.Count-1; i >= 0; i--)
-//		{
-//			Destroy(Spline.Splines[i]);
-//		}
-//		
-//		for (int i = Point.Points.Count - 1 ; i >= 0; i--)
-//		{
-//			Point.Points[i].Destroy();
-//		}
-
-		foreach (StellationController s in splineParent.GetComponentsInChildren<StellationController>())
-		{
-			Destroy(s.gameObject);
-		}
-
-		SceneController.instance.activeScenes.Clear();
 		Point.Points.Clear();
 		Spline.Splines.Clear();
 		Services.PlayerBehaviour.Reset();
@@ -250,7 +236,7 @@ public class Main : MonoBehaviour {
 	public void CloseMenu()
 	{
 		menu.SetActive(false);
-		state = GameState.playing;		
+			
 		
 		if (curLevel != "Editor") 
 		{
@@ -450,6 +436,8 @@ public class Main : MonoBehaviour {
 				if (state == GameState.menu)
 				{
 					CloseMenu();
+					
+					 state =  GameState.playing;
 				}
 				foreach (Point p in Point.Points)	
 				{
@@ -557,24 +545,27 @@ public class Main : MonoBehaviour {
 	public IEnumerator LevelIntro(LevelSet l)
 	{
 		
-		ShowWord(l.title);
-		ShowImage(l.image);
+//		ShowWord(l.title);
+//		ShowImage(l.image);
+
+		description.text = l.description;
 		
+//		yield return new WaitForSeconds(0.25f);
+//		
+//		ShowWord("", false);
+		while (!Input.anyKey)
+		{
+			yield return null;
+		}
 		
 		SceneController.instance.LoadNextStellation();
 		
+		description.text = "";
+
 		
-		yield return new WaitForSeconds(0.25f);
-		
-		ShowWord("", false);
-		
-		yield return new WaitForSeconds(0.1f);
-		
-		ShowImage(null, false);
-		
-		
-		
-		
+//		ShowImage(null, false);
+
+		state = GameState.playing;
 	}
 	
 	

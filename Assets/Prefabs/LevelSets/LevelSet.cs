@@ -6,6 +6,7 @@ using UnityEngine;
 public class LevelSet : ScriptableObject
 {
     public string title = "Stellation";
+    public string description = "Good going";
     public Sprite image;
     
     public List<string> levels;
