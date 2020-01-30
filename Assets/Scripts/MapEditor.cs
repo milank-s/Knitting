@@ -1152,6 +1152,8 @@ public class MapEditor : MonoBehaviour
     public void ChangeScore(Single i)
     {
         scoreText.text = scoreSlider.value.ToString("F0");
+        controller.score = (int)i;
+        controller.scoreCount = i;
     }
     public void ChangeWinCondition(Int32 i)
     {

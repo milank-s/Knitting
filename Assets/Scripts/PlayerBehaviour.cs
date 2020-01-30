@@ -162,7 +162,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		PointManager.ResetPoints ();
 		Reset();
 		
-		Services.fx.Reset();
 		cursor = Services.Cursor;
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
@@ -254,8 +253,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		curSpeed = lerpSpeed;
 		StartCoroutine(Unwind());
 	}
-	public void Step () {
+	public void Step ()
+	{
 
+		Services.fx.readout.transform.position = transform.position;
+		
 		if (joystickLocked)
 		{
 			cursorSprite.enabled = false;

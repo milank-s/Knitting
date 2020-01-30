@@ -22,6 +22,7 @@ public class StellationController : MonoBehaviour {
 	public Spline unlock;
 
 	public int score;
+	public float scoreCount;
 	
 	[Space(10)]
 	[Header("Point Physics")]
@@ -57,7 +58,9 @@ public class StellationController : MonoBehaviour {
 		_points = new List<Point>();
 	}
 	public void Initialize()
-	{	
+	{
+		scoreCount = score;
+		
 		foreach(Point p in GetComponentsInChildren<Point>()){
 			
 			//expensive but easy
@@ -121,9 +124,15 @@ public class StellationController : MonoBehaviour {
 	public bool CheckCompleteness()
 	{
 
+		int minLaps = 1000;
 		bool isDone = true;
 		foreach (Point p in _points)
 		{
+			if (p.timesHit < minLaps)
+			{
+				minLaps = p.timesHit;
+			}
+			
 			if (p.timesHit < score)
 			{
 				isDone = false;
@@ -131,34 +140,47 @@ public class StellationController : MonoBehaviour {
 			}
 		}
 
+		scoreCount = minLaps;
+
 		return isDone;
 	}
 
+	public void Reset()
+	{
+		
+		Services.main.InitializeLevel();
+		scoreCount = score;
+	}
 	public void Step()
 	{
 		
 			if (isOn)
 			{
-				Services.fx.readout.transform.position = transform.position;
+				
 				if (unlockMethod == UnlockType.speed)
 				{
-					Services.fx.readout.text = (Services.PlayerBehaviour.flow - score).ToString("F2");
+					Services.fx.readout.text = (Services.PlayerBehaviour.flow - scoreCount).ToString("F2");
+					
 				}else if (unlockMethod == UnlockType.time)
 				{
+					Services.fx.readout.text = (scoreCount).ToString("F2");
+					scoreCount -= Time.deltaTime;
+
+					if (scoreCount <= 0)
+					{
+						Reset();
+					}
+				}else if (unlockMethod == UnlockType.laps){
 					
-				} 	
-				else
-				{
-//					Services.fx.readout.text = _points[0].timesHit.ToString() + " / " + lapsRequired;
+					Services.fx.readout.text = scoreCount.ToString("F0") + "/" + score.ToString("F0");
 				}
 
 				if (isComplete)
 				{
 					List<Vector3> positions = new List<Vector3>();
+					
 //					foreach (Point p in _points)
 //					{
-//
-//						
 //						//p.Contract();
 //					}
 

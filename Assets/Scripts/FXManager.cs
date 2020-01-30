@@ -67,8 +67,6 @@ public class FXManager : MonoBehaviour
                  glitchfx.transform.position = p.Pos;
                  yield return new WaitForSeconds(0.1f);
               }
-
-              
           }
 
       }
