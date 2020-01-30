@@ -256,7 +256,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void Step ()
 	{
 
-		Services.fx.readout.transform.position = transform.position;
+		
 		
 		if (joystickLocked)
 		{
@@ -275,8 +275,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			directionIndicator.enabled = true;
 		}
 		
-		
-
 		if (Input.GetButton("Button1"))
 		{
 			if(charging){
@@ -825,6 +823,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			pointDest = raycastPoint;
 		}
 
+		flow = flyingSpeed;
+		
 		if (pointDest != null)
 		{
 			flyingSpeed += Time.deltaTime;

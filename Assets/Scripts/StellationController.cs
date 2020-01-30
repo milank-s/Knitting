@@ -59,7 +59,12 @@ public class StellationController : MonoBehaviour {
 	}
 	public void Initialize()
 	{
-		scoreCount = score;
+		
+		scoreCount = 0;
+		if (unlockMethod == UnlockType.laps && score == 0)
+		{
+			score = 1;
+		}
 		
 		foreach(Point p in GetComponentsInChildren<Point>()){
 			
@@ -128,20 +133,24 @@ public class StellationController : MonoBehaviour {
 		bool isDone = true;
 		foreach (Point p in _points)
 		{
-			if (p.timesHit < minLaps)
-			{
-				minLaps = p.timesHit;
-			}
-			
+
 			if (p.timesHit < score)
 			{
+				if (p.timesHit < minLaps)
+				{
+					minLaps = p.timesHit;
+				}
+				
+				if (minLaps > scoreCount)
+				{
+					scoreCount = minLaps;
+				}
+				
 				isDone = false;
 				break;
 			}
 		}
-
-		scoreCount = minLaps;
-
+		
 		return isDone;
 	}
 
@@ -159,20 +168,22 @@ public class StellationController : MonoBehaviour {
 				
 				if (unlockMethod == UnlockType.speed)
 				{
-					Services.fx.readout.text = (Services.PlayerBehaviour.flow - scoreCount).ToString("F2");
+					Services.fx.readout.text = (Services.PlayerBehaviour.flow - score).ToString("F2");
 					
 				}else if (unlockMethod == UnlockType.time)
 				{
-					Services.fx.readout.text = (scoreCount).ToString("F2");
-					scoreCount -= Time.deltaTime;
+					Services.fx.readout.text = (score - scoreCount).ToString("F2");
+					scoreCount += Time.deltaTime;
 
-					if (scoreCount <= 0)
+					if (score - scoreCount <= 0)
 					{
 						Reset();
 					}
+					
 				}else if (unlockMethod == UnlockType.laps){
 					
-					Services.fx.readout.text = scoreCount.ToString("F0") + "/" + score.ToString("F0");
+					//Services.fx.readout.text = scoreCount.ToString("F0") + "/" + score.ToString("F0");
+					Services.fx.readout.text = "";
 				}
 
 				if (isComplete)
@@ -222,6 +233,7 @@ public class StellationController : MonoBehaviour {
 				complete = CheckSpeed();
 				break;
 			}
+			
 			
 			if (complete)
 			{

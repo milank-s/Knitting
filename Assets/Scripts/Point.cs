@@ -480,6 +480,7 @@ public class Point : MonoBehaviour
 				GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
 				fx.transform.parent = transform;
 				Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, transform);
+				SynthController.instance.PlayNote(0);
 		}
 
 		if (pointType == PointTypes.end)
