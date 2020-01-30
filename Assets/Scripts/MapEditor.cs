@@ -93,15 +93,20 @@ public class MapEditor : MonoBehaviour
     public Text xPos;
     public Text yPos;
     public Text zPos;
-
+    public Text fov;
+    public Slider fovSlider;
+    public Slider scoreSlider;
+    public Text scoreText;
+    public Toggle fixedCamera;
+    
     public InputField sceneTitle;
     public Dropdown levelList;
-
+    public Dropdown unlockTypes;
+    
     private static float cameraDistance = 2;
     private List<GameObject> text;
 
-    [SerializeField]
-    private StellationController controller;
+    public StellationController controller;
 
     public LineRenderer l;
     
@@ -222,6 +227,18 @@ public class MapEditor : MonoBehaviour
         sceneName = name;
     }
 
+    public void ChangeFOV(System.Single s)
+    {
+        controller.desiredFOV = (int)s;
+        CameraFollow.instance.cam.fieldOfView = s;
+        fov.text = s.ToString("F0");
+
+    }
+    public void FixCamera(bool b)
+    {
+        controller.fixedCam = b;
+    }
+
     IEnumerator Start()
     {
         cam = Services.mainCam;
@@ -247,13 +264,17 @@ public class MapEditor : MonoBehaviour
             }
         }
 
+        unlockTypes.options.Add(new Dropdown.OptionData("Laps"));
+        unlockTypes.options.Add(new Dropdown.OptionData("Speed"));
+        unlockTypes.options.Add(new Dropdown.OptionData("Time"));
+        
+        
         _curTool = Tool.select;
         _curTool = Tool.draw;
 
         for (int i = 0; i < tooltips.Length; i++)
         {
             tooltips[i].SetActive(false);
-        
         }
         
         for (int i = 0; i < 50; i++)
@@ -872,8 +893,12 @@ public class MapEditor : MonoBehaviour
             level["p" + i] = Point.Points[i].Save(i);
             
         }
-
+        
+        level["fixedCamera"].AsBool = controller.fixedCam;
+        level["fov"].AsInt = controller.desiredFOV;
         level["splineCount"].AsInt = Spline.Splines.Count;
+        level["unlockType"].AsInt = (int) controller.unlockMethod;
+        level["score"].AsInt = (int)scoreSlider.value;
 
         for (int j = 0; j < Spline.Splines.Count; j++)
         {
@@ -950,9 +975,18 @@ public class MapEditor : MonoBehaviour
         //Delete everything already in the scene
         //take care of any local variables in here that reference shit in the scene
 
-        Services.main.Reset();
+        if (!Input.GetKey(KeyCode.LeftShift))
+        {
+            Services.main.Reset();
+        }
 
         Load(fileName);
+
+        fov.text = controller.desiredFOV.ToString("F0");
+        fovSlider.value = controller.desiredFOV;
+        fixedCamera.isOn = controller.fixedCam;
+        scoreSlider.value = controller.score;
+        unlockTypes.value = (int)controller.unlockMethod;
         
         sceneName = fileName;
         sceneTitle.text = sceneName;
@@ -1096,11 +1130,54 @@ public class MapEditor : MonoBehaviour
 //            points[i].Destroy();
 //        }
         StellationController c = parent.AddComponent<StellationController>();
+
+        c.fixedCam = json["fixedCamera"];
+        c.desiredFOV = json["fov"];
+        c.score = json["score"];
+        int unlock = json["unlockType"];
+        c.unlockMethod = (StellationController.UnlockType) unlock;
+        
+        if (c.desiredFOV == 0)
+        {
+            c.desiredFOV = 40;
+        }
         c.Initialize();
+        
+        
         instance.controller = c;
         return c;
     }
-    
+
+
+    public void ChangeScore(Single i)
+    {
+        scoreText.text = scoreSlider.value.ToString("F0");
+    }
+    public void ChangeWinCondition(Int32 i)
+    {
+        controller.unlockMethod = (StellationController.UnlockType) i;
+        switch ((StellationController.UnlockType) i)
+        {
+            case StellationController.UnlockType.laps:
+                scoreSlider.minValue = 1;
+                scoreSlider.maxValue = 50;
+                
+                break;
+            
+            case StellationController.UnlockType.speed:
+                scoreSlider.minValue = 1;
+                scoreSlider.maxValue = 9;
+                break;
+            
+            case StellationController.UnlockType.time:
+                scoreSlider.minValue = 5;
+                scoreSlider.maxValue = 600;
+                break;
+        }
+
+        scoreText.text = scoreSlider.minValue.ToString("F0");
+        scoreSlider.value = scoreSlider.minValue;
+    }
     
 void DragCamera()
     {

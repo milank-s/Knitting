@@ -4,8 +4,9 @@
 	 using UnityEngine.UI;
 	 using UnityEngine.SceneManagement;
 	 using UnityEngine.InputSystem;
+	 using UnityEngine.InputSystem.LowLevel;
 
-public class Main : MonoBehaviour {
+	 public class Main : MonoBehaviour {
 
 	public enum GameState {playing, paused, editing, menu}
 
@@ -57,7 +58,6 @@ public class Main : MonoBehaviour {
 	public void Reset()
 	{
 		
-		
 		SceneController.instance.Reset();
 		
 		editor.DeselectPoints();
@@ -68,7 +68,6 @@ public class Main : MonoBehaviour {
 		Spline.Splines.Clear();
 		Services.PlayerBehaviour.Reset();
 		Services.fx.Reset();
-
 	
 	}
 	
@@ -218,6 +217,13 @@ public class Main : MonoBehaviour {
 
 	public void OpenMenu()
 	{
+		if (SceneController.instance.curSetIndex < 0)
+		{
+			SceneController.instance.curSetIndex = 0;
+		}
+
+		Services.Player.SetActive(false);
+		
 		menu.SetActive(true);
 		SceneController.instance.SelectLevelSet();
 
@@ -237,7 +243,6 @@ public class Main : MonoBehaviour {
 	{
 		menu.SetActive(false);
 			
-		
 		if (curLevel != "Editor") 
 		{
 			Cursor.visible = false;
@@ -411,6 +416,7 @@ public class Main : MonoBehaviour {
 		
 		if (!MapEditor.editing)
 		{
+			Services.Player.SetActive(true);
 			Services.PlayerBehaviour.Initialize();
 		}
 		
@@ -420,6 +426,7 @@ public class Main : MonoBehaviour {
 	
 	public void ToggleEditMode()
 	{
+			
 			MapEditor.editing = !MapEditor.editing;
 			bool enter = MapEditor.editing;
 			editorUI.SetActive(enter);
@@ -451,6 +458,8 @@ public class Main : MonoBehaviour {
 
 				
 				state = GameState.playing;
+				
+				SceneController.instance.curSetIndex = -1;
 				
 				Cursor.lockState = CursorLockMode.None;
 			}
@@ -566,6 +575,7 @@ public class Main : MonoBehaviour {
 //		ShowImage(null, false);
 
 		state = GameState.playing;
+		
 	}
 	
 	

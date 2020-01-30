@@ -6,7 +6,7 @@ using UnityEngine.XR.WSA;
 
 public class StellationController : MonoBehaviour {
 
-	public enum UnlockType{laps, speed}
+	public enum UnlockType{laps, speed, time}
 	public enum UnlockMechanism{unlockSpline, turnOnSpline, unlockPoints, switchPointTypes}
 	
 	public List<UnlockMechanism> unlockActions = new List<UnlockMechanism>() {UnlockMechanism.unlockSpline};
@@ -20,9 +20,8 @@ public class StellationController : MonoBehaviour {
 	public List<Point> _points;
 	
 	public Spline unlock;
-	
-	public int lapsRequired = 1;
-	public float speedRequired = 1;
+
+	public int score;
 	
 	[Space(10)]
 	[Header("Point Physics")]
@@ -36,7 +35,7 @@ public class StellationController : MonoBehaviour {
 	public TextMesh title;
 	public SpriteRenderer image;
 	public bool fixedCam = false;
-	public float desiredFOV = 30;
+	public int desiredFOV = 30;
 	public TextAsset text;
 	[Space(10)]
 
@@ -102,8 +101,15 @@ public class StellationController : MonoBehaviour {
 			words = text.text.Split (new char[] { ' ' });
 		}
 
-		SetCameraBounds();
-		
+		if (fixedCam)
+		{
+			SetCameraBounds();
+		}
+		else
+		{
+			CameraFollow.desiredFOV = desiredFOV;
+		}
+
 		Services.main.state = Main.GameState.playing;
 		
 }
@@ -118,7 +124,7 @@ public class StellationController : MonoBehaviour {
 		bool isDone = true;
 		foreach (Point p in _points)
 		{
-			if (p.timesHit < lapsRequired)
+			if (p.timesHit < score)
 			{
 				isDone = false;
 				break;
@@ -136,8 +142,11 @@ public class StellationController : MonoBehaviour {
 				Services.fx.readout.transform.position = transform.position;
 				if (unlockMethod == UnlockType.speed)
 				{
-					Services.fx.readout.text = (Services.PlayerBehaviour.flow - speedRequired).ToString("F2");
-				}
+					Services.fx.readout.text = (Services.PlayerBehaviour.flow - score).ToString("F2");
+				}else if (unlockMethod == UnlockType.time)
+				{
+					
+				} 	
 				else
 				{
 //					Services.fx.readout.text = _points[0].timesHit.ToString() + " / " + lapsRequired;
@@ -258,9 +267,6 @@ public class StellationController : MonoBehaviour {
 			float height = Mathf.Abs(upperRight.y - lowerLeft.y);
 			float fov = CameraDolly.FOVForHeightAndDistance(height, -CameraFollow.instance.offset.z) + 10f;
 
-			fixedCam = true;
-			desiredFOV = fov;
-			
 			CameraFollow.desiredFOV = fov;
 			CameraFollow.fixedCamera = fixedCam;
 			CameraFollow.instance.WarpToPosition(center);
@@ -270,7 +276,7 @@ public class StellationController : MonoBehaviour {
 	
 	public bool CheckSpeed()
 	{
-		if (Services.PlayerBehaviour.flow > speedRequired)
+		if (Services.PlayerBehaviour.flow > score)
 		{
 			return true;
 		}

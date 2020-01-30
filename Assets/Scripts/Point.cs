@@ -547,8 +547,10 @@ public class Point : MonoBehaviour
 
 			case PointTypes.normal:
 
-				Services.PlayerBehaviour.boost += boostAmount + Services.PlayerBehaviour.boostTimer;
-				Services.PlayerBehaviour.flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
+				if (Services.PlayerBehaviour.buttonPressed)
+				{
+					AddBoost();
+				}
 
 			break;
 			

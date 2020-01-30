@@ -28,7 +28,7 @@ public class SceneController : MonoBehaviour
         activeScenes = new List<StellationController>();
         instance = this;
         curLevel = 0;
-       SelectLevelSet();
+        SelectLevelSet();
    
        
     }
@@ -56,7 +56,7 @@ public class SceneController : MonoBehaviour
 
     public void Reset()
     {
-        foreach (StellationController s in Services.main.GetComponentsInChildren<StellationController>())
+        foreach (StellationController s in Services.main.splineParent.GetComponentsInChildren<StellationController>())
         {
             Destroy(s.gameObject);
         }
@@ -116,10 +116,8 @@ public class SceneController : MonoBehaviour
     }
     public void SelectLevelSet()
     {
-        
         Services.main.ShowImage(curLevelSet.image);
-        Services.main.ShowWord(curLevelSet.title);
-
+        Services.main.ShowWord(curLevelSet.title);    
     }
 
     public void LoadLevelSet()
@@ -141,6 +139,11 @@ public class SceneController : MonoBehaviour
     
     public void LoadNextStellation(float delay = 0)
     {
+
+        if (curSetIndex == -1)
+        {
+            return;
+        }
         
         if(curLevel < curLevelSet.levels.Count){
             

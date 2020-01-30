@@ -114,7 +114,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public TrailRenderer shortTrail;
 	[SerializeField] ParticleSystem sparks;
 	private LineRenderer l;
-	[SerializeField] SpriteRenderer cursorSprite;
+	public SpriteRenderer cursorSprite;
 	public SpriteRenderer playerSprite;
 	public SpriteRenderer boostIndicator;
 	public SpriteRenderer directionIndicator;
@@ -123,7 +123,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	private VectorLine velocityLine;
 	private VectorLine velocityLine2;
 	
-	private bool buttonPressed;
+	public bool buttonPressed;
 	private float buttonPressedBuffer = 0.2f;
 	private float buttonPressedTimer;
 	private float progressRemainder;
@@ -256,16 +256,24 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 	public void Step () {
 
+		if (joystickLocked)
+		{
+			cursorSprite.enabled = false;
+		}
+		else
+		{
+			cursorSprite.enabled = true;
+		}
+		
 		Point.hitColorLerp = connectTime;
 
 		if (Input.GetButtonDown("Button1"))
 		{
-			buttonPressed = true;
-			charging = true;
 			boostIndicator.enabled = true;
-			buttonPressedTimer = buttonPressedBuffer;
 			directionIndicator.enabled = true;
 		}
+		
+		
 
 		if (Input.GetButton("Button1"))
 		{
@@ -273,6 +281,10 @@ public class PlayerBehaviour: MonoBehaviour {
 				boostTimer += Time.deltaTime;
 				boostTimer = Mathf.Clamp01(boostTimer);
 			}
+			
+			buttonPressed = true;
+			charging = true;
+			buttonPressedTimer = buttonPressedBuffer;
 		}
 		
 		boostIndicator.transform.localScale = Vector3.Lerp(Vector3.one, Vector3.one * 0.2f, Services.PlayerBehaviour.boostTimer);
@@ -286,12 +298,15 @@ public class PlayerBehaviour: MonoBehaviour {
 			{
 				boostTimer = 0;
 			}
-
+			buttonPressedTimer = buttonPressedBuffer;
 			directionIndicator.enabled = false;
 		}
-		
-		buttonPressedTimer -= Time.deltaTime;
-		
+
+		if (buttonPressed)
+		{
+			buttonPressedTimer -= Time.deltaTime;
+		}
+
 		if (buttonPressedTimer < 0)
 		{
 			buttonPressed = false;
@@ -1012,12 +1027,20 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		if ((accuracy < 0.5f) || joystickLocked) {
 
+			
 			if (flow > 0)
 			{
 				decelerationTimer = Mathf.Clamp01(decelerationTimer + Time.deltaTime * (2-accuracy));
 				
 				if (decelerationTimer >=1 || flow > curSpline.segmentDistance)
 				{
+					if (decelerationTimer >= 1)
+					{
+						
+						flyingSpeed = flow + speed + boost;
+						
+						SwitchState(PlayerState.Flying);
+					}
 					flow -= (0.5f - accuracy / 2f) * Time.deltaTime;
 				}
 
