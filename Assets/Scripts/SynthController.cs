@@ -13,7 +13,7 @@ public class SynthController : MonoBehaviour
     public List<HelmController> synths;
     public bool hasStartedNoise;
     public static SynthController instance;
-    private int[] notes = {60,65,70, 75};
+    private int[] notes = {60,65,70,75};
     
     private bool a, b, c, d;
     // Update is called once per frame
@@ -25,10 +25,10 @@ public class SynthController : MonoBehaviour
 
     public void PlayNote(int i)
     {
-        float time = 0.5f;
+        float time = 0.8f;
         foreach (HelmController h in synths)
         {
-            time += 0.25f;
+            time -= 0.1f;
             h.NoteOn(notes[Random.Range(0, notes.Length)], 1, time);
         }
     }
