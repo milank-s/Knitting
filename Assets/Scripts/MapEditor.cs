@@ -1141,6 +1141,7 @@ public class MapEditor : MonoBehaviour
         {
             c.desiredFOV = 40;
         }
+        
         c.Initialize();
         
         
@@ -1153,7 +1154,6 @@ public class MapEditor : MonoBehaviour
     {
         scoreText.text = scoreSlider.value.ToString("F0");
         controller.score = (int)i;
-        controller.scoreCount = i;
     }
     public void ChangeWinCondition(Int32 i)
     {

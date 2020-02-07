@@ -54,7 +54,7 @@ LightmapSettings:
     m_EnableBakedLightmaps: 0
     m_EnableRealtimeLightmaps: 0
   m_LightmapEditorSettings:
-    serializedVersion: 10
+    serializedVersion: 12
     m_Resolution: 1
     m_BakeResolution: 50
     m_AtlasSize: 1024
@@ -62,6 +62,7 @@ LightmapSettings:
     m_AOMaxDistance: 1
     m_CompAOExponent: 1
     m_CompAOExponentDirect: 0
+    m_ExtractAmbientOcclusion: 0
     m_Padding: 2
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
@@ -76,10 +77,16 @@ LightmapSettings:
     m_PVRDirectSampleCount: 32
     m_PVRSampleCount: 500
     m_PVRBounces: 2
+    m_PVREnvironmentSampleCount: 500
+    m_PVREnvironmentReferencePointCount: 2048
+    m_PVRFilteringMode: 2
+    m_PVRDenoiserTypeDirect: 0
+    m_PVRDenoiserTypeIndirect: 0
+    m_PVRDenoiserTypeAO: 0
     m_PVRFilterTypeDirect: 0
     m_PVRFilterTypeIndirect: 0
     m_PVRFilterTypeAO: 0
-    m_PVRFilteringMode: 1
+    m_PVREnvironmentMIS: 0
     m_PVRCulling: 1
     m_PVRFilteringGaussRadiusDirect: 1
     m_PVRFilteringGaussRadiusIndirect: 5
@@ -87,7 +94,8 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaDirect: 0.5
     m_PVRFilteringAtrousPositionSigmaIndirect: 2
     m_PVRFilteringAtrousPositionSigmaAO: 1
-    m_ShowResolutionOverlay: 1
+    m_ExportTrainingData: 0
+    m_TrainingDataDestination: TrainingData
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 0
 --- !u!196 &5
@@ -135,8 +143,8 @@ MonoBehaviour:
   _pointshit: []
   _points: []
   unlock: {fileID: 0}
-  lapsRequired: 1
-  speedRequired: 1
+  score: 0
+  scoreCount: 0
   isKinematic: 0
   damping: 600
   stiffness: 100
@@ -10731,6 +10739,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -10779,24 +10788,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -11011,8 +11018,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours:
   - {fileID: 832458708}
@@ -11022,16 +11028,15 @@ MonoBehaviour:
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -11063,6 +11068,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -11171,6 +11177,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -11219,24 +11226,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -11301,6 +11306,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -11349,24 +11355,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: -1
   bias: -0.41
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -11396,8 +11400,8 @@ MonoBehaviour:
   _pointshit: []
   _points: []
   unlock: {fileID: 0}
-  lapsRequired: 1
-  speedRequired: 1
+  score: 0
+  scoreCount: 0
   isKinematic: 0
   damping: 600
   stiffness: 100
@@ -11491,6 +11495,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -11539,24 +11544,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -11633,6 +11636,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -11681,24 +11685,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -11763,6 +11765,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -11811,24 +11814,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -11905,6 +11906,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -11953,24 +11955,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 1
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -12035,6 +12035,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -12083,24 +12084,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -12165,6 +12164,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -12213,24 +12213,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -12308,6 +12306,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -12356,24 +12355,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -12453,6 +12450,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -12501,24 +12499,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -12583,6 +12579,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -12631,24 +12628,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -12714,6 +12709,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -12762,24 +12758,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -12859,6 +12853,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -12907,24 +12902,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -12962,8 +12955,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours:
   - {fileID: 1698364208}
@@ -12972,16 +12964,15 @@ MonoBehaviour:
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -13013,6 +13004,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -13121,6 +13113,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -13169,8 +13162,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours:
   - {fileID: 460845754}
@@ -13179,16 +13171,15 @@ MonoBehaviour:
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -13253,6 +13244,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -13301,24 +13293,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -13383,6 +13373,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -13431,24 +13422,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -13513,6 +13502,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -13561,24 +13551,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -13643,6 +13631,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -13691,24 +13680,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -13773,6 +13760,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -13821,24 +13809,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -13903,6 +13889,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -13951,24 +13938,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -14033,6 +14018,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -14081,24 +14067,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: -1
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -14211,6 +14195,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -14259,24 +14244,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: -0.59
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -14341,6 +14324,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -14389,24 +14373,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -14471,6 +14453,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -14519,24 +14502,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -14601,6 +14582,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -14649,24 +14631,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -14887,6 +14867,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -14935,24 +14916,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -15017,6 +14996,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -15065,24 +15045,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -15147,6 +15125,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -15195,24 +15174,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -15250,8 +15227,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours:
   - {fileID: 1698364208}
@@ -15261,16 +15237,15 @@ MonoBehaviour:
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -15302,6 +15277,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -15410,6 +15386,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -15458,24 +15435,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -15540,6 +15515,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -15588,24 +15564,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -15670,6 +15644,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -15718,24 +15693,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -15785,8 +15758,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours:
   - {fileID: 1097496128}
@@ -15796,16 +15768,15 @@ MonoBehaviour:
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -15837,6 +15808,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -15918,8 +15890,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours:
   - {fileID: 1192998881}
@@ -15929,16 +15900,15 @@ MonoBehaviour:
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -15970,6 +15940,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -16078,6 +16049,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -16126,24 +16098,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -16208,6 +16178,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -16256,24 +16227,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -16350,6 +16319,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -16398,24 +16368,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -16480,6 +16448,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -16528,24 +16497,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 1
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -16610,6 +16577,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -16658,24 +16626,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -16740,6 +16706,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -16788,24 +16755,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -16948,6 +16913,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -16996,24 +16962,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -17078,6 +17042,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -17126,24 +17091,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -17193,8 +17156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours:
   - {fileID: 1558964407}
@@ -17204,16 +17166,15 @@ MonoBehaviour:
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -17245,6 +17206,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -17353,6 +17315,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -17401,24 +17364,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 1
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -17456,8 +17417,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours:
   - {fileID: 632678978}
@@ -17467,16 +17427,15 @@ MonoBehaviour:
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -17508,6 +17467,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -17616,6 +17576,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -17664,24 +17625,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -17746,6 +17705,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -17794,24 +17754,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -17994,6 +17952,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -18042,24 +18001,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -18173,6 +18130,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157a06c1609e6354b94cb9c220a2c5bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  state: 0
+  type: 0
+  distortion: 0
   SplinePoints:
   - {fileID: 259644172}
   - {fileID: 1698364208}
@@ -18276,12 +18236,11 @@ MonoBehaviour:
     m_trigger: 0
     m_physicsMaterial: {fileID: 0}
     m_alignOddWidthToPixels: 0
-  accuracyCoefficient: 0
+  completion: 0
   maxSpeed: 0
   boost: 0
   acceleration: 0
   closed: 0
-  unlockSpeed: 0
   curveFidelity: 10
   isPlayerOn: 0
   reactToPlayer: 0
@@ -18289,6 +18248,7 @@ MonoBehaviour:
   distance: 0
   segmentDistance: 0
   linearDirection: {x: 0, y: 0}
+  lineMaterial: 0
 --- !u!1 &720375835
 GameObject:
   m_ObjectHideFlags: 0
@@ -18347,6 +18307,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -18395,24 +18356,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -18477,6 +18436,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -18525,24 +18485,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -18607,6 +18565,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -18655,24 +18614,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -18738,6 +18695,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -18786,24 +18744,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -18883,6 +18839,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -18931,24 +18888,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -19025,6 +18980,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -19073,24 +19029,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -19155,6 +19109,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -19203,24 +19158,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -19285,6 +19238,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -19333,24 +19287,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -19415,6 +19367,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -19463,24 +19416,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -19545,6 +19496,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -19593,24 +19545,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: -0.77
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -19675,6 +19625,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -19723,24 +19674,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -19805,6 +19754,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -19853,24 +19803,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -19908,8 +19856,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours:
   - {fileID: 1404180991}
@@ -19919,16 +19866,15 @@ MonoBehaviour:
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -19960,6 +19906,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -20069,6 +20016,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -20117,24 +20065,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -20214,6 +20160,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -20262,24 +20209,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -20344,6 +20289,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -20392,24 +20338,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -20607,6 +20551,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -20655,24 +20600,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -20749,6 +20692,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -20797,24 +20741,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -20879,6 +20821,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -20927,24 +20870,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -21009,6 +20950,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -21057,24 +20999,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -21284,6 +21224,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -21332,24 +21273,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -21414,6 +21353,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -21462,24 +21402,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -21544,6 +21482,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -21592,24 +21531,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 1
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -21674,6 +21611,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -21722,24 +21660,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -21804,6 +21740,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -21852,24 +21789,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -21934,6 +21869,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -21982,24 +21918,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -22064,6 +21998,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -22112,24 +22047,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -22194,6 +22127,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -22242,24 +22176,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -22375,8 +22307,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours:
   - {fileID: 489063067}
@@ -22386,16 +22317,15 @@ MonoBehaviour:
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -22427,6 +22357,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -22696,6 +22627,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -22744,24 +22676,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -22826,6 +22756,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -22874,24 +22805,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: -1
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -22956,6 +22885,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -23004,24 +22934,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -23239,8 +23167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours:
   - {fileID: 645471130}
@@ -23250,16 +23177,15 @@ MonoBehaviour:
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -23291,6 +23217,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -23400,6 +23327,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -23448,24 +23376,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -23545,6 +23471,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -23593,24 +23520,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -23675,6 +23600,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -23723,24 +23649,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -23805,6 +23729,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -23853,24 +23778,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -23935,6 +23858,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -23983,24 +23907,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -24220,6 +24142,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -24268,24 +24191,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -24350,6 +24271,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -24398,24 +24320,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -24480,6 +24400,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -24528,24 +24449,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: -1
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -24583,8 +24502,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours:
   - {fileID: 1886149575}
@@ -24594,16 +24512,15 @@ MonoBehaviour:
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -24635,6 +24552,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -24744,6 +24662,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -24792,24 +24711,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -24889,6 +24806,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -24937,24 +24855,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -25098,6 +25014,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -25146,24 +25063,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -25255,6 +25170,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -25303,24 +25219,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -25385,6 +25299,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -25433,24 +25348,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -25515,6 +25428,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -25563,24 +25477,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -25645,6 +25557,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -25693,24 +25606,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: -1
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -25775,6 +25686,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -25823,24 +25735,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -25905,6 +25815,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -25953,24 +25864,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -26035,6 +25944,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -26083,24 +25993,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -26290,6 +26198,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -26338,24 +26247,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 1
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -26420,6 +26327,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -26468,24 +26376,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -26523,8 +26429,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours:
   - {fileID: 1073124363}
@@ -26534,16 +26439,15 @@ MonoBehaviour:
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -26575,6 +26479,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -26695,6 +26600,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -26743,24 +26649,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -26825,6 +26729,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -26873,24 +26778,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -26956,6 +26859,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -27004,24 +26908,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -27101,6 +27003,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -27149,24 +27052,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -27231,6 +27132,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -27279,24 +27181,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -27361,6 +27261,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -27409,24 +27310,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -27503,6 +27402,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -27551,24 +27451,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -27633,6 +27531,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -27681,24 +27580,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -27714,7 +27611,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1552267955}
-  - component: {fileID: 1552267957}
   - component: {fileID: 1552267956}
   m_Layer: 0
   m_Name: Structures
@@ -27731,7 +27627,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1552267954}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 3.91, y: 1.38, z: 6.61}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1986677818}
@@ -27777,19 +27673,6 @@ MonoBehaviour:
   - {fileID: 217632701}
   - {fileID: 1749203976}
   - {fileID: 1703673090}
---- !u!114 &1552267957
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1552267954}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2ea5319c55fdff4b8a7bb2cd264a7f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startPoint: {fileID: 280026307}
 --- !u!1 &1558964406
 GameObject:
   m_ObjectHideFlags: 0
@@ -27821,8 +27704,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours:
   - {fileID: 81789448}
@@ -27832,16 +27714,15 @@ MonoBehaviour:
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -27873,6 +27754,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -27981,6 +27863,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -28029,24 +27912,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -28123,6 +28004,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -28171,24 +28053,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -28253,6 +28133,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -28301,24 +28182,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -28384,6 +28263,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -28432,24 +28312,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -28529,6 +28407,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -28577,24 +28456,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -28659,6 +28536,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -28707,24 +28585,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -28789,6 +28665,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -28837,24 +28714,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -28919,6 +28794,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -28967,24 +28843,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -29049,6 +28923,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -29097,24 +28972,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -29179,6 +29052,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -29227,24 +29101,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -29309,6 +29181,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -29357,24 +29230,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -29439,6 +29310,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -29487,24 +29359,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -29542,8 +29412,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours:
   - {fileID: 259644172}
@@ -29553,16 +29422,15 @@ MonoBehaviour:
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -29594,6 +29462,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -29847,6 +29716,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -29895,24 +29765,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -29977,6 +29845,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -30025,24 +29894,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -30119,6 +29986,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -30167,24 +30035,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -30415,6 +30281,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -30463,24 +30330,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -30569,6 +30434,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -30617,24 +30483,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -30699,6 +30563,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -30747,24 +30612,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -30829,6 +30692,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -30877,24 +30741,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -30971,6 +30833,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -31019,24 +30882,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -31074,8 +30935,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours:
   - {fileID: 395114641}
@@ -31085,16 +30945,15 @@ MonoBehaviour:
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -31126,6 +30985,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -31324,6 +31184,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -31372,24 +31233,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -31454,6 +31313,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -31502,24 +31362,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -31584,6 +31442,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -31632,24 +31491,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -66761,8 +66618,8 @@ MonoBehaviour:
   _pointshit: []
   _points: []
   unlock: {fileID: 0}
-  lapsRequired: 1
-  speedRequired: 1
+  score: 0
+  scoreCount: 0
   isKinematic: 0
   damping: 600
   stiffness: 100
@@ -66844,6 +66701,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -66892,24 +66750,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -67008,6 +66864,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -67056,24 +66913,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -67138,6 +66993,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -67186,24 +67042,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -100236,6 +100090,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -100284,24 +100139,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -100366,6 +100219,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -100414,24 +100268,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -100496,6 +100348,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -100544,24 +100397,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -100704,6 +100555,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -100752,24 +100604,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -100835,6 +100685,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -100883,24 +100734,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -100980,6 +100829,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -101028,24 +100878,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}
@@ -101111,6 +100959,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -101159,24 +101008,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 1
   defaultToGhost: 1
   anchorPos: {x: 0, y: 0, z: 0}
   initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
   color: {r: 0, g: 0, b: 0, a: 1}

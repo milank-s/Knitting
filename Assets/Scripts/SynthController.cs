@@ -21,6 +21,11 @@ public class SynthController : MonoBehaviour
     public void Start()
     {
         instance = this;
+        foreach (HelmController h in synths)
+        {
+            
+            h.NoteOn(notes[Random.Range(0, notes.Length)], 1, 0.01f);
+        }
     }
 
     public void PlayNote(int i)

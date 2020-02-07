@@ -68,7 +68,6 @@
 		Spline.Splines.Clear();
 		Services.PlayerBehaviour.Reset();
 		Services.fx.Reset();
-	
 	}
 	
 	public void ReloadScene()
@@ -123,13 +122,18 @@
 		StartCoroutine(FadeIn());
 	}
 
-	public void QuitLevel()
+	public void QuitLevel(bool goNext = false)
 	{
 		
 		Pause(false);
 		Reset();
 		
 		OpenMenu();
+
+		if (goNext)
+		{
+			SceneController.instance.SelectNextLevel(true);
+		}
 	}
 	
 	public void LoadLevel(string i)
@@ -172,6 +176,7 @@
 	
 	void Awake ()
 	{
+
 		
 		curLevel = "";
 		Point.Points = new List<Point>();
@@ -213,6 +218,8 @@
 		Cursor.lockState = CursorLockMode.None;
 		
 		OpenMenu();
+
+		Time.timeScale = 1;
 	}
 
 	public void OpenMenu()
@@ -421,7 +428,6 @@
 		}
 		
 		Services.main.fx.Reset();
-		
 	}
 	
 	public void ToggleEditMode()
@@ -562,11 +568,9 @@
 //		yield return new WaitForSeconds(0.25f);
 //		
 //		ShowWord("", false);
-		while (!Input.anyKey)
-		{
-			yield return null;
-		}
-		
+		Word.gameObject.SetActive(false);
+		yield return new WaitForSeconds(3);
+		Word.gameObject.SetActive(true);
 		SceneController.instance.LoadNextStellation();
 		
 		description.text = "";

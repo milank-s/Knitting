@@ -204,6 +204,7 @@ public class Point : MonoBehaviour
 
 	void Awake()
 	{
+		initPos = transform.position;
 		SR = GetComponent<SpriteRenderer> ();
 
 		
@@ -410,8 +411,7 @@ public class Point : MonoBehaviour
 		if(hasController){
 			
 				controller.isOn = true;	
-		controller.TryToUnlock();
-	
+				controller.TryToUnlock();
 		}
 	}
 	
@@ -549,11 +549,12 @@ public class Point : MonoBehaviour
 			case PointTypes.normal:
 
 				
-				SynthController.instance.PlayNote(0);
+				
 				
 				if (Services.PlayerBehaviour.buttonPressed)
 				{
 					AddBoost();
+					SynthController.instance.PlayNote(0);
 				}
 
 			break;

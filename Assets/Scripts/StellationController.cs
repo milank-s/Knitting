@@ -61,6 +61,7 @@ public class StellationController : MonoBehaviour {
 	{
 		
 		scoreCount = 0;
+		
 		if (unlockMethod == UnlockType.laps && score == 0)
 		{
 			score = 1;
@@ -109,23 +110,19 @@ public class StellationController : MonoBehaviour {
 			words = text.text.Split (new char[] { ' ' });
 		}
 
+		CameraFollow.instance.fixedCamera = fixedCam;
+		CameraFollow.instance.desiredFOV = desiredFOV;
+		
 		if (fixedCam)
 		{
 			SetCameraBounds();
 		}
-		else
-		{
-			CameraFollow.desiredFOV = desiredFOV;
-		}
+	
+		
 
 		Services.main.state = Main.GameState.playing;
-		
 }
 
-	public void MoveUp(float z)
-	{
-		transform.position -= Vector3.forward * z * 0.5f;
-	}
 	public bool CheckCompleteness()
 	{
 
@@ -156,7 +153,6 @@ public class StellationController : MonoBehaviour {
 
 	public void Reset()
 	{
-		
 		Services.main.InitializeLevel();
 		scoreCount = score;
 	}
@@ -165,27 +161,9 @@ public class StellationController : MonoBehaviour {
 		
 			if (isOn)
 			{
+
+				Services.main.fx.readout.transform.position = Services.main.Player.transform.position;
 				
-				if (unlockMethod == UnlockType.speed)
-				{
-					Services.fx.readout.text = (Services.PlayerBehaviour.flow - score).ToString("F2");
-					
-				}else if (unlockMethod == UnlockType.time)
-				{
-					Services.fx.readout.text = (score - scoreCount).ToString("F2");
-					scoreCount += Time.deltaTime;
-
-					if (score - scoreCount <= 0)
-					{
-						Reset();
-					}
-					
-				}else if (unlockMethod == UnlockType.laps){
-					
-					//Services.fx.readout.text = scoreCount.ToString("F0") + "/" + score.ToString("F0");
-					Services.fx.readout.text = "";
-				}
-
 				if (isComplete)
 				{
 					List<Vector3> positions = new List<Vector3>();
@@ -196,6 +174,29 @@ public class StellationController : MonoBehaviour {
 //					}
 
 					Services.fx.DrawLine();
+				}
+				else
+				{
+					if (unlockMethod == UnlockType.speed)
+					{
+						Services.fx.readout.text = (Services.PlayerBehaviour.flow - score).ToString("F2");
+					
+					}else if (unlockMethod == UnlockType.time)
+					{
+						Services.fx.readout.text = (score - scoreCount).ToString("F2");
+						scoreCount += Time.deltaTime;
+
+						if (score - scoreCount <= 0)
+						{
+							Reset();
+						}
+					
+					}else if (unlockMethod == UnlockType.laps){
+					
+						//Services.fx.readout.text = scoreCount.ToString("F0") + "/" + score.ToString("F0");
+						Services.fx.readout.text = "";
+					}
+
 				}
 				
 			
@@ -301,8 +302,8 @@ public class StellationController : MonoBehaviour {
 			float height = Mathf.Abs(upperRight.y - lowerLeft.y);
 			float fov = CameraDolly.FOVForHeightAndDistance(height, -CameraFollow.instance.offset.z) + 10f;
 
-			CameraFollow.desiredFOV = fov;
-			CameraFollow.fixedCamera = fixedCam;
+		
+			CameraFollow.instance.desiredFOV = fov;
 			CameraFollow.instance.WarpToPosition(center);
 			
 			//get center position and fov

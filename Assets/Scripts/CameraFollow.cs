@@ -8,8 +8,8 @@ public class CameraFollow : MonoBehaviour {
 	private Vector3 velocity = Vector2.zero;
 	public Vector3 offset;
 	public Camera cam;
-	public static bool fixedCamera;
-	public static float desiredFOV;
+	public bool fixedCamera;
+	public float desiredFOV;
 	public static Vector3 targetPos;
 	
 	public static CameraFollow instance;
@@ -31,12 +31,6 @@ public class CameraFollow : MonoBehaviour {
 		cam.fieldOfView = desiredFOV;
 	}
 
-	public void WarpToPlayer()
-	{
-		transform.position = Services.Player.transform.position + offset;
-		fixedCamera = false;
-	}
-
 	// Update is called once per frame
 	public void FollowPlayer()
 	{
@@ -44,6 +38,11 @@ public class CameraFollow : MonoBehaviour {
 		//find its bounds
 		// get around them
 
+		if (!fixedCamera)
+		{
+			targetPos = Services.Player.transform.position;
+		}
+		
 		cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, desiredFOV, Time.deltaTime * 3);
 
 
@@ -51,40 +50,24 @@ public class CameraFollow : MonoBehaviour {
 		float yPos;
 		float xPos;
 
-		//if the camera is not fixed, or if the player is flying/animating, follow them.
+		Vector3 shake = Services.PlayerBehaviour.state == PlayerState.Traversing
+			? (Vector3) Random.insideUnitCircle.normalized * Mathf.Clamp(
+				  Mathf.Pow(1 - Services.PlayerBehaviour.accuracy, Services.PlayerBehaviour.accuracyCoefficient) *
+				  Services.PlayerBehaviour.flow, 0, 0.5f)
+			: Vector3.zero;
 
-		if (!fixedCamera || (Services.PlayerBehaviour.state != PlayerState.Traversing &&
-		                     Services.PlayerBehaviour.state != PlayerState.Switching))
-		{
 
-
-			Vector3 targetPosition = Vector3.SmoothDamp(transform.position, Services.PlayerBehaviour.transform.position,
-				ref velocity, 0.25f);
-
-			transform.position = new Vector3(targetPosition.x, targetPosition.y,
-				Services.PlayerBehaviour.transform.position.z + offset.z);
-
-		}
 		
-	
+		Vector3 finalPos = new Vector3(targetPos.x, targetPos.y, Services.Player.transform.position.z + offset.z);
+		
+		transform.position = Vector3.SmoothDamp(transform.position, finalPos + shake,
+			ref velocity, 0.25f);
 
 		height = Mathf.Abs(CameraDolly.topBound - CameraDolly.bottomBound);
 		yPos = Mathf.Lerp(CameraDolly.bottomBound, CameraDolly.topBound, 0.5f);
 		xPos = Mathf.Lerp(CameraDolly.leftBound, CameraDolly.rightBound, 0.5f);
 
 
-		//CALCULATE SHAKE
-		Vector3 shake = Services.PlayerBehaviour.state == PlayerState.Traversing
-			? (Vector3) Random.insideUnitCircle.normalized * Mathf.Clamp(
-				  Mathf.Pow(1 - Services.PlayerBehaviour.accuracy, Services.PlayerBehaviour.accuracyCoefficient) *
-				  Services.PlayerBehaviour.flow, 0, 0.5f)
-			: Vector3.zero;
-		
-		//ADD SHAKE
-		transform.position = Vector3.SmoothDamp(transform.position,
-			new Vector3(targetPos.x, targetPos.y, Services.PlayerBehaviour.transform.position.z + offset.z) + shake,
-			ref velocity, 0.25f);
-		
 		
 		//		if (fixedCamera && Services.PlayerBehaviour.curSpline != null)
 //		{

@@ -122,11 +122,12 @@ public class SceneController : MonoBehaviour
 
     public void LoadLevelSet()
     {
-//        curLevel = 0;
+        
         
         if (Services.main.state == Main.GameState.menu)
         {
       
+        curLevel = 0;
         Services.main.Reset();
         Services.main.CloseMenu();
 
@@ -167,7 +168,7 @@ public class SceneController : MonoBehaviour
             //Services.main.LoadLevelDelayed("", 2);
             
             //reopen menu, empty scene;
-            Services.main.QuitLevel();
+            Services.main.QuitLevel(true);
         }
     }
 
