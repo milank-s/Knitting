@@ -204,6 +204,12 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Reset()
 	{
+		
+		if (Main.usingJoystick)
+		{
+			Services.main.controller.ResetHaptics();
+		}
+		
 		cursorSprite.enabled = true;
 		progress = 0;
 		state = PlayerState.Switching;
@@ -1077,8 +1083,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (curPoint == curSpline.Selected) {
 			curPoint.proximity = 1 - progress;
-			pointDest.proximity = progress;
-
+			if (pointDest != null)
+			{
+				pointDest.proximity = progress;
+			}
 			// if (curSpline.closed && curSpline.SplinePoints.IndexOf(curPoint) >= curSpline.SplinePoints.Count-1) {
 			// 	curSpline.endPoint.proximity = 1 - progress;
 			// }
@@ -1670,6 +1678,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		LeaveState();
 
+		
+		SynthController.instance.SwitchState(newState);
 		if (Main.usingJoystick)
 		{
 			Services.main.controller.ResetHaptics();

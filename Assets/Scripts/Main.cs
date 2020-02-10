@@ -569,7 +569,18 @@
 //		
 //		ShowWord("", false);
 		Word.gameObject.SetActive(false);
-		yield return new WaitForSeconds(3);
+
+		float t = 0;
+		while (t < 3)
+		{
+			t += Time.deltaTime;
+			if (Input.anyKeyDown)
+			{
+				break;
+			}
+			yield return null;
+		}
+
 		Word.gameObject.SetActive(true);
 		SceneController.instance.LoadNextStellation();
 		
