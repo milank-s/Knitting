@@ -474,7 +474,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
 						Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.boostTimer + 1 * 5, transform);
 						Services.fx.EmitLinearBurst(50, Services.PlayerBehaviour.boostTimer + 1, transform, Services.PlayerBehaviour.cursorDir);
-						Services.Sounds.PlayPointAttack(0.5f);
+						
 						Services.PlayerBehaviour.boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
 						SwitchState(PlayerState.Flying);
 						return;

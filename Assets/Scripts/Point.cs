@@ -469,7 +469,7 @@ public class Point : MonoBehaviour
 			switch (pointType)
 			{
 				case PointTypes.normal:
-					Services.Sounds.PlayPointAttack(Services.PlayerBehaviour.clampedSpeed/10);
+					//Services.Sounds.PlayPointAttack(Services.PlayerBehaviour.clampedSpeed/10);
 					break;
 				
 				case PointTypes.end:
@@ -546,18 +546,19 @@ public class Point : MonoBehaviour
 
 				
 				
+				SynthController.instance.PlayNote(0);
 				
 				if (Services.PlayerBehaviour.buttonPressed)
 				{
 					AddBoost();
-					SynthController.instance.PlayNote(0);
+					
 				}
 
 			break;
 			
 			case PointTypes.start:
 				AddBoost();
-				Services.Sounds.PlayPointAttack(0.5f);
+				//Services.Sounds.PlayPointAttack(0.5f);
 				break;
 			
 			case PointTypes.end:

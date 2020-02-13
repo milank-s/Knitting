@@ -2,20 +2,24 @@
 using System.Collections.Generic;
 using AudioHelm;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class SynthController : MonoBehaviour
 {
     public HelmController movementSynth;
 
     public HelmController noiseySynth;
+    public HelmController flyingSynth;
     // Start is called before the first frame update
 
+    public AudioMixer synths;
+    
 
     public List<HelmController> pads;
     public List<HelmController> keys;
     public bool hasStartedNoise;
     public static SynthController instance;
-    private int[] notes = {60, 65, 70, 75};
+    private int[] notes = {60, 65, 70, 75, 80, 82, 90};
 
     private bool a, b, c, d;
 
@@ -38,8 +42,8 @@ public class SynthController : MonoBehaviour
 
         StopNote(i);
 
-        padNote = notes[Random.Range(0, notes.Length)];
-        keys[0].NoteOn(padNote, Mathf.Clamp01(Services.PlayerBehaviour.flow), 1);
+        padNote = 80;
+        pads[0].NoteOn(padNote, 1, 0.05f);
     }
 
     public void SwitchState(PlayerState s)
@@ -50,13 +54,13 @@ public class SynthController : MonoBehaviour
 	    {
 		    case PlayerState.Traversing:
 
-			    movementSynth.NoteOn(60);
-					    
+			    movementSynth.NoteOn(32);
+			    noiseySynth.NoteOn(50, 1);
 			    break;
 
 		    case PlayerState.Flying:
-
-
+			    synths.SetFloat("Attenuation", -80);
+			    flyingSynth.NoteOn(60, 1);
 			    break;
 
 		    case PlayerState.Switching:
@@ -69,7 +73,22 @@ public class SynthController : MonoBehaviour
 
     public void LeaveState(PlayerState s)
 		{
-			
+			switch (s)
+			{
+				case PlayerState.Traversing:
+
+					movementSynth.NoteOff(32);
+					noiseySynth.NoteOff(50);
+					break;
+
+				case PlayerState.Flying:
+					synths.SetFloat("Attenuation", 0);
+					flyingSynth.NoteOff(60);
+					break;
+
+				case PlayerState.Switching:
+					break;
+			}
 			
 		}
     
@@ -83,10 +102,11 @@ public class SynthController : MonoBehaviour
     {
         float accuracy = Mathf.Clamp01(0.5f - Services.PlayerBehaviour.accuracy / 2);
         float accuracy2 = (accuracy - 0.75f);
-       
-        movementSynth.SetParameterValue(Param.kVolume, Mathf.Clamp01( Services.PlayerBehaviour.flow));
-        movementSynth.SetParameterValue(Param.kOsc1Tune,  accuracy2 * 100f);
+	
         
+        noiseySynth.SetParameterValue(Param.kVolume, Mathf.Lerp(0, Mathf.Clamp01( 1- Services.PlayerBehaviour.accuracy) * Mathf.Clamp01(Mathf.Pow(Services.PlayerBehaviour.flow,2)), Services.PlayerBehaviour.decelerationTimer));
+		movementSynth.SetParameterValue(Param.kOsc2Tune,  accuracy2 * 100f);
+		movementSynth.SetParameterValue(Param.kVolume,  Mathf.Lerp(movementSynth.GetParameterValue(Param.kVolume), Mathf.Clamp01(Services.PlayerBehaviour.flow - 0.25f) / 2f, Time.deltaTime));
 //        if (!hasStartedNoise && Services.PlayerBehaviour.state == PlayerState.Traversing)
 //        {
 //            
@@ -94,8 +114,8 @@ public class SynthController : MonoBehaviour
 //            
 //            hasStartedNoise = true;
 //        }
-        
-        
+
+
 //            noiseySynth.SetParameterValue(Param.kDistortionMix, 1);
 
 //        if (Services.PlayerBehaviour.curSpeed > 0.25f && !a)
