@@ -331,7 +331,6 @@ public class MapEditor : MonoBehaviour
                 selectedSpline.ChangeMaterial(selectedSpline.lineMaterial + 1);
             }
 
-            splineSelectedTip.SetActive(true);
 
             if (pointSelected)
             {
@@ -1287,7 +1286,7 @@ void DragCamera()
     {
         s.ChangeMaterial(s.lineMaterial);
         selectedSplines.Remove(s);
-        if (selectedSplines.Count < 1)
+        if (selectedSplines.Count == 0)
         {
             splineSelectedTip.SetActive(false);
         }

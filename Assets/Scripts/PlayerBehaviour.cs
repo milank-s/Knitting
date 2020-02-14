@@ -448,13 +448,13 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if (CanCreatePoint())
 			{
-				if (Input.GetButtonUp("Button1") && pointDest.pointType == PointTypes.connect)
+				if (Input.GetButtonUp("Button1") && curPoint.pointType == PointTypes.connect)
 				{
 					CreatePoint();
 					canTraverse = true;
 
 				}
-				else if (pointDest.pointType == PointTypes.connect)
+				else if (curPoint.pointType == PointTypes.connect)
 				{
 					l.positionCount = 2;
 					cursorOnPoint.positionCount = 2;
@@ -500,6 +500,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			// pointInfo.GetComponent<Text>().text = "";
 			SwitchState(PlayerState.Traversing);
+			cursorDistance = 25f;
 		}
 		else{
 			StayOnPoint();
@@ -527,12 +528,12 @@ public class PlayerBehaviour: MonoBehaviour {
 					if(drawnPoint != null){
 						if(drawnPoint != pointDest){
 							return true;
-					  }else{
+					  }
 							return false;
-						}
-					}else{
-						return true;
+						
 					}
+						return true;
+					
 				}
 		}
 
@@ -1516,7 +1517,8 @@ public class PlayerBehaviour: MonoBehaviour {
 //		Vector3 screenPos = ((Vector3)cursorDir/10f + Vector3.one/2f);
 		Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
 		
-		screenPos += new Vector3(cursorDir2.x / Services.mainCam.aspect, cursorDir2.y, 0)/25f;
+		
+		screenPos += new Vector3(cursorDir2.x / Services.mainCam.aspect, cursorDir2.y, 0)/cursorDistance;
 
 			
 		screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Mathf.Abs(transform.position.z - Services.mainCam.transform.position.z));
@@ -1807,6 +1809,11 @@ public class PlayerBehaviour: MonoBehaviour {
 				{
 //				traversedPoints.Clear();
 //				traversedPoints.Add(curPoint);
+				}
+
+				if (curPoint.pointType == PointTypes.connect)
+				{
+					cursorDistance = 2f;
 				}
 				
 				PlayerOnPoint();
