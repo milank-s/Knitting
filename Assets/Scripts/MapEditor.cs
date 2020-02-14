@@ -325,7 +325,7 @@ public class MapEditor : MonoBehaviour
         {
 
 
-            if (Input.GetKeyDown(KeyCode.Alpha5))
+            if (Input.GetKeyDown(KeyCode.Alpha0))
             {
 
                 selectedSpline.ChangeMaterial(selectedSpline.lineMaterial + 1);
@@ -747,14 +747,14 @@ public class MapEditor : MonoBehaviour
                 activePoint.SetPointType(PointTypes.fly);
             }
 
-            else if (Input.GetKeyDown(KeyCode.Alpha9))
+            else if (Input.GetKeyDown(KeyCode.Alpha6))
             {
                 activePoint.SetPointType(PointTypes.start);
-            }else if (Input.GetKeyDown(KeyCode.Alpha0))
+            }else if (Input.GetKeyDown(KeyCode.Alpha7))
             {
                 activePoint.SetPointType(PointTypes.end);
                 
-            }else if (Input.GetKeyDown(KeyCode.O))
+            }else if (Input.GetKeyDown(KeyCode.Alpha5))
             {
                 activePoint.SetPointType(PointTypes.ghost);
             }
