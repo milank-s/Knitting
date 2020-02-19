@@ -217,7 +217,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversedPoints.Clear();
 		hasFlown = false;
 		boost = 0;
-		flow = 0;
+		flow = 0.1f;
 		pointDest = null;
 		lastPoint = null;
 	}
@@ -1115,7 +1115,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	public IEnumerator Unwind()
 	{
 
-		
 		float t = curSpeed;
 		bool moving = true;
 		int pIndex = traversedPoints.Count -1;

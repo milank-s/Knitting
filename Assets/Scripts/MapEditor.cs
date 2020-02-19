@@ -62,7 +62,7 @@ public class MapEditor : MonoBehaviour
                 ChangeTool();
             }
                 
-//            tooltips[(int)value].SetActive(true);   
+            tooltips[(int)value].SetActive(true);   
         }
 
         get { return curTool; }
@@ -511,8 +511,6 @@ public class MapEditor : MonoBehaviour
             PanCamera();
         }
 
-        cam.fieldOfView = Mathf.Clamp(cam.fieldOfView - Input.mouseScrollDelta.y * Time.deltaTime * 100f, 10,
-            160);
 
         lastPos = worldPos;
         curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
@@ -538,7 +536,7 @@ public class MapEditor : MonoBehaviour
         Ray r = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        if (Physics.Raycast(r.origin, r.direction, out hit))
+        if (Physics.Raycast(r.origin, r.direction, out hit, 50))
         {
             hitPoint = hit.transform.GetComponent<Point>();
 
@@ -614,8 +612,18 @@ public class MapEditor : MonoBehaviour
         if (editing)
             {
                 Cursor.visible = false;
-                SetCursorPosition();
                 
+                SetCursorPosition();
+
+                if (!Input.GetKey(KeyCode.LeftShift))
+                {
+                    cam.fieldOfView = Mathf.Clamp(cam.fieldOfView - Input.mouseScrollDelta.y * Time.deltaTime * 100f, 10, 160);
+                }
+                else
+                {
+                    cam.transform.position += Vector3.forward * -Input.mouseScrollDelta.y * Time.deltaTime * 10;
+                }
+
                 if (!typing)
                 {
                     
@@ -629,7 +637,7 @@ public class MapEditor : MonoBehaviour
                     ChangeSelectedSpline();
                     
                     
-                    tooltips[(int)curTool].SetActive(false);
+                    tooltips[(int)curTool].SetActive(true);
                     
                     TryChangeTool();
                     
@@ -649,7 +657,7 @@ public class MapEditor : MonoBehaviour
                 UseTool();
 
                 
-                if (curTool != Tool.clone && curTool != Tool.rotate)
+                if (curTool != Tool.clone && curTool != Tool.rotate && !Input.GetKey(KeyCode.LeftAlt))
                 {
                     SelectPoint(hitPoint);
                 }
@@ -660,8 +668,6 @@ public class MapEditor : MonoBehaviour
                 {
                     selectedPointIndicator.SetActive(false);
                 }
-
-                
 
                 ManageSelectionUI();
 
@@ -697,13 +703,13 @@ public class MapEditor : MonoBehaviour
 
     void EditSelectedPoint()
     {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            cam.transform.position = new Vector3(center.x, center.y, center.z - cameraDistance);
+        }
+        
         if (pointSelected)
         {
-
-            if (Input.GetKeyDown(KeyCode.F))
-            {
-                cam.transform.position = new Vector3(center.x, center.y, center.z - cameraDistance);
-            }
 
             marqueeTip.SetActive(false);
             deselectTip.SetActive(true);
@@ -788,6 +794,7 @@ public class MapEditor : MonoBehaviour
         {
             marqueeTip.SetActive(true);
             deselectTip.SetActive(false);
+            
         }
     }
 
@@ -795,75 +802,93 @@ public class MapEditor : MonoBehaviour
     {
         int index = 0;
 
-                lowerLeft = new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
-                upperRight = new Vector3(-Mathf.Infinity, -Mathf.Infinity, -Mathf.Infinity);
+        lowerLeft = new Vector3(Mathf.Infinity, Mathf.Infinity, -Mathf.Infinity);
+        upperRight = new Vector3(-Mathf.Infinity, -Mathf.Infinity, -Mathf.Infinity);
 
+        if (pointSelected)
+        {
+            foreach (Point p in selectedPoints)
+            {
+                ComparePointPosition(p);
+                SetPointInfo(p, index);
+                index++;
+            }
+        }
+        else
+        {
+            foreach (Point p in Point.Points)
+            {
+                ComparePointPosition(p);
+            }
 
-                foreach (Point p in selectedPoints)
-                {
-                    if (p.Pos.x > upperRight.x)
-                    {
-                        upperRight.x = p.Pos.x;
-                    }
-
-                    if (p.Pos.x < lowerLeft.x)
-                    {
-                        lowerLeft.x = p.Pos.x;
-                    }
-
-                    if (p.Pos.y > upperRight.y)
-                    {
-                        upperRight.y = p.Pos.y;
-                    }
-
-                    if (p.Pos.y < lowerLeft.y)
-                    {
-                        lowerLeft.y = p.Pos.y;
-                    }
-
-                    if (p.Pos.z > upperRight.z)
-                    {
-                        upperRight.z = p.Pos.z;
-                    }
-
-                    if (p.Pos.z < lowerLeft.z)
-                    {
-                        lowerLeft.z = p.Pos.z;
-                    }
-
-
-                    if (index < selectors.Count)
-                    {
-                        selectors[index].transform.Rotate(Vector3.forward);
-                        selectors[index].transform.position = cam.WorldToScreenPoint(p.Pos);
-                    }
-
-
-                    if (index == selectedPoints.Count - 1)
-                    {
-                        if (hitPoint == null)
-                        {
-                            selectedPointIndicator.transform.position = cam.WorldToScreenPoint(p.Pos);
-                        }
-                        else
-                        {
-                            if (Input.GetMouseButton(0))
-                            {
-                                selectedPointIndicator.transform.position = cam.WorldToScreenPoint(p.Pos);
-                            }
-                            else
-                            {
-                                selectedPointIndicator.transform.position = cam.WorldToScreenPoint(hitPoint.Pos);
-                            }
-                        }
-
-                        pointOptions.transform.position = cam.WorldToScreenPoint(p.Pos);
-                        pointCoords.position = cam.WorldToScreenPoint(p.Pos);
-                    }
-
-                    index++;
-                }
+        }
     }
+
+    void ComparePointPosition(Point p)
+        {
+            if (p.Pos.x > upperRight.x)
+            {
+                upperRight.x = p.Pos.x;
+            }
+
+            if (p.Pos.x < lowerLeft.x)
+            {
+                lowerLeft.x = p.Pos.x;
+            }
+
+            if (p.Pos.y > upperRight.y)
+            {
+                upperRight.y = p.Pos.y;
+            }
+
+            if (p.Pos.y < lowerLeft.y)
+            {
+                lowerLeft.y = p.Pos.y;
+            }
+
+            if (p.Pos.z > upperRight.z)
+            {
+                upperRight.z = 0;
+            }
+
+            if (p.Pos.z > lowerLeft.z)
+            {
+                lowerLeft.z = 0;
+            }
+        }
+
+        void SetPointInfo(Point p, int i)
+        {
+            if (i < selectors.Count)
+            {
+                selectors[i].transform.Rotate(Vector3.forward);
+                selectors[i].transform.position = cam.WorldToScreenPoint(p.Pos);
+            }
+
+
+            if (i == selectedPoints.Count - 1)
+            {
+                if (hitPoint == null)
+                {
+                    selectedPointIndicator.transform.position = cam.WorldToScreenPoint(p.Pos);
+                }
+                else
+                {
+                    if (Input.GetMouseButton(0))
+                    {
+                        selectedPointIndicator.transform.position = cam.WorldToScreenPoint(p.Pos);
+                    }
+                    else
+                    {
+                        selectedPointIndicator.transform.position = cam.WorldToScreenPoint(hitPoint.Pos);
+                    }
+                }
+
+                pointOptions.transform.position = cam.WorldToScreenPoint(p.Pos);
+                pointCoords.position = cam.WorldToScreenPoint(p.Pos);
+            }
+        }
+        
     void MoveSelectedPoints()
     {
         Vector3 pos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
@@ -1494,11 +1519,11 @@ void DragCamera()
 
             case Tool.marquee:
 
-                if (pointSelected && Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonDown(0))
                 {
                     StartCoroutine(MarqueeSelect(worldPos));
                 }
-
+                
                 break;
 
             case Tool.draw:
@@ -1514,7 +1539,7 @@ void DragCamera()
                     l.SetPosition(1, Vector3.one * 1000);
                 }
 
-                if (hitPoint != null)
+                if (hitPoint != null && !Input.GetKey(KeyCode.LeftAlt))
                 {
 
                     if (pointSelected)
@@ -1535,8 +1560,6 @@ void DragCamera()
                                 AddSelectedPoint(hitPoint);
                                 
                             }
-
-
                         }
                     }
                     else
@@ -1547,11 +1570,10 @@ void DragCamera()
                         }
                     }
                 }
-                else if (hitPoint == null)
+                else if (raycastNull || Input.GetKey(KeyCode.LeftAlt))
                 {
                     if (Input.GetMouseButtonDown(0))
-                    {
-                        if (selectedPoints.Count > 0 && raycastNull)
+                        if (selectedPoints.Count > 0)
                         {
                             Point newPoint = SplineUtil.CreatePoint(worldPos);
                             if (Input.GetKey(KeyCode.LeftShift))
@@ -1568,7 +1590,6 @@ void DragCamera()
                                 spp.s.transform.parent = splinesParent;
                                 spp.p.transform.parent = pointsParent;
 
-
                                 RemoveSelectedPoint(activePoint);
                                 AddSelectedPoint(newPoint);
                                 AddSelectedSpline(spp.s);
@@ -1582,7 +1603,7 @@ void DragCamera()
                             AddSelectedPoint(newPoint);
                         }
                     }
-                }
+                
 
                 break;
 
@@ -1761,6 +1782,7 @@ void DragCamera()
                     cursor.rectTransform.pivot = new Vector3(0.5f, 0.5f);
                 }
                 
+               
 
                 if (curTool != Tool.text)
                 {

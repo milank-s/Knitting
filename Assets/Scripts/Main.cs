@@ -441,10 +441,9 @@
 			Services.mainCam.GetComponent<CameraFollow>().enabled = !enter;
 			RenderSettings.fog = !enter;
 			editor.l.enabled = enter;
-			//Services.mainCam.GetComponentInChildren<Camera>().enabled = !enter;
+			
 			if (enter)
 			{
-				
 				
 				if (state == GameState.menu)
 				{
@@ -462,6 +461,9 @@
 					s.ResetVectorLine();
 				}
 
+				Vector3 cameraPos = CameraFollow.instance.cam.transform.position;
+				cameraPos.z = 0;
+				CameraFollow.instance.WarpToPosition(cameraPos);
 				
 				state = GameState.playing;
 				
