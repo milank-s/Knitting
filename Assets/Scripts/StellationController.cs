@@ -164,6 +164,7 @@ public class StellationController : MonoBehaviour {
 
 				Services.main.fx.readout.transform.position = Services.main.Player.transform.position;
 				
+				
 				if (isComplete)
 				{
 					List<Vector3> positions = new List<Vector3>();
@@ -172,8 +173,6 @@ public class StellationController : MonoBehaviour {
 //					{
 //						//p.Contract();
 //					}
-
-					//Services.fx.DrawLine();
 				}
 				else
 				{

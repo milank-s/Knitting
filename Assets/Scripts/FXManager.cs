@@ -16,6 +16,7 @@ public class FXManager : MonoBehaviour
     public GameObject[] spawnableSprites;
     public List<GameObject> spawnedSprites;
     private int lineIndex;
+    private List<Vector3> linePositions;
     private VectorLine line;
     [SerializeField] private GameObject fxPrefab;
   private int index;
@@ -239,23 +240,44 @@ public class FXManager : MonoBehaviour
       speedParticles.Emit(i);
   }
 
+  public IEnumerator DrawGraffiti()
+  {
+      float t = 0.1f;
+
+      
+      
+      while (t > 0)
+      {
+          lineIndex ++;
+          Vector3[] positions = new Vector3[playerTrail.positionCount];
+          playerTrail.GetPositions(positions);
+
+          List<Vector3> pos = new List<Vector3>();
+          
+          for (int i = 0; i < 25; i++)
+          {
+              if (Random.Range(0, 100) < 10)
+              {
+                  pos.Add(positions[Mathf.Clamp(playerTrail.positionCount - i, 0, playerTrail.positionCount-1)] + (Vector3) Random.insideUnitCircle / 10f);
+              }
+          }
+
+          line.points3 = pos;
+          line.Draw3D();
+          t -= Time.deltaTime;
+
+          yield return null;
+
+      }
+      
+      line.points3 = new List<Vector3>();
+      line.Draw3D();
+      
+  }
+
   public void DrawLine()
   {
-      lineIndex += (int)(50 * Time.deltaTime);
-      List<Vector3> pos = new List<Vector3>();
-      Vector3[] positions = new Vector3[playerTrail.positionCount];
-      playerTrail.GetPositions(positions);
-      int indices = Mathf.Clamp(playerTrail.positionCount, 0, 50);
-      for (int i = 0; i < indices; i++)
-      {
-          if (Random.Range(0, 100) < 100)
-          {
-              pos.Add(positions[(indices + lineIndex - i)%playerTrail.positionCount] +  (Vector3) Random.insideUnitCircle /100);
-//             
-          }
-      } 
-      line.points3 = pos;
-      line.Draw3D();
+      StartCoroutine(DrawGraffiti());
   }
  
   

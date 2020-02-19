@@ -452,6 +452,9 @@ public class Point : MonoBehaviour
 		proximity = 1;
 		timeOnPoint = 0;
 		timesHit++;
+		
+		Services.fx.DrawLine();
+		
 //		stiffness = Mathf.Clamp(stiffness -100, 100, 10000);
 //		damping = Mathf.Clamp(damping - 100, 100, 10000);
 		
