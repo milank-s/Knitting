@@ -619,9 +619,9 @@ public class MapEditor : MonoBehaviour
                 {
                     cam.fieldOfView = Mathf.Clamp(cam.fieldOfView - Input.mouseScrollDelta.y * Time.deltaTime * 100f, 10, 160);
                 }
-                else
+                else if(!Input.GetMouseButton(0))
                 {
-                    cam.transform.position += Vector3.forward * -Input.mouseScrollDelta.y * Time.deltaTime * 10;
+                    cam.transform.position += Vector3.forward * Input.mouseScrollDelta.y * Time.deltaTime * 10;
                 }
 
                 if (!typing)
