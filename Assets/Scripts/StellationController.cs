@@ -173,7 +173,7 @@ public class StellationController : MonoBehaviour {
 //						//p.Contract();
 //					}
 
-					Services.fx.DrawLine();
+					//Services.fx.DrawLine();
 				}
 				else
 				{
