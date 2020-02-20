@@ -161,7 +161,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		PointManager.ResetPoints ();
 		Reset();
-		
+		cursorDistance = 25;
 		cursor = Services.Cursor;
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
