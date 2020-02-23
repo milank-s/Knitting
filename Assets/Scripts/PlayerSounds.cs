@@ -20,6 +20,6 @@ public class PlayerSounds : MonoBehaviour {
 	{
 		brakingSound.clip = braking;
 		moveSound.clip = moving;
-		moveSound.Play();
+		//moveSound.Play();
 	}
 }

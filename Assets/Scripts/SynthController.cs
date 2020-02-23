@@ -42,8 +42,8 @@ public class SynthController : MonoBehaviour
 
         StopNote(i);
 
-        padNote = 80;
-        pads[0].NoteOn(padNote, 1, 0.05f);
+       keyNote = notes[Random.Range(0, notes.Length)];
+        keys[1].NoteOn(keyNote, 1, 0.05f);
     }
 
     public void SwitchState(PlayerState s)
@@ -54,7 +54,9 @@ public class SynthController : MonoBehaviour
 	    {
 		    case PlayerState.Traversing:
 
-			    movementSynth.NoteOn(32);
+
+			    padNote = 30;
+			    movementSynth.NoteOn(padNote, 0.01f);
 			    noiseySynth.NoteOn(50, 1);
 			    break;
 
@@ -77,7 +79,7 @@ public class SynthController : MonoBehaviour
 			{
 				case PlayerState.Traversing:
 
-					movementSynth.NoteOff(32);
+					movementSynth.NoteOff(padNote);
 					noiseySynth.NoteOff(50);
 					break;
 
@@ -100,13 +102,16 @@ public class SynthController : MonoBehaviour
 
     void Update()
     {
-        float accuracy = Mathf.Clamp01(0.5f - Services.PlayerBehaviour.accuracy / 2);
-        float accuracy2 = (accuracy - 0.75f);
+        float accuracy = Mathf.Clamp01(Services.PlayerBehaviour.accuracy);
 	
         
         noiseySynth.SetParameterValue(Param.kVolume, Mathf.Lerp(0, Mathf.Clamp01( 1- Services.PlayerBehaviour.accuracy) * Mathf.Clamp01(Mathf.Pow(Services.PlayerBehaviour.flow,2)), Services.PlayerBehaviour.decelerationTimer));
-		movementSynth.SetParameterValue(Param.kOsc2Tune,  accuracy2 * 100f);
-		movementSynth.SetParameterValue(Param.kVolume,  Mathf.Lerp(movementSynth.GetParameterValue(Param.kVolume), Mathf.Clamp01(Services.PlayerBehaviour.flow - 0.25f) / 2f, Time.deltaTime));
+		//movementSynth.SetParameterPercent(Param.kStutterResampleFrequency,  accuracy/2f);
+		//movementSynth.SetParameterPercent(Param.kStutterFrequency, accuracy/2f);
+		//movementSynth.SetParameterPercent(Param.kArpTempo, accuracy/10f);
+		movementSynth.SetParameterPercent(Param.kArpTempo, accuracy * 0.5f + Services.PlayerBehaviour.flow/10f);
+		
+		//movementSynth.SetParameterValue(Param.kVolume,  Mathf.Lerp(movementSynth.GetParameterValue(Param.kVolume), Mathf.Clamp01(Services.PlayerBehaviour.flow - 0.25f) / 2f, Time.deltaTime));
 //        if (!hasStartedNoise && Services.PlayerBehaviour.state == PlayerState.Traversing)
 //        {
 //            

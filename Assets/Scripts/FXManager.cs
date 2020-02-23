@@ -253,17 +253,24 @@ public class FXManager : MonoBehaviour
           playerTrail.GetPositions(positions);
 
           List<Vector3> pos = new List<Vector3>();
-          
-          for (int i = 0; i < 25; i++)
-          {
-              if (Random.Range(0, 100) < 10)
-              {
-                  pos.Add(positions[Mathf.Clamp(playerTrail.positionCount - i, 0, playerTrail.positionCount-1)] + (Vector3) Random.insideUnitCircle / 10f);
-              }
-          }
 
-          line.points3 = pos;
-          line.Draw3D();
+          if (playerTrail.positionCount > 0)
+          {
+              for (int i = 0; i < 25; i++)
+              {
+                  if (Random.Range(0, 100) < 10)
+                  {
+                      pos.Add(positions[Mathf.Clamp(playerTrail.positionCount - i, 0, playerTrail.positionCount - 1)] +
+                              (Vector3) Random.insideUnitCircle / 10f);
+                  }
+              }
+
+
+              line.points3 = pos;
+              line.Draw3D();
+          }
+          
+
           t -= Time.deltaTime;
 
           yield return null;

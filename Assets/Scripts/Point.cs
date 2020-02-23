@@ -71,7 +71,6 @@ public class Point : MonoBehaviour
 	[Space(10)] 
 	public bool usedToFly;
 	public bool isKinematic;
-	public bool defaultToGhost = true;
 	[HideInInspector]
 	
 	public static float damping = 1000f;
@@ -290,7 +289,6 @@ public class Point : MonoBehaviour
 
 			case PointTypes.connect:
 				
-				defaultToGhost = false;
 				break;
 
 			case PointTypes.ghost:

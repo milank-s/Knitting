@@ -429,7 +429,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 			
 			//boostTimer >= 1 ||  if you wnna fuck with ppl
-			else if (!joystickLocked && ((!Input.GetButton("Button1") && (curPoint.pointType != PointTypes.stop && curPoint.pointType != PointTypes.start) || Input.GetButtonUp("Button1"))))
+			else if (!joystickLocked && ((!Input.GetButton("Button1") && (curPoint.pointType != PointTypes.stop && (curPoint.pointType != PointTypes.start || (curPoint.pointType == PointTypes.start  && curPoint.timesHit > 1))) || Input.GetButtonUp("Button1"))))
 			{
 				//something about locking was here
 				
@@ -1681,6 +1681,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		
 		SynthController.instance.SwitchState(newState);
+		
 		if (Main.usingJoystick)
 		{
 			Services.main.controller.ResetHaptics();
