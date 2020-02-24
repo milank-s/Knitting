@@ -21,11 +21,12 @@ public class SynthController : MonoBehaviour
     public static SynthController instance;
     private int[] notes = {60, 65, 70, 75, 80, 82, 90};
 
+    
     private bool a, b, c, d;
 
     private int padNote;
 
-    private int keyNote;
+    private int[] keyNote;
     // Update is called once per frame
 
     public void Start()
@@ -40,10 +41,26 @@ public class SynthController : MonoBehaviour
         //which note and which patch?
         //how do you modulate the frequency once the note is being played?
 
-        StopNote(i);
+        GetNotes(keyNote, 3, keys[i]);
 
-       keyNote = notes[Random.Range(0, notes.Length)];
-        keys[1].NoteOn(keyNote, 1, 0.05f);
+    }
+
+    void GetNotes(int[] n, int amount, HelmController c)
+    {
+	    n = new int[amount];
+	    for (int i = 0; i < amount; i++)
+	    {
+		    n[i] = notes[Random.Range(0, notes.Length)];
+		    c.NoteOn(n[i], 1, 0.05f);
+	    }
+    }
+
+    void EndNotes(int[] notes, HelmController c)
+    {
+	    for (int i = 0; i < notes.Length; i++)
+	    {
+		    c.NoteOff(notes[i]);
+	    }
     }
 
     public void SwitchState(PlayerState s)
@@ -53,7 +70,6 @@ public class SynthController : MonoBehaviour
 	    switch (s)
 	    {
 		    case PlayerState.Traversing:
-
 
 			    padNote = 30;
 			    movementSynth.NoteOn(padNote, 0.01f);
@@ -93,23 +109,20 @@ public class SynthController : MonoBehaviour
 			}
 			
 		}
-    
-    
-    public void StopNote(int pad)
-    {
-        //pads[pad].NoteOff(padNote);
-    }
+
 
     void Update()
     {
         float accuracy = Mathf.Clamp01(Services.PlayerBehaviour.accuracy);
 	
         
-        noiseySynth.SetParameterValue(Param.kVolume, Mathf.Lerp(0, Mathf.Clamp01( 1- Services.PlayerBehaviour.accuracy) * Mathf.Clamp01(Mathf.Pow(Services.PlayerBehaviour.flow,2)), Services.PlayerBehaviour.decelerationTimer));
+        //noiseySynth.SetParameterValue(Param.kVolume, Mathf.Lerp(0, Mathf.Clamp01( accuracy) * Mathf.Clamp01(Mathf.Pow(Services.PlayerBehaviour.flow,2)), Services.PlayerBehaviour.decelerationTimer));
+        noiseySynth.SetParameterValue(Param.kVolume,Mathf.Clamp01( 1 - (Services.PlayerBehaviour.accuracy + 0.2f)) * Mathf.Clamp01(Mathf.Pow(Services.PlayerBehaviour.flow,2)));
+
+        movementSynth.SetParameterPercent(Param.kArpTempo, accuracy * 0.5f + Services.PlayerBehaviour.flow/10f);
 		//movementSynth.SetParameterPercent(Param.kStutterResampleFrequency,  accuracy/2f);
 		//movementSynth.SetParameterPercent(Param.kStutterFrequency, accuracy/2f);
 		//movementSynth.SetParameterPercent(Param.kArpTempo, accuracy/10f);
-		movementSynth.SetParameterPercent(Param.kArpTempo, accuracy * 0.5f + Services.PlayerBehaviour.flow/10f);
 		
 		//movementSynth.SetParameterValue(Param.kVolume,  Mathf.Lerp(movementSynth.GetParameterValue(Param.kVolume), Mathf.Clamp01(Services.PlayerBehaviour.flow - 0.25f) / 2f, Time.deltaTime));
 //        if (!hasStartedNoise && Services.PlayerBehaviour.state == PlayerState.Traversing)

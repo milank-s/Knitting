@@ -547,8 +547,6 @@ public class Point : MonoBehaviour
 
 				
 				
-				SynthController.instance.PlayNote(0);
-				
 				if (Services.PlayerBehaviour.buttonPressed)
 				{
 					AddBoost();
@@ -569,6 +567,8 @@ public class Point : MonoBehaviour
 
 		if(pointType != PointTypes.ghost){
 			
+				SynthController.instance.PlayNote(0);
+				
 		}
 
 		
