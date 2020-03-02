@@ -440,6 +440,10 @@ public class MapEditor : MonoBehaviour
             {
                 if (Input.GetKeyDown(KeyCode.Minus))
                 {
+                    
+                    Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, activePoint.transform);
+                    SynthController.instance.keys[1].NoteOn(40, 0.5f, 0.5f);
+                    
                     selectedSpline.RemovePoint((selectedSpline.SplinePoints.IndexOf(activePoint)));
                     selectedSpline.ResetLineLength();
 
@@ -452,7 +456,9 @@ public class MapEditor : MonoBehaviour
 
                 if (Input.GetKeyDown(KeyCode.Equals))
                 {
+                    SynthController.instance.keys[0].NoteOn(70, 0.5f, 0.5f);
                     selectedSpline.AddNewPoint(selectedSpline.SplinePoints.IndexOf(activePoint));
+                    
                 }
             }
 
@@ -776,6 +782,9 @@ public class MapEditor : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.Backspace) && curTool != Tool.text)
             {
+                Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, activePoint.transform);
+                SynthController.instance.keys[1].NoteOn(40, 0.5f, 0.5f);
+                
                 Point pointToDelete = activePoint;
                 RemoveSelectedPoint(activePoint);
                 foreach (Spline s in Spline.Splines)
@@ -1393,17 +1402,19 @@ void DragCamera()
 
                 Vector3 screenPos = cam.WorldToViewportPoint(lastPos);
                 Vector3 viewPortPos = cam.ScreenToViewportPoint(curPos);
-                if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftShift))
+
+                
+                if (Input.GetMouseButton(0) && hitPoint == null && !pointSelected &&  !dragging)
+                {
+                    DragCamera();
+                }
+                else if(Input.GetMouseButton(0) && pointSelected && hitPoint == null  && !dragging)
                 {
                     if (pointSelected)
                     {
                         biasSlider.value += (viewPortPos.x - screenPos.x) * 1000 * Time.deltaTime;
                         tensionSlider.value += (viewPortPos.y - screenPos.y) * 1000 * Time.deltaTime;
                     }
-                }
-                else if (Input.GetMouseButton(0) && hitPoint == null && !dragging)
-                {
-                    DragCamera();
                 }
 
                 break;

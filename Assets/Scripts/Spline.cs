@@ -422,7 +422,7 @@ public class Spline : MonoBehaviour
 		for (int i = 0; i < end; i++)
 		{
 			SplinePoints[i].isKinematic = true;
-			SplinePoints[i].transform.position += GetInitVelocity(SplinePoints[i])* Time.deltaTime * speed;
+			SplinePoints[i].transform.position -= GetInitVelocity(SplinePoints[i])* Time.deltaTime * speed;
 		}
 	}
 
@@ -1078,6 +1078,7 @@ public class Spline : MonoBehaviour
 	public void ResetLineLength()
 	{
 		int pointCount;
+		
 		if (closed)
 		{
 			pointCount = SplinePoints.Count * curveFidelity;
@@ -1086,6 +1087,7 @@ public class Spline : MonoBehaviour
 		{
 			pointCount = (SplinePoints.Count-1)* curveFidelity;
 		}
+		
 		line.points3 = new List<Vector3>(pointCount);	
 	}
 		
@@ -1125,9 +1127,16 @@ public class Spline : MonoBehaviour
 			}
 			newPoint = SpawnPointPrefab.CreatePoint(newPos);
 			InsertPoint(newPoint, i+1);
+			
+			Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, newPoint.transform);
+			
 			newPoint.transform.parent = transform;
-		}else{
-			newPoint = SpawnPointPrefab.CreatePoint (transform.position);
+		}else
+		{
+			newPoint = SpawnPointPrefab.CreatePoint(transform.position);
+				
+			Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, newPoint.transform);
+			
 			Point newPoint2 = SpawnPointPrefab.CreatePoint (transform.position + Vector3.up/5f);
 			SplinePoints.Add(newPoint);
 			SplinePoints.Add(newPoint2);

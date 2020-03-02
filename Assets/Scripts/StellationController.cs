@@ -172,10 +172,17 @@ public class StellationController : MonoBehaviour {
 				if (isComplete)
 				{
 
+					winTimer += Time.deltaTime/4;
+					
 					foreach (Spline s in Spline.Splines)
 					{
 
 						s.Spin(winTimer);
+					}
+
+					if (winTimer > 1)
+					{
+						//endLevel
 					}
 					//					
 
