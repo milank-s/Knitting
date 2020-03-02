@@ -416,6 +416,16 @@ public class Spline : MonoBehaviour
 		}
 	}
 
+	public void Spin(float speed)
+	{
+		int end = closed ? SplinePoints.Count : SplinePoints.Count - 1;
+		for (int i = 0; i < end; i++)
+		{
+			SplinePoints[i].isKinematic = true;
+			SplinePoints[i].transform.position += GetInitVelocity(SplinePoints[i])* Time.deltaTime * speed;
+		}
+	}
+
 	public void DrawSpline(int pointIndex = 0)
 	{
 

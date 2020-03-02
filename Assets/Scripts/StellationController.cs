@@ -48,6 +48,7 @@ public class StellationController : MonoBehaviour {
 	private int wordIndex;
 	private float fade;
 	private bool hasUnlock;
+	private float winTimer;
 	public string GetWord (){
 		wordIndex++;
 		return words[(wordIndex-1) % (words.Length)];
@@ -59,9 +60,11 @@ public class StellationController : MonoBehaviour {
 	}
 	public void Initialize()
 	{
+		isComplete = false;
 		
 		scoreCount = 0;
 		
+		//stupid code for old maps that didnt have scoreCount idk. 
 		if (unlockMethod == UnlockType.laps && score == 0)
 		{
 			score = 1;
@@ -154,7 +157,8 @@ public class StellationController : MonoBehaviour {
 	public void Reset()
 	{
 		Services.main.InitializeLevel();
-		scoreCount = score;
+		scoreCount = 0;
+		isComplete = false;
 	}
 	public void Step()
 	{
@@ -167,11 +171,17 @@ public class StellationController : MonoBehaviour {
 				
 				if (isComplete)
 				{
-					List<Vector3> positions = new List<Vector3>();
-					
+
+					foreach (Spline s in Spline.Splines)
+					{
+
+						s.Spin(winTimer);
+					}
+					//					
+
 //					foreach (Point p in _points)
 //					{
-//						//p.Contract();
+//						p.Contract();
 //					}
 				}
 				else
@@ -214,7 +224,6 @@ public class StellationController : MonoBehaviour {
 				image.color = new Color (1, 1, 1, fade);
 			}
 
-		
 	}
 	public void TryToUnlock()
 	{
@@ -237,6 +246,8 @@ public class StellationController : MonoBehaviour {
 			
 			if (complete)
 			{
+				winTimer = 0;
+				
 				if(hasUnlock)
 				unlock.LockSpline(false);
 				

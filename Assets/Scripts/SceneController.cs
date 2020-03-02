@@ -1,7 +1,11 @@
 ﻿
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using UnityEngine.InputSystem;
+
 public class SceneController : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -16,6 +20,9 @@ public class SceneController : MonoBehaviour
     {
         get { return levelSets[curSetIndex]; }
     }
+
+    public EventSystem UISystem;
+    public Button levelButton;
     
     public List<LevelSet> levelSets;
     
@@ -35,24 +42,33 @@ public class SceneController : MonoBehaviour
 
     void Update()
     {
+
         if (Input.GetKeyDown(KeyCode.Period))
         {
             LoadNextStellation(0);
         }
         
-        
     }
 
-    public void OnLeft()
+    public void OnNavigate(InputAction.CallbackContext context)
     {
-        Debug.Log("cmon");
-        SelectNextLevel(false);
+
+        if (context.phase == InputActionPhase.Started && levelButton.gameObject == UISystem.currentSelectedGameObject && Services.main.state == Main.GameState.menu)
+        {
+            Vector2 input = context.ReadValue<Vector2>();
+            if (input.x > 0 && Mathf.Approximately(input.y, 0))
+            {
+                SelectNextLevel(true);
+            }
+            else if(input.x < 0 && Mathf.Approximately(input.y, 0))
+            {
+
+                SelectNextLevel(true);
+            }
+        }
     }
 
-    public void OnRight()
-    {
-        SelectNextLevel(true);
-    }
+
 
     public void Reset()
     {

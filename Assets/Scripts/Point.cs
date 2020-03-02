@@ -273,10 +273,10 @@ public class Point : MonoBehaviour
 
 	public void SetPointType(PointTypes t)
 	{
-		
 		SR.enabled = true;
 		pointType = t;
 		SR.sprite = SR.sprite = Services.Prefabs.pointSprites[(int)t];
+	
 		switch(t){
 
 			case PointTypes.fly:

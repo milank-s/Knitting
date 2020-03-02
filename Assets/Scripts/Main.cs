@@ -1,6 +1,7 @@
 	 using System.Collections;
 	using System.Collections.Generic;
 	 using UnityEngine;
+	 using UnityEngine.EventSystems;
 	 using UnityEngine.UI;
 	 using UnityEngine.SceneManagement;
 	 using UnityEngine.InputSystem;
@@ -15,6 +16,7 @@
 	public GameObject Player;
 	public Image PauseScreen;
 	public GameObject PauseMenu;
+	public GameObject pauseResumeButton;
 	public Text Word;
 	public Text description;
 	public Image image;
@@ -130,6 +132,7 @@
 		
 		OpenMenu();
 
+		
 		if (goNext)
 		{
 			SceneController.instance.SelectNextLevel(true);
@@ -195,13 +198,14 @@
 		Services.main = this;
 		PauseScreen.color = new Color(0,0,0,0);
 		PauseMenu.SetActive(false);
-		
-		MapEditor.editing = true;
-		ToggleEditMode();
+	
 	}
 
 	void Start()
 	{
+		MapEditor.editing = true;
+		ToggleEditMode();
+		
 		state = GameState.menu;
 
 		if (SceneManager.sceneCount > 1)
@@ -224,6 +228,9 @@
 
 	public void OpenMenu()
 	{
+
+		EventSystem.current.SetSelectedGameObject(SceneController.instance.levelButton.gameObject);
+		
 		if (SceneController.instance.curSetIndex < 0)
 		{
 			SceneController.instance.curSetIndex = 0;
@@ -241,6 +248,8 @@
 		{
 			ToggleEditMode();
 		}
+		
+		SynthController.instance.StopNotes();
 		
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
@@ -270,13 +279,16 @@
 		PauseMenu.SetActive(pause);
 		if (pause)
 		{
-			
+			SynthController.instance.synths.SetFloat("Volume", -80);
+			EventSystem.current.SetSelectedGameObject(pauseResumeButton);
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;
 			state = GameState.paused;
 		}
 		else
 		{
+			SynthController.instance.synths.SetFloat("Volume", 0);
+			
 			if (!MapEditor.editing)
 			{
 				Cursor.lockState = CursorLockMode.Locked;
@@ -473,6 +485,8 @@
 			}
 			else
 			{
+				SynthController.instance.StopNotes();
+				
 				if (state != GameState.menu)
 				{
 					editor.TogglePlayMode();

@@ -694,8 +694,17 @@ public class MapEditor : MonoBehaviour
             }
         }
 
+     void SetPointType(PointTypes t)
+     {
+         activePoint.SetPointType(t);
+         
+         //play effects
+         SynthController.instance.keys[0].NoteOn((int)t * 4 + 60, 0.5f, 0.1f);
+         Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, activePoint.transform);
+         
+     }
 
-    void PlaySavedEffect()
+     void PlaySavedEffect()
     {
         Services.main.ShowWord("SAVED");
         StartCoroutine(Services.main.FlashWord());
@@ -734,35 +743,35 @@ public class MapEditor : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
 
-                activePoint.SetPointType(PointTypes.normal);
+                 SetPointType(PointTypes.normal);
 
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
 
-                activePoint.SetPointType(PointTypes.stop);
+                 SetPointType(PointTypes.stop);
 
             }
             else if (Input.GetKeyDown(KeyCode.Alpha3))
             {
-                activePoint.SetPointType(PointTypes.connect);
+                 SetPointType(PointTypes.connect);
 
             }
             else if (Input.GetKeyDown(KeyCode.Alpha4))
             {
-                activePoint.SetPointType(PointTypes.fly);
+                 SetPointType(PointTypes.fly);
             }
 
             else if (Input.GetKeyDown(KeyCode.Alpha6))
             {
-                activePoint.SetPointType(PointTypes.start);
+                 SetPointType(PointTypes.start);
             }else if (Input.GetKeyDown(KeyCode.Alpha7))
             {
-                activePoint.SetPointType(PointTypes.end);
+                 SetPointType(PointTypes.end);
                 
             }else if (Input.GetKeyDown(KeyCode.Alpha5))
             {
-                activePoint.SetPointType(PointTypes.ghost);
+                 SetPointType(PointTypes.ghost);
             }
 
             if (Input.GetKeyDown(KeyCode.Backspace) && curTool != Tool.text)
@@ -1528,6 +1537,8 @@ void DragCamera()
 
             case Tool.draw:
 
+                bool pointCreated = false;
+                
                 if (pointSelected)
                 {
                     l.SetPosition(0, selectedPoints[selectedPoints.Count - 1].transform.position);
@@ -1542,6 +1553,7 @@ void DragCamera()
                 if (hitPoint != null && !Input.GetKey(KeyCode.LeftAlt))
                 {
 
+                    
                     if (pointSelected)
                     {
                         l.SetPosition(1, hitPoint.Pos);
@@ -1559,6 +1571,8 @@ void DragCamera()
                                 AddSelectedSpline(spp.s);
                                 AddSelectedPoint(hitPoint);
                                 
+                                pointCreated = true;
+                                
                             }
                         }
                     }
@@ -1566,6 +1580,8 @@ void DragCamera()
                     {
                         if (Input.GetMouseButtonDown(0))
                         {
+                            
+                            SynthController.instance.keys[0].NoteOn((int)hitPoint.pointType * 4 + 60, 0.5f, 0.5f);
                             AddSelectedPoint(hitPoint);
                         }
                     }
@@ -1594,16 +1610,24 @@ void DragCamera()
                                 AddSelectedPoint(newPoint);
                                 AddSelectedSpline(spp.s);
                             }
+                            pointCreated = true;
 
                         }
                         else
                         {
+                            pointCreated = true;
                             Point newPoint = SplineUtil.CreatePoint(worldPos);
                             newPoint.transform.parent = pointsParent;
                             AddSelectedPoint(newPoint);
                         }
                     }
-                
+
+
+                if (pointCreated)
+                {
+
+                    SynthController.instance.pads[0].NoteOn(60, 0.5f, 0.1f);
+                }
 
                 break;
 

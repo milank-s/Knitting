@@ -1018,7 +1018,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				//
 //			maxSpeed = curSpline.distance * 2;
 
-			if(Mathf.Abs(flow) < curSpline.segmentDistance * 100)
+			//need non-shitty way to cap speed
+			if(true)
 			{
 				flow += Mathf.Pow(accuracy, 2) * acceleration * Time.deltaTime * cursorDir.magnitude;
 				
@@ -1053,7 +1054,8 @@ public class PlayerBehaviour: MonoBehaviour {
 						
 						flyingSpeed = flow + speed + boost;
 						
-						SwitchState(PlayerState.Flying);
+						//IDK ABOUT THIS ONE CHIEF
+						//SwitchState(PlayerState.Flying);
 					}
 					flow -= (0.5f - accuracy / 2f) * Time.deltaTime;
 				}
@@ -1754,6 +1756,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Switching:
 
+				//stop players from popping off the line as soon as they enter a point
+				
+				decelerationTimer = 0;
+				
 				if (curSpline != null)
 				{
 //					curSpline.OnSplineExit();
