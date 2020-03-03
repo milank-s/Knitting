@@ -402,10 +402,10 @@ public class Spline : MonoBehaviour
 	{
 		for (int i = 0; i < SplinePoints.Count - (closed ? 0 : 1); i++)
 		{
-			for (int k = 0; k < curveFidelity; k++)
+			for (int k = 0; k <= curveFidelity; k++)
 			{
 				int index = (i * curveFidelity) + k;
-				float step = (float) k / (float) (curveFidelity-1);
+				float step = (float) k / (float) (curveFidelity);
 
 				
 //					DrawLine(i, index, step);
@@ -494,7 +494,7 @@ public class Spline : MonoBehaviour
 					{
 
 						int index = (i * curveFidelity) + k;
-						float step = (float) k / (float) (curveFidelity-1);
+						float step = (float) k / (float) (curveFidelity);
 
 						Vector3 v = Vector3.zero;
 	
@@ -876,12 +876,24 @@ public class Spline : MonoBehaviour
 			}
 		}
 
-		Point Point1 = SplinePoints [j];
+		Point Point0 = SplinePoints [j];
 
-		j = i + 1;
+		
+		j = i;
 		if (j > Count - 1) {
 			if (closed) {
 				j = 0;
+			} else {
+				j = i;
+			}
+		}
+
+		Point Point1 = SplinePoints[j];
+		
+		j = i + 1;
+		if (j > Count - 1) {
+			if (closed) {
+				j = j % Count;
 			} else {
 				j = i;
 			}
@@ -893,7 +905,7 @@ public class Spline : MonoBehaviour
 
 		if (j > Count - 1) {
 			if (closed) {
-				j = 0;
+				j = j % Count;
 			} else {
 				j = i;
 			}
@@ -901,18 +913,18 @@ public class Spline : MonoBehaviour
 
 		Point Point3 = SplinePoints [j];
 
-		float tension = SplinePoints [i].tension;
-		float continuity = SplinePoints [i].continuity;
-		float bias = SplinePoints [i].bias;
+		float tension = Point1.tension;
+		float continuity = Point1.continuity;
+		float bias = Point1.bias;
 
-		Vector3 r1 = 0.5f * (1 - tension) * ((1 + bias) * (1 - continuity) * (SplinePoints [i].Pos - Point1.Pos) + (1 - bias) * (1 + continuity) * (Point2.Pos - SplinePoints [i].Pos));
+		Vector3 r1 = 0.5f * (1 - tension) * ((1 + bias) * (1 - continuity) * (Point1.Pos - Point0.Pos) + (1 - bias) * (1 + continuity) * (Point2.Pos - Point1.Pos));
 
 		tension = Point2.tension;
 		continuity = Point2.continuity;
 		bias = Point2.bias;
 
-		Vector3 r2 = 0.5f * (1 - tension) * ((1 + bias) * (1 + continuity) * (Point2.Pos - SplinePoints [i].Pos) + (1 - bias) * (1 - continuity) * (Point3.Pos - Point2.Pos));
-		Vector3 v = GetPoint (t, SplinePoints [i].Pos, Point2.Pos, r1, r2);
+		Vector3 r2 = 0.5f * (1 - tension) * ((1 + bias) * (1 + continuity) * (Point2.Pos - Point1.Pos) + (1 - bias) * (1 - continuity) * (Point3.Pos - Point2.Pos));
+		Vector3 v = GetPoint (t, Point1.Pos, Point2.Pos, r1, r2);
 
 		return v;
 	}
@@ -1085,7 +1097,7 @@ public class Spline : MonoBehaviour
 		}
 		else
 		{
-			pointCount = (SplinePoints.Count-1)* curveFidelity;
+			pointCount = (SplinePoints.Count-1) * curveFidelity;
 		}
 		
 		line.points3 = new List<Vector3>(pointCount);	

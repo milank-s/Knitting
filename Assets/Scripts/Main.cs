@@ -477,6 +477,9 @@
 				cameraPos.z = 0;
 				CameraFollow.instance.WarpToPosition(cameraPos);
 				
+				
+				SynthController.instance.StopNotes();
+				
 				state = GameState.playing;
 				
 				SceneController.instance.curSetIndex = -1;

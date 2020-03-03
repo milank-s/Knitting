@@ -347,6 +347,7 @@ public class MapEditor : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.C))
             {
                 selectedSpline.closed = !selectedSpline.closed;
+                selectedSpline.ResetLineLength();
             }
 
 

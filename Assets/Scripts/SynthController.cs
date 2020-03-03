@@ -25,7 +25,7 @@ public class SynthController : MonoBehaviour
     
     private bool a, b, c, d;
 
-    private int padNote;
+    private int padNote = 42;
 
     private int[] keyNote;
 
@@ -39,9 +39,7 @@ public class SynthController : MonoBehaviour
         //how many should play?
         //which note and which patch?
         //how do you modulate the frequency once the note is being played?
-
-        GetNotes(keyNote, 3, keys[i]);
-
+        GetNotes(keyNote, 1, keys[0]);
     }
 
     void GetNotes(int[] n, int amount, HelmController c)
@@ -51,7 +49,7 @@ public class SynthController : MonoBehaviour
 	    for (int i = 0; i < amount; i++)
 	    {
 		    n[i] = notes[Random.Range(0, notes.Length)];
-		    c.NoteOn(n[i], 1, 0.05f);
+		    c.NoteOn(n[i], 0.2f, 0.05f);
 	    }
     }
 
@@ -71,15 +69,18 @@ public class SynthController : MonoBehaviour
 	    {
 		    case PlayerState.Traversing:
 
-			    padNote = 30;
-			    movementSynth.NoteOn(padNote, Services.PlayerBehaviour.flow);
-			    //pads[0].NoteOn(notes[Random.Range(0, notes.Length)]);
-			    //pads[1].NoteOn(lowNotes[Random.Range(0, lowNotes.Length)]);
+			    if (Services.PlayerBehaviour.curPoint.pointType != PointTypes.ghost)
+			    {
+				    pads[1].NoteOn(padNote, Services.PlayerBehaviour.flow / 5f);
+				    //pads[0].NoteOn(notes[Random.Range(0, notes.Length)]);
+				    //pads[1].NoteOn(lowNotes[Random.Range(0, lowNotes.Length)]);
+				    noiseySynth.NoteOn(50, 1);
+			    }
 
-			    noiseySynth.NoteOn(50, 1);
 			    break;
 
 		    case PlayerState.Flying:
+			    
 			    synths.SetFloat("Volume", -80);
 			    flyingSynth.NoteOn(60, 1);
 			    break;
@@ -115,14 +116,18 @@ public class SynthController : MonoBehaviour
 			{
 				case PlayerState.Traversing:
 
-					movementSynth.NoteOff(padNote);
-					
-					foreach (HelmController c in pads)
+					if (Services.PlayerBehaviour.pointDest.pointType != PointTypes.ghost)
 					{
-						c.AllNotesOff();
+						pads[1].NoteOff(padNote);
+
+						foreach (HelmController c in pads)
+						{
+							c.AllNotesOff();
+						}
+
+						noiseySynth.NoteOff(50);
 					}
-					
-					noiseySynth.NoteOff(50);
+
 					break;
 
 				case PlayerState.Flying:
@@ -145,7 +150,9 @@ public class SynthController : MonoBehaviour
         //noiseySynth.SetParameterValue(Param.kVolume, Mathf.Lerp(0, Mathf.Clamp01( accuracy) * Mathf.Clamp01(Mathf.Pow(Services.PlayerBehaviour.flow,2)), Services.PlayerBehaviour.decelerationTimer));
         noiseySynth.SetParameterValue(Param.kVolume,Mathf.Clamp01( 1 - (Services.PlayerBehaviour.accuracy + 0.2f)) * Mathf.Clamp01(Services.PlayerBehaviour.flow/5f + 0.1f));
 
-        movementSynth.SetParameterPercent(Param.kArpTempo, (Services.PlayerBehaviour.flow/5f) * accuracy);
+        //movementSynth.SetParameterPercent(Param.kArpTempo, (Services.PlayerBehaviour.flow/5f) * accuracy);
+        pads[1].SetParameterPercent(Param.kOsc2Tune, accuracy);
+        pads[1].SetParameterPercent(Param.kVolume, Services.PlayerBehaviour.flow/5f);
 		//movementSynth.SetParameterPercent(Param.kStutterResampleFrequency,  accuracy/2f);
 		//movementSynth.SetParameterPercent(Param.kStutterFrequency, accuracy/2f);
 		//movementSynth.SetParameterPercent(Param.kArpTempo, accuracy/10f);
