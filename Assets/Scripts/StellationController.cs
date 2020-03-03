@@ -177,7 +177,7 @@ public class StellationController : MonoBehaviour {
 					foreach (Spline s in Spline.Splines)
 					{
 
-						s.Spin(winTimer);
+						//s.Spin(winTimer);
 					}
 
 					if (winTimer > 1)

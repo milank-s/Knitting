@@ -411,7 +411,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			
 			if ((Input.GetButton("Button2") || (flow <= 0.01f && state == PlayerState.Traversing))) {
 				// && Mathf.Abs (flow) <= 0)
-				SwitchState(PlayerState.Animating);
+				//SwitchState(PlayerState.Animating);
 			}
 		}
 	}
