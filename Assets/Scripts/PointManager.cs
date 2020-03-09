@@ -12,14 +12,6 @@ public static class PointManager{
 //		_pointsHit = new List<Point> ();
 //	}
 
-	public static bool PointsHit(){
-		if (_pointsHit.Count >= Point.Points.Count) {
-			return true;
-		} else {
-			return false;
-		}
-
-	}
 
 	public static void AddPointHit (Point p){
 
@@ -48,7 +40,6 @@ public static class PointManager{
 //		CameraDolly.bottomBound = CameraDolly.topBound;
 
 		for(int i = _pointsHit.Count-1; i >= 0; i--) {
-			_pointsHit [i].state = Point.PointState.off;
 			_pointsHit.Remove (_pointsHit [i]);
 		}
 	}

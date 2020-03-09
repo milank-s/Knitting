@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.XR.WSA;
@@ -23,6 +25,9 @@ public class StellationController : MonoBehaviour {
 
 	public int score;
 	public float scoreCount;
+
+	public Point start;
+	
 	
 	[Space(10)]
 	[Header("Point Physics")]
@@ -54,13 +59,68 @@ public class StellationController : MonoBehaviour {
 		return words[(wordIndex-1) % (words.Length)];
 	}
 
-	public void Awake()
+
+	public void Won()
 	{
-		_points = new List<Point>();
+		isOn = false;
+		
+
+		if (StellationManager.instance != null)
+		{
+			StellationManager.instance.EnableStellations(true);
+		}
+					
+		
+		for (int i = 0; i < activateOnCompletion.Count; i++)
+		{
+			activateOnCompletion[i].DoBehaviour();
+		}
+
+		isComplete = true;
+		
+		Lock(true);
+		
+			//show some type of image
+			//lock instantly
+			//turn off over time. 
+		
 	}
+
+	public void SetActive(bool b)
+	{
+		if (b)
+		{
+			start.SwitchState(Point.PointState.on);
+		}
+		else
+		{
+			
+			start.SwitchState(Point.PointState.locked);
+		}
+	}
+
+	public void Lock(bool b)
+	{
+		foreach (Point p in _points)
+		{
+			if (b)
+			{
+				p.SwitchState(Point.PointState.locked);
+			}
+			else
+			{
+				p.SwitchState(Point.PointState.off);
+			}
+		}
+	}
+	
+	
+	
 	public void Initialize()
 	{
 		isComplete = false;
+		
+		_points = new List<Point>();
 		
 		scoreCount = 0;
 		
@@ -71,13 +131,19 @@ public class StellationController : MonoBehaviour {
 		}
 		
 		foreach(Point p in GetComponentsInChildren<Point>()){
-			
+
+			if (p.pointType == PointTypes.start)
+			{
+				start = p;
+			}
+
 			//expensive but easy
 			if (!_points.Contains(p))
 			{
 				p.hasController = true;
 				p.controller = this;
 				_points.Add(p);
+				p.Initialize();
 			}
 		}
 
@@ -156,29 +222,41 @@ public class StellationController : MonoBehaviour {
 
 	public void Reset()
 	{
-		Services.main.InitializeLevel();
+		//Services.main.InitializeLevel();
 		scoreCount = 0;
 		isComplete = false;
 	}
+
+	public void ReloadFromEditor()
+	{
+		StellationController c = Services.main.editor.Load(gameObject.name);
+		StellationManager manager = GetComponentInParent<StellationManager>();
+		if (manager.controllers.Contains(this))
+		{
+			manager.controllers[manager.controllers.IndexOf(this)] = c;
+		}
+		c.transform.parent = transform.parent;
+		c.transform.position = transform.position;
+		DestroyImmediate(gameObject);
+	}
+
 	public void Step()
 	{
-		
 			if (isOn)
 			{
-
+				foreach (Point p in _points)
+				{
+					p.Step();
+				}
+				
 				Services.main.fx.readout.transform.position = Services.main.Player.transform.position;
-				
-				
+
 				if (isComplete)
 				{
 
 					winTimer += Time.deltaTime/4;
 					
-					foreach (Spline s in Spline.Splines)
-					{
-
-						//s.Spin(winTimer);
-					}
+					
 
 					if (winTimer > 1)
 					{
@@ -232,7 +310,7 @@ public class StellationController : MonoBehaviour {
 			}
 
 	}
-	public void TryToUnlock()
+	public bool TryToUnlock()
 	{
 		
 		if (!isComplete)
@@ -249,28 +327,18 @@ public class StellationController : MonoBehaviour {
 				complete = CheckSpeed();
 				break;
 			}
-			
-			
+
 			if (complete)
 			{
-				winTimer = 0;
-				
-				if(hasUnlock)
-				unlock.LockSpline(false);
-				
-				for (int i = 0; i < activateOnCompletion.Count; i++)
-				{
-					activateOnCompletion[i].DoBehaviour();
-				}
-
-				foreach (Point p in _points)
-				{
-					p.TurnOn();
-				}
-				isComplete = true;
+				Won();
 			}
+			
+			return complete;
+
 		}
-	
+
+		return true;
+
 	}
 
 	public void SetCameraBounds()

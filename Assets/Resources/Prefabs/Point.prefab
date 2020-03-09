@@ -45,27 +45,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f45ea6e1844a6438b4911d7e50e37c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visited: 0
+  state: 1
   pointType: 0
   _neighbours: []
   _connectedSplines: []
   tension: 0
   bias: 0
   continuity: 0
+  usedToFly: 0
   isKinematic: 0
-  originalPos: {x: 0, y: 0, z: 0}
+  anchorPos: {x: 0, y: 0, z: 0}
+  initPos: {x: 0, y: 0, z: 0}
   text: 
   textMesh: {fileID: 0}
-  pointClouds: []
-  hasPointcloud: 0
-  hit: 0
-  lockAmount: 0
+  controller: {fileID: 0}
+  hasController: 0
   timeOffset: 0
   proximity: 0
-  locked: 0
   color: {r: 0, g: 0, b: 0, a: 1}
   c: 0
   accretion: 0
+  SR: {fileID: 212494285075244442}
+  timesHit: 0
 --- !u!135 &135992623569106810
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -104,6 +105,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0

@@ -578,7 +578,7 @@ public class Spline : MonoBehaviour
 		invertedDistance = 1f - Mathf.Clamp01(Mathf.Abs(distanceFromPlayer));
 
 		float flow = Mathf.Abs(Services.PlayerBehaviour.flow);
-		float newFrequency = Mathf.Abs(Services.PlayerBehaviour.accuracy * 10);
+		float newFrequency = Mathf.Abs(flow);
 
 		//use accuracy to show static
 		float amplitude;
@@ -592,7 +592,10 @@ public class Spline : MonoBehaviour
 			 float accuracyDistortion = Mathf.Lerp(0, 1, Mathf.Pow(0.5f - Services.PlayerBehaviour.accuracy / 2, 2)) + distortion;
 			v += (distortionVector * UnityEngine.Random.Range(- accuracyDistortion, accuracyDistortion) * invertedDistance) * amplitude;
 			
-			v += distortionVector * (Mathf.Sin(Time.time * 10 * frequency + phase - segmentIndex) *
+			
+			NewFrequency(newFrequency * 10);
+			
+			v += distortionVector * (Mathf.Sin(Time.time * frequency + phase - segmentIndex) *
 				                         Mathf.Clamp01(_completion) * Mathf.Clamp01(distanceFromPlayer) *
 				                         Mathf.Clamp01(drawTimer /5f) * 0.025f);
 			
@@ -603,7 +606,6 @@ public class Spline : MonoBehaviour
 			v += (distortionVector * UnityEngine.Random.Range(-distortion, distortion) * Mathf.Clamp01(-indexDiff + 1)) * amplitude;
 		}
 
-		NewFrequency(newFrequency);
 
 		//get value for sine wave effect
 		

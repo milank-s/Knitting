@@ -18,10 +18,14 @@ public class MainEditor : Editor
         Main mainScript = (Main)target;
 
 
+        if (GUILayout.Button("INIT"))
+        {
+            mainScript.Awake();
+        }
         if(GUILayout.Button("LOAD"))
         {
             Undo.RecordObject(mainScript, "savedFile");
-            MapEditor.Load(mainScript.loadFileName);
+            mainScript.editor.Load(mainScript.loadFileName);
         }
         
         

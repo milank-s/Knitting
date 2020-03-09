@@ -22,6 +22,7 @@
 	public Image image;
 	public FXManager fx;
 	public GameObject canvas;
+	public PrefabManager prefabs;
 	public static bool usingJoystick;
 	public Transform pointParent;
 	public Transform splineParent;
@@ -90,7 +91,8 @@
 		StartCoroutine(FadeOut());
 		yield return new WaitForSeconds(fadeLength);
 		
-		StellationController c = MapEditor.Load(m);
+		StellationController c = editor.Load(m);
+		
 		if (!MapEditor.editing)
 		{
 			SceneController.instance.activeScenes.Add(c);
@@ -156,7 +158,7 @@
 		else
 		{
 			Reset();
-			OpenMenu();
+			//OpenMenu();
 		}
 
 		curLevel = i;
@@ -171,25 +173,22 @@
 //			Cursor.lockState = CursorLockMode.None;
 //			Cursor.visible = true;
 //		}
-
-		state = GameState.playing;
-
+	
 	}
 	
 	
-	void Awake ()
+	public void Awake ()
 	{
-
-		
 		curLevel = "";
 		Point.Points = new List<Point>();
 		Spline.Splines = new List<Spline>();
 		Services.GameUI = canvas;
 		Services.Word = Word;
 		Services.mainCam = mainCam;
-		Services.Prefabs = GetComponent<PrefabManager>();
+		Services.Prefabs = prefabs;
 		Services.Player = Player;
 		Services.fx = fx;
+		CameraFollow.instance = mainCam.GetComponent<CameraFollow>();
 		Services.PlayerBehaviour = Player.GetComponent<PlayerBehaviour>();
 		Services.Cursor = cursor;
 		PointManager._pointsHit = new List<Point> ();
@@ -241,7 +240,6 @@
 		menu.SetActive(true);
 		SceneController.instance.SelectLevelSet();
 
-		
 		state = GameState.menu;
 		
 		if (MapEditor.editing)
@@ -384,31 +382,36 @@
 	
 	public void InitializeLevel()
 	{
-		for (int i = Point.Points.Count - 1; i >= 0; i--)
+		if (Point.Points.Count > 0)
 		{
-			if (Point.Points[i] == null)
+			for (int i = Point.Points.Count - 1; i >= 0; i--)
 			{
-				Point.Points.RemoveAt(i);
-			}
-			else
-			{
-				Point.Points[i].Clear();
-			}
-		}
-		
-		for (int i = Spline.Splines.Count - 1; i >= 0; i--)
-		{
-			if (Spline.Splines[i] == null)
-			{
-				Spline.Splines.RemoveAt(i);
-			}
-			else
-			{	
-				Spline.Splines[i].Initialize();
+				if (Point.Points[i] == null)
+				{
+					Point.Points.RemoveAt(i);
+				}
+				else
+				{
+					Point.Points[i].Clear();
+				}
 			}
 		}
 
-		
+		if (Spline.Splines.Count > 0){
+			for (int i = Spline.Splines.Count - 1; i >= 0; i--)
+			{
+				if (Spline.Splines[i] == null)
+				{
+					Spline.Splines.RemoveAt(i);
+				}
+				else
+				{
+					Spline.Splines[i].Initialize();
+				}
+			}
+		}
+
+
 //		foreach (StellationController c in SceneController.instance.activeScenes)
 //		{
 //			
@@ -423,10 +426,10 @@
 //			}
 //		}
 
-		foreach (Point p in Point.Points)
+/*	foreach (Point p in Point.Points)
 		{
 			p.Initialize();
-		}
+		}*/
 
 		if (Services.StartPoint == null && Point.Points.Count > 0)
 		{

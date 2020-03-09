@@ -104,7 +104,7 @@ public class Point : MonoBehaviour
 	public float accretion;
 	public static Point Select;
 	private FadeSprite activationSprite;
-	private SpriteRenderer SR;
+	[SerializeField] SpriteRenderer SR;
 	private float timeOnPoint;
 	[HideInInspector] public int timesHit = 0;
 	public bool isSelect
@@ -204,7 +204,6 @@ public class Point : MonoBehaviour
 	void Awake()
 	{
 		initPos = transform.position;
-		SR = GetComponent<SpriteRenderer> ();
 
 		
 //		stiffness = 1600;
@@ -223,8 +222,6 @@ public class Point : MonoBehaviour
 			textMesh.GetComponent<FadeTextOnPoint>().p = this;
 		}
 		
-		
-	
 		Points.Add(this);
 		Point.pointCount++;
 	}
@@ -241,7 +238,6 @@ public class Point : MonoBehaviour
 	}
 	public void Initialize()
 	{
-
 		gameObject.name = text;
 		initPos = transform.position;
 		anchorPos = initPos;
@@ -300,12 +296,13 @@ public class Point : MonoBehaviour
 				break;
 			
 			case PointTypes.start:
+				
 				Services.StartPoint = this;
 				break;
 		}
 	}
 
-	public void Update(){
+	public void Step(){
 		if (!MapEditor.editing)
 		{
 			SetColor();
@@ -372,9 +369,10 @@ public class Point : MonoBehaviour
 	IEnumerator LightUp()
 	{
 		float f = 0;
+		Color startColor = color;
+		
 		while (f < 1)
 		{
-			Color startColor = color;
 			color = Color.Lerp(startColor, Color.white * 0.5f, f);
 			f += Time.deltaTime;
 			yield return null;
@@ -395,29 +393,20 @@ public class Point : MonoBehaviour
 
 	public void TurnOff()
 	{
+		state = PointState.locked;
+		StartCoroutine(Fade());
+	}
+
+	IEnumerator Fade()
+	{
+		float f = 0;
+		Color startColor = color;
 		
-	}
-
-
-	public void Updatecontrollers()
-	{
-		controller.Step();	
-	}
-	
-	public void TurnOnController()
-	{
-		if(hasController){
-			
-				controller.isOn = true;	
-				controller.TryToUnlock();
-		}
-	}
-	
-	public void TurnOffController()
-	{
-		if(hasController){
-			controller.isOn = false;
-			Services.fx.trailParticles.Pause();
+		while (f < 1)
+		{
+			color = Color.Lerp(startColor, Color.white/8f, f);
+			f += Time.deltaTime;
+			yield return null;
 		}
 	}
 
@@ -429,6 +418,11 @@ public class Point : MonoBehaviour
 			{
 				case PointState.locked:
 					
+					if (state == PointState.on)
+					{
+						TurnOff();
+					}
+
 					break;
 
 				case PointState.off:
@@ -462,7 +456,6 @@ public class Point : MonoBehaviour
 
 		SwitchState(PointState.on);
 
-		TurnOnController();
 //		SynthController.instance.noteySynth.NoteOn(24, 1, 1);
 
 		if(pointType != PointTypes.ghost){
@@ -473,8 +466,40 @@ public class Point : MonoBehaviour
 					//Services.Sounds.PlayPointAttack(Services.PlayerBehaviour.clampedSpeed/10);
 					break;
 				
+				case PointTypes.start:
+					if (StellationManager.instance.curController != null &&
+					    StellationManager.instance.curController != controller)
+					{
+						
+					}
+//					SynthController.instance.bassySynth.NoteOn(29, 1, 1);
+					break;
+				
 				case PointTypes.end:
 //					SynthController.instance.bassySynth.NoteOn(29, 1, 1);
+					
+					if (controller.TryToUnlock())
+					{
+				
+						Services.fx.SpawnSprite(0, transform);
+						//Services.Sounds.PlayPointAttack(0.5f);
+						Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed + 10, transform);
+						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
+				
+						if (SceneController.instance != null && !MapEditor.editing)
+						{
+							SceneController.instance.LoadNextStellation( 1);	
+						}
+				
+					}
+					else
+					{
+				
+						Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
+//				Services.main.WarpPlayerToNewPoint(Services.StartPoint);
+						Services.fx.ShowUnfinished();
+				
+					}
 					break;
 			}
 				
@@ -482,36 +507,6 @@ public class Point : MonoBehaviour
 				fx.transform.parent = transform;
 				Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, transform);
 				
-		}
-
-		if (pointType == PointTypes.end)
-		{
-			
-			if (controller.CheckCompleteness())
-			{
-				
-				Services.fx.SpawnSprite(0, transform);
-				//Services.Sounds.PlayPointAttack(0.5f);
-				Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed + 10, transform);
-				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
-				
-				if (controller.CheckCompleteness() && SceneController.instance != null && !MapEditor.editing)
-				{
-					SceneController.instance.LoadNextStellation( 1);	
-				}
-				
-			}
-			else
-			{
-				
-				Services.PlayerBehaviour.SwitchState(PlayerState.Animating);
-//				Services.main.WarpPlayerToNewPoint(Services.StartPoint);
-				Services.fx.ShowUnfinished();
-				
-			}
-
-//			Services.PlayerBehaviour.Reset();
-//			SceneController.instance.LoadNextLevel();
 		}
 		
 	}
@@ -527,9 +522,6 @@ public class Point : MonoBehaviour
 	
 	public void OnPointExit(){
 
-	
-		TurnOffController();
-		
 		switch(pointType){
 			case PointTypes.stop:
 				

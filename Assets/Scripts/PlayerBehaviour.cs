@@ -261,9 +261,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 	public void Step ()
 	{
-
-		
-		
 		if (joystickLocked)
 		{
 			cursorSprite.enabled = false;
@@ -385,10 +382,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			//curSpline.UpdateSpline();
 //			ManageSound();
 
-			if (curPoint.hasController)
-			{
-				curPoint.Updatecontrollers();
-			}
+			curPoint.controller.Step();
 			
 			foreach(Spline s in curPoint._connectedSplines){
 				//should always be drawn
@@ -1695,7 +1689,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				GranularSynth.moving.TurnOn();
 				curSpline.CalculateDistance ();
-				pointDest.TurnOnController();
 				
 				VectorLine v = velocityLine2;
 				velocityLine2 = velocityLine;

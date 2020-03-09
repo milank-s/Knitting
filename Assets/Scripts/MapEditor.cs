@@ -70,7 +70,9 @@ public class MapEditor : MonoBehaviour
 
     [Space(25)] public Transform pointsParent;
     public Transform splinesParent;
-
+    public Transform stellationsParent;
+    public PrefabManager prefabs;
+    public Main main;
     public  Image textCursor;
     public static bool editing = false;
     public GameObject selector;
@@ -200,7 +202,8 @@ public class MapEditor : MonoBehaviour
 
         instance = this;
         sceneName = "Stellation 1";
-
+        controller = main.splineParent.GetComponentInChildren<StellationController>();
+        
         text = new List<GameObject>();
         foreach (Text t in canvas.GetComponentsInChildren<Text>())
         {
@@ -1037,7 +1040,7 @@ public class MapEditor : MonoBehaviour
         StopTyping(sceneName);
     }
 
-    public static StellationController Load(string fileName, bool recycle = true)
+    public StellationController Load(string fileName, bool recycle = true)
     {
         
         List<Spline> splines = Spline.Splines;
@@ -1051,13 +1054,13 @@ public class MapEditor : MonoBehaviour
    
             parent = new GameObject();
             pointParent = new GameObject();
-            parent.transform.parent = Services.main.splineParent;
+            parent.transform.parent = stellationsParent;
             pointParent.transform.parent = parent.transform;
             pointParent.name = "points";
             parent.name = json["name"];
 
-            instance.pointsParent = pointParent.transform;
-            instance.splinesParent = parent.transform;
+            pointsParent = pointParent.transform;
+            splinesParent = parent.transform;
         
         List<Point> newPoints = new List<Point>();
         
@@ -1090,7 +1093,7 @@ public class MapEditor : MonoBehaviour
                     json["p" + i]["text"]["z"]);
                 if (newPoint.textMesh == null)
                 {
-                     newText = Instantiate(Services.Prefabs.spawnedText, newPoint.transform)
+                     newText = Instantiate(prefabs.spawnedText, newPoint.transform)
                         .GetComponent<TextMesh>();
                 }
                 else
@@ -1099,7 +1102,7 @@ public class MapEditor : MonoBehaviour
                 }
                 newPoint.textMesh = newText;
                 newText.transform.position = textPos;
-                Services.Prefabs.SetFont(newText, json["p" + i]["text"]["font"]);
+                prefabs.SetFont(newText, json["p" + i]["text"]["font"]);
                 newText.fontSize = json["p" + i]["text"]["fontSize"];
                 newText.text = json["p" + i]["word"];
                 newPoint.text = newText.text;
@@ -1188,7 +1191,7 @@ public class MapEditor : MonoBehaviour
         c.Initialize();
         
         
-        instance.controller = c;
+        controller = c;
         return c;
     }
 

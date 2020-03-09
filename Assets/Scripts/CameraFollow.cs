@@ -17,7 +17,6 @@ public class CameraFollow : MonoBehaviour {
 	void Awake()
 	{
 		instance = this;
-		cam = GetComponent<Camera> ();
 		CameraDolly.leftBound = float.PositiveInfinity;
 		CameraDolly.rightBound = float.NegativeInfinity;
 		CameraDolly.topBound = float.NegativeInfinity;
