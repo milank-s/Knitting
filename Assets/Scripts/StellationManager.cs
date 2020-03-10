@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using AudioHelm;
 using UnityEngine;
 
 public class StellationManager : MonoBehaviour
@@ -18,15 +19,20 @@ public class StellationManager : MonoBehaviour
 	public void Start()
 	{
 		
+	
+
+		foreach (StellationController c in controllers)
+		{
+			c.Initialize();
+			c.Lock(true);
+		}
+	
 		curController = controllers[0];	
-		curController.Initialize();
+		curController.Lock(false);
+		Services.StartPoint = curController.start;
+		curController.isOn = true;
 		
-		Services.Player.SetActive(true);
-		Services.PlayerBehaviour.Initialize();
-		
-		
-		Services.main.fx.Reset();
-		Services.main.state = Main.GameState.playing;
+		Services.main.InitializeLevel();
 
 	}
 
@@ -34,6 +40,7 @@ public class StellationManager : MonoBehaviour
 	{
 		curController = c;
 		c.Lock(false);
+		EnableStellations(false);
 	}
 	
 	public void EnableStellations(bool on)

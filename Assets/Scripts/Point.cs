@@ -205,7 +205,15 @@ public class Point : MonoBehaviour
 	{
 		initPos = transform.position;
 		state = PointState.off;
-		
+
+		if (MapEditor.editing)
+		{
+			SR.color = Color.white;
+		}
+		else
+		{
+			SR.color = Color.black;
+		}
 //		stiffness = 1600;
 //		damping = 1000;
 //		mass = 20;
@@ -375,6 +383,7 @@ public class Point : MonoBehaviour
 		{
 			color = Color.Lerp(startColor, Color.white * 0.5f, f);
 			f += Time.deltaTime;
+			SetColor();
 			yield return null;
 		}
 	}
@@ -406,6 +415,7 @@ public class Point : MonoBehaviour
 		{
 			color = Color.Lerp(startColor, Color.white/8f, f);
 			f += Time.deltaTime;
+			SetColor();
 			yield return null;
 		}
 	}
@@ -430,7 +440,7 @@ public class Point : MonoBehaviour
 
 				case PointState.on:
 					TurnOn();
-					PointManager.AddPointHit(this);
+					//PointManager.AddPointHit(this);
 
 					break;
 			}
@@ -484,20 +494,23 @@ public class Point : MonoBehaviour
 					
 					if (controller.TryToUnlock())
 					{
+						Debug.Log("COMPLETE");
 						Services.fx.SpawnSprite(0, transform);
 						//Services.Sounds.PlayPointAttack(0.5f);
 						Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed + 10, transform);
 						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
 				
-						if (SceneController.instance != null && !MapEditor.editing)
+						Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
+						
+						/*if (SceneController.instance != null && !MapEditor.editing)
 						{
 							SceneController.instance.LoadNextStellation( 1);	
-						}
+						}*/
 				
 					}
 					else
 					{
-						Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
+						//Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
 						//Services.main.WarpPlayerToNewPoint(Services.StartPoint);
 						Services.fx.ShowUnfinished();
 				
@@ -552,9 +565,13 @@ public class Point : MonoBehaviour
 		}
 
 		if(pointType != PointTypes.ghost){
-			
-			AddBoost();
-				SynthController.instance.PlayNote(0);
+
+			if (Services.PlayerBehaviour.buttonPressed)
+			{
+				AddBoost();
+			}
+
+			SynthController.instance.PlayNote(0);
 				
 		}
 
