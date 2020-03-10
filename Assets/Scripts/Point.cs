@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using AudioHelm;
 using SimpleJSON;
 using UnityEngine.Experimental.PlayerLoop;
 
@@ -481,11 +482,12 @@ public class Point : MonoBehaviour
 					break;
 				
 				case PointTypes.start:
-					if (StellationManager.instance.curController != null &&
+					if (StellationManager.instance != null &&
 					    StellationManager.instance.curController != controller)
 					{
-						
+						StellationManager.instance.EnterStellation(controller);
 					}
+					
 //					SynthController.instance.bassySynth.NoteOn(29, 1, 1);
 					break;
 				
@@ -494,34 +496,34 @@ public class Point : MonoBehaviour
 					
 					if (controller.TryToUnlock())
 					{
-						Debug.Log("COMPLETE");
+						
 						Services.fx.SpawnSprite(0, transform);
 						//Services.Sounds.PlayPointAttack(0.5f);
 						Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed + 10, transform);
 						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
-				
+						
 						Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
+						
 						
 						/*if (SceneController.instance != null && !MapEditor.editing)
 						{
 							SceneController.instance.LoadNextStellation( 1);	
 						}*/
-				
+
 					}
 					else
 					{
 						//Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
 						//Services.main.WarpPlayerToNewPoint(Services.StartPoint);
 						Services.fx.ShowUnfinished();
-				
 					}
+					
 					break;
 			}
 			
 			GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
 			fx.transform.parent = transform;
-				
-				Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, transform);
+			Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, transform);
 				
 		}
 		
@@ -540,9 +542,8 @@ public class Point : MonoBehaviour
 
 		switch(pointType){
 			case PointTypes.stop:
-				
-
 //				Services.PlayerBehaviour.flow += 0.1f;
+
 			break;
 
 			case PointTypes.fly:
@@ -586,6 +587,63 @@ public class Point : MonoBehaviour
 		*/
 	}
 
+	public bool CanLeave()
+	{
+
+		bool buttonUp = Input.GetButtonUp("Button1");
+		bool buttonDown = Input.GetButton("Button1");
+		
+		if (buttonDown)
+		{
+			return false;
+		}
+		
+		switch (pointType)
+		{
+			case PointTypes.start:
+				if (timesHit > 1)
+				{
+					return true;
+				}else if (buttonUp)
+				
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+
+				break;
+			
+			case PointTypes.end:
+				if (controller.isComplete)
+				{
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+				break;
+			
+			case PointTypes.stop:
+				if (buttonUp)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+		
+			
+			default:
+				return true;
+			
+		}
+	}
+	
 	public void Contract()
 	{
 		tension = Mathf.Clamp(tension + Time.deltaTime /5f, -1f, 1f);

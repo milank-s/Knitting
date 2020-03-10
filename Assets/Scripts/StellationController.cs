@@ -23,8 +23,13 @@ public class StellationController : MonoBehaviour {
 	
 	public Spline unlock;
 
-	public int score;
-	public float scoreCount;
+	public int laps;
+	public int speed;
+	public int time;
+
+	private float timer;
+	public int lapCount;
+	
 
 	public Point start;
 	
@@ -53,7 +58,7 @@ public class StellationController : MonoBehaviour {
 	private int wordIndex;
 	private float fade;
 	private bool hasUnlock;
-	private float winTimer;
+	
 	public string GetWord (){
 		wordIndex++;
 		return words[(wordIndex-1) % (words.Length)];
@@ -64,6 +69,11 @@ public class StellationController : MonoBehaviour {
 	{
 		isOn = false;
 		
+		CameraFollow.instance.fixedCamera = false;
+						
+		Services.mainCam.fieldOfView = 80;
+		CameraFollow.instance.desiredFOV = 80;
+
 
 		if (StellationManager.instance != null)
 		{
@@ -121,13 +131,13 @@ public class StellationController : MonoBehaviour {
 		isComplete = false;
 		
 		_points = new List<Point>();
-		
-		scoreCount = 0;
+
+		lapCount = 0;
 		
 		//stupid code for old maps that didnt have scoreCount idk. 
-		if (unlockMethod == UnlockType.laps && score == 0)
+		if (unlockMethod == UnlockType.laps && laps == 0)
 		{
-			score = 1;
+			laps = 1;
 		}
 		
 		foreach(Point p in GetComponentsInChildren<Point>()){
@@ -200,16 +210,16 @@ public class StellationController : MonoBehaviour {
 		foreach (Point p in _points)
 		{
 
-			if (p.timesHit < score)
+			if (p.timesHit < laps)
 			{
 				if (p.timesHit < minLaps)
 				{
 					minLaps = p.timesHit;
 				}
 				
-				if (minLaps > scoreCount)
+				if (minLaps > lapCount)
 				{
-					scoreCount = minLaps;
+					lapCount = minLaps;
 				}
 				
 				isDone = false;
@@ -223,7 +233,8 @@ public class StellationController : MonoBehaviour {
 	public void Reset()
 	{
 		//Services.main.InitializeLevel();
-		scoreCount = 0;
+		lapCount = 0;
+		
 		isComplete = false;
 	}
 
@@ -251,36 +262,18 @@ public class StellationController : MonoBehaviour {
 				
 				Services.main.fx.readout.transform.position = Services.main.Player.transform.position;
 
-				if (isComplete)
-				{
-
-					winTimer += Time.deltaTime/4;
-					
-					
-
-					if (winTimer > 1)
-					{
-						//endLevel
-					}
-					//					
-
-//					foreach (Point p in _points)
-//					{
-//						p.Contract();
-//					}
-				}
-				else
-				{
+				if (!isComplete)
+				{	
 					if (unlockMethod == UnlockType.speed)
 					{
-						Services.fx.readout.text = (Services.PlayerBehaviour.flow - score).ToString("F2");
+						Services.fx.readout.text = (Services.PlayerBehaviour.flow - speed).ToString("F2");
 					
 					}else if (unlockMethod == UnlockType.time)
 					{
-						Services.fx.readout.text = (score - scoreCount).ToString("F2");
-						scoreCount += Time.deltaTime;
+						Services.fx.readout.text = (time - timer).ToString("F2");
+						timer += Time.deltaTime;
 
-						if (score - scoreCount <= 0)
+						if (time - timer <= 0)
 						{
 							Reset();
 						}
@@ -315,25 +308,25 @@ public class StellationController : MonoBehaviour {
 		
 		if (!isComplete)
 		{
-			bool complete = false;
 			
 			switch (unlockMethod)
 			{
 			case UnlockType.laps:
-				complete = CheckCompleteness();
+				isComplete = CheckCompleteness();
 				break;
 			
 			case UnlockType.speed:
-				complete = CheckSpeed();
+				isComplete = CheckSpeed();
 				break;
 			}
 
-			if (complete)
+			if (isComplete)
 			{
 				Won();
 			}
-			
-			return complete;
+
+
+			return isComplete;
 
 		}
 
@@ -396,7 +389,7 @@ public class StellationController : MonoBehaviour {
 	
 	public bool CheckSpeed()
 	{
-		if (Services.PlayerBehaviour.flow > score)
+		if (Services.PlayerBehaviour.flow >= speed)
 		{
 			return true;
 		}

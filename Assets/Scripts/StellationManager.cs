@@ -21,15 +21,13 @@ public class StellationManager : MonoBehaviour
 		
 	
 
-		foreach (StellationController c in controllers)
-		{
-			c.Initialize();
-			c.Lock(true);
+		for(int i = controllers.Count -1; i >= 0; i--){
+			controllers[i].Initialize();
+			controllers[i].Lock(true);
 		}
 	
 		curController = controllers[0];	
 		curController.Lock(false);
-		Services.StartPoint = curController.start;
 		curController.isOn = true;
 		
 		Services.main.InitializeLevel();
@@ -41,9 +39,17 @@ public class StellationManager : MonoBehaviour
 		curController = c;
 		c.Lock(false);
 		EnableStellations(false);
+		c.Initialize();
 	}
 	
 	public void EnableStellations(bool on)
+	{
+
+		StartCoroutine(ShowStartPoints(on));
+		
+	}
+
+	IEnumerator ShowStartPoints(bool on)
 	{
 		foreach (StellationController s in controllers)
 		{
@@ -51,9 +57,10 @@ public class StellationManager : MonoBehaviour
 			{
 				s.SetActive(on);
 			}
-		}
+
+			yield return new WaitForSeconds(0.25f);
+		}		
 	}
-	
 	public void EndScene()
 	{
 

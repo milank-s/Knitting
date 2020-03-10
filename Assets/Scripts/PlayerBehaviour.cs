@@ -84,6 +84,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float creationCD = 0.25f;
 	public float creationInterval = 0.25f;
 	private bool canFly;
+	private bool noRaycast;
 	private bool charging;
 	private List<Transform> newPointList;
 	[Space(10)]
@@ -415,6 +416,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 	
 	public void PlayerOnPoint(){
+		
 		bool canTraverse = false;
 
 		if (CanLeavePoint())
@@ -425,20 +427,23 @@ public class PlayerBehaviour: MonoBehaviour {
 				canTraverse = true;
 
 			}
-			
+
 			//boostTimer >= 1 ||  if you wnna fuck with ppl
-			else if (!joystickLocked && ((!Input.GetButton("Button1") && (curPoint.pointType != PointTypes.stop && (curPoint.pointType != PointTypes.start || (curPoint.pointType == PointTypes.start  && curPoint.timesHit > 1))) || Input.GetButtonUp("Button1"))))
-			{
+			else if (!joystickLocked && curPoint.CanLeave()) {	
+					
 				//something about locking was here
-				
 				canTraverse = true;
+	
 			}
-			else
+
+
+			if (!canTraverse)
 			{
 				cursorSprite.sprite = traverseSprite;
 				l.positionCount = 0;
 				cursorOnPoint.positionCount = 0;
 			}
+			
 		}
 		else {
 			// NO CONNECTING FOR NOW
@@ -822,10 +827,15 @@ public class PlayerBehaviour: MonoBehaviour {
 	void FreeMovement()
 	{
 		Point raycastPoint = SplineUtil.RaycastFromCamera(cursorPos, 1f);
-		
+
+		if (noRaycast)
+		{
+			pointDest = null;
+		}
 		
 		if (raycastPoint != null && raycastPoint != curPoint && raycastPoint.pointType != PointTypes.ghost && raycastPoint.state != Point.PointState.locked)
 		{
+			noRaycast = false;
 			//& !raycastPoint.used
 			pointDest = raycastPoint;
 		}
@@ -852,7 +862,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			if (flyingSpeed > 0)
 			{
-				flyingSpeed -= Time.deltaTime/2f;
+				//flyingSpeed -= Time.deltaTime/2f;
 				Vector3 inertia = cursorDir * flyingSpeed;
 				transform.position += inertia * Time.deltaTime;
 			}
@@ -1729,7 +1739,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Flying:
 
-		
 				GranularSynth.flying.TurnOn();
 				GranularSynth.moving.TurnOff();
 				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
@@ -1738,6 +1747,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				sparks.Pause();
 				Services.fx.flyingParticles.Play();
 				flyingTrail.Clear();
+
+				noRaycast = true;
 				
 				curPoint.usedToFly = true;
 				pointDest = null;
@@ -1747,9 +1758,10 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				curPoint.OnPointExit();
 				curPoint.proximity = 0;
-
 				
-				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
+				
+				pointDest = null;
+
 				
 				state = PlayerState.Flying;
 				flyingTrail.emitting = true;

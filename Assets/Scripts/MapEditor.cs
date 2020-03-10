@@ -946,7 +946,9 @@ public class MapEditor : MonoBehaviour
         level["fov"].AsInt = controller.desiredFOV;
         level["splineCount"].AsInt = Spline.Splines.Count;
         level["unlockType"].AsInt = (int) controller.unlockMethod;
-        level["score"].AsInt = (int)scoreSlider.value;
+        level["speed"].AsInt = controller.speed;
+        level["time"].AsInt = controller.time;
+        level["laps"].AsInt = controller.laps;
 
         for (int j = 0; j < Spline.Splines.Count; j++)
         {
@@ -1033,8 +1035,7 @@ public class MapEditor : MonoBehaviour
         fov.text = controller.desiredFOV.ToString("F0");
         fovSlider.value = controller.desiredFOV;
         fixedCamera.isOn = controller.fixedCam;
-        scoreSlider.value = controller.score;
-        unlockTypes.value = (int)controller.unlockMethod;
+        ChangeWinCondition((int)StellationController.UnlockType.speed);
         
         sceneName = fileName;
         sceneTitle.text = sceneName;
@@ -1181,7 +1182,9 @@ public class MapEditor : MonoBehaviour
 
         c.fixedCam = json["fixedCamera"];
         c.desiredFOV = json["fov"];
-        c.score = json["score"];
+        c.speed = json["speed"];
+        c.laps = json["laps"];
+        c.time = json["time"];
         int unlock = json["unlockType"];
         c.unlockMethod = (StellationController.UnlockType) unlock;
         
@@ -1200,33 +1203,53 @@ public class MapEditor : MonoBehaviour
 
     public void ChangeScore(Single i)
     {
+        
         scoreText.text = scoreSlider.value.ToString("F0");
-        controller.score = (int)i;
+
+        switch (controller.unlockMethod)
+        {
+            case StellationController.UnlockType.laps:
+                controller.laps = (int)i;
+                
+                break;
+            
+            case StellationController.UnlockType.speed:
+                controller.speed = (int)i;
+                break;
+            
+            case StellationController.UnlockType.time:
+
+                controller.time = (int)i;
+                break;
+        }
     }
+    
     public void ChangeWinCondition(Int32 i)
     {
         controller.unlockMethod = (StellationController.UnlockType) i;
         switch ((StellationController.UnlockType) i)
         {
             case StellationController.UnlockType.laps:
-                scoreSlider.minValue = 1;
-                scoreSlider.maxValue = 50;
-                
+                scoreSlider.minValue = 0;
+                scoreSlider.maxValue = 10;
+                scoreSlider.value = controller.laps;
                 break;
             
             case StellationController.UnlockType.speed:
-                scoreSlider.minValue = 1;
-                scoreSlider.maxValue = 9;
+                scoreSlider.minValue = 0;
+                scoreSlider.maxValue = 10;
+                scoreSlider.value = controller.speed;
                 break;
             
             case StellationController.UnlockType.time:
                 scoreSlider.minValue = 5;
                 scoreSlider.maxValue = 600;
+                scoreSlider.value = controller.time;
                 break;
         }
 
-        scoreText.text = scoreSlider.minValue.ToString("F0");
-        scoreSlider.value = scoreSlider.minValue;
+        scoreText.text = scoreSlider.value.ToString("F0");
+        
     }
     
 void DragCamera()
