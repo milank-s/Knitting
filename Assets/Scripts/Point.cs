@@ -204,7 +204,7 @@ public class Point : MonoBehaviour
 	void Awake()
 	{
 		initPos = transform.position;
-
+		state = PointState.off;
 		
 //		stiffness = 1600;
 //		damping = 1000;
@@ -238,6 +238,7 @@ public class Point : MonoBehaviour
 	}
 	public void Initialize()
 	{
+		state = PointState.off;
 		gameObject.name = text;
 		initPos = transform.position;
 		anchorPos = initPos;
@@ -311,7 +312,6 @@ public class Point : MonoBehaviour
 			{
 				Movement();
 			}
-
 		}
 		else
 		{
@@ -443,17 +443,21 @@ public class Point : MonoBehaviour
 	{
 		proximity = 1;
 		timeOnPoint = 0;
-		timesHit++;
-		
+
+		if (controller.CheckSpeed())
+		{
+			timesHit++;
+			
+			if(textMesh != null){
+				textMesh.GetComponent<FadeTextOnPoint>().alpha = 1;
+			}
+		}
+
 		Services.fx.DrawLine();
 		
 //		stiffness = Mathf.Clamp(stiffness -100, 100, 10000);
 //		damping = Mathf.Clamp(damping - 100, 100, 10000);
 		
-		if(textMesh != null){
-			textMesh.GetComponent<FadeTextOnPoint>().alpha = 1;
-		}
-
 		SwitchState(PointState.on);
 
 //		SynthController.instance.noteySynth.NoteOn(24, 1, 1);
@@ -480,7 +484,6 @@ public class Point : MonoBehaviour
 					
 					if (controller.TryToUnlock())
 					{
-				
 						Services.fx.SpawnSprite(0, transform);
 						//Services.Sounds.PlayPointAttack(0.5f);
 						Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed + 10, transform);
@@ -494,17 +497,17 @@ public class Point : MonoBehaviour
 					}
 					else
 					{
-				
 						Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
-//				Services.main.WarpPlayerToNewPoint(Services.StartPoint);
+						//Services.main.WarpPlayerToNewPoint(Services.StartPoint);
 						Services.fx.ShowUnfinished();
 				
 					}
 					break;
 			}
+			
+			GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
+			fx.transform.parent = transform;
 				
-				GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
-				fx.transform.parent = transform;
 				Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, transform);
 				
 		}
@@ -516,8 +519,8 @@ public class Point : MonoBehaviour
 		Services.PlayerBehaviour.flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
 		Services.PlayerBehaviour.boost += boostAmount + Services.PlayerBehaviour.boostTimer;
 		Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
-		Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.boostTimer + 1 * 5, transform);
-		Services.fx.EmitLinearBurst(50, Services.PlayerBehaviour.boostTimer + 1, transform, Services.PlayerBehaviour.cursorDir);
+		Services.fx.EmitRadialBurst(10,Services.PlayerBehaviour.boostTimer + 1, transform);
+		Services.fx.EmitLinearBurst(5, Services.PlayerBehaviour.boostTimer + 1, transform, Services.PlayerBehaviour.cursorDir);
 	}
 	
 	public void OnPointExit(){
@@ -525,40 +528,32 @@ public class Point : MonoBehaviour
 		switch(pointType){
 			case PointTypes.stop:
 				
-				AddBoost();
+
 //				Services.PlayerBehaviour.flow += 0.1f;
 			break;
 
 			case PointTypes.fly:
-					
-				
+
 				
 			break;
 
 			case PointTypes.normal:
 
-				
-				
-				if (Services.PlayerBehaviour.buttonPressed)
-				{
-					AddBoost();
-					
-				}
 
 			break;
 			
 			case PointTypes.start:
-				AddBoost();
+
 				//Services.Sounds.PlayPointAttack(0.5f);
 				break;
 			
 			case PointTypes.end:
-				Services.PlayerBehaviour.boost += boostAmount + Services.PlayerBehaviour.boostTimer;
 				break;
 		}
 
 		if(pointType != PointTypes.ghost){
 			
+			AddBoost();
 				SynthController.instance.PlayNote(0);
 				
 		}
@@ -636,7 +631,7 @@ public class Point : MonoBehaviour
 			
 		}else if (state == PointState.off)
 		{
-			SR.color = _color + Color.white / 8f;
+			SR.color = _color;
 		}
 
 //		SR.color += Color.white * Mathf.Sin(3 * (Time.time + timeOffset)) / 10;

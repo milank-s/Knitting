@@ -315,8 +315,8 @@ public class StellationController : MonoBehaviour {
 		
 		if (!isComplete)
 		{
-			
 			bool complete = false;
+			
 			switch (unlockMethod)
 			{
 			case UnlockType.laps:

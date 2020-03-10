@@ -224,6 +224,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public IEnumerator RetraceTrail()
 	{
+		
+		
+		cursorSprite.sprite = null;
+		
 		Vector3[] positions = new Vector3[flyingTrail.positionCount];
 		flyingTrail.GetPositions(positions);
 		float f = 0;
@@ -465,10 +469,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					cursorSprite.sprite = canFlySprite;
 					if (Input.GetButtonUp("Button1"))
 					{
-						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
-						Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.boostTimer + 1 * 5, transform);
-						Services.fx.EmitLinearBurst(50, Services.PlayerBehaviour.boostTimer + 1, transform, Services.PlayerBehaviour.cursorDir);
-						
+				
 						Services.PlayerBehaviour.boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
 						SwitchState(PlayerState.Flying);
 						return;
@@ -1111,6 +1112,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	public IEnumerator Unwind()
 	{
 
+		cursorSprite.sprite = null;
+		
 		float t = curSpeed;
 		bool moving = true;
 		int pIndex = traversedPoints.Count -1;
@@ -1620,7 +1623,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			case PlayerState.Traversing:
 				//Services.fx.BakeParticles(sparks, Services.fx.brakeParticleMesh);
-				sparks.Pause();
+				
+				
 				if (Main.usingJoystick)
 				{
 					Services.main.controller.ResetHaptics();
@@ -1630,7 +1634,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				break;
 			
 			case PlayerState.Flying:
-				Services.fx.flyingParticles.Pause();
 				
 				GranularSynth.flying.TurnOff();
 				
@@ -1640,6 +1643,9 @@ public class PlayerBehaviour: MonoBehaviour {
 					
 				}
 
+				
+				Services.fx.flyingParticles.Pause();
+				
 				curSpeed = flyingSpeed;
 				
 				boost = 0;
@@ -1687,6 +1693,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			case PlayerState.Traversing:
 
 				
+				sparks.Play();
+				
 				GranularSynth.moving.TurnOn();
 				curSpline.CalculateDistance ();
 				
@@ -1711,7 +1719,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 				//PlayerMovement ();
 				
-				sparks.Play();
 				t.emitting = true;
 				if (curSpeed > flyingSpeedThreshold)
 				{
@@ -1727,6 +1734,11 @@ public class PlayerBehaviour: MonoBehaviour {
 				GranularSynth.moving.TurnOff();
 				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
 				
+				
+				sparks.Pause();
+				Services.fx.flyingParticles.Play();
+				flyingTrail.Clear();
+				
 				curPoint.usedToFly = true;
 				pointDest = null;
 				l.positionCount = 0;
@@ -1736,11 +1748,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				curPoint.OnPointExit();
 				curPoint.proximity = 0;
 
-				Services.fx.flyingParticles.Play();
-				flyingTrail.Clear();
 				
-				Services.fx.EmitRadialBurst(20,curSpeed, transform);
 				Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
+				
 				state = PlayerState.Flying;
 				flyingTrail.emitting = true;
 				curSpeed = 0;
@@ -1750,6 +1760,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			case PlayerState.Switching:
 
 				//stop players from popping off the line as soon as they enter a point
+				
+				
+				sparks.Pause();
 				
 				decelerationTimer = 0;
 				

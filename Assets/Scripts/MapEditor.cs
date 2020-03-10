@@ -293,6 +293,9 @@ public class MapEditor : MonoBehaviour
     public  void TogglePlayMode()
     {
         
+        controller.Initialize();
+        controller.isOn = true;
+        
         if (pointSelected)
         {
             Services.StartPoint = activePoint;
@@ -305,7 +308,6 @@ public class MapEditor : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         
-      controller.Initialize();
       canvas.gameObject.SetActive(!editing);
       
     }

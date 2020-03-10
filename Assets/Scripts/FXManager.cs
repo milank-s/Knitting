@@ -234,7 +234,7 @@ public class FXManager : MonoBehaviour
   public void EmitLinearBurst(int i, float force, Transform t, Vector3 direction)
   {
       ParticleSystem.MainModule m = speedParticles.main;
-      m.startSpeedMultiplier = force;
+      m.startSpeedMultiplier = force + 1;
       speedParticles.transform.position = t.position;
       speedParticles.transform.up = direction;
       speedParticles.Emit(i);

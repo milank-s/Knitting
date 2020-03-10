@@ -1,21 +1,11 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &100100000
-Prefab:
-  m_ObjectHideFlags: 1
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications: []
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1564635831231520}
-  m_IsPrefabAsset: 1
 --- !u!1 &1564635831231520
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4964647454313934}
@@ -29,9 +19,10 @@ GameObject:
   m_IsActive: 1
 --- !u!4 &4964647454313934
 Transform:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1564635831231520}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -42,15 +33,19 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &114116036116751806
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1564635831231520}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 157a06c1609e6354b94cb9c220a2c5bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  state: 1
+  type: 0
+  distortion: 0
   SplinePoints: []
   Selected: {fileID: 0}
   line:
@@ -137,13 +132,16 @@ MonoBehaviour:
     m_trigger: 0
     m_physicsMaterial: {fileID: 0}
     m_alignOddWidthToPixels: 0
+  completion: 0
+  maxSpeed: 0
+  boost: 0
+  acceleration: 0
   closed: 0
-  locked: 0
-  unlockSpeed: 0
-  splinesToUnlock: []
   curveFidelity: 10
   isPlayerOn: 0
+  reactToPlayer: 0
   draw: 0
   distance: 0
   segmentDistance: 0
   linearDirection: {x: 0, y: 0}
+  lineMaterial: 0
