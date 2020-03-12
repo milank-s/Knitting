@@ -32,7 +32,7 @@ public class StellationController : MonoBehaviour {
 	
 
 	public Point start;
-	
+	public Vector3 center;
 	
 	[Space(10)]
 	[Header("Point Physics")]
@@ -64,7 +64,12 @@ public class StellationController : MonoBehaviour {
 		return words[(wordIndex-1) % (words.Length)];
 	}
 
-
+	public void AdjustCamera()
+	{
+		CameraFollow.instance.desiredFOV = desiredFOV;
+		
+	}
+	
 	public void Won()
 	{
 		isOn = false;
@@ -196,6 +201,7 @@ public class StellationController : MonoBehaviour {
 		if (fixedCam)
 		{
 			SetCameraBounds();
+			
 		}
 	
 		
@@ -376,14 +382,13 @@ public class StellationController : MonoBehaviour {
 				}
 			}
 
-			Vector3 center = Vector3.Lerp(lowerLeft, upperRight, 0.5f);
+			center = Vector3.Lerp(lowerLeft, upperRight, 0.5f);
 
 			float height = Mathf.Abs(upperRight.y - lowerLeft.y);
 			float fov = CameraDolly.FOVForHeightAndDistance(height, -CameraFollow.instance.offset.z) + 10f;
-
 		
 			CameraFollow.instance.desiredFOV = fov;
-			CameraFollow.instance.WarpToPosition(center);
+			CameraFollow.targetPos = center;
 			
 			//get center position and fov
 	}

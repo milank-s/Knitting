@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine.Experimental.PlayerLoop;
 using UnityEngine.InputSystem.LowLevel;
 using Vectrosity;
@@ -444,10 +445,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				cursorOnPoint.positionCount = 0;
 			}
 			
-		}
-		else {
-			// NO CONNECTING FOR NOW
-
+		} 
+		if(!canTraverse){
 
 			if (CanCreatePoint())
 			{
@@ -474,9 +473,9 @@ public class PlayerBehaviour: MonoBehaviour {
 					cursorSprite.sprite = canFlySprite;
 					if (Input.GetButtonUp("Button1"))
 					{
-				
 						Services.PlayerBehaviour.boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
 						SwitchState(PlayerState.Flying);
+
 						return;
 					}
 				}
@@ -503,7 +502,14 @@ public class PlayerBehaviour: MonoBehaviour {
 			cursorDistance = 25f;
 		}
 		else{
-			StayOnPoint();
+			if (curPoint.pointType == PointTypes.end && !curPoint.controller.isComplete)
+			{
+				SwitchState(PlayerState.Animating);
+			}
+			else
+			{
+				StayOnPoint();
+			}
 		}
 	}
 
@@ -521,10 +527,12 @@ public class PlayerBehaviour: MonoBehaviour {
 				pointDest = SplineUtil.RaycastFromCamera(cursorPos, 1f);
 
 				bool drawnPointNull;
+				
 				if(drawnPoint == null){
 					drawnPointNull = true;
 				}
-				if (pointDest != null && pointDest != curPoint && !pointDest.IsAdjacent(curPoint)) {
+				
+				if (pointDest != null && pointDest.state != Point.PointState.locked && pointDest != curPoint && !pointDest.IsAdjacent(curPoint)) {
 					if(drawnPoint != null){
 						if(drawnPoint != pointDest){
 							return true;
@@ -844,6 +852,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		if (pointDest != null)
 		{
+			pointDest.controller.AdjustCamera();
+			
 			flyingSpeed += Time.deltaTime;
 			transform.position += (pointDest.transform.position - transform.position).normalized * Time.deltaTime * flyingSpeed;
 

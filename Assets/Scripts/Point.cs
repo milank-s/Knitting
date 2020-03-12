@@ -35,7 +35,7 @@ public class Point : MonoBehaviour
 	{
 		get
 		{
-			if (pointType == PointTypes.fly)
+			if (pointType == PointTypes.fly || pointType == PointTypes.end && controller.isComplete)
 //				
 			{
 				return true;
@@ -505,7 +505,7 @@ public class Point : MonoBehaviour
 						Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed + 10, transform);
 						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
 						
-						Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
+//						Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
 						
 						
 						/*if (SceneController.instance != null && !MapEditor.editing)
