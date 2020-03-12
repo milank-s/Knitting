@@ -154,6 +154,7 @@ public class StellationController : MonoBehaviour {
 				p.controller = this;
 				_points.Add(p);
 				p.Initialize();
+				p.SR.color = Color.white * 0.2f;
 			}
 		}
 
@@ -393,9 +394,8 @@ public class StellationController : MonoBehaviour {
 		{
 			return true;
 		}
-		else
-		{
+		
 			return false;
-		}
+		
 	}
 }

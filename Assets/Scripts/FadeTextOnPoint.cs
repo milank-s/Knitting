@@ -43,21 +43,20 @@ public class FadeTextOnPoint: MonoBehaviour {
 		}
 		else
 		{
-
 			if (hasPoint)
 			{
 				if (stayOn)
 				{
 					if (p.state == Point.PointState.on)
 					{
-						t.color = new Color(1, 1, 1, 1);
+						//t.color = new Color(1, 1, 1, 1);
 					}
 
-				}
-				else
-				{
-					alpha = Mathf.Clamp01(alpha - Time.deltaTime);
-					t.color = new Color(1, 1, 1, alpha);
+					else
+					{
+						//alpha = Mathf.Clamp01(alpha - Time.deltaTime);
+						t.color = new Color(1, 1, 1, alpha);
+					}
 				}
 			}
 			else if (!startOn)

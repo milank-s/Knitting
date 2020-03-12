@@ -40,6 +40,7 @@ public class StellationManager : MonoBehaviour
 		c.Lock(false);
 		EnableStellations(false);
 		c.Initialize();
+		c.start.OnPointEnter();
 	}
 	
 	public void EnableStellations(bool on)

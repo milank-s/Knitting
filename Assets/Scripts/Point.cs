@@ -105,9 +105,10 @@ public class Point : MonoBehaviour
 	public float accretion;
 	public static Point Select;
 	private FadeSprite activationSprite;
-	[SerializeField] SpriteRenderer SR;
+	public SpriteRenderer SR;
 	private float timeOnPoint;
-	[HideInInspector] public int timesHit = 0;
+	public int timesHit = 0;
+	
 	public bool isSelect
 	{
 		get
@@ -239,6 +240,7 @@ public class Point : MonoBehaviour
 	{
 		StartCoroutine(LightUp());
 	}
+
 	
 	public void Clear()
 	{
@@ -457,6 +459,7 @@ public class Point : MonoBehaviour
 
 		if (controller.CheckSpeed())
 		{
+			
 			timesHit++;
 			
 			if(textMesh != null){
