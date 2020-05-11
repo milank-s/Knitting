@@ -72,6 +72,7 @@ public class SynthController : MonoBehaviour
 			    if (Services.PlayerBehaviour.curPoint.pointType != PointTypes.ghost)
 			    {
 				    pads[1].NoteOn(padNote, Services.PlayerBehaviour.flow / 5f);
+				    
 				    //pads[0].NoteOn(notes[Random.Range(0, notes.Length)]);
 				    //pads[1].NoteOn(lowNotes[Random.Range(0, lowNotes.Length)]);
 				    noiseySynth.NoteOn(50, 1);
@@ -142,17 +143,68 @@ public class SynthController : MonoBehaviour
 		}
 
 
+    void TestNotes()
+    {
+	    if (Input.GetKeyDown(KeyCode.Alpha1))
+	    {
+		    if (pads[0].IsNoteOn(60))
+		    {
+			    pads[0].AllNotesOff();
+		    }
+		    else
+		    {
+			    pads[0].NoteOn(60);
+		    }
+	    }
+	    
+	    if (Input.GetKeyDown(KeyCode.Alpha2))
+	    {
+		    if (pads[1].IsNoteOn(60))
+		    {
+			    pads[1].AllNotesOff();
+		    }
+		    else
+		    {
+			    pads[1].NoteOn(60);
+		    }
+	    }
+	    
+	    if (Input.GetKeyDown(KeyCode.Alpha3))
+	    {
+		   
+			    keys[0].NoteOn(80,1);
+		    
+	    }
+	    
+	    if (Input.GetKeyDown(KeyCode.Alpha4))
+	    {
+		    
+			    keys[1].NoteOn(60, 1);
+		    
+	    }
+    }
+    
+    
     void Update()
     {
+	    TestNotes();
+	    
         float accuracy = Mathf.Clamp01(Services.PlayerBehaviour.accuracy);
 	
+        //Sound of noise when player goes of accuracy
+        noiseySynth.SetParameterValue(Param.kVolume,Mathf.Clamp01( 1 - (Services.PlayerBehaviour.accuracy + 0.2f)) * Mathf.Clamp01(Services.PlayerBehaviour.flow/5f));
+        
+        //slight pitch bend on accuracy
+        //pads[1].SetParameterPercent(Param.kOsc2Tune, accuracy);
+        //volume on speed
+        //pads[1].SetParameterPercent(Param.kVolume, Services.PlayerBehaviour.flow/5f);
+        
         
         //noiseySynth.SetParameterValue(Param.kVolume, Mathf.Lerp(0, Mathf.Clamp01( accuracy) * Mathf.Clamp01(Mathf.Pow(Services.PlayerBehaviour.flow,2)), Services.PlayerBehaviour.decelerationTimer));
-        noiseySynth.SetParameterValue(Param.kVolume,Mathf.Clamp01( 1 - (Services.PlayerBehaviour.accuracy + 0.2f)) * Mathf.Clamp01(Services.PlayerBehaviour.flow/5f));
+        
 
         //movementSynth.SetParameterPercent(Param.kArpTempo, (Services.PlayerBehaviour.flow/5f) * accuracy);
-        pads[1].SetParameterPercent(Param.kOsc2Tune, accuracy);
-        pads[1].SetParameterPercent(Param.kVolume, Services.PlayerBehaviour.flow/5f);
+        
 		//movementSynth.SetParameterPercent(Param.kStutterResampleFrequency,  accuracy/2f);
 		//movementSynth.SetParameterPercent(Param.kStutterFrequency, accuracy/2f);
 		//movementSynth.SetParameterPercent(Param.kArpTempo, accuracy/10f);

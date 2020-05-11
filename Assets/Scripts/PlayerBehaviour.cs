@@ -39,7 +39,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public Point curPoint;
 	public Point pointDest;
 	public Point lastPoint;
-
+	
 	[Space(10)] [Header("Movement Tuning")]
 	public float speed;
 	public float acceleration;
@@ -88,9 +88,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	private bool noRaycast;
 	private bool charging;
 	private List<Transform> newPointList;
-	[Space(10)]
 
-	[Header("Point Creation")]
+	[Space(10)] [Header("Point Creation")] 
+	[SerializeField] CrawlerManager crawlerManager;
 	private Spline drawnSpline;
 	private Point drawnPoint;
 	private List<Point> traversedPoints;
@@ -163,6 +163,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		PointManager.ResetPoints ();
 		Reset();
+		crawlerManager.Reset();
 		cursorDistance = 25;
 		cursor = Services.Cursor;
 		curPoint = Services.StartPoint;
@@ -226,8 +227,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public IEnumerator RetraceTrail()
 	{
-		
-		
 		cursorSprite.sprite = null;
 		
 		Vector3[] positions = new Vector3[flyingTrail.positionCount];
@@ -1677,7 +1676,19 @@ public class PlayerBehaviour: MonoBehaviour {
 			
 			case PlayerState.Switching:
 				l.positionCount = 0;
+				
+				if (traversedPoints.Count >= 2 && curPoint.pointType == PointTypes.start || curPoint.pointType == PointTypes.end || curPoint.pointType == PointTypes.fly)
+				{
+					crawlerManager.AddCrawler(traversedPoints, curSpeed);
+					traversedPoints.Clear();
+					if (curPoint.pointType != PointTypes.fly)
+					{
+						traversedPoints.Add(curPoint);
+					}
+				}
+				
 				curPoint.OnPointExit();
+				
 				connectTime = 1;
 				if (curPoint.pointType != PointTypes.ghost)
 				{
@@ -1766,7 +1777,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				//flyingSpeed = curSpeed;
 				
-				curPoint.OnPointExit();
+				//THIS MAY NOT BE NECESSARY UNLESS WE CAN FLY OFF OF SPLINES, NOT JUST POINTS
+				//curPoint.OnPointExit();
+				
 				curPoint.proximity = 0;
 				
 				
@@ -1782,7 +1795,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			case PlayerState.Switching:
 
 				//stop players from popping off the line as soon as they enter a point
-				
 				
 				sparks.Pause();
 				
@@ -1845,13 +1857,13 @@ public class PlayerBehaviour: MonoBehaviour {
 //				traversedPoints.Add(curPoint);
 				}
 
+					
 				if (curPoint.pointType == PointTypes.connect)
 				{
 					cursorDistance = 2f;
 				}
 				
 				PlayerOnPoint();
-				
 
 				break;
 
@@ -1888,7 +1900,6 @@ public class PlayerBehaviour: MonoBehaviour {
 						Initialize();
 						
 					}
-
 				}
 				
 				break;

@@ -35,8 +35,7 @@ public class Point : MonoBehaviour
 	{
 		get
 		{
-			if (pointType == PointTypes.fly || pointType == PointTypes.end && controller.isComplete)
-//				
+			if (pointType == PointTypes.fly) //|| pointType == PointTypes.end && controller.isComplete
 			{
 				return true;
 			}
@@ -146,7 +145,7 @@ public class Point : MonoBehaviour
 				
 			}
 			
-			return new Color(c, c, c, 1) + (Color.white * 0.1f);
+			return new Color(c, c, c, 1) + (Color.white * 0.25f);
 		}
 	}
 	
@@ -310,6 +309,12 @@ public class Point : MonoBehaviour
 			case PointTypes.start:
 				
 				Services.StartPoint = this;
+				break;
+			
+			case PointTypes.end:
+				SR.color = Color.white;
+				color = Color.white;
+				
 				break;
 		}
 	}

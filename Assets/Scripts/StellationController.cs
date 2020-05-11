@@ -21,7 +21,7 @@ public class StellationController : MonoBehaviour {
 	[HideInInspector]
 	public List<Point> _points;
 	
-	public Spline unlock;
+	public StellationController unlock;
 
 	public int laps;
 	public int speed;
@@ -82,7 +82,14 @@ public class StellationController : MonoBehaviour {
 
 		if (StellationManager.instance != null)
 		{
-			StellationManager.instance.EnableStellations(true);
+			if (hasUnlock)
+			{
+				StellationManager.instance.EnableStellation(unlock);
+			}
+		}
+		else
+		{
+			SceneController.instance.LoadNextStellation();
 		}
 					
 		
@@ -129,8 +136,6 @@ public class StellationController : MonoBehaviour {
 		}
 	}
 	
-	
-	
 	public void Initialize()
 	{
 		isComplete = false;
@@ -142,7 +147,7 @@ public class StellationController : MonoBehaviour {
 		//stupid code for old maps that didnt have scoreCount idk. 
 		if (unlockMethod == UnlockType.laps && laps == 0)
 		{
-			laps = 1;
+			//laps = 1;
 		}
 		
 		foreach(Point p in GetComponentsInChildren<Point>()){
@@ -158,8 +163,8 @@ public class StellationController : MonoBehaviour {
 				p.hasController = true;
 				p.controller = this;
 				_points.Add(p);
-				p.Initialize();
 				p.SR.color = Color.white * 0.2f;
+				p.Initialize();
 			}
 		}
 
@@ -169,7 +174,6 @@ public class StellationController : MonoBehaviour {
 		}
 		
 		if(unlock){
-			unlock.LockSpline(true);
 			hasUnlock = true;
 		}
 
@@ -203,9 +207,6 @@ public class StellationController : MonoBehaviour {
 			SetCameraBounds();
 			
 		}
-	
-		
-
 		Services.main.state = Main.GameState.playing;
 }
 

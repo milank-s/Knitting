@@ -18,9 +18,6 @@ public class StellationManager : MonoBehaviour
 	}
 	public void Start()
 	{
-		
-	
-
 		for(int i = controllers.Count -1; i >= 0; i--){
 			controllers[i].Initialize();
 			controllers[i].Lock(true);
@@ -48,6 +45,11 @@ public class StellationManager : MonoBehaviour
 
 		StartCoroutine(ShowStartPoints(on));
 		
+	}
+
+	public void EnableStellation(StellationController s)
+	{
+		s.SetActive(true);
 	}
 
 	IEnumerator ShowStartPoints(bool on)

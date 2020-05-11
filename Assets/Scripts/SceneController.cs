@@ -164,7 +164,14 @@ public class SceneController : MonoBehaviour
             Services.main.CloseMenu();
 
             //play level intro. 
-            Services.main.LoadLevel(curLevelSet.scene);
+            if (curLevelSet.scene != "")
+            {
+                Services.main.LoadLevel(curLevelSet.scene);
+            }
+            else
+            {
+                StartCoroutine(Services.main.LevelIntro(curLevelSet));
+            }
         }
     }
     
@@ -179,12 +186,13 @@ public class SceneController : MonoBehaviour
             
             //MapEditor.Load(levels[curLevel]);
 
-            Services.main.LoadFile(curLevelSet.levels[curLevel], delay);
-            
             if (activeScenes.Count > 0)
             {
                 UnloadScene(activeScenes[0]);
             }
+            
+            Services.main.LoadFile(curLevelSet.levels[curLevel], delay);
+           
 
             //Services.main.InitializeLevel();            
             //Services.PlayerBehaviour.Reset();

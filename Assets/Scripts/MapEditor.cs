@@ -1230,21 +1230,23 @@ public class MapEditor : MonoBehaviour
         switch ((StellationController.UnlockType) i)
         {
             case StellationController.UnlockType.laps:
+            
+                scoreSlider.value = controller.laps;
                 scoreSlider.minValue = 0;
                 scoreSlider.maxValue = 10;
-                scoreSlider.value = controller.laps;
                 break;
             
             case StellationController.UnlockType.speed:
+                
+                scoreSlider.value = controller.speed;
                 scoreSlider.minValue = 0;
                 scoreSlider.maxValue = 10;
-                scoreSlider.value = controller.speed;
                 break;
             
             case StellationController.UnlockType.time:
-                scoreSlider.minValue = 5;
-                scoreSlider.maxValue = 600;
                 scoreSlider.value = controller.time;
+                scoreSlider.minValue = 0;
+                scoreSlider.maxValue = 600;
                 break;
         }
 
