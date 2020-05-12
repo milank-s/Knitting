@@ -79,12 +79,28 @@ public class PlayerBehaviour: MonoBehaviour {
 		gravity,
 		decelerationTimer;
 
+	float calculatedSpeed
+	{
+		get
+		{
+			float adjustedAccuracy = goingForward ? Mathf.Pow(1 - accuracy, 2) : -Mathf.Clamp(accuracy, -1, -0.5f);
+			float accuracyMultiplier = Mathf.Pow(accuracy, accuracyCoefficient);
+			
+			float relaxedAccuracy = (adjustedAccuracy * decelerationTimer);
+			if (progress >= 0.9f && accuracy < 0.5f)
+			{
+				relaxedAccuracy = 0;
+			}
+			
+			return Mathf.Clamp(flow + speed + boost, 0, 1000) * cursorDir.magnitude * Mathf.Clamp01(1- relaxedAccuracy);
+		}
+	}
+	
 	[Header("Flying tuning")]
 	public float flyingSpeedThreshold = 3;
 	public float PointDrawDistance;
 	public float creationCD = 0.25f;
 	public float creationInterval = 0.25f;
-	private bool canFly;
 	private bool noRaycast;
 	private bool charging;
 	private List<Transform> newPointList;
@@ -1080,17 +1096,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		}
 
-		float adjustedAccuracy = goingForward ? Mathf.Pow(1 - accuracy, 2) : -Mathf.Clamp(accuracy, -1, -0.5f);
-		float accuracyMultiplier = Mathf.Pow(accuracy, accuracyCoefficient);
 		// (adjustedAccuracy + 0.1f)
 		if (!joystickLocked)
 		{
-			float relaxedAccuracy = (adjustedAccuracy * decelerationTimer);
-			if (progress >= 0.9f && accuracy < 0.5f)
-			{
-				relaxedAccuracy = 0;
-			}
-			curSpeed = Mathf.Clamp(flow + speed + boost, 0, 1000) * cursorDir.magnitude * Mathf.Clamp01(1- relaxedAccuracy);
+		
+			curSpeed = calculatedSpeed;
 			progress += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
 			
 			curSpline.completion += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
@@ -1677,10 +1687,18 @@ public class PlayerBehaviour: MonoBehaviour {
 			case PlayerState.Switching:
 				l.positionCount = 0;
 				
-				if (traversedPoints.Count >= 2 && curPoint.pointType == PointTypes.start || curPoint.pointType == PointTypes.end || curPoint.pointType == PointTypes.fly)
+				if (traversedPoints.Count >= 2 && (curPoint.pointType == PointTypes.start || curPoint.pointType == PointTypes.end || curPoint.pointType == PointTypes.fly))
 				{
-					crawlerManager.AddCrawler(traversedPoints, curSpeed);
+					List<Point> pointsToTraverse = new List<Point>();
+					foreach (Point p in traversedPoints)
+					{
+						pointsToTraverse.Add(p);
+					}
+					
+					crawlerManager.AddCrawler(pointsToTraverse, calculatedSpeed);
+					
 					traversedPoints.Clear();
+					
 					if (curPoint.pointType != PointTypes.fly)
 					{
 						traversedPoints.Add(curPoint);
@@ -1688,6 +1706,22 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 				
 				curPoint.OnPointExit();
+				
+				if(curPoint.pointType != PointTypes.ghost){
+
+					if (Services.PlayerBehaviour.buttonPressed)
+					{
+						flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
+						boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
+						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
+						Services.fx.EmitRadialBurst(10,boostTimer + 1, curPoint.transform);
+						Services.fx.EmitLinearBurst(5, boostTimer + 1, curPoint.transform, cursorDir);
+					}
+
+					SynthController.instance.PlayNote(0);
+				
+				}
+
 				
 				connectTime = 1;
 				if (curPoint.pointType != PointTypes.ghost)

@@ -537,14 +537,6 @@ public class Point : MonoBehaviour
 		
 	}
 
-	public void AddBoost()
-	{
-		Services.PlayerBehaviour.flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
-		Services.PlayerBehaviour.boost += boostAmount + Services.PlayerBehaviour.boostTimer;
-		Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
-		Services.fx.EmitRadialBurst(10,Services.PlayerBehaviour.boostTimer + 1, transform);
-		Services.fx.EmitLinearBurst(5, Services.PlayerBehaviour.boostTimer + 1, transform, Services.PlayerBehaviour.cursorDir);
-	}
 	
 	public void OnPointExit(){
 
@@ -573,17 +565,7 @@ public class Point : MonoBehaviour
 				break;
 		}
 
-		if(pointType != PointTypes.ghost){
-
-			if (Services.PlayerBehaviour.buttonPressed)
-			{
-				AddBoost();
-			}
-
-			SynthController.instance.PlayNote(0);
-				
-		}
-
+	
 		
 		/*
 			if(curPoint.IsOffCooldown()){

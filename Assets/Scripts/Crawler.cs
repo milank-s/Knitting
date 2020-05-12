@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Crawler : MonoBehaviour
 {
-    private float progress;
+    public float progress;
     public List<Point> points;
     private Spline curSpline;
     private int curIndex;
@@ -43,6 +43,7 @@ public class Crawler : MonoBehaviour
 
     void GetNextPoint()
     {
+        progress = 0;
         
         if(curIndex < points.Count - 1)
         {
@@ -56,6 +57,7 @@ public class Crawler : MonoBehaviour
         }
         
         curPoint.OnPointEnter();
+        SynthController.instance.PlayNote(0);
     }
 
     public void Stop()
@@ -66,6 +68,7 @@ public class Crawler : MonoBehaviour
 
     public void Init()
     {
+        curIndex = 0;
         curSpline = startSpline;
         running = true;
         mesh.enabled = true;

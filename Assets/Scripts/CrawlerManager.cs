@@ -14,13 +14,16 @@ public class CrawlerManager : MonoBehaviour
         
         for (int i = 0; i < crawlerCount; i++)
         {
-            Crawler newCrawler = Instantiate(crawler, transform.position, Quaternion.identity).GetComponent<Crawler>();
+            Debug.Log("test");
+            Crawler newCrawler = Instantiate(crawler, transform).GetComponent<Crawler>();
             crawlers.Add(newCrawler);
+            
         }
     }
 
     public void AddCrawler(List<Point> p, float f)
     {
+        
         bool available = false;
         Crawler toUse = null;
         foreach (Crawler c in crawlers)
