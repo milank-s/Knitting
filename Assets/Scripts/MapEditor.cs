@@ -946,7 +946,7 @@ public class MapEditor : MonoBehaviour
         level["fov"].AsInt = controller.desiredFOV;
         level["splineCount"].AsInt = Spline.Splines.Count;
         level["unlockType"].AsInt = (int) controller.unlockMethod;
-        level["speed"].AsInt = controller.speed;
+        level["speed"].AsInt = controller.speed; 
         level["time"].AsInt = controller.time;
         level["laps"].AsInt = controller.laps;
 

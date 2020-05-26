@@ -15,7 +15,7 @@ public class StellationController : MonoBehaviour {
 	
 	List<ActivatedBehaviour>  activateOnCompletion = new List<ActivatedBehaviour>();
 	
-	public UnlockType unlockMethod;
+	public UnlockType unlockMethod = UnlockType.laps;
 	[HideInInspector]
 	public List<Point> _pointshit;
 	[HideInInspector]
@@ -201,6 +201,7 @@ public class StellationController : MonoBehaviour {
 
 		CameraFollow.instance.fixedCamera = fixedCam;
 		CameraFollow.instance.desiredFOV = desiredFOV;
+		CameraFollow.instance.WarpToPosition(start.transform.position);
 		
 		if (fixedCam)
 		{
@@ -389,8 +390,8 @@ public class StellationController : MonoBehaviour {
 			float fov = CameraDolly.FOVForHeightAndDistance(height, -CameraFollow.instance.offset.z) + 10f;
 		
 			CameraFollow.instance.desiredFOV = fov;
-			CameraFollow.targetPos = center;
-			
+			CameraFollow.instance.cam.fieldOfView = fov;
+			CameraFollow.instance.WarpToPosition(center);
 			//get center position and fov
 	}
 	

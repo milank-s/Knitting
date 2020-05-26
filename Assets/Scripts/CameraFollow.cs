@@ -26,10 +26,11 @@ public class CameraFollow : MonoBehaviour {
 	public void WarpToPosition(Vector3 pos)
 	{
 		targetPos = pos;
-		transform.position = pos + offset;
+		transform.position = new Vector3(targetPos.x, targetPos.y, Services.Player.transform.position.z + offset.z);		
 		cam.fieldOfView = desiredFOV;
 	}
 
+	
 	// Update is called once per frame
 	public void FollowPlayer()
 	{
