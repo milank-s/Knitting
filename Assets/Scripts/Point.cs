@@ -504,6 +504,7 @@ public class Point : MonoBehaviour
 					
 					if (controller.TryToUnlock())
 					{
+						controller.Won();
 						
 						Services.fx.SpawnSprite(0, transform);
 						//Services.Sounds.PlayPointAttack(0.5f);

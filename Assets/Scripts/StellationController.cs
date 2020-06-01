@@ -20,6 +20,9 @@ public class StellationController : MonoBehaviour {
 	public List<Point> _pointshit;
 	[HideInInspector]
 	public List<Point> _points;
+
+	public List<Spline> _splines;
+	public List<Spline> _splinesToUnlock;
 	
 	public StellationController unlock;
 
@@ -72,6 +75,11 @@ public class StellationController : MonoBehaviour {
 	
 	public void Won()
 	{
+		if (!isComplete)
+		{
+			return;
+		}
+		
 		isOn = false;
 		
 		CameraFollow.instance.fixedCamera = false;
@@ -168,6 +176,15 @@ public class StellationController : MonoBehaviour {
 			}
 		}
 
+		foreach (Spline s in GetComponentsInChildren<Spline>())
+		{
+			_splines.Add(s);
+			if (s.state == Spline.SplineState.locked)
+			{
+				_splinesToUnlock.Add(s);
+			}
+		}
+
 		if (_points.Count == 0)
 		{
 			return;
@@ -218,7 +235,12 @@ public class StellationController : MonoBehaviour {
 		bool isDone = true;
 		foreach (Point p in _points)
 		{
-
+			//we arent checking against the points we need to unlock
+			if (p.state == Point.PointState.locked)
+			{
+				continue;
+			}
+			
 			if (p.timesHit < laps)
 			{
 				if (p.timesHit < minLaps)
@@ -329,10 +351,10 @@ public class StellationController : MonoBehaviour {
 				break;
 			}
 
-			if (isComplete)
-			{
-				Won();
-			}
+			
+			
+			//Unlock shit
+			
 
 
 			return isComplete;

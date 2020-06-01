@@ -87,9 +87,12 @@
 	public IEnumerator LoadFileTransition(string m, float delay = 0)
 	{
 		yield return new WaitForSeconds(delay);
-		
-		StartCoroutine(FadeOut());
-		yield return new WaitForSeconds(fadeLength);
+
+		if (delay > 0)
+		{
+			yield return StartCoroutine(FadeOut());
+		}
+
 		
 		StellationController c = editor.Load(m);
 		
@@ -98,12 +101,14 @@
 			SceneController.instance.activeScenes.Add(c);
 		}
 		
-		yield return null;
+		AudioManager.instance.MuteSynths(true);
 
 		InitializeLevel();
-		
-		
-		StartCoroutine(FadeIn());
+
+		if (delay > 0)
+		{
+			StartCoroutine(FadeIn());
+		}
 	}
 
 	public void LoadLevelDelayed(string m, float f)
@@ -114,16 +119,21 @@
 	IEnumerator LoadTransition(string i, float delay = 0)
 	{
 		Time.timeScale = 1;
-		
-		yield return new WaitForSeconds(delay);
-		
-		StartCoroutine(FadeOut());
-		
-		yield return new WaitForSeconds(fadeLength);
 
-		LoadLevel(i);
+		if (delay > 0)
+		{
+			yield return StartCoroutine(FadeOut());
+		}
+
+
+		AudioManager.instance.MuteSynths(true);
 		
-		StartCoroutine(FadeIn());
+		LoadLevel(i);
+
+		if (delay > 0)
+		{
+			StartCoroutine(FadeIn());
+		}
 	}
 
 	public void QuitLevel(bool goNext = false)
@@ -149,6 +159,7 @@
 			SceneManager.UnloadSceneAsync(curLevel);
 		}
 
+		
 		Services.PlayerBehaviour.Reset();
 
 		if (i != "")
@@ -619,7 +630,6 @@
 	public IEnumerator FadeOut(){
 		float t = 0;
 		
-		AudioManager.instance.MuteSynths(true);
 		
 		while (t < fadeLength)
 		{

@@ -786,6 +786,25 @@ public class MapEditor : MonoBehaviour
                  SetPointType(PointTypes.ghost);
             }
 
+            if (Input.GetKeyDown(KeyCode.Alpha9))
+            {
+                if (selectedSpline != null)
+                {
+                    bool locked = selectedSpline.type == Spline.SplineType.locked;
+
+                    if (
+                        locked)
+                    {
+                        selectedSpline.SetSplineType(Spline.SplineType.normal);
+                        
+                    }
+                    else
+                    {
+                        selectedSpline.SetSplineType(Spline.SplineType.locked);
+                    }
+                }
+            }
+            
             if (Input.GetKeyDown(KeyCode.Backspace) && curTool != Tool.text)
             {
                 Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, activePoint.transform);
@@ -956,6 +975,7 @@ public class MapEditor : MonoBehaviour
             //record if its closed
             splineData["closed"].AsBool = Spline.Splines[j].closed;
             splineData["numPoints"] = Spline.Splines[j].SplinePoints.Count;
+            splineData["type"].AsInt = (int)Spline.Splines[j].type;
             splineData["lineTexture"] = Spline.Splines[j].lineMaterial;
             JSONObject pointIndices = new JSONObject();
 
@@ -1152,6 +1172,7 @@ public class MapEditor : MonoBehaviour
 
             
             int numPoints = json["spline" + i]["numPoints"];
+           
             
             if (json["spline" + i]["numPoints"] > 2)
             {
@@ -1161,6 +1182,8 @@ public class MapEditor : MonoBehaviour
                 }
             }
 
+            int splineType = json["spline" + i]["type"];
+            newSpline.state = (Spline.SplineState) splineType;
             newSpline.lineMaterial = json["spline" + i]["lineTexture"];
             newSpline.closed = json["spline" + i]["closed"];
             newSpline.transform.parent = parent.transform;
@@ -1381,6 +1404,7 @@ void DragCamera()
             if (!selectedSplines.Contains(s))
             {
                 splineindex = Spline.Splines.IndexOf(s);
+                //draw locked stuff diff ? if(selectedSpline.)
                 selectedSpline.SwitchMaterial(3);
                 selectedSplines.Add(selectedSpline);
                 splineSelectedTip.SetActive(true);
@@ -1651,6 +1675,12 @@ void DragCamera()
                                 RemoveSelectedPoint(activePoint);
                                 AddSelectedPoint(newPoint);
                                 AddSelectedSpline(spp.s);
+                                
+                                if (spp.s.controller == null)
+                                {
+                                    controller._splines.Add(spp.s);
+                                    spp.s.controller = controller;
+                                }
                             }
                             pointCreated = true;
 

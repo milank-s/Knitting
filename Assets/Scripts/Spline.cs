@@ -29,12 +29,13 @@ using SubjectNerd.Utilities;
 public class Spline : MonoBehaviour
 {
 	
-	public enum SplineType{normal, moving}
+	public enum SplineType{normal, moving, locked}
 	public enum SplineState{locked, on, done}
 	public SplineState state;
 	
 	public SplineType type = SplineType.normal;
-	
+
+	public StellationController controller;
 	
 	[HideInInspector]
 	public float distortion;
@@ -231,7 +232,7 @@ public class Spline : MonoBehaviour
 
 	public void SetUpReferences()
 	{
-		SetSplineType();
+		SetSplineType(type);
 		
 		distance = 0;
 		
@@ -313,13 +314,24 @@ public class Spline : MonoBehaviour
 		completion = 0;
 	}
 
-	public void SetSplineType()
+	public void SetSplineType(SplineType t)
 	{
 		if (type == SplineType.moving)
 		{
 			lineMaterial = 3;
 			acceleration = 0.25f;
 		}
+
+		if (type == SplineType.locked)
+		{
+			LockSpline(true);
+		}
+
+		if (type == SplineType.normal)
+		{
+			LockSpline(false);
+		}
+		type = t;
 	}
 	
 	public void ResetVectorLine()
@@ -370,15 +382,39 @@ public class Spline : MonoBehaviour
 	
 	public void LockSpline(bool b)
 	{
-		locked = b;
-		foreach (Point p in SplinePoints)
+		if (b)
 		{
-					
-			if (p != null && p._connectedSplines.Count <= 1)
+			
+			if (controller._splinesToUnlock.Contains(this))
 			{
-				p.state = Point.PointState.locked;
+				controller._splinesToUnlock.Remove(this);
 			}
 		}
+		else
+		{
+			if (!controller._splinesToUnlock.Contains(this))
+			{
+				controller._splinesToUnlock.Add(this);
+			}
+			state = SplineState.on;
+		}
+		foreach (Point p in SplinePoints)
+		{
+
+			if (b)
+			{
+				if (p != null && p._connectedSplines.Count <= 1)
+				{
+					p.state = Point.PointState.locked;
+				}
+			}
+			else
+			{
+				p.state = Point.PointState.on;
+			}
+		}
+		
+		
 	}
 
 	void SetLinePoint(Vector3 v, int index){
@@ -839,6 +875,12 @@ public class Spline : MonoBehaviour
 	void OnDestroy ()
 	{
 		Splines.Remove (this);
+		controller._splines.Remove(this);
+		if (controller._splinesToUnlock.Contains(this))
+		{
+			controller._splinesToUnlock.Remove(this);
+		}
+		
 		DestroyVectorLine();
 		Destroy(gameObject);
 	}
