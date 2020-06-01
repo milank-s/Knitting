@@ -8,6 +8,7 @@ using Vectrosity;
 using UnityEngine.Audio;
 using System.Linq;
 using SubjectNerd.Utilities;
+using UnityEditorInternal;
 
 //###################################################
 //###################################################
@@ -76,12 +77,7 @@ public class Spline : MonoBehaviour
 	
 	public bool locked
 	{
-		get { return _locked; }
-		
-		set
-		{
-			_locked = value;
-		}
+		get { return state == SplineState.locked; }
 	}
 	
 	[HideInInspector]
@@ -232,7 +228,6 @@ public class Spline : MonoBehaviour
 
 	public void SetUpReferences()
 	{
-		SetSplineType(type);
 		
 		distance = 0;
 		
@@ -316,21 +311,17 @@ public class Spline : MonoBehaviour
 
 	public void SetSplineType(SplineType t)
 	{
-		if (type == SplineType.moving)
+		if (t == SplineType.moving)
 		{
 			lineMaterial = 3;
 			acceleration = 0.25f;
 		}
 
-		if (type == SplineType.locked)
+		if (t == SplineType.locked)
 		{
-			LockSpline(true);
+			LockSpline();
 		}
 
-		if (type == SplineType.normal)
-		{
-			LockSpline(false);
-		}
 		type = t;
 	}
 	
@@ -380,41 +371,34 @@ public class Spline : MonoBehaviour
 		}
 	}
 	
-	public void LockSpline(bool b)
-	{
-		if (b)
-		{
-			
-			if (controller._splinesToUnlock.Contains(this))
-			{
-				controller._splinesToUnlock.Remove(this);
-			}
-		}
-		else
-		{
-			if (!controller._splinesToUnlock.Contains(this))
-			{
-				controller._splinesToUnlock.Add(this);
-			}
-			state = SplineState.on;
-		}
+	public void LockSpline()
+	{	
 		foreach (Point p in SplinePoints)
 		{
 
-			if (b)
+			if (p != null && p._connectedSplines.Count <= 1)
 			{
-				if (p != null && p._connectedSplines.Count <= 1)
-				{
-					p.state = Point.PointState.locked;
-				}
-			}
-			else
-			{
-				p.state = Point.PointState.on;
+				p.SwitchState(Point.PointState.locked);
 			}
 		}
+
+		state = SplineState.locked;
+	}
+
+	public void Unlock()
+	{
+		//fancy animation bullshit
 		
+		foreach (Point p in SplinePoints)
+		{
 		
+			if (p != null && p._connectedSplines.Count <= 1)
+			{
+				p.SwitchState(Point.PointState.off);
+			}
+		}
+
+		state = SplineState.on;
 	}
 
 	void SetLinePoint(Vector3 v, int index){

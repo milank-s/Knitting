@@ -149,7 +149,8 @@ public class StellationController : MonoBehaviour {
 		isComplete = false;
 		
 		_points = new List<Point>();
-
+		_splines = new List<Spline>();
+		_splinesToUnlock = new List<Spline>();
 		lapCount = 0;
 		
 		//stupid code for old maps that didnt have scoreCount idk. 
@@ -179,10 +180,15 @@ public class StellationController : MonoBehaviour {
 		foreach (Spline s in GetComponentsInChildren<Spline>())
 		{
 			_splines.Add(s);
-			if (s.state == Spline.SplineState.locked)
+			
+			if (s.type == Spline.SplineType.locked)
 			{
 				_splinesToUnlock.Add(s);
 			}
+
+			s.controller = this;
+			
+			s.SetSplineType(s.type);
 		}
 
 		if (_points.Count == 0)
@@ -354,8 +360,8 @@ public class StellationController : MonoBehaviour {
 			
 			
 			//Unlock shit
-			
 
+			Unlock();
 
 			return isComplete;
 
@@ -363,6 +369,14 @@ public class StellationController : MonoBehaviour {
 
 		return true;
 
+	}
+
+	void Unlock()
+	{
+		foreach (Spline s in _splinesToUnlock)
+		{
+			s.Unlock();
+		}
 	}
 
 	public void SetCameraBounds()

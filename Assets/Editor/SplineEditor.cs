@@ -74,8 +74,7 @@ public class SplineEditor : Editor {
         GUILayout.Space(15);
         Undo.RecordObject(spline, "closed");
         spline.closed = EditorGUILayout.Toggle("closed", spline.closed);
-        Undo.RecordObject(spline, "locked");
-        spline.locked = EditorGUILayout.Toggle("locked", spline.locked);
+        
         //add closed function;
         //add lock button;
         GUILayout.Space(15);

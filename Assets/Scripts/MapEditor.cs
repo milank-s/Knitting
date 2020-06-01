@@ -792,15 +792,22 @@ public class MapEditor : MonoBehaviour
                 {
                     bool locked = selectedSpline.type == Spline.SplineType.locked;
 
-                    if (
-                        locked)
+                    if (locked)
                     {
                         selectedSpline.SetSplineType(Spline.SplineType.normal);
-                        
+
+                        if (controller._splinesToUnlock.Contains(selectedSpline))
+                        {
+                            controller._splinesToUnlock.Remove(selectedSpline);
+                        }
                     }
                     else
                     {
                         selectedSpline.SetSplineType(Spline.SplineType.locked);
+                        if (!controller._splinesToUnlock.Contains(selectedSpline))
+                        {
+                            controller._splinesToUnlock.Add(selectedSpline);
+                        }
                     }
                 }
             }
@@ -1183,7 +1190,7 @@ public class MapEditor : MonoBehaviour
             }
 
             int splineType = json["spline" + i]["type"];
-            newSpline.state = (Spline.SplineState) splineType;
+            newSpline.type = (Spline.SplineType) splineType;
             newSpline.lineMaterial = json["spline" + i]["lineTexture"];
             newSpline.closed = json["spline" + i]["closed"];
             newSpline.transform.parent = parent.transform;
