@@ -83,6 +83,7 @@ public class MapEditor : MonoBehaviour
     public Transform container;
     private bool raycastNull;
     private Camera cam;
+    public Camera zCam;
     public Slider tensionSlider;
     public Slider biasSlider;
     public GameObject pointSelectedTip;
@@ -1436,10 +1437,21 @@ void DragCamera()
                         dragging = true;
                     }
 
-                    if (dragging || Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0))
+                    if (dragging || Input.GetMouseButton(0))
                     {
 
                         MoveSelectedPoints();
+                        if (Input.GetKey(KeyCode.LeftShift))
+                        {
+                            
+                            zCam.gameObject.SetActive(true);
+                        }
+
+                        else
+                        {
+                            
+                            zCam.gameObject.SetActive(false);
+                        }
 //                                dragging = true;
 //                            if (hitPoint != activePoint)
 //                            {
@@ -1449,6 +1461,11 @@ void DragCamera()
 
 
                     }
+                }
+                else
+                {
+                    
+                    zCam.gameObject.SetActive(false);
                 }
 
                 if (!dragging && hitPoint == null && Input.GetMouseButton(0) &&

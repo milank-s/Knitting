@@ -271,7 +271,6 @@ public class StellationController : MonoBehaviour {
 	{
 		//Services.main.InitializeLevel();
 		lapCount = 0;
-		
 		isComplete = false;
 	}
 
