@@ -291,6 +291,20 @@ public class MapEditor : MonoBehaviour
         }
     }
 
+    
+    public void EnterEditMode()
+    {
+        fov.text = controller.desiredFOV.ToString("F0");
+        fovSlider.value = controller.desiredFOV;
+        fixedCamera.isOn = controller.fixedCam;
+        ChangeWinCondition((int)controller.unlockMethod);
+        
+        sceneName = controller.name;
+        sceneTitle.text = sceneName;
+        
+        StopTyping(sceneName);        
+    }
+    
     public  void TogglePlayMode()
     {
         
@@ -1060,15 +1074,7 @@ public class MapEditor : MonoBehaviour
 
         Load(fileName);
 
-        fov.text = controller.desiredFOV.ToString("F0");
-        fovSlider.value = controller.desiredFOV;
-        fixedCamera.isOn = controller.fixedCam;
-        ChangeWinCondition((int)StellationController.UnlockType.speed);
-        
-        sceneName = fileName;
-        sceneTitle.text = sceneName;
-        
-        StopTyping(sceneName);
+        EnterEditMode();
     }
 
     public StellationController Load(string fileName, bool recycle = true)
@@ -1211,6 +1217,7 @@ public class MapEditor : MonoBehaviour
 //        }
         StellationController c = parent.AddComponent<StellationController>();
 
+        c.name = parent.name;
         c.fixedCam = json["fixedCamera"];
         c.desiredFOV = json["fov"];
         c.speed = json["speed"];
@@ -1418,7 +1425,6 @@ void DragCamera()
                 splineSelectedTip.SetActive(true);
             }
 
-
     }
 
     void UseTool()
@@ -1437,20 +1443,14 @@ void DragCamera()
                         dragging = true;
                     }
 
-                    if (dragging || Input.GetMouseButton(0))
+                    if (dragging || (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftShift)))
                     {
 
                         MoveSelectedPoints();
-                        if (Input.GetKey(KeyCode.LeftShift))
+                        if (Input.mouseScrollDelta.y != 0)
                         {
-                            
-                            zCam.gameObject.SetActive(true);
-                        }
 
-                        else
-                        {
-                            
-                            zCam.gameObject.SetActive(false);
+                            zCam.gameObject.SetActive(true);
                         }
 //                                dragging = true;
 //                            if (hitPoint != activePoint)
@@ -1458,10 +1458,12 @@ void DragCamera()
 //                                selectedPoints.Remove(hitPoint);
 //                                selectedPoints.Add(hitPoint);
 //                            }
-
-
                     }
-                }
+                    else
+                    {
+                        zCam.gameObject.SetActive(false);
+                    }
+}
                 else
                 {
                     

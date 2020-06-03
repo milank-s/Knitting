@@ -360,7 +360,9 @@ public class StellationController : MonoBehaviour {
 			
 			//Unlock shit
 
-			Unlock();
+			if(isComplete){
+				Unlock();
+			}
 
 			return isComplete;
 
