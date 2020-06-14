@@ -1,10 +1,7 @@
-﻿using System.Collections;
+﻿
 using System.Collections.Generic;
-using System.Linq;
-using Unity.Collections;
+using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.XR.WSA;
 
 public class StellationController : MonoBehaviour {
 
@@ -177,8 +174,16 @@ public class StellationController : MonoBehaviour {
 			}
 		}
 
-		foreach (Spline s in GetComponentsInChildren<Spline>())
+		Spline[] splines = GetComponentsInChildren<Spline>();
+		
+		     Array.Sort(splines, delegate(Spline x, Spline y) { return x.order.CompareTo(y.order); });
+
+		     int index = 0;
+		     
+		foreach (Spline s in splines)
 		{
+			s.order = index;
+			
 			_splines.Add(s);
 			
 			if (s.type == Spline.SplineType.locked)
@@ -194,6 +199,8 @@ public class StellationController : MonoBehaviour {
 			s.controller = this;
 			
 			s.SetSplineType(s.type);
+
+			index++;
 		}
 
 		if (_points.Count == 0)
