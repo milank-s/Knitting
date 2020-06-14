@@ -186,6 +186,11 @@ public class StellationController : MonoBehaviour {
 				_splinesToUnlock.Add(s);
 			}
 
+			if (s.order != 0)
+			{
+				s.LockSpline();
+			}
+
 			s.controller = this;
 			
 			s.SetSplineType(s.type);
@@ -277,6 +282,22 @@ public class StellationController : MonoBehaviour {
 		isComplete = false;
 	}
 
+	public void UnlockSpline(Spline spline)
+	{
+		
+		//trying to unlock next spline in the list. 
+
+		int index = spline.order + 1;
+		
+		foreach (Spline s in _splines)
+		{
+			if (s.order == index && !_splinesToUnlock.Contains(s))
+			{
+				s.Unlock();
+			}
+		}
+	}
+	
 	public void ReloadFromEditor()
 	{
 		StellationController c = Services.main.editor.Load(gameObject.name);

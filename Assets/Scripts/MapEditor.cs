@@ -1693,6 +1693,14 @@ void DragCamera()
                             {
                                 spp.s.transform.parent = splinesParent;
                                 spp.p.transform.parent = pointsParent;
+                                
+                                if (spp.s.controller == null)
+                                {
+                                    controller._splines.Add(spp.s);
+                                    spp.s.order = controller._splines.IndexOf(spp.s);
+                                    spp.s.controller = controller;
+                                }
+                                
                                 splineindex = Spline.Splines.IndexOf(spp.s);
 
                                 RemoveSelectedPoint(activePoint);
@@ -1923,8 +1931,6 @@ void DragCamera()
             {
                 newPosition = 0;
             }
-            
-            
             
             Spline selected = selectedSpline;
             Spline splineToSwap = controller._splines[newPosition];

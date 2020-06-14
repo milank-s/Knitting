@@ -430,6 +430,7 @@ public class Point : MonoBehaviour
 
 	public void SwitchState(PointState s)
 	{
+		
 		if (s != state)
 		{
 			switch (s)
@@ -453,7 +454,7 @@ public class Point : MonoBehaviour
 					break;
 			}
 		}
-
+		
 		state = s;
 	}
 	
@@ -464,7 +465,6 @@ public class Point : MonoBehaviour
 
 		if (controller.CheckSpeed())
 		{
-			
 			timesHit++;
 			
 			if(textMesh != null){

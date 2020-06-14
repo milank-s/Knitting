@@ -168,19 +168,23 @@ public class Spline : MonoBehaviour
 	public void CheckComplete()
 	{
 		bool complete = false;
+		
 		foreach (Point p in SplinePoints)
 		{
 			if (p.state != Point.PointState.on)
 			{
-				break;
+				return;
 			}
 		}
 
+		
 		if (controller != null)
 		{
-			
+			controller.UnlockSpline(this);
 		}
 	}
+	
+	
 	
 	public void OnSplineEnter (Point p1, Point p2)
 	{
