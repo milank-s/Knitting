@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using AudioHelm;
 using UnityEditor;
+using UnityEditor.U2D;
 
 //###################################################
 //###################################################
@@ -101,7 +102,7 @@ public class MapEditor : MonoBehaviour
     public Slider scoreSlider;
     public Text scoreText;
     public Toggle fixedCamera;
-    
+    public Text splineOrder;
     public InputField sceneTitle;
     public Dropdown levelList;
     public Dropdown unlockTypes;
@@ -173,7 +174,9 @@ public class MapEditor : MonoBehaviour
                     splineindex = Spline.Splines.Count - 1;
                 }
 
-                return Spline.Splines[splineindex];
+                splineOrder.text = controller._splines[splineindex].order.ToString();
+                splineOrder.transform.position = cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.1f);
+                return controller._splines[splineindex];
             }
             else
             {
@@ -472,6 +475,7 @@ public class MapEditor : MonoBehaviour
                     {
                         DeselectSpline();
                         Destroy(selectedSpline);
+                        ReassignSplineOrder();
                     }
                 }
 
@@ -642,6 +646,15 @@ public class MapEditor : MonoBehaviour
                 
                 SetCursorPosition();
 
+                if(Input.GetKeyDown(KeyCode.PageUp))
+                {
+                    ShuffleSplineOrder(1);
+                }else if (Input.GetKeyDown(KeyCode.PageDown))
+                {
+                    ShuffleSplineOrder(-1);
+                }
+                
+                
                 if (!Input.GetKey(KeyCode.LeftShift))
                 {
                     cam.fieldOfView = Mathf.Clamp(cam.fieldOfView - Input.mouseScrollDelta.y * Time.deltaTime * 100f, 10, 160);
@@ -834,6 +847,7 @@ public class MapEditor : MonoBehaviour
                 
                 Point pointToDelete = activePoint;
                 RemoveSelectedPoint(activePoint);
+                
                 foreach (Spline s in Spline.Splines)
                 {
                     if (s.SplinePoints.Contains(pointToDelete))
@@ -849,6 +863,8 @@ public class MapEditor : MonoBehaviour
                             selectedSplines.Remove(s);
                         }
                         Destroy(s);
+                        
+                        ReassignSplineOrder();
                     }
                 }
 
@@ -863,6 +879,18 @@ public class MapEditor : MonoBehaviour
         }
     }
 
+    void ReassignSplineOrder()
+    {
+        
+       int i = 0;
+       
+       foreach (Spline s in controller._splines)
+       {
+           s.order = i;
+           i++;
+       } 
+    }
+    
     void ManageSelectionUI()
     {
         int index = 0;
@@ -991,14 +1019,17 @@ public class MapEditor : MonoBehaviour
         level["time"].AsInt = controller.time;
         level["laps"].AsInt = controller.laps;
 
-        for (int j = 0; j < Spline.Splines.Count; j++)
+        for (int j = 0; j < instance.controller._splines.Count; j++)
         {
+            Spline s = instance.controller._splines[j];
+            
             JSONObject splineData = new JSONObject();
             //record if its closed
-            splineData["closed"].AsBool = Spline.Splines[j].closed;
-            splineData["numPoints"] = Spline.Splines[j].SplinePoints.Count;
-            splineData["type"].AsInt = (int)Spline.Splines[j].type;
-            splineData["lineTexture"] = Spline.Splines[j].lineMaterial;
+            splineData["order"].AsInt = instance.controller._splines.IndexOf(s);
+            splineData["closed"].AsBool = s.closed;
+            splineData["numPoints"] = s.SplinePoints.Count;
+            splineData["type"].AsInt = (int)s.type;
+            splineData["lineTexture"] = s.lineMaterial;
             JSONObject pointIndices = new JSONObject();
 
             int pi = 0;
@@ -1201,7 +1232,8 @@ public class MapEditor : MonoBehaviour
             newSpline.lineMaterial = json["spline" + i]["lineTexture"];
             newSpline.closed = json["spline" + i]["closed"];
             newSpline.transform.parent = parent.transform;
-            newSpline.gameObject.name = "spline " + i;
+            newSpline.order =  json["spline" + i]["order"];
+            newSpline.gameObject.name = newSpline.order.ToString();
         }
 
         //I no longer want to clean house
@@ -1401,6 +1433,7 @@ void DragCamera()
         if (selectedSplines.Count == 0)
         {
             splineSelectedTip.SetActive(false);
+            splineOrder.text = "";
         }
     }
     void AddSelectedSpline(Spline s, bool add = false)
@@ -1410,15 +1443,15 @@ void DragCamera()
         {
             add = true;
         }
+        
             if (!add && selectedSpline != null)
             {
                 RemoveSelectedSpline(selectedSpline);
             }
 
-
             if (!selectedSplines.Contains(s))
             {
-                splineindex = Spline.Splines.IndexOf(s);
+                splineindex = controller._splines.IndexOf(s);
                 //draw locked stuff diff ? if(selectedSpline.)
                 selectedSpline.SwitchMaterial(3);
                 selectedSplines.Add(selectedSpline);
@@ -1550,6 +1583,7 @@ void DragCamera()
                         newSpline.closed = selectedSpline.closed;
                         newSpline.transform.parent = splinesParent;
                         newSplines.Add(newSpline);
+                        
                     }
 
                     foreach (Point p in pointsToCopy)
@@ -1566,6 +1600,8 @@ void DragCamera()
 
                     foreach (Spline s in newSplines)
                     {
+                        controller._splines.Add(s);
+                        s.order = controller._splines.IndexOf(s);
                         AddSelectedSpline(s, true);
                     }
 
@@ -1698,15 +1734,18 @@ void DragCamera()
                                 spp.s.transform.parent = splinesParent;
                                 spp.p.transform.parent = pointsParent;
 
+                                if (spp.s.controller == null)
+                                {
+                                    controller._splines.Add(spp.s);
+                                    spp.s.order = controller._splines.IndexOf(spp.s);
+                                    spp.s.controller = controller;
+                                }
+                                
                                 RemoveSelectedPoint(activePoint);
                                 AddSelectedPoint(newPoint);
                                 AddSelectedSpline(spp.s);
                                 
-                                if (spp.s.controller == null)
-                                {
-                                    controller._splines.Add(spp.s);
-                                    spp.s.controller = controller;
-                                }
+                               
                             }
                             pointCreated = true;
 
@@ -1867,6 +1906,48 @@ void DragCamera()
         activePoint.bias = t;
     }
 
+    void ShuffleSplineOrder(int i)
+    {
+        
+        
+        if (controller._splines.Count > 1)
+        {
+            int newPosition = splineindex + i;
+            
+            if (newPosition < 0)
+            {
+                newPosition = controller._splines.Count - 1;
+            }
+
+            if (newPosition >= controller._splines.Count)
+            {
+                newPosition = 0;
+            }
+            
+            
+            
+            Spline selected = selectedSpline;
+            Spline splineToSwap = controller._splines[newPosition];
+
+            //Debug.Log("spline " + selected + " with order " + selected.order + " in position " + controller._splines.IndexOf(selected).ToString());
+            //Debug.Log("spline " + splineToSwap + " with order " + splineToSwap.order  +" in position " + controller._splines.IndexOf(splineToSwap).ToString());
+            
+            //Debug.Log("swapping");
+            controller._splines[newPosition] = controller._splines[splineindex];
+            controller._splines[splineindex] = splineToSwap;
+            
+            splineindex = newPosition;
+            selectedSpline.order = controller._splines.IndexOf(selected);
+            splineToSwap.order = controller._splines.IndexOf(splineToSwap);
+
+            
+            //Debug.Log("spline " + selected + " with order " + selected.order + " in position " + controller._splines.IndexOf(selected).ToString());
+            //Debug.Log("spline " + splineToSwap + " with order " + splineToSwap.order  +" in position " + controller._splines.IndexOf(splineToSwap).ToString());
+            
+            AddSelectedSpline(selected);
+        }
+    }
+    
     void ChangeTool()
     {
         for (int i = 0; i < tools.Length; i++)
@@ -1927,8 +2008,10 @@ void DragCamera()
         }
         selectedSplines.Clear();
         splineSelectedTip.SetActive(false);
-        
+        splineOrder.text = "";
     }
+    
+    
     public void DeselectPoints()
     {
         selectedPoints.Clear();

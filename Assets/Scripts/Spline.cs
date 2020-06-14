@@ -71,7 +71,7 @@ public class Spline : MonoBehaviour
 	
 	[HideInInspector]
 	public bool closed = false;
-
+	public int order;
 	private bool _locked;
 	
 	
@@ -165,6 +165,22 @@ public class Spline : MonoBehaviour
 
 	}
 
+	public void CheckComplete()
+	{
+		bool complete = false;
+		foreach (Point p in SplinePoints)
+		{
+			if (p.state != Point.PointState.on)
+			{
+				break;
+			}
+		}
+
+		if (controller != null)
+		{
+			
+		}
+	}
 	
 	public void OnSplineEnter (Point p1, Point p2)
 	{
@@ -860,6 +876,7 @@ public class Spline : MonoBehaviour
 	{
 		Splines.Remove (this);
 		controller._splines.Remove(this);
+		
 		if (controller._splinesToUnlock.Contains(this))
 		{
 			controller._splinesToUnlock.Remove(this);

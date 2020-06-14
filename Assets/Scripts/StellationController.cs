@@ -224,13 +224,16 @@ public class StellationController : MonoBehaviour {
 
 		CameraFollow.instance.fixedCamera = fixedCam;
 		CameraFollow.instance.desiredFOV = desiredFOV;
-		CameraFollow.instance.WarpToPosition(start.transform.position);
-		
+		if (start != null)
+		{
+			CameraFollow.instance.WarpToPosition(start.transform.position);
+		}
+
 		if (fixedCam)
 		{
 			SetCameraBounds();
-			
 		}
+		
 		Services.main.state = Main.GameState.playing;
 }
 

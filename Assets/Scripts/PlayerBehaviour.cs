@@ -311,13 +311,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			buttonPressedTimer = buttonPressedBuffer;
 		}
 		
-		boostIndicator.transform.localScale = Vector3.Lerp(Vector3.one, Vector3.one * 0.2f, Services.PlayerBehaviour.boostTimer);
+		//boostIndicator.transform.localScale = Vector3.Lerp(Vector3.one * 0.2f, Vector3.one , Services.PlayerBehaviour.boostTimer);
 		
 
 		if (Input.GetButtonUp("Button1"))
 		{
 			charging = false;
-			boostIndicator.enabled = false;
 			if (state == PlayerState.Traversing)
 			{
 				boostTimer = 0;
@@ -457,7 +456,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			{
 				cursorSprite.sprite = traverseSprite;
 				l.positionCount = 0;
-				cursorOnPoint.positionCount = 0;
+				
 			}
 			
 		} 
@@ -474,7 +473,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				else if (curPoint.pointType == PointTypes.connect)
 				{
 					l.positionCount = 2;
-					cursorOnPoint.positionCount = 2;
+					
 					l.SetPosition(0, pointDest.Pos);
 					l.SetPosition(1, transform.position);
 					cursorOnPoint.SetPosition(0, pointDest.Pos);
@@ -504,7 +503,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //			}
 				else{
 					l.positionCount = 0;
-		 			cursorOnPoint.positionCount = 0;
+					
 		 			cursorSprite.sprite = brakeSprite;
 				 }
 			}
@@ -568,7 +567,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		//Adding points multiple times to each other is happening HERE
 		//Could restrict points to never try and add their immediate neighbours?
 		l.positionCount = 0;
-		cursorOnPoint.positionCount = 0;
+		
 
 		bool isEntering = false;
 
@@ -1545,7 +1544,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
 		
 		
-		screenPos += new Vector3(cursorDir2.x / Services.mainCam.aspect, cursorDir2.y, 0)/cursorDistance;
+		screenPos += new Vector3(cursorDir.x / Services.mainCam.aspect, cursorDir.y, 0)/cursorDistance;
 
 			
 		screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Mathf.Abs(transform.position.z - Services.mainCam.transform.position.z));
@@ -1553,9 +1552,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		
 		cursor.transform.position = cursorPos;
-		cursor.transform.rotation = Quaternion.Euler(0, 0, (float)(Mathf.Atan2(-cursorDir2.x, cursorDir2.y) / Mathf.PI) * 180f);
+		cursor.transform.rotation = Quaternion.Euler(0, 0, (float)(Mathf.Atan2(-cursorDir.x, cursorDir.y) / Mathf.PI) * 180f);
 		
-		
+		cursorOnPoint.SetPosition(0, transform.position);
+		cursorOnPoint.SetPosition(1, Vector3.Lerp(transform.position, cursorPos, boostTimer));
 		
 		if(Input.GetButton("Button1") && state == PlayerState.Traversing)
 		{
@@ -1883,6 +1883,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				pointDest.proximity = 1;
 				pointDest.OnPointEnter();
+
+				if (curSpline != null)
+				{
+					curSpline.CheckComplete();
+				}
 				
 				//checkpoint shit
 				if (curPoint.pointType == PointTypes.stop)

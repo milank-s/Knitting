@@ -440,7 +440,7 @@
 /*	foreach (Point p in Point.Points)
 		{
 			p.Initialize();
-		}*/
+		}*/ 
 
 		if (Services.StartPoint == null && Point.Points.Count > 0)
 		{
