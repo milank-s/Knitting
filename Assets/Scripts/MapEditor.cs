@@ -167,11 +167,11 @@ public class MapEditor : MonoBehaviour
                 return null;
             }
 
-            if (Spline.Splines.Count > 0)
+            if (controller._splines.Count > 0)
             {
-                if (splineindex >= Spline.Splines.Count)
+                if (splineindex >= controller._splines.Count)
                 {
-                    splineindex = Spline.Splines.Count - 1;
+                    splineindex = controller._splines.Count - 1;
                 }
 
                 splineOrder.text = controller._splines[splineindex].order.ToString();
@@ -493,7 +493,7 @@ public class MapEditor : MonoBehaviour
     void ChangeSelectedSpline()
     {
         if ((Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)) &&
-            Spline.Splines.Count > 0)
+            controller._splines.Count > 0)
         {
 
             int i = 0;
@@ -508,17 +508,17 @@ public class MapEditor : MonoBehaviour
 
             }
 
-            if (i >= Spline.Splines.Count)
+            if (i >= controller._splines.Count)
             {
                 i = 0;
             }
 
             if (i < 0)
             {
-                i = Spline.Splines.Count - 1;
+                i = controller._splines.Count - 1;
             }
 
-            AddSelectedSpline(Spline.Splines[i]);
+            AddSelectedSpline(controller._splines[i]);
 
 
             if (!Input.GetKey(KeyCode.LeftShift))
@@ -1025,7 +1025,7 @@ public class MapEditor : MonoBehaviour
             
             JSONObject splineData = new JSONObject();
             //record if its closed
-            splineData["order"].AsInt = instance.controller._splines.IndexOf(s);
+            splineData["order"].AsInt = s.order;
             splineData["closed"].AsBool = s.closed;
             splineData["numPoints"] = s.SplinePoints.Count;
             splineData["type"].AsInt = (int)s.type;
@@ -1111,8 +1111,8 @@ public class MapEditor : MonoBehaviour
     public StellationController Load(string fileName, bool recycle = true)
     {
         
-        List<Spline> splines = Spline.Splines;
-        List<Point> points = Point.Points;
+        List<Spline> splines = new List<Spline>();
+        List<Point> points = new List<Point>();
 
         GameObject parent;
         GameObject pointParent;
@@ -1943,7 +1943,8 @@ void DragCamera()
             controller._splines[splineindex] = splineToSwap;
             
             splineindex = newPosition;
-            selectedSpline.order = controller._splines.IndexOf(selected);
+            
+            selected.order = controller._splines.IndexOf(selected);
             splineToSwap.order = controller._splines.IndexOf(splineToSwap);
 
             

@@ -471,6 +471,13 @@
 			
 			if (enter)
 			{
+				if (editor.controller == null)
+				{
+					GameObject newController = new GameObject();
+					StellationController c = newController.AddComponent<StellationController>();
+					editor.controller = c;
+					newController.transform.parent = splineParent;
+				}
 				
 				if (state == GameState.menu)
 				{

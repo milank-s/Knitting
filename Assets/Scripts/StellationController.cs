@@ -174,15 +174,19 @@ public class StellationController : MonoBehaviour {
 			}
 		}
 
-		Spline[] splines = GetComponentsInChildren<Spline>();
-		
+			Spline[] splines = GetComponentsInChildren<Spline>();
 		     Array.Sort(splines, delegate(Spline x, Spline y) { return x.order.CompareTo(y.order); });
 
 		     int index = 0;
+
+		     if (splines.Length == 0) return;
 		     
-		foreach (Spline s in splines)
+		     
+		for (int i = 0; i < splines.Length; i++)
 		{
-			s.order = index;
+			Spline s = splines[i];
+			
+			s.order = i;
 			
 			_splines.Add(s);
 			
@@ -202,6 +206,7 @@ public class StellationController : MonoBehaviour {
 
 			index++;
 		}
+		
 
 		if (_points.Count == 0)
 		{

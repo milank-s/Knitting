@@ -280,7 +280,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		curSpeed = lerpSpeed;
 		StartCoroutine(Unwind());
 	}
-	public void Step ()
+	public void Step()
 	{
 		if (joystickLocked)
 		{
@@ -301,6 +301,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		if (Input.GetButton("Button1"))
 		{
+
+			boostIndicator.transform.position =
+				transform.position + (Vector3) cursorDir2 * ((Vector3)transform.position - cursorPos).magnitude;
+			boostIndicator.transform.up = cursorDir2;
+			
 			if(charging){
 				boostTimer += Time.deltaTime;
 				boostTimer = Mathf.Clamp01(boostTimer);
@@ -309,6 +314,10 @@ public class PlayerBehaviour: MonoBehaviour {
 			buttonPressed = true;
 			charging = true;
 			buttonPressedTimer = buttonPressedBuffer;
+		}
+		else
+		{
+			boostIndicator.enabled = false;
 		}
 		
 		//boostIndicator.transform.localScale = Vector3.Lerp(Vector3.one * 0.2f, Vector3.one , Services.PlayerBehaviour.boostTimer);
@@ -648,6 +657,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		l.positionCount = 2;
 		l.SetPosition (0, Vector3.Lerp(transform.position, cursorPos, Easing.QuadEaseOut(boostTimer)));
 		l.SetPosition (1, transform.position);
+		
+		playerSprite.transform.localScale = Vector3.Lerp(playerSprite.transform.localScale, new Vector3(Mathf.Clamp(1 - (boostTimer), 0.1f, 0.25f), Mathf.Clamp(boostTimer, 0.25f, 0.75f), 0.25f), Time.deltaTime * 10);
+		
 		
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
 //		if (connectTime < 0) {
@@ -1554,8 +1566,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		cursor.transform.position = cursorPos;
 		cursor.transform.rotation = Quaternion.Euler(0, 0, (float)(Mathf.Atan2(-cursorDir.x, cursorDir.y) / Mathf.PI) * 180f);
 		
-		cursorOnPoint.SetPosition(0, transform.position);
-		cursorOnPoint.SetPosition(1, Vector3.Lerp(transform.position, cursorPos, boostTimer));
 		
 		if(Input.GetButton("Button1") && state == PlayerState.Traversing)
 		{
@@ -1563,7 +1573,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 		else
 		{
-			cursorDir = cursorDir2;
+			cursorDir = Vector3.Lerp (cursorDir, cursorDir2, (cursorRotateSpeed + flow) * Time.deltaTime);
 		}
 
 		playerSprite.transform.up = cursorDir;
