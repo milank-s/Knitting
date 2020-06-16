@@ -78,18 +78,16 @@ public class StellationController : MonoBehaviour {
 		}
 		
 		isOn = false;
-		
-		CameraFollow.instance.fixedCamera = false;
 						
-		Services.mainCam.fieldOfView = 80;
-		CameraFollow.instance.desiredFOV = 80;
-
-
 		if (StellationManager.instance != null)
 		{
 			if (hasUnlock)
 			{
 				StellationManager.instance.EnableStellation(unlock);
+				
+				Services.mainCam.fieldOfView = 80;
+				CameraFollow.instance.desiredFOV = 80;
+				CameraFollow.instance.fixedCamera = false;
 			}
 		}
 		else
@@ -269,18 +267,17 @@ public class StellationController : MonoBehaviour {
 			
 			if (p.timesHit < laps)
 			{
-				if (p.timesHit < minLaps)
-				{
-					minLaps = p.timesHit;
-				}
-				
-				if (minLaps > lapCount)
-				{
-					lapCount = minLaps;
-				}
-				
-				isDone = false;
-				break;
+//				if (p.timesHit < minLaps)
+//				{
+//					minLaps = p.timesHit;
+//				}
+//				
+//				if (minLaps > lapCount)
+//				{
+//					lapCount = minLaps;
+//				}
+
+				return false;
 			}
 		}
 		

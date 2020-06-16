@@ -65,7 +65,6 @@
 		
 		editor.DeselectPoints();
 		editor.DeselectSpline();
-
 		
 		Point.Points.Clear();
 		Spline.Splines.Clear();

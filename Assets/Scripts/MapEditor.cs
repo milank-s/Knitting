@@ -300,6 +300,7 @@ public class MapEditor : MonoBehaviour
         fov.text = controller.desiredFOV.ToString("F0");
         fovSlider.value = controller.desiredFOV;
         fixedCamera.isOn = controller.fixedCam;
+        
         ChangeWinCondition((int)controller.unlockMethod);
         
         sceneName = controller.name;
@@ -344,7 +345,7 @@ public class MapEditor : MonoBehaviour
 
     void EditSelectedSpline()
     {
-        if (splineindex >= 0 && splineindex < Spline.Splines.Count)
+        if (splineindex >= 0 && splineindex < controller._splines.Count)
         {
 
 
@@ -848,7 +849,7 @@ public class MapEditor : MonoBehaviour
                 Point pointToDelete = activePoint;
                 RemoveSelectedPoint(activePoint);
                 
-                foreach (Spline s in Spline.Splines)
+                foreach (Spline s in controller._splines)
                 {
                     if (s.SplinePoints.Contains(pointToDelete))
                     {
@@ -862,6 +863,7 @@ public class MapEditor : MonoBehaviour
                         {
                             selectedSplines.Remove(s);
                         }
+                        
                         Destroy(s);
                         
                         ReassignSplineOrder();
@@ -881,7 +883,6 @@ public class MapEditor : MonoBehaviour
 
     void ReassignSplineOrder()
     {
-        
        int i = 0;
        
        foreach (Spline s in controller._splines)
@@ -1013,7 +1014,7 @@ public class MapEditor : MonoBehaviour
         
         level["fixedCamera"].AsBool = controller.fixedCam;
         level["fov"].AsInt = controller.desiredFOV;
-        level["splineCount"].AsInt = Spline.Splines.Count;
+        level["splineCount"].AsInt = controller._splines.Count;
         level["unlockType"].AsInt = (int) controller.unlockMethod;
         level["speed"].AsInt = controller.speed; 
         level["time"].AsInt = controller.time;
@@ -1033,7 +1034,7 @@ public class MapEditor : MonoBehaviour
             JSONObject pointIndices = new JSONObject();
 
             int pi = 0;
-            foreach (Point sp in Spline.Splines[j].SplinePoints)
+            foreach (Point sp in s.SplinePoints)
             {
 
                 for (int i = 0; i < Point.Points.Count; i++)
@@ -1297,6 +1298,7 @@ public class MapEditor : MonoBehaviour
     public void ChangeWinCondition(Int32 i)
     {
         controller.unlockMethod = (StellationController.UnlockType) i;
+        
         switch ((StellationController.UnlockType) i)
         {
             case StellationController.UnlockType.laps:
@@ -1320,6 +1322,7 @@ public class MapEditor : MonoBehaviour
                 break;
         }
 
+        unlockTypes.SetValueWithoutNotify(i);
         scoreText.text = scoreSlider.value.ToString("F0");
         
     }
