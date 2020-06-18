@@ -26,7 +26,8 @@ public class StellationController : MonoBehaviour {
 	public int laps;
 	public int speed;
 	public int time;
-
+	public float startSpeed;
+	
 	private float timer;
 	public int lapCount;
 	
@@ -142,6 +143,8 @@ public class StellationController : MonoBehaviour {
 	public void Initialize()
 	{
 		isComplete = false;
+
+		Services.PlayerBehaviour.flow = startSpeed;
 		
 		_points = new List<Point>();
 		_splines = new List<Spline>();

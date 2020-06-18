@@ -97,6 +97,9 @@ public class MapEditor : MonoBehaviour
     public Text xPos;
     public Text yPos;
     public Text zPos;
+    
+    public Text startSpeed;
+    public Slider speedSlider;
     public Text fov;
     public Slider fovSlider;
     public Slider scoreSlider;
@@ -239,8 +242,14 @@ public class MapEditor : MonoBehaviour
         controller.desiredFOV = (int)s;
         CameraFollow.instance.cam.fieldOfView = s;
         fov.text = s.ToString("F0");
-
     }
+
+    public void ChangeStartSpeed(System.Single s)
+    {
+        controller.startSpeed = s;
+        startSpeed.text = s.ToString("F1");
+    }
+    
     public void FixCamera(bool b)
     {
         controller.fixedCam = b;
@@ -300,6 +309,7 @@ public class MapEditor : MonoBehaviour
         fov.text = controller.desiredFOV.ToString("F0");
         fovSlider.value = controller.desiredFOV;
         fixedCamera.isOn = controller.fixedCam;
+        speedSlider.value = controller.startSpeed;
         
         ChangeWinCondition((int)controller.unlockMethod);
         
@@ -1019,7 +1029,8 @@ public class MapEditor : MonoBehaviour
         level["speed"].AsInt = controller.speed; 
         level["time"].AsInt = controller.time;
         level["laps"].AsInt = controller.laps;
-
+        level["startSpeed"].AsFloat = controller.startSpeed;
+        
         for (int j = 0; j < instance.controller._splines.Count; j++)
         {
             Spline s = instance.controller._splines[j];
@@ -1119,14 +1130,13 @@ public class MapEditor : MonoBehaviour
         GameObject pointParent;
         
         JSONNode json = ReadJSONFromFile(Application.streamingAssetsPath + "/Levels", fileName + ".json");
-        
    
             parent = new GameObject();
             pointParent = new GameObject();
             parent.transform.parent = stellationsParent;
             pointParent.transform.parent = parent.transform;
             pointParent.name = "points";
-            parent.name = json["name"];
+            parent.name = fileName;
 
             pointsParent = pointParent.transform;
             splinesParent = parent.transform;
@@ -1256,6 +1266,7 @@ public class MapEditor : MonoBehaviour
         c.speed = json["speed"];
         c.laps = json["laps"];
         c.time = json["time"];
+        c.startSpeed = json["startSpeed"];
         int unlock = json["unlockType"];
         c.unlockMethod = (StellationController.UnlockType) unlock;
         

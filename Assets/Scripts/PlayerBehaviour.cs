@@ -236,7 +236,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversedPoints.Clear();
 		hasFlown = false;
 		boost = 0;
-		flow = 0.1f;
+		
 		pointDest = null;
 		lastPoint = null;
 	}
