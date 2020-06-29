@@ -8,13 +8,12 @@ public class CrawlerManager : MonoBehaviour
     private List<Crawler> crawlers;
     private int index;
     public int crawlerCount = 10;
-    void Start()
+    void Awake()
     {
         crawlers = new List<Crawler>();
         
         for (int i = 0; i < crawlerCount; i++)
         {
-            Debug.Log("test");
             Crawler newCrawler = Instantiate(crawler, transform).GetComponent<Crawler>();
             crawlers.Add(newCrawler);
             

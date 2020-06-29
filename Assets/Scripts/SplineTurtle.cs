@@ -5,11 +5,16 @@ using UnityEditor;
 
 public class SplineTurtle : MonoBehaviour {
 
+	public MapEditor editor;
+	
 	public static float maxTotalPoints = 1;
 	public static float maxCrawlers = 1;
 
-	public string parentName;
+	public string name;
 
+	public GameObject parent;
+	public GameObject pointsParent;
+	
 	public bool createSplines;
 	public bool Randomize;
 
@@ -41,7 +46,6 @@ public class SplineTurtle : MonoBehaviour {
 	public bool childrenInherit = false;
 	private bool turnleft = true;
 
-	GameObject parent;
 
 	public Vector3 startDirection;
 	public Vector3 offsetDirection = Vector3.zero;
@@ -51,6 +55,20 @@ public class SplineTurtle : MonoBehaviour {
 	Spline curSpline;
 	Point curPoint;
 
+
+	public void Reset()
+	{
+		Transform[] ts = parent.GetComponentsInChildren<Transform>();
+		for(int i = 0; i < ts.Length; i++){
+			if (ts[i].GetComponent<Spline>() != null || ts[i].GetComponent<Point>() != null){
+				DestroyImmediate(ts[i].gameObject);
+			}
+		}
+
+		editor.controller._splines.Clear();
+		parent.name = "Untitled";
+
+	}
 	public void Generate(){
 		if (Randomize) {
 
@@ -106,8 +124,9 @@ public class SplineTurtle : MonoBehaviour {
 			spp = SplineUtil.ConnectPoints (curSpline, curSpline.SplinePoints[curSpline.SplinePoints.Count-1], curSpline.SplinePoints[0]);
 			curSpline = spp.s;
 			curPoint = spp.p;
-			curPoint.transform.parent = parent.transform;
+			curPoint.transform.parent = pointsParent.transform;
 			curSpline.transform.parent = parent.transform;
+			editor.AddSpline(curSpline);
 		}
 
 		if (maxCrawlers < 100) {
@@ -116,14 +135,21 @@ public class SplineTurtle : MonoBehaviour {
 
 			}
 		}
+		
 		transform.rotation = Quaternion.identity;
-		parent.transform.parent = transform;
 	}
 
 	void InitializeSpline(){
 
-		parent = new GameObject();
-		parent.name = parentName;
+		
+		parent.name = name;
+		if (parent.GetComponent<StellationController>() == null)
+		{
+			parent.AddComponent<StellationController>();	
+		}
+
+		StellationController s = parent.GetComponent<StellationController>();
+
 		parent.transform.position = transform.position;
 
 		mxAngle = maxAngle;
@@ -143,16 +169,18 @@ public class SplineTurtle : MonoBehaviour {
 
 				if (createSplines) {
 					curSpline = SplineUtil.CreateSpline (curPoint, secondPoint);
+					editor.AddSpline(curSpline);
+					
 				}
 				curPoint = secondPoint;
-				curPoint.transform.parent = parent.transform;
+				curPoint.transform.parent = pointsParent.transform;
 			}
 			Step ();
 			NewPoint ();
 		} else {
 
 			curPoint = SpawnPointPrefab.CreatePoint (transform.position);
-			curPoint.transform.parent = parent.transform;
+			curPoint.transform.parent = pointsParent.transform;
 
 			Step ();
 
@@ -160,9 +188,10 @@ public class SplineTurtle : MonoBehaviour {
 
 			if (createSplines) {
 				curSpline = SplineUtil.CreateSpline (curPoint, secondPoint);
+				editor.AddSpline(curSpline);
 			}
 			curPoint = secondPoint;
-			curPoint.transform.parent = parent.transform;
+			curPoint.transform.parent = pointsParent.transform;
 		}
 
 
@@ -212,10 +241,10 @@ public class SplineTurtle : MonoBehaviour {
 			spp = SplineUtil.ConnectPoints (curSpline, curPoint, newPoint);
 			curSpline = spp.s;
 			curPoint = spp.p;
-			curPoint.transform.parent = parent.transform;
+			curPoint.transform.parent = pointsParent.transform;
 			curSpline.transform.parent = parent.transform;
 		} else {
-			newPoint.transform.parent = parent.transform;
+			newPoint.transform.parent = pointsParent.transform;
 		}
 	}
 

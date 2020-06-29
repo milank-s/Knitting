@@ -12,6 +12,8 @@ public class SplineTurtleCreator : Editor {
 			SplineTurtle myScript = (SplineTurtle)target;
 			if(GUILayout.Button("Generate Spline"))
 			{
+				
+					myScript.Reset();
 					myScript.Generate();
 					Undo.RecordObject(myScript, "generated");
 			}
@@ -19,23 +21,24 @@ public class SplineTurtleCreator : Editor {
 			if(GUILayout.Button("Reset"))
 			{
 
-				Transform[] ts = myScript.GetComponentsInChildren<Transform>();
-					for(int i = 0; i < ts.Length; i++){
-						if (ts[i] != myScript.transform){
-							DestroyImmediate(ts[i].gameObject);
-						}
-					}
+				myScript.Reset();
 					// Undo.RecordObject(myScript, "reset");
 			}
 
 			if(GUILayout.Button("Save"))
 			{
-				foreach(Transform t in myScript.transform){
-						if (t!= myScript.transform){
-							t.parent = null;
-						}
-					}
-					Undo.RecordObject(myScript, "saved");
+
+				myScript.editor.Save();
+				
+				//MapEditor.Save();
+//				foreach(Transform t in myScript.parent.transform){
+//						if (t!= myScript.transform){
+//							t.parent = null;
+//						}
+//					}
+//					Undo.RecordObject(myScript, "saved");
+
+
 			}
 
 	}

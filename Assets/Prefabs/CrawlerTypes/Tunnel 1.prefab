@@ -1,58 +1,53 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &100100000
-Prefab:
-  m_ObjectHideFlags: 1
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications: []
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1481432780208522}
-  m_IsPrefabAsset: 1
---- !u!1 &1481432780208522
+--- !u!1 &7964463204830351002
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4965225154801480}
-  - component: {fileID: 114131759621320518}
+  - component: {fileID: 7964463204830351001}
+  - component: {fileID: 7964463204830351000}
   m_Layer: 0
-  m_Name: Tunnel
+  m_Name: Tunnel 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4965225154801480
+--- !u!4 &7964463204830351001
 Transform:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1481432780208522}
-  m_LocalRotation: {x: 0, y: 0, z: 0.5, w: 0.8660254}
-  m_LocalPosition: {x: -2.5980763, y: 11.5, z: 9.799995}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7964463204830351002}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.928203, y: 4, z: 38}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114131759621320518
+--- !u!114 &7964463204830351000
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1481432780208522}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7964463204830351002}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 80d7d6c4fab294446a50ae7967beb115, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parentName: 
-  createSplines: 0
+  editor: {fileID: 0}
+  name: testing
+  parent: {fileID: 0}
+  pointsParent: {fileID: 0}
+  createSplines: 1
   Randomize: 0
   initialAmount: 0
   initialAngleMax: 0
@@ -61,11 +56,11 @@ MonoBehaviour:
   minAngle: 60
   maxAngle: 60
   scaleChange: 1
-  maxDist: 3
-  minDist: 3
+  maxDist: 1
+  minDist: 1
   branchFactor: 0
-  maxPoints: 50
-  continuity: 1
+  maxPoints: 20
+  continuity: 0
   Raycast: 0
   LockAngle: 1
   alternateAngle: 0
@@ -74,4 +69,4 @@ MonoBehaviour:
   closed: 0
   childrenInherit: 0
   startDirection: {x: 0, y: 0, z: 0}
-  offsetDirection: {x: 0, y: 0, z: 0.2}
+  offsetDirection: {x: 0, y: 0, z: 0.25}

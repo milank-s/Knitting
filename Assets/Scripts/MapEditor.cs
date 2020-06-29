@@ -31,7 +31,7 @@ public class MapEditor : MonoBehaviour
 {
 
 
-    [SerializeField] public string sceneName;
+    //[SerializeField] public string controller.name;
 
 
 
@@ -69,6 +69,7 @@ public class MapEditor : MonoBehaviour
         get { return curTool; }
     }
 
+    
     [Space(25)] public Transform pointsParent;
     public Transform splinesParent;
     public Transform stellationsParent;
@@ -208,7 +209,7 @@ public class MapEditor : MonoBehaviour
     {
 
         instance = this;
-        sceneName = "Stellation 1";
+        controller.name = "Untitled";
         controller = main.splineParent.GetComponentInChildren<StellationController>();
         
         text = new List<GameObject>();
@@ -217,6 +218,7 @@ public class MapEditor : MonoBehaviour
             text.Add(t.gameObject);
         }
 
+        selectedPointIndicator.SetActive(false);
         selectedPointIndicator.SetActive(false);
         pointOptions.SetActive(false);
         selectors = new List<Image>();
@@ -234,7 +236,7 @@ public class MapEditor : MonoBehaviour
     public void StopTyping(String name)
     {
         typing = false;
-        sceneName = name;
+        controller.name = name;
     }
 
     public void ChangeFOV(System.Single s)
@@ -313,10 +315,10 @@ public class MapEditor : MonoBehaviour
         
         ChangeWinCondition((int)controller.unlockMethod);
         
-        sceneName = controller.name;
-        sceneTitle.text = sceneName;
+        controller.name = controller.name;
+        sceneTitle.text = controller.name;
         
-        StopTyping(sceneName);        
+        StopTyping(controller.name);        
     }
     
     public  void TogglePlayMode()
@@ -1010,16 +1012,18 @@ public class MapEditor : MonoBehaviour
 
     public void Save()
     {
-
+        instance = this;
+        
         JSONObject level = new JSONObject();
 
-        level["name"] = sceneName;
-        level["pointCount"].AsInt = Point.Points.Count;
+        Point[] points = pointsParent.GetComponentsInChildren<Point>();
+        
+        level["name"] = controller.name;
+        level["pointCount"].AsInt = points.Length;
 
-        for (int i = 0; i < Point.Points.Count; i++)
+        for (int i = 0; i < points.Length; i++)
         {
-            level["p" + i] = Point.Points[i].Save(i);
-            
+            level["p" + i] = points[i].Save(i);
         }
         
         level["fixedCamera"].AsBool = controller.fixedCam;
@@ -1048,9 +1052,9 @@ public class MapEditor : MonoBehaviour
             foreach (Point sp in s.SplinePoints)
             {
 
-                for (int i = 0; i < Point.Points.Count; i++)
+                for (int i = 0; i < points.Length; i++)
                 {
-                    if (sp == Point.Points[i])
+                    if (sp == points[i])
                     {
                         pointIndices["p" + pi] = i;
                         pi++;
@@ -1062,12 +1066,14 @@ public class MapEditor : MonoBehaviour
             level["spline" + j] = splineData;
         }
 
-        WriteJSONtoFile(Application.streamingAssetsPath + "/Levels", sceneName + ".json", level);
+        WriteJSONtoFile(Application.streamingAssetsPath + "/Levels", controller.name + ".json", level);
 
+        Debug.Log("saved");
+        
         bool contains = false;
         foreach (Dropdown.OptionData d in levelList.options)
         {
-            if (d.text == sceneName)
+            if (d.text == controller.name)
             {
                 contains = true;
             }
@@ -1075,7 +1081,7 @@ public class MapEditor : MonoBehaviour
 
         if (!contains)
         {
-            levelList.options.Add(new Dropdown.OptionData(sceneName));
+            levelList.options.Add(new Dropdown.OptionData(controller.name));
         }
     }
 
@@ -1440,6 +1446,14 @@ void DragCamera()
         
     }
 
+    public void AddSpline(Spline s)
+    {
+        if (!controller._splines.Contains(s))
+        {
+            controller._splines.Add(s);
+        }
+    }
+    
     void RemoveSelectedSpline(Spline s)
     {
         s.ChangeMaterial(s.lineMaterial);

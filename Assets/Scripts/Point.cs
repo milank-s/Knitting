@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using AudioHelm;
 using SimpleJSON;
-using UnityEngine.Experimental.PlayerLoop;
 
 
 //###################################################
@@ -162,7 +161,6 @@ public class Point : MonoBehaviour
 		data["continuity"].AsFloat = continuity;
 		data["index"].AsInt = i;
 		data["pointType"].AsInt = (int) pointType;
-
 		data["word"] = text;
 		
 		JSONObject pointText = new JSONObject();
