@@ -10,23 +10,21 @@ public class ReadSliderValue : MonoBehaviour
     
     public InputField input;
     public Text text;
-    [SerializeField] public Slider slider;
-    
-    
+    [SerializeField] public UnityEngine.UI.Slider slider;
 
-    // Update is called once per frame
-    void Update()
+    public void Start()
     {
-        
+        slider = GetComponentInChildren<UnityEngine.UI.Slider>();
     }
-
+    
     public void ChangeInputField(String s)
     {
         float f;
         float.TryParse(s, out f);
-        f = Mathf.Clamp(f, slider.lowValue, slider.highValue);
+        f = Mathf.Clamp(f, slider.minValue, slider.maxValue);
         
         slider.SetValueWithoutNotify(f);
+        input.SetTextWithoutNotify(f.ToString());
     }
     
     public void ChangeSlider(Single s)
