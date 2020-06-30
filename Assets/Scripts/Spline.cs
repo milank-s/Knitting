@@ -879,11 +879,15 @@ public class Spline : MonoBehaviour
 	void OnDestroy ()
 	{
 		Splines.Remove (this);
-		controller._splines.Remove(this);
-		
-		if (controller._splinesToUnlock.Contains(this))
+		if (controller != null)
 		{
-			controller._splinesToUnlock.Remove(this);
+			controller._splines.Remove(this);
+			
+			if (controller._splinesToUnlock.Contains(this))
+			{
+				controller._splinesToUnlock.Remove(this);
+			}
+			
 		}
 		
 		DestroyVectorLine();

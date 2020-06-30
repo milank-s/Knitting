@@ -84,7 +84,8 @@ public class SplineTurtle : MonoBehaviour {
 	public Vector3 startDirection;
 	public Vector3 offsetDirection = Vector3.zero;
 
-
+	private float timeSinceRedraw;
+	
 	Mesh mesh;
 	Spline curSpline;
 	Point curPoint;
@@ -92,6 +93,9 @@ public class SplineTurtle : MonoBehaviour {
 
 	public void Reset()
 	{
+		
+		editor.controller._splines.Clear();
+		
 		turtle.position = Vector3.zero;
 		turtle.rotation = Quaternion.identity;
 		pivot.position = turtle.position + Vector3.up * pivotDistanceUI.val;
@@ -106,7 +110,6 @@ public class SplineTurtle : MonoBehaviour {
 			}
 		}
 
-		editor.controller._splines.Clear();
 		//parent.name = "Untitled";
 
 	}
@@ -151,17 +154,32 @@ public class SplineTurtle : MonoBehaviour {
 	public void Update()
 	{
 		UpdateValues();
+
+		if (redraw)
+		{
+			timeSinceRedraw += Time.deltaTime;
+			
+			if (timeSinceRedraw > 0.1f)
+			{
+				if (!running)
+				{
+					running = true;
+					redraw = false;
+					Reset();
+					Generate();
+				}
+			}
+			
+		}
+
 		
-	
 	}
 
 	public void UpdateTurtle()
 	{
-		if (!running)
-		{
-			running = true;
-			StartCoroutine(Draw());
-		}
+		
+		redraw = true;
+		timeSinceRedraw = 0;
 	}
 
 	void UpdateValues()
@@ -375,7 +393,7 @@ public class SplineTurtle : MonoBehaviour {
 		float moveDistance = Random.Range (mDist, mxDist);
 		mDist *= scaleChange;
 		mxDist *= scaleChange;
-		turtle.localPosition += transform.up * moveDistance + offsetDirection;
+		turtle.localPosition += turtle.up * moveDistance + offsetDirection;
 		curPoint.continuity = continuity;
 		curPoint.tension = tension;
 	}
