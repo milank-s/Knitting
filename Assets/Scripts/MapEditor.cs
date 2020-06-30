@@ -570,14 +570,13 @@ public class MapEditor : MonoBehaviour
         cursor.transform.position = curPos;
     }
 
-    void DeselectAll()
+    public void DeselectAll()
     {
-        if (Input.GetMouseButtonDown(1))
-        {
+        
             //RemoveSelectedPoint(hitPoint);
             DeselectPoints();
             DeselectSpline();
-        }
+        
     }
 
     void RaycastFromCursor()
@@ -709,7 +708,11 @@ public class MapEditor : MonoBehaviour
                     
                 }
 
-                DeselectAll();
+                if (Input.GetMouseButtonDown(1))
+                {
+                    DeselectAll();
+                }
+
                 RaycastFromCursor();
 
 

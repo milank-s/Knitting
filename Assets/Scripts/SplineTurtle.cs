@@ -10,25 +10,28 @@ public class SplineTurtle : MonoBehaviour {
 	public MapEditor editor;
 
 	[Header("UI")] 
-	private ReadSliderValue numPointsUI;
-	private ReadSliderValue minDistUI;
-	private ReadSliderValue maxDistUI;
-	private ReadSliderValue distScaleUI;
-	private ReadSliderValue angleeUI;
-	private ReadSliderValue angleDeltaUI;
-	private ReadSliderValue angleScaleUI;
 	
-	private ReadSliderValue continuityUI;
-	private ReadSliderValue tensionUI;
+	[SerializeField] private ReadSliderValue numPointsUI;
+	[SerializeField] private ReadSliderValue minDistUI;
+	[SerializeField] private ReadSliderValue maxDistUI;
+	[SerializeField] private ReadSliderValue distScaleUI;
+	[SerializeField] private ReadSliderValue angleeUI;
+	[SerializeField] private ReadSliderValue angleDeltaUI;
+	[SerializeField] private ReadSliderValue angleScaleUI;
 	
-	private ReadSliderValue pivotAngleUI;
-	private ReadSliderValue pivotDistanceUI;
-	private ReadSliderValue stepSpeedUI;
+	[SerializeField] private ReadSliderValue continuityUI;
+	[SerializeField] private ReadSliderValue tensionUI;
+	
+	[SerializeField] private ReadSliderValue pivotAngleUI;
+	[SerializeField] private ReadSliderValue pivotDistanceUI;
+	[SerializeField] private ReadSliderValue stepSpeedUI;
 
-	private InputField xOffsetUI;
-	private InputField yOffsetUI;
-	private InputField zOffsetUI;
+	[SerializeField] private InputField xOffsetUI;
+	[SerializeField] private InputField yOffsetUI;
+	[SerializeField] private InputField zOffsetUI;
 
+	[SerializeField] private ReadToggleValue zigzagUI;
+	[SerializeField] private ReadToggleValue connectUI;
 	
 	public static float maxTotalPoints = 1;
 	public static float maxCrawlers = 1;
@@ -46,6 +49,7 @@ public class SplineTurtle : MonoBehaviour {
 	public float initialAngleMin;
 
 	public Transform pivot;
+	public Transform turtle;
 	
 	public float stepSpeed;
 	
@@ -88,7 +92,14 @@ public class SplineTurtle : MonoBehaviour {
 
 	public void Reset()
 	{
+		turtle.position = Vector3.zero;
+		turtle.rotation = Quaternion.identity;
+		pivot.position = turtle.position + Vector3.up * pivotDistanceUI.val;
+		
+		editor.DeselectAll();
+		
 		Transform[] ts = parent.GetComponentsInChildren<Transform>();
+	
 		for(int i = 0; i < ts.Length; i++){
 			if (ts[i].GetComponent<Spline>() != null || ts[i].GetComponent<Point>() != null){
 				DestroyImmediate(ts[i].gameObject);
@@ -155,6 +166,8 @@ public class SplineTurtle : MonoBehaviour {
 
 	void UpdateValues()
 	{
+		alternateAngle = zigzagUI.val;
+		Raycast = connectUI.val;
 		maxPoints = (int)numPointsUI.val;
 		minDist = minDistUI.val;
 		maxDist = maxDistUI.val;
@@ -202,13 +215,13 @@ public class SplineTurtle : MonoBehaviour {
 
 		if (maxCrawlers < 100) {
 			for (int i = 0; i < initialAmount; i++) {
-				SpawnTurtle ().transform.Rotate (0, 0, transform.eulerAngles.z + Random.Range (initialAngleMin, initialAngleMax) * i);
+				SpawnTurtle ().transform.Rotate (0, 0, turtle.eulerAngles.z + Random.Range (initialAngleMin, initialAngleMax) * i);
 
 			}
 		}
 
 		running = false;
-		transform.rotation = Quaternion.identity;
+		turtle.rotation = Quaternion.identity;
 	}
 
 	void InitializeSpline(){
@@ -229,14 +242,14 @@ public class SplineTurtle : MonoBehaviour {
 		mDist = minDist;
 
 
-		if (Raycast && SplineUtil.RaycastDownToPoint (transform.position, Mathf.Infinity, 1000f) != null) {
-			curPoint = SplineUtil.RaycastDownToPoint (transform.position, Mathf.Infinity, 1000f);
+		if (Raycast && SplineUtil.RaycastDownToPoint (turtle.position, Mathf.Infinity, 1000f) != null) {
+			curPoint = SplineUtil.RaycastDownToPoint (turtle.position, Mathf.Infinity, 1000f);
 			if (curPoint.HasSplines ()) {
 				curSpline = curPoint._connectedSplines [0];
 			} else {
 				Step ();
 
-				Point secondPoint = SpawnPointPrefab.CreatePoint (transform.position);
+				Point secondPoint = SpawnPointPrefab.CreatePoint (turtle.position);
 
 				if (createSplines) {
 					curSpline = SplineUtil.CreateSpline (curPoint, secondPoint);
@@ -250,12 +263,12 @@ public class SplineTurtle : MonoBehaviour {
 			NewPoint ();
 		} else {
 
-			curPoint = SpawnPointPrefab.CreatePoint (transform.position);
+			curPoint = SpawnPointPrefab.CreatePoint (turtle.position);
 			curPoint.transform.parent = pointsParent.transform;
 
 			Step ();
 
-			Point secondPoint = SpawnPointPrefab.CreatePoint (transform.position);
+			Point secondPoint = SpawnPointPrefab.CreatePoint (turtle.position);
 
 			if (createSplines) {
 				curSpline = SplineUtil.CreateSpline (curPoint, secondPoint);
@@ -270,7 +283,7 @@ public class SplineTurtle : MonoBehaviour {
 	}
 
 	public GameObject SpawnTurtle(){
-		GameObject newTurtle = Instantiate (gameObject, transform.position, Quaternion.Euler(transform.eulerAngles));
+		GameObject newTurtle = Instantiate (gameObject, turtle.position, Quaternion.Euler(turtle.eulerAngles));
 
 		SplineTurtle newTurtleScript = newTurtle.GetComponent<SplineTurtle> ();
 
@@ -300,12 +313,12 @@ public class SplineTurtle : MonoBehaviour {
 		Point newPoint = null;
 
 		if (Raycast) {
-			newPoint = SplineUtil.RaycastDownToPoint (transform.position, Mathf.Infinity, 1000f);
+			newPoint = SplineUtil.RaycastDownToPoint (turtle.position, Mathf.Infinity, 1000f);
 			if (newPoint == null) {
-				newPoint = SpawnPointPrefab.CreatePoint (transform.position);
+				newPoint = SpawnPointPrefab.CreatePoint (turtle.position);
 			}
 		} else {
-			newPoint = SpawnPointPrefab.CreatePoint (transform.position);
+			newPoint = SpawnPointPrefab.CreatePoint (turtle.position);
 		}
 
 		if (createSplines) {
@@ -351,7 +364,7 @@ public class SplineTurtle : MonoBehaviour {
 //			angleChange = -angleChange;
 		}
 
-		transform.Rotate (0, 0, rotation);
+		turtle.Rotate (0, 0, rotation);
 	}
 
 	void Step(){
@@ -362,7 +375,7 @@ public class SplineTurtle : MonoBehaviour {
 		float moveDistance = Random.Range (mDist, mxDist);
 		mDist *= scaleChange;
 		mxDist *= scaleChange;
-		transform.localPosition += transform.up * moveDistance + offsetDirection;
+		turtle.localPosition += transform.up * moveDistance + offsetDirection;
 		curPoint.continuity = continuity;
 		curPoint.tension = tension;
 	}

@@ -18,6 +18,7 @@ public class ReadSliderValue : MonoBehaviour
     {
         turtle = GetComponentInParent<SplineTurtle>();
         slider = GetComponentInChildren<UnityEngine.UI.Slider>();
+        val = slider.value;
     }
     
     public void ChangeInputField(String s)
@@ -36,7 +37,6 @@ public class ReadSliderValue : MonoBehaviour
     {
         input.SetTextWithoutNotify(s.ToString());
         val = s;
-        
         
         turtle.UpdateTurtle();
     }
