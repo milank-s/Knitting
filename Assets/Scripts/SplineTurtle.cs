@@ -217,9 +217,9 @@ public class SplineTurtle : MonoBehaviour {
 			Step ();
 			NewPoint ();
 
-			if (PivotAroundCenter) {
+			
 				parent.transform.RotateAround (pivot.position, Vector3.forward, PivotSpeed);
-			}
+			
 
 			yield return new WaitForSeconds(stepSpeed);
 		}
