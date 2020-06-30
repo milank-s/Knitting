@@ -1,11 +1,34 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Messaging;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.UI;
 
 public class SplineTurtle : MonoBehaviour {
 
 	public MapEditor editor;
+
+	[Header("UI")] 
+	private ReadSliderValue numPointsUI;
+	private ReadSliderValue minDistUI;
+	private ReadSliderValue maxDistUI;
+	private ReadSliderValue distScaleUI;
+	private ReadSliderValue angleeUI;
+	private ReadSliderValue angleDeltaUI;
+	private ReadSliderValue angleScaleUI;
+	
+	private ReadSliderValue continuityUI;
+	private ReadSliderValue tensionUI;
+	
+	private ReadSliderValue pivotAngleUI;
+	private ReadSliderValue pivotDistanceUI;
+	private ReadSliderValue stepSpeedUI;
+
+	private InputField xOffsetUI;
+	private InputField yOffsetUI;
+	private InputField zOffsetUI;
+
 	
 	public static float maxTotalPoints = 1;
 	public static float maxCrawlers = 1;
@@ -22,6 +45,8 @@ public class SplineTurtle : MonoBehaviour {
 	public float initialAngleMax;
 	public float initialAngleMin;
 
+	public Transform pivot;
+	
 	public float stepSpeed;
 	
 	public float angleChange = 0;
@@ -33,6 +58,7 @@ public class SplineTurtle : MonoBehaviour {
 	public float branchFactor = 0;
 	public int maxPoints = 50;
 	public float continuity = 0;
+	public float tension;
 	public bool Raycast = true;
 	public bool LockAngle = false;
 	public bool alternateAngle = false;
@@ -113,11 +139,41 @@ public class SplineTurtle : MonoBehaviour {
 
 	public void Update()
 	{
-		if (!running && redraw)
+		UpdateValues();
+		
+	
+	}
+
+	public void UpdateTurtle()
+	{
+		if (!running)
 		{
-			redraw = false;
 			running = true;
+			StartCoroutine(Draw());
 		}
+	}
+
+	void UpdateValues()
+	{
+		maxPoints = (int)numPointsUI.val;
+		minDist = minDistUI.val;
+		maxDist = maxDistUI.val;
+		scaleChange = distScaleUI.val;
+		
+		angle = angleeUI.val;
+		angleChange = angleDeltaUI.val;
+		angleChange = angleScaleUI.val;
+
+		continuity = continuityUI.val;
+		tension = tensionUI.val;
+
+		stepSpeed = stepSpeedUI.val;
+		pivot.position = parent.transform.position + Vector3.up * pivotDistanceUI.val;
+		PivotSpeed = pivotAngleUI.val;
+		
+		float.TryParse(xOffsetUI.text, out offsetDirection.x);
+		float.TryParse(yOffsetUI.text, out offsetDirection.y);
+		float.TryParse(zOffsetUI.text, out offsetDirection.z);
 	}
 	
 	IEnumerator Draw(){
@@ -126,7 +182,7 @@ public class SplineTurtle : MonoBehaviour {
 			NewPoint ();
 
 			if (PivotAroundCenter) {
-				transform.RotateAround (Vector3.zero, Vector3.forward, PivotSpeed);
+				parent.transform.RotateAround (pivot.position, Vector3.forward, PivotSpeed);
 			}
 
 			yield return new WaitForSeconds(stepSpeed);
@@ -150,7 +206,8 @@ public class SplineTurtle : MonoBehaviour {
 
 			}
 		}
-		
+
+		running = false;
 		transform.rotation = Quaternion.identity;
 	}
 
@@ -284,7 +341,7 @@ public class SplineTurtle : MonoBehaviour {
 			rotation = Random.Range (ang -angleRandom/2f, ang + angleRandom/2f);
 		//}
 
-		ang += angleChange;
+		ang *= angleChange;
 		if (Mathf.Abs (angleRandom) > angleVariance) {
 //			angleChange = -angleChange;
 //			angleRandom = angleRandom % angleVariance;
@@ -307,5 +364,6 @@ public class SplineTurtle : MonoBehaviour {
 		mxDist *= scaleChange;
 		transform.localPosition += transform.up * moveDistance + offsetDirection;
 		curPoint.continuity = continuity;
+		curPoint.tension = tension;
 	}
 }

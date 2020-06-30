@@ -7,6 +7,8 @@ using Slider = UnityEngine.UIElements.Slider;
 
 public class ReadSliderValue : MonoBehaviour
 {
+    [SerializeField] private SplineTurtle turtle;
+    public float val;
     
     public InputField input;
     public Text text;
@@ -14,22 +16,29 @@ public class ReadSliderValue : MonoBehaviour
 
     public void Start()
     {
+        turtle = GetComponentInParent<SplineTurtle>();
         slider = GetComponentInChildren<UnityEngine.UI.Slider>();
     }
     
     public void ChangeInputField(String s)
     {
-        float f;
-        float.TryParse(s, out f);
-        f = Mathf.Clamp(f, slider.minValue, slider.maxValue);
         
-        slider.SetValueWithoutNotify(f);
-        input.SetTextWithoutNotify(f.ToString());
+        float.TryParse(s, out val);
+        val = Mathf.Clamp(val, slider.minValue, slider.maxValue);
+        
+        slider.SetValueWithoutNotify(val);
+        input.SetTextWithoutNotify(val.ToString());
+        
+        turtle.UpdateTurtle();
     }
     
     public void ChangeSlider(Single s)
     {
         input.SetTextWithoutNotify(s.ToString());
+        val = s;
+        
+        
+        turtle.UpdateTurtle();
     }
     
   

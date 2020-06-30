@@ -774,7 +774,10 @@ public class MapEditor : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F))
         {
-            cam.transform.position = new Vector3(center.x, center.y, center.z - cameraDistance);
+            if (Point.Points.Count > 0)
+            {
+                cam.transform.position = new Vector3(center.x, center.y, center.z - cameraDistance);
+            }
         }
         
         if (pointSelected)
