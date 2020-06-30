@@ -71,6 +71,8 @@ public class MapEditor : MonoBehaviour
 
     
     [Space(25)] public Transform pointsParent;
+    public GameObject tooltipParent;
+    public SplineTurtle splineTurtle;
     public Transform splinesParent;
     public Transform stellationsParent;
     public PrefabManager prefabs;
@@ -224,8 +226,6 @@ public class MapEditor : MonoBehaviour
         selectors = new List<Image>();
         
         selectedPoints = new List<Point>();
-
-        
     }
 
     public void Typing()
@@ -319,6 +319,13 @@ public class MapEditor : MonoBehaviour
         sceneTitle.text = controller.name;
         
         StopTyping(controller.name);        
+    }
+
+    public void ToggleTurtleMode()
+    {
+        bool on = splineTurtle.gameObject.activeSelf;
+            splineTurtle.gameObject.SetActive(!on);
+            tooltipParent.gameObject.SetActive(on);
     }
     
     public  void TogglePlayMode()

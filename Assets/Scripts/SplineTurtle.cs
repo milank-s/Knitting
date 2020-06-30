@@ -22,9 +22,11 @@ public class SplineTurtle : MonoBehaviour {
 	public float initialAngleMax;
 	public float initialAngleMin;
 
+	public float stepSpeed;
+	
 	public float angleChange = 0;
-	public float minAngle = 10;
-	public float maxAngle = 30;
+	public float angleVariance = 10;
+	public float angle = 30;
 	public float scaleChange = 0;
 	public float maxDist = 2;
 	public float minDist = 1;
@@ -35,8 +37,8 @@ public class SplineTurtle : MonoBehaviour {
 	public bool LockAngle = false;
 	public bool alternateAngle = false;
 
-	private float mAngle;
-	private float mxAngle;
+	private float angleRandom;
+	private float ang;
 	private float mxDist;
 	private float mDist;
 
@@ -46,7 +48,9 @@ public class SplineTurtle : MonoBehaviour {
 	public bool childrenInherit = false;
 	private bool turnleft = true;
 
-
+	private bool running;
+	private bool redraw;
+	
 	public Vector3 startDirection;
 	public Vector3 offsetDirection = Vector3.zero;
 
@@ -66,7 +70,7 @@ public class SplineTurtle : MonoBehaviour {
 		}
 
 		editor.controller._splines.Clear();
-		parent.name = "Untitled";
+		//parent.name = "Untitled";
 
 	}
 	public void Generate(){
@@ -76,8 +80,8 @@ public class SplineTurtle : MonoBehaviour {
 			initialAngleMin = Random.Range(initialAngleMax, 90);
 
 			angleChange = Random.Range (0,3);
-			minAngle = Random.Range (-90, 10);
-			maxAngle = Random.Range (minAngle, 90);
+			angleVariance = Random.Range (-90, 10);
+			angle = Random.Range (angleVariance, 90);
 			scaleChange = Random.Range (0.98f, 1.02f);
 			if (Random.Range (0, 100) < 90) {
 				maxDist = Random.Range (1f, 2f);
@@ -106,15 +110,26 @@ public class SplineTurtle : MonoBehaviour {
 	InitializeSpline ();
 
 	}
-	void Draw(){
-		for(int i = 2; i < maxPoints; i++) {
 
+	public void Update()
+	{
+		if (!running && redraw)
+		{
+			redraw = false;
+			running = true;
+		}
+	}
+	
+	IEnumerator Draw(){
+		for(int i = 2; i < maxPoints; i++) {
 			Step ();
 			NewPoint ();
 
 			if (PivotAroundCenter) {
 				transform.RotateAround (Vector3.zero, Vector3.forward, PivotSpeed);
 			}
+
+			yield return new WaitForSeconds(stepSpeed);
 		}
 
 		if (createSplines && closed) {
@@ -140,9 +155,8 @@ public class SplineTurtle : MonoBehaviour {
 	}
 
 	void InitializeSpline(){
-
 		
-		parent.name = name;
+		//parent.name = name;
 		if (parent.GetComponent<StellationController>() == null)
 		{
 			parent.AddComponent<StellationController>();	
@@ -150,10 +164,10 @@ public class SplineTurtle : MonoBehaviour {
 
 		StellationController s = parent.GetComponent<StellationController>();
 
-		parent.transform.position = transform.position;
+		//parent.transform.position = transform.position;
 
-		mxAngle = maxAngle;
-		mAngle = minAngle;
+		ang = angle;
+		angleRandom = angleVariance;
 		mxDist = maxDist;
 		mDist = minDist;
 
@@ -195,7 +209,7 @@ public class SplineTurtle : MonoBehaviour {
 		}
 
 
-		Draw ();
+		StartCoroutine(Draw());
 	}
 
 	public GameObject SpawnTurtle(){
@@ -206,8 +220,8 @@ public class SplineTurtle : MonoBehaviour {
 		newTurtle.transform.Rotate (0,0,Random.Range (initialAngleMin, initialAngleMax));
 
 		if (!childrenInherit) {
-			newTurtleScript.maxAngle = maxAngle;
-			newTurtleScript.minAngle = minAngle;
+			newTurtleScript.angle = angle;
+			newTurtleScript.angleVariance = angleVariance;
 			newTurtleScript.maxDist = maxDist;
 			newTurtleScript.minDist = minDist;
 		}
@@ -250,34 +264,33 @@ public class SplineTurtle : MonoBehaviour {
 
 	public void Rotate(){
 		float rotation;
-		if (LockAngle) {
+		//if (LockAngle) {
 			if (alternateAngle) {
 				if (turnleft) {
-					rotation = mAngle;
+					rotation = -ang;
 					turnleft = !turnleft;
 				} else {
-					rotation = mxAngle;
+					rotation = ang;
 					turnleft = !turnleft;
 				}
 			} else {
 				if (Random.Range (0f, 100f) >= 50) {
-					rotation = mAngle;
+					rotation = angleRandom;
 				} else {
-					rotation = mxAngle;
+					rotation = ang;
 				}
 			}
-		} else {
-			rotation = Random.Range (mAngle, mxAngle);
-		}
+		//} else {
+			rotation = Random.Range (ang -angleRandom/2f, ang + angleRandom/2f);
+		//}
 
-		mAngle += angleChange;
-		mxAngle += angleChange;
-		if (Mathf.Abs (mAngle) > minAngle) {
+		ang += angleChange;
+		if (Mathf.Abs (angleRandom) > angleVariance) {
 //			angleChange = -angleChange;
-//			mAngle = mAngle % minAngle;
+//			angleRandom = angleRandom % angleVariance;
 		}
-		if (Mathf.Abs (mxAngle) > maxAngle) {
-//			mxAngle = maxAngle % maxAngle;
+		if (Mathf.Abs (ang) > angle) {
+//			ang = angle % angle;
 //			angleChange = -angleChange;
 		}
 
