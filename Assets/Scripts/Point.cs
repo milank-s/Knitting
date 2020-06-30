@@ -187,7 +187,7 @@ public class Point : MonoBehaviour
 		return data;
 	}
 
-	public void Destroy()
+	public void OnDestroy()
 	{
 		Points.Remove(this);
 		
@@ -195,8 +195,6 @@ public class Point : MonoBehaviour
 		{
 			controller._points.Remove(this);
 		}
-		
-		Destroy(gameObject);
 	}
 
 
@@ -654,7 +652,7 @@ public class Point : MonoBehaviour
 	}
 	
 	public bool HasSplines(){
-		return _connectedSplines.Count > 0 ? true : false;
+		return _connectedSplines.Count > 0;
 	}
 
 	public Spline GetConnectingSpline(Point p){

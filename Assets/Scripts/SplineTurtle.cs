@@ -33,7 +33,7 @@ public class SplineTurtle : MonoBehaviour {
 	[SerializeField] private ReadToggleValue zigzagUI;
 	[SerializeField] private ReadToggleValue connectUI;
 	
-	public static float maxTotalPoints = 1;
+	public static float maxTotalPoints = 1000;
 	public static float maxCrawlers = 1;
 
 	public string name;
@@ -88,28 +88,33 @@ public class SplineTurtle : MonoBehaviour {
 	
 	Mesh mesh;
 	Spline curSpline;
-	Point curPoint;
+	public Point curPoint;
 
 
 	public void Reset()
 	{
 		
+		editor.DeselectAll();
 		editor.controller._splines.Clear();
 		
 		turtle.position = Vector3.zero;
 		turtle.rotation = Quaternion.identity;
 		pivot.position = turtle.position + Vector3.up * pivotDistanceUI.val;
 		
-		editor.DeselectAll();
+		Transform parentParent = parent.transform.parent;
 		
-		Transform[] ts = parent.GetComponentsInChildren<Transform>();
-	
-		for(int i = 0; i < ts.Length; i++){
-			if (ts[i].GetComponent<Spline>() != null || ts[i].GetComponent<Point>() != null){
-				DestroyImmediate(ts[i].gameObject);
-			}
-		}
-
+		Destroy(parent);
+		
+		parent = new GameObject();
+		parent.transform.parent = parentParent;
+		parent.name = editor.sceneTitle.text;
+		editor.controller = parent.AddComponent<StellationController>();
+		editor.splinesParent = parent.transform;
+		editor.pointsParent = new GameObject().transform;
+		editor.pointsParent.name = "points";
+		editor.pointsParent.parent = editor.splinesParent;
+		
+		pointsParent = editor.pointsParent.gameObject;
 		//parent.name = "Untitled";
 
 	}
@@ -192,7 +197,7 @@ public class SplineTurtle : MonoBehaviour {
 		scaleChange = distScaleUI.val;
 		
 		angle = angleeUI.val;
-		angleChange = angleDeltaUI.val;
+		angleVariance = angleDeltaUI.val;
 		angleChange = angleScaleUI.val;
 
 		continuity = continuityUI.val;
@@ -238,27 +243,24 @@ public class SplineTurtle : MonoBehaviour {
 			}
 		}
 
+		
 		running = false;
 		turtle.rotation = Quaternion.identity;
+
+		foreach (Spline s in Spline.Splines)
+		{
+			editor.AddSpline(s);
+		}
 	}
 
 	void InitializeSpline(){
 		
 		//parent.name = name;
-		if (parent.GetComponent<StellationController>() == null)
-		{
-			parent.AddComponent<StellationController>();	
-		}
-
-		StellationController s = parent.GetComponent<StellationController>();
-
-		//parent.transform.position = transform.position;
-
+	
 		ang = angle;
 		angleRandom = angleVariance;
 		mxDist = maxDist;
 		mDist = minDist;
-
 
 		if (Raycast && SplineUtil.RaycastDownToPoint (turtle.position, Mathf.Infinity, 1000f) != null) {
 			curPoint = SplineUtil.RaycastDownToPoint (turtle.position, Mathf.Infinity, 1000f);
@@ -271,7 +273,7 @@ public class SplineTurtle : MonoBehaviour {
 
 				if (createSplines) {
 					curSpline = SplineUtil.CreateSpline (curPoint, secondPoint);
-					editor.AddSpline(curSpline);
+					//
 					
 				}
 				curPoint = secondPoint;
@@ -290,8 +292,8 @@ public class SplineTurtle : MonoBehaviour {
 
 			if (createSplines) {
 				curSpline = SplineUtil.CreateSpline (curPoint, secondPoint);
-				editor.AddSpline(curSpline);
 			}
+			
 			curPoint = secondPoint;
 			curPoint.transform.parent = pointsParent.transform;
 		}
@@ -369,7 +371,7 @@ public class SplineTurtle : MonoBehaviour {
 				}
 			}
 		//} else {
-			rotation = Random.Range (ang -angleRandom/2f, ang + angleRandom/2f);
+			rotation = Random.Range (ang - angleRandom/2f, ang + angleRandom/2f);
 		//}
 
 		ang *= angleChange;

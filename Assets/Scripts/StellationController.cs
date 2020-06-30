@@ -70,6 +70,13 @@ public class StellationController : MonoBehaviour {
 		CameraFollow.instance.desiredFOV = desiredFOV;
 		
 	}
+
+	public void Awake()
+	{
+		_points = new List<Point>();
+		_splines = new List<Spline>();
+		_splinesToUnlock = new List<Spline>();
+	}
 	
 	public void Won()
 	{
@@ -146,9 +153,10 @@ public class StellationController : MonoBehaviour {
 
 		Services.PlayerBehaviour.flow = startSpeed;
 		
-		_points = new List<Point>();
-		_splines = new List<Spline>();
-		_splinesToUnlock = new List<Spline>();
+		_points.Clear();
+		_splines.Clear();
+		_splinesToUnlock.Clear();
+		
 		lapCount = 0;
 		
 		//stupid code for old maps that didnt have scoreCount idk. 

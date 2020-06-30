@@ -895,7 +895,7 @@ public class MapEditor : MonoBehaviour
                     }
                 }
 
-                pointToDelete.Destroy();
+                Destroy(pointToDelete.gameObject);
             }
         }
         else
