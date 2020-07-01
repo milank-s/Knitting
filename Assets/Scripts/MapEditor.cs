@@ -149,6 +149,7 @@ public class MapEditor : MonoBehaviour
     private Vector3 lastPos;
     private Vector3 worldPos;
     private Vector3 rotationPivot;
+
     
     public enum Tool
     {

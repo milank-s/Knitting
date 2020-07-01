@@ -14,6 +14,7 @@ public class ReadToggleValue : MonoBehaviour
 
     void Start()
     {
+        turtle = GetComponentInParent<SplineTurtle>();
         toggle.isOn = val;
     }
     

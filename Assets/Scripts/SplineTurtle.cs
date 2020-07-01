@@ -86,6 +86,10 @@ public class SplineTurtle : MonoBehaviour {
 
 	private float timeSinceRedraw;
 	
+	
+	private Coroutine drawing;
+	
+	
 	Mesh mesh;
 	Spline curSpline;
 	public Point curPoint;
@@ -93,7 +97,8 @@ public class SplineTurtle : MonoBehaviour {
 
 	public void Reset()
 	{
-		
+		drawing = null;
+	
 		editor.DeselectAll();
 		editor.controller._splines.Clear();
 		
@@ -118,7 +123,11 @@ public class SplineTurtle : MonoBehaviour {
 		//parent.name = "Untitled";
 
 	}
-	public void Generate(){
+	public void Generate()
+	{
+
+		Reset();
+		
 		if (Randomize) {
 
 			initialAngleMax = Random.Range(-90, 45);
@@ -213,15 +222,20 @@ public class SplineTurtle : MonoBehaviour {
 	}
 	
 	IEnumerator Draw(){
+		
+		
 		for(int i = 2; i < maxPoints; i++) {
 			Step ();
 			NewPoint ();
 
 			
 				parent.transform.RotateAround (pivot.position, Vector3.forward, PivotSpeed);
-			
 
-			yield return new WaitForSeconds(stepSpeed);
+
+				if (stepSpeed > 0)
+				{
+					yield return new WaitForSeconds(stepSpeed);
+				}
 		}
 
 		if (createSplines && closed) {
@@ -251,12 +265,19 @@ public class SplineTurtle : MonoBehaviour {
 		{
 			editor.AddSpline(s);
 		}
+
+		yield return null;
 	}
 
 	void InitializeSpline(){
 		
 		//parent.name = name;
-	
+
+		if (drawing != null)
+		{
+			return;	
+		}
+		
 		ang = angle;
 		angleRandom = angleVariance;
 		mxDist = maxDist;
@@ -299,7 +320,7 @@ public class SplineTurtle : MonoBehaviour {
 		}
 
 
-		StartCoroutine(Draw());
+		drawing = StartCoroutine(Draw());
 	}
 
 	public GameObject SpawnTurtle(){
