@@ -395,13 +395,15 @@ public class SplineTurtle : MonoBehaviour {
 
 		Rotate ();
 
+		
+		
 		float moveDistance = Random.Range (mDist, mxDist);
 		mDist *= scaleChange;
 		mxDist *= scaleChange;
-		turtle.position += turtle.up * moveDistance + offsetDirection;
+		turtle.localPosition += turtle.up * moveDistance + offsetDirection;
 		curPoint.continuity = continuity;
 		curPoint.tension = tension;
 		
-		editor.splinesParent.RotateAround (pivot.position, Vector3.forward, PivotSpeed);
+		turtle.RotateAround (pivot.position, Vector3.forward, PivotSpeed);
 	}
 }
