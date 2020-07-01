@@ -338,7 +338,7 @@ public class SplineTurtle : MonoBehaviour {
 		Point newPoint = null;
 
 		if (Raycast) {
-			newPoint = SplineUtil.RaycastDownToPoint (turtle.position, Mathf.Infinity, 1000f);
+			newPoint = SplineUtil.RaycastDownToPoint (turtle.position, Mathf.Infinity, 100f);
 			if (newPoint == null) {
 				newPoint = SpawnPointPrefab.CreatePoint (turtle.position);
 			}
@@ -368,15 +368,13 @@ public class SplineTurtle : MonoBehaviour {
 					rotation = ang;
 					turnleft = !turnleft;
 				}
-			} else {
-				if (Random.Range (0f, 100f) >= 50) {
-					rotation = angleRandom;
-				} else {
-					rotation = ang;
-				}
+			}
+			else
+			{
+				rotation = ang;
 			}
 		//} else {
-			rotation = Random.Range (ang - angleRandom/2f, ang + angleRandom/2f);
+			rotation = rotation + Random.Range (-angleRandom/2f, angleRandom/2f);
 		//}
 
 		ang *= angleChange;
@@ -400,7 +398,7 @@ public class SplineTurtle : MonoBehaviour {
 		float moveDistance = Random.Range (mDist, mxDist);
 		mDist *= scaleChange;
 		mxDist *= scaleChange;
-		turtle.localPosition += turtle.up * moveDistance + offsetDirection;
+		turtle.position += turtle.up * moveDistance + offsetDirection;
 		curPoint.continuity = continuity;
 		curPoint.tension = tension;
 		
