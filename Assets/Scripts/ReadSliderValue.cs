@@ -9,6 +9,7 @@ public class ReadSliderValue : MonoBehaviour
 {
     [SerializeField] private SplineTurtle turtle;
     public float val;
+    public bool updateTurtle = true;
     
     public InputField input;
     public Text text;
@@ -25,20 +26,26 @@ public class ReadSliderValue : MonoBehaviour
     {
         
         float.TryParse(s, out val);
-        val = Mathf.Clamp(val, slider.minValue, slider.maxValue);
+        //val = Mathf.Clamp(val, slider.minValue, slider.maxValue);
         
         slider.SetValueWithoutNotify(val);
         input.SetTextWithoutNotify(val.ToString());
-        
-        turtle.UpdateTurtle();
+
+        if (updateTurtle)
+        {
+            turtle.UpdateTurtle();
+        }
     }
     
     public void ChangeSlider(Single s)
     {
         input.SetTextWithoutNotify(s.ToString());
         val = s;
-        
-        turtle.UpdateTurtle();
+
+        if (updateTurtle)
+        {
+            turtle.UpdateTurtle();
+        }
     }
     
   

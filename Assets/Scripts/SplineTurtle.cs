@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Remoting.Messaging;
 using UnityEngine;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine.UI;
 
 public class SplineTurtle : MonoBehaviour {
@@ -38,8 +39,6 @@ public class SplineTurtle : MonoBehaviour {
 
 	public string name;
 
-	public GameObject parent;
-	public GameObject pointsParent;
 	
 	public bool createSplines;
 	public bool Randomize;
@@ -64,7 +63,7 @@ public class SplineTurtle : MonoBehaviour {
 	public float continuity = 0;
 	public float tension;
 	public bool Raycast = true;
-	public bool LockAngle = false;
+	
 	public bool alternateAngle = false;
 
 	private float angleRandom;
@@ -72,7 +71,7 @@ public class SplineTurtle : MonoBehaviour {
 	private float mxDist;
 	private float mDist;
 
-	public bool PivotAroundCenter;
+	
 	public float  PivotSpeed;
 	public bool closed;
 	public bool childrenInherit = false;
@@ -81,7 +80,7 @@ public class SplineTurtle : MonoBehaviour {
 	private bool running;
 	private bool redraw;
 	
-	public Vector3 startDirection;
+	
 	public Vector3 offsetDirection = Vector3.zero;
 
 	private float timeSinceRedraw;
@@ -109,20 +108,18 @@ public class SplineTurtle : MonoBehaviour {
 		turtle.rotation = Quaternion.identity;
 		pivot.position = turtle.position + Vector3.up * pivotDistanceUI.val;
 		
-		Transform parentParent = parent.transform.parent;
 		
-		Destroy(parent);
 		
-		parent = new GameObject();
-		parent.transform.parent = parentParent;
-		parent.name = editor.sceneTitle.text;
-		editor.controller = parent.AddComponent<StellationController>();
-		editor.splinesParent = parent.transform;
+		Destroy(editor.splinesParent.gameObject);
+		
+		editor.splinesParent = new GameObject().transform;
+		editor.splinesParent.transform.parent = editor.stellationsParent;
+		editor.splinesParent.name = editor.sceneTitle.text;
+		editor.controller = editor.splinesParent.gameObject.AddComponent<StellationController>();
 		editor.pointsParent = new GameObject().transform;
 		editor.pointsParent.name = "points";
 		editor.pointsParent.parent = editor.splinesParent;
 		
-		pointsParent = editor.pointsParent.gameObject;
 		//parent.name = "Untitled";
 
 	}
@@ -154,12 +151,9 @@ public class SplineTurtle : MonoBehaviour {
 			branchFactor = Random.Range(0,0);
 			continuity = Random.Range(0,2);
 
-			LockAngle = Random.Range (0f, 100f) > 50 ? true : false;
+			
 			alternateAngle = Random.Range (0f, 100f) > 50 ? true : false;
 
-
-
-			PivotAroundCenter = Random.Range (0f, 100f) > 50 ? true : false;
 			PivotSpeed = Random.Range (0f, 2f);
 
 		}
@@ -207,7 +201,7 @@ public class SplineTurtle : MonoBehaviour {
 		tension = tensionUI.val;
 
 		stepSpeed = stepSpeedUI.val;
-		pivot.position = parent.transform.position + Vector3.up * pivotDistanceUI.val;
+		pivot.position = editor.splinesParent.position + Vector3.up * pivotDistanceUI.val;
 		PivotSpeed = pivotAngleUI.val;
 		
 		float.TryParse(xOffsetUI.text, out offsetDirection.x);
@@ -238,8 +232,8 @@ public class SplineTurtle : MonoBehaviour {
 			spp = SplineUtil.ConnectPoints (curSpline, curSpline.SplinePoints[curSpline.SplinePoints.Count-1], curSpline.SplinePoints[0]);
 			curSpline = spp.s;
 			curPoint = spp.p;
-			curPoint.transform.parent = pointsParent.transform;
-			curSpline.transform.parent = parent.transform;
+			curPoint.transform.parent = editor.pointsParent.transform;
+			curSpline.transform.parent = editor.splinesParent;
 			editor.AddSpline(curSpline);
 		}
 
@@ -276,6 +270,7 @@ public class SplineTurtle : MonoBehaviour {
 			if (curPoint.HasSplines ()) {
 				curSpline = curPoint._connectedSplines [0];
 			} else {
+				
 				Step ();
 
 				Point secondPoint = SpawnPointPrefab.CreatePoint (turtle.position);
@@ -286,14 +281,14 @@ public class SplineTurtle : MonoBehaviour {
 					
 				}
 				curPoint = secondPoint;
-				curPoint.transform.parent = pointsParent.transform;
+				curPoint.transform.parent = editor.pointsParent.transform;
 			}
 			Step ();
 			NewPoint ();
 		} else {
 
 			curPoint = SpawnPointPrefab.CreatePoint (turtle.position);
-			curPoint.transform.parent = pointsParent.transform;
+			curPoint.transform.parent = editor.pointsParent.transform;
 
 			Step ();
 
@@ -304,10 +299,11 @@ public class SplineTurtle : MonoBehaviour {
 			}
 			
 			curPoint = secondPoint;
-			curPoint.transform.parent = pointsParent.transform;
+			curPoint.transform.parent = editor.pointsParent.transform;
 		}
 
 
+		curSpline.transform.parent = editor.splinesParent;
 		drawing = StartCoroutine(Draw());
 	}
 
@@ -354,10 +350,10 @@ public class SplineTurtle : MonoBehaviour {
 			spp = SplineUtil.ConnectPoints (curSpline, curPoint, newPoint);
 			curSpline = spp.s;
 			curPoint = spp.p;
-			curPoint.transform.parent = pointsParent.transform;
-			curSpline.transform.parent = parent.transform;
+			curPoint.transform.parent = editor.pointsParent.transform;
+			curSpline.transform.parent = editor.splinesParent;
 		} else {
-			newPoint.transform.parent = pointsParent.transform;
+			newPoint.transform.parent = editor.pointsParent.transform;
 		}
 	}
 
@@ -408,6 +404,6 @@ public class SplineTurtle : MonoBehaviour {
 		curPoint.continuity = continuity;
 		curPoint.tension = tension;
 		
-		parent.transform.RotateAround (pivot.position, Vector3.forward, PivotSpeed);
+		editor.splinesParent.RotateAround (pivot.position, Vector3.forward, PivotSpeed);
 	}
 }
