@@ -97,7 +97,10 @@ public class SplineTurtle : MonoBehaviour {
 
 	public void Reset()
 	{
-		drawing = null;
+		if (drawing != null)
+		{
+			StopCoroutine(drawing);
+		}
 	
 		editor.DeselectAll();
 		editor.controller._splines.Clear();
@@ -173,17 +176,9 @@ public class SplineTurtle : MonoBehaviour {
 		{
 			timeSinceRedraw += Time.deltaTime;
 			
-			if (timeSinceRedraw > 0.1f)
-			{
-				if (!running)
-				{
-					running = true;
-					redraw = false;
-					Reset();
-					Generate();
-				}
-			}
-			
+			Generate();
+			redraw = false;
+
 		}
 
 		
@@ -191,7 +186,6 @@ public class SplineTurtle : MonoBehaviour {
 
 	public void UpdateTurtle()
 	{
-		
 		redraw = true;
 		timeSinceRedraw = 0;
 	}
@@ -229,7 +223,6 @@ public class SplineTurtle : MonoBehaviour {
 			NewPoint ();
 
 			
-				parent.transform.RotateAround (pivot.position, Vector3.forward, PivotSpeed);
 
 
 				if (stepSpeed > 0)
@@ -272,11 +265,6 @@ public class SplineTurtle : MonoBehaviour {
 	void InitializeSpline(){
 		
 		//parent.name = name;
-
-		if (drawing != null)
-		{
-			return;	
-		}
 		
 		ang = angle;
 		angleRandom = angleVariance;
@@ -419,5 +407,7 @@ public class SplineTurtle : MonoBehaviour {
 		turtle.localPosition += turtle.up * moveDistance + offsetDirection;
 		curPoint.continuity = continuity;
 		curPoint.tension = tension;
+		
+		parent.transform.RotateAround (pivot.position, Vector3.forward, PivotSpeed);
 	}
 }
