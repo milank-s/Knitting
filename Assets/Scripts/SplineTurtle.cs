@@ -391,11 +391,12 @@ public class SplineTurtle : MonoBehaviour {
 	}
 
 	void Step(){
+		
 		maxTotalPoints++;
 
 		Rotate ();
 
-		
+		turtle.RotateAround (pivot.position, Vector3.forward, PivotSpeed);
 		
 		float moveDistance = Random.Range (mDist, mxDist);
 		mDist *= scaleChange;
@@ -404,6 +405,5 @@ public class SplineTurtle : MonoBehaviour {
 		curPoint.continuity = continuity;
 		curPoint.tension = tension;
 		
-		turtle.RotateAround (pivot.position, Vector3.forward, PivotSpeed);
 	}
 }
