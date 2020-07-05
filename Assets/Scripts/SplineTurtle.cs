@@ -32,7 +32,9 @@ public class SplineTurtle : MonoBehaviour {
 	[SerializeField] private InputField zOffsetUI;
 
 	[SerializeField] private ReadToggleValue zigzagUI;
+	[SerializeField] private ReadToggleValue closeToggle;
 	[SerializeField] private ReadToggleValue connectUI;
+	[SerializeField] private ReadToggleValue ghostToggle;
 	
 	public static float maxTotalPoints = 1000;
 	public static float maxCrawlers = 1;
@@ -77,6 +79,8 @@ public class SplineTurtle : MonoBehaviour {
 	public bool childrenInherit = false;
 	private bool turnleft = true;
 
+	public bool ghostPoints;
+	
 	private bool running;
 	private bool redraw;
 	
@@ -108,8 +112,6 @@ public class SplineTurtle : MonoBehaviour {
 		turtle.rotation = Quaternion.identity;
 		pivot.position = turtle.position + Vector3.up * pivotDistanceUI.val;
 		
-		
-		
 		Destroy(editor.splinesParent.gameObject);
 		
 		editor.splinesParent = new GameObject().transform;
@@ -123,10 +125,17 @@ public class SplineTurtle : MonoBehaviour {
 		//parent.name = "Untitled";
 
 	}
+
+	IEnumerator WaitOneFrameThenGenerate()
+	{
+		yield return null;
+		InitializeSpline();
+	}
 	public void Generate()
 	{
 
 		Reset();
+		StartCoroutine(WaitOneFrameThenGenerate());
 		
 		if (Randomize) {
 
@@ -158,11 +167,10 @@ public class SplineTurtle : MonoBehaviour {
 
 		}
 
-	InitializeSpline ();
-
+	
 	}
 
-	public void Update()
+	public void UpdateTurtle()
 	{
 		UpdateValues();
 
@@ -174,11 +182,9 @@ public class SplineTurtle : MonoBehaviour {
 			redraw = false;
 
 		}
-
-		
 	}
 
-	public void UpdateTurtle()
+	public void RedrawTurtle()
 	{
 		redraw = true;
 		timeSinceRedraw = 0;
@@ -186,6 +192,7 @@ public class SplineTurtle : MonoBehaviour {
 
 	void UpdateValues()
 	{
+		closed = closeToggle.val;
 		alternateAngle = zigzagUI.val;
 		Raycast = connectUI.val;
 		maxPoints = (int)numPointsUI.val;
@@ -197,6 +204,7 @@ public class SplineTurtle : MonoBehaviour {
 		angleVariance = angleDeltaUI.val;
 		angleChange = angleScaleUI.val;
 
+		ghostPoints = ghostToggle.val;
 		continuity = continuityUI.val;
 		tension = tensionUI.val;
 
@@ -265,43 +273,33 @@ public class SplineTurtle : MonoBehaviour {
 		mxDist = maxDist;
 		mDist = minDist;
 
-		if (Raycast && SplineUtil.RaycastDownToPoint (turtle.position, Mathf.Infinity, 1000f) != null) {
-			curPoint = SplineUtil.RaycastDownToPoint (turtle.position, Mathf.Infinity, 1000f);
-			if (curPoint.HasSplines ()) {
-				curSpline = curPoint._connectedSplines [0];
-			} else {
-				
-				Step ();
-
-				Point secondPoint = SpawnPointPrefab.CreatePoint (turtle.position);
-
-				if (createSplines) {
-					curSpline = SplineUtil.CreateSpline (curPoint, secondPoint);
-					//
-					
-				}
-				curPoint = secondPoint;
-				curPoint.transform.parent = editor.pointsParent.transform;
-			}
-			Step ();
-			NewPoint ();
-		} else {
+//		if(Raycast){
+//			curPoint = SplineUtil.RaycastDownToPoint (turtle.position, Mathf.Infinity, 1000f);
+//			if (curPoint == null)
+//			{
+//				
+//			}
 
 			curPoint = SpawnPointPrefab.CreatePoint (turtle.position);
 			curPoint.transform.parent = editor.pointsParent.transform;
 
 			Step ();
-
-			Point secondPoint = SpawnPointPrefab.CreatePoint (turtle.position);
-
-			if (createSplines) {
-				curSpline = SplineUtil.CreateSpline (curPoint, secondPoint);
-			}
+			NewPoint();
 			
-			curPoint = secondPoint;
-			curPoint.transform.parent = editor.pointsParent.transform;
-		}
+//			Point secondPoint = SpawnPointPrefab.CreatePoint (turtle.position);
+//
+//			if (createSplines) {
+//				curSpline = SplineUtil.CreateSpline (curPoint, secondPoint);
+//			}
+			
+			//curPoint = secondPoint;
+			//curPoint.transform.parent = editor.pointsParent.transform;
+		
 
+		if (ghostPoints)
+		{
+			curPoint.SetPointType(PointTypes.ghost);
+		}
 
 		curSpline.transform.parent = editor.splinesParent;
 		drawing = StartCoroutine(Draw());
@@ -355,6 +353,12 @@ public class SplineTurtle : MonoBehaviour {
 		} else {
 			newPoint.transform.parent = editor.pointsParent.transform;
 		}
+
+		if (ghostPoints)
+		{
+			newPoint.SetPointType(PointTypes.ghost);
+		}
+		
 	}
 
 	public void Rotate(){

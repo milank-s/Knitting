@@ -12,8 +12,6 @@ public class SplineTurtleCreator : Editor {
 			SplineTurtle myScript = (SplineTurtle)target;
 			if(GUILayout.Button("Generate Spline"))
 			{
-				
-					myScript.Reset();
 					myScript.Generate();
 					Undo.RecordObject(myScript, "generated");
 			}

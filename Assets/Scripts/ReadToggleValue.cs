@@ -14,7 +14,6 @@ public class ReadToggleValue : MonoBehaviour
 
     void Start()
     {
-        turtle = GetComponentInParent<SplineTurtle>();
         toggle.isOn = val;
     }
     
@@ -22,7 +21,7 @@ public class ReadToggleValue : MonoBehaviour
     {
 
         val = b;
-        turtle.UpdateTurtle();
+        turtle.RedrawTurtle();
     }
     
   

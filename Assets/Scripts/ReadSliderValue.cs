@@ -17,8 +17,6 @@ public class ReadSliderValue : MonoBehaviour
 
     public void Start()
     {
-        turtle = GetComponentInParent<SplineTurtle>();
-        slider = GetComponentInChildren<UnityEngine.UI.Slider>();
         val = slider.value;
     }
     
@@ -33,7 +31,7 @@ public class ReadSliderValue : MonoBehaviour
 
         if (updateTurtle)
         {
-            turtle.UpdateTurtle();
+            turtle.RedrawTurtle();
         }
     }
     
@@ -44,7 +42,7 @@ public class ReadSliderValue : MonoBehaviour
 
         if (updateTurtle)
         {
-            turtle.UpdateTurtle();
+            turtle.RedrawTurtle();
         }
     }
     

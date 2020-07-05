@@ -73,6 +73,7 @@ public class MapEditor : MonoBehaviour
     [Space(25)] public Transform pointsParent;
     public GameObject tooltipParent;
     public SplineTurtle splineTurtle;
+    public GameObject turtleUI;
     public Transform splinesParent;
     public Transform stellationsParent;
     public PrefabManager prefabs;
@@ -324,16 +325,18 @@ public class MapEditor : MonoBehaviour
 
     public void ToggleTurtleMode()
     {
-        bool on = splineTurtle.gameObject.activeSelf;
-            splineTurtle.gameObject.SetActive(!on);
+        bool on =  turtleUI.activeSelf;
+            turtleUI.SetActive(!on);
             tooltipParent.gameObject.SetActive(on);
     }
     
     public  void TogglePlayMode()
     {
         
+        
         controller.Initialize();
         controller.isOn = true;
+        
         
         if (pointSelected)
         {
@@ -662,6 +665,7 @@ public class MapEditor : MonoBehaviour
     {
         if (editing)
             {
+                
                 Cursor.visible = false;
                 
                 SetCursorPosition();
@@ -755,7 +759,15 @@ public class MapEditor : MonoBehaviour
                     EditSelectedPoint();
                 }
                 
+                
+                if (turtleUI.activeSelf)
+                {
+                    splineTurtle.UpdateTurtle();
+                }
+                
             }
+        
+        
         }
 
      void SetPointType(PointTypes t)
