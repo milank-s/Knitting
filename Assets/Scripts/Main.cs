@@ -463,7 +463,6 @@
 			editorUI.SetActive(enter);
 			canvas.SetActive(!enter);
 			Player.SetActive(!enter);
-			editor.EnterEditMode();
 			
 			Services.mainCam.GetComponent<CameraFollow>().enabled = !enter;
 			RenderSettings.fog = !enter;
@@ -507,6 +506,8 @@
 				SceneController.instance.curSetIndex = -1;
 				
 				Cursor.lockState = CursorLockMode.None;
+				
+				editor.EnterEditMode();
 			}
 			else
 			{

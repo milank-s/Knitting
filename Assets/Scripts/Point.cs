@@ -463,10 +463,10 @@ public class Point : MonoBehaviour
 	{
 		proximity = 1;
 		timeOnPoint = 0;
-
+		timesHit++;
+		
 		if (controller.CheckSpeed())
 		{
-			timesHit++;
 			
 			if(textMesh != null){
 				textMesh.GetComponent<FadeTextOnPoint>().alpha = 1;

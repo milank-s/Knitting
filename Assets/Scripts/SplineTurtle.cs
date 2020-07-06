@@ -105,23 +105,13 @@ public class SplineTurtle : MonoBehaviour {
 			StopCoroutine(drawing);
 		}
 	
-		editor.DeselectAll();
-		editor.controller._splines.Clear();
 		
 		turtle.position = Vector3.zero;
 		turtle.rotation = Quaternion.identity;
 		pivot.position = turtle.position + Vector3.up * pivotDistanceUI.val;
-		
-		Destroy(editor.splinesParent.gameObject);
-		
-		editor.splinesParent = new GameObject().transform;
-		editor.splinesParent.transform.parent = editor.stellationsParent;
-		editor.splinesParent.name = editor.sceneTitle.text;
-		editor.controller = editor.splinesParent.gameObject.AddComponent<StellationController>();
-		editor.pointsParent = new GameObject().transform;
-		editor.pointsParent.name = "points";
-		editor.pointsParent.parent = editor.splinesParent;
-		
+
+		editor.Reset();
+
 		//parent.name = "Untitled";
 
 	}

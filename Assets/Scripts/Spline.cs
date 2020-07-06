@@ -339,7 +339,12 @@ public class Spline : MonoBehaviour
 
 		if (t == SplineType.locked)
 		{
-			LockSpline();
+			
+		}
+
+		if (t == SplineType.normal)
+		{
+			state = SplineState.on;
 		}
 
 		type = t;

@@ -85,6 +85,7 @@ public class SceneController : MonoBehaviour
 
         Services.main.Word.text = "";
         Services.main.ShowImage(null, false);
+        
         if (Services.main.state == Main.GameState.menu)
         {
             Services.main.CloseMenu();

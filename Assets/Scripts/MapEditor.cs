@@ -1152,6 +1152,24 @@ public class MapEditor : MonoBehaviour
         EnterEditMode();
     }
 
+    public void Reset()
+    {
+        DeselectAll();
+        if (controller != null)
+        {
+            controller._splines.Clear();   
+        }
+		
+        Destroy(splinesParent.gameObject);
+		
+        splinesParent = new GameObject().transform;
+        splinesParent.transform.parent = stellationsParent;
+        splinesParent.name = sceneTitle.text;
+        controller = splinesParent.gameObject.AddComponent<StellationController>();
+        pointsParent = new GameObject().transform;
+        pointsParent.name = "points";
+        pointsParent.parent = splinesParent;
+    }
     public StellationController Load(string fileName, bool recycle = true)
     {
         
@@ -1654,7 +1672,7 @@ void DragCamera()
 
                     foreach (Spline s in newSplines)
                     {
-                        controller._splines.Add(s);
+                        AddSpline(s);
                         s.order = controller._splines.IndexOf(s);
                         AddSelectedSpline(s, true);
                     }
@@ -1750,7 +1768,7 @@ void DragCamera()
                                 
                                 if (spp.s.controller == null)
                                 {
-                                    controller._splines.Add(spp.s);
+                                     AddSpline(spp.s);
                                     spp.s.order = controller._splines.IndexOf(spp.s);
                                     spp.s.controller = controller;
                                 }
@@ -1798,7 +1816,7 @@ void DragCamera()
 
                                 if (spp.s.controller == null)
                                 {
-                                    controller._splines.Add(spp.s);
+                                    AddSpline(spp.s);
                                     spp.s.order = controller._splines.IndexOf(spp.s);
                                     spp.s.controller = controller;
                                 }
