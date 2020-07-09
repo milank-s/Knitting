@@ -110,6 +110,7 @@ public class MapEditor : MonoBehaviour
     public Text scoreText;
     public Toggle fixedCamera;
     public Text splineOrder;
+    public Text splineTypeReadout;
     public InputField sceneTitle;
     public Dropdown levelList;
     public Dropdown unlockTypes;
@@ -182,8 +183,10 @@ public class MapEditor : MonoBehaviour
                     splineindex = controller._splines.Count - 1;
                 }
 
-                splineOrder.text = controller._splines[splineindex].order.ToString();
+                splineOrder.text = "spline " + controller._splines[splineindex].order;
+                splineTypeReadout.text = controller._splines[splineindex].type.ToString();
                 splineOrder.transform.position = cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.1f);
+                splineTypeReadout.transform.position =  cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.05f);
                 return controller._splines[splineindex];
             }
             else
@@ -317,7 +320,6 @@ public class MapEditor : MonoBehaviour
         
         ChangeWinCondition((int)controller.unlockMethod);
         
-        controller.name = controller.name;
         sceneTitle.text = controller.name;
         
         StopTyping(controller.name);        
@@ -760,11 +762,24 @@ public class MapEditor : MonoBehaviour
                 }
                 
                 
+                if (Input.GetKeyDown(KeyCode.Delete))
+                {
+                    File.Delete (Application.streamingAssetsPath + "/Levels/"+controller.name + ".json");
+                    #if UNITY_EDITOR
+                        AssetDatabase.Refresh();
+                    #endif
+                    
+                    Reset();
+                    levelList.options.RemoveAll(d => d.text.Contains(controller.name));
+                    controller.name = "Untitled";
+                    sceneTitle.text = controller.name;
+                }
+                
                 if (turtleUI.activeSelf)
                 {
                     splineTurtle.UpdateTurtle();
                 }
-                
+                   
             }
         
         
@@ -777,7 +792,6 @@ public class MapEditor : MonoBehaviour
          //play effects
          SynthController.instance.keys[0].NoteOn((int)t * 4 + 60, 0.5f, 0.1f);
          Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, activePoint.transform);
-         
      }
 
      void PlaySavedEffect()
@@ -851,6 +865,10 @@ public class MapEditor : MonoBehaviour
             }else if (Input.GetKeyDown(KeyCode.Alpha5))
             {
                  SetPointType(PointTypes.ghost);
+            }
+              else if (Input.GetKeyDown(KeyCode.Alpha8))
+            {
+                SetPointType(PointTypes.reset);
             }
 
             if (Input.GetKeyDown(KeyCode.Alpha9))

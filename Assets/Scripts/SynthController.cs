@@ -187,7 +187,7 @@ public class SynthController : MonoBehaviour
     
     void Update()
     {
-	    TestNotes();
+	    //TestNotes();
 	    
         float accuracy = Mathf.Clamp01(Services.PlayerBehaviour.accuracy);
 	

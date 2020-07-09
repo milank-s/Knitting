@@ -21,7 +21,7 @@ using SimpleJSON;
 //###################################################
 //###################################################
 
-public enum PointTypes{normal, fly, ghost, stop, connect, start, end}
+public enum PointTypes{normal, fly, ghost, stop, connect, reset, start, end}
 public class Point : MonoBehaviour
 {
 
@@ -258,6 +258,7 @@ public class Point : MonoBehaviour
 		
 		SetPointType(pointType);
 
+		
 		if (MapEditor.editing)
 		{
 			color = Color.white;
@@ -279,7 +280,7 @@ public class Point : MonoBehaviour
 		SR.enabled = true;
 		pointType = t;
 		SR.sprite = SR.sprite = Services.Prefabs.pointSprites[(int)t];
-	
+
 		switch(t){
 
 			case PointTypes.fly:
@@ -492,6 +493,11 @@ public class Point : MonoBehaviour
 					//Services.Sounds.PlayPointAttack(Services.PlayerBehaviour.clampedSpeed/10);
 					break;
 				
+				case PointTypes.reset:
+
+					Services.main.WarpPlayerToNewPoint(Services.StartPoint);
+					break;
+				
 				case PointTypes.start:
 					if (StellationManager.instance != null &&
 					    StellationManager.instance.curController != controller)
@@ -526,7 +532,7 @@ public class Point : MonoBehaviour
 					else
 					{
 						//Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
-						//Services.main.WarpPlayerToNewPoint(Services.StartPoint);
+						Services.main.WarpPlayerToNewPoint(Services.StartPoint);
 						Services.fx.ShowUnfinished();
 					}
 					
@@ -538,7 +544,6 @@ public class Point : MonoBehaviour
 			Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, transform);
 			
 			controller.TryToUnlock();
-			
 		}
 		
 	}

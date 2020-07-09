@@ -1,6 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using System;
+using UnityEditorInternal;
 using UnityEngine;
 
 public class StellationController : MonoBehaviour {
@@ -198,6 +199,7 @@ public class StellationController : MonoBehaviour {
 			s.order = i;
 			
 			_splines.Add(s);
+			s.SetSplineType(s.type);
 			
 			if (s.type == Spline.SplineType.locked)
 			{
@@ -206,12 +208,12 @@ public class StellationController : MonoBehaviour {
 
 			if (s.order != 0)
 			{
-				s.LockSpline();
+				s.SwitchState(Spline.SplineState.locked);
 			}
 
 			s.controller = this;
 			
-			s.SetSplineType(s.type);
+			
 
 			index++;
 		}
@@ -305,8 +307,6 @@ public class StellationController : MonoBehaviour {
 	public void UnlockSpline(Spline spline)
 	{
 		
-		//trying to unlock next spline in the list. 
-
 		int index = spline.order + 1;
 		
 		foreach (Spline s in _splines)

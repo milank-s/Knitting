@@ -105,7 +105,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	private List<Transform> newPointList;
 
 	[Space(10)] [Header("Point Creation")] 
-	[SerializeField] CrawlerManager crawlerManager;
+	
 	private Spline drawnSpline;
 	private Point drawnPoint;
 	private List<Point> traversedPoints;
@@ -178,7 +178,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		PointManager.ResetPoints ();
 		Reset();
-		crawlerManager.Reset();
+		Services.main.crawlerManager.Reset();
 		cursorDistance = 25;
 		cursor = Services.Cursor;
 		curPoint = Services.StartPoint;
@@ -1704,7 +1704,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						pointsToTraverse.Add(p);
 					}
 					
-					crawlerManager.AddCrawler(pointsToTraverse, calculatedSpeed);
+					Services.main.crawlerManager.AddCrawler(pointsToTraverse, calculatedSpeed);
 					
 					traversedPoints.Clear();
 					

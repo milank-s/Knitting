@@ -33,7 +33,8 @@
 	public GameObject menu;
 	public GameObject settings;
 	private bool settingsOpen;
-		
+	public CrawlerManager crawlerManager;
+	
 	[SerializeField]
 	private float fadeLength = 0.1f;
 	public Gamepad controller
@@ -59,7 +60,8 @@
 		Application.Quit();
 	}
 	public void Reset()
-	{
+	{	
+		crawlerManager.Reset();
 		
 		SceneController.instance.Reset();
 		
@@ -382,12 +384,14 @@
 
 	public void WarpPlayerToNewPoint(Point p)
 	{
-		Services.StartPoint = p;
+		//Services.StartPoint = p;
 		float curSpeed = Services.PlayerBehaviour.curSpeed;
 		float flow = Services.PlayerBehaviour.flow;
-		Services.PlayerBehaviour.Initialize();
-		Services.PlayerBehaviour.flow = flow;
-		Services.PlayerBehaviour.curSpeed = curSpeed;
+//		Services.PlayerBehaviour.Initialize();
+//		Services.PlayerBehaviour.flow = flow;
+//		Services.PlayerBehaviour.curSpeed = curSpeed;
+
+		Services.PlayerBehaviour.curPoint = p;
 	}
 	
 	public void InitializeLevel()
@@ -612,17 +616,19 @@
 //		ShowWord("", false);
 		Word.gameObject.SetActive(false);
 
-		float t = 0;
-		while (t < 3)
-		{
-			t += Time.deltaTime;
-			if (Input.anyKeyDown)
-			{
-				break;
-			}
-			yield return null;
-		}
+//		float t = 0;
+//		while (t < 3)
+//		{
+//			t += Time.deltaTime;
+//			if (Input.anyKeyDown)
+//			{
+//				break;
+//			}
+//			yield return null;
+//		}
 
+		yield return null;
+		
 		Word.gameObject.SetActive(true);
 		SceneController.instance.LoadNextStellation();
 		

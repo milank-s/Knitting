@@ -167,7 +167,6 @@ public class Spline : MonoBehaviour
 
 	public void CheckComplete()
 	{
-		bool complete = false;
 		
 		foreach (Point p in SplinePoints)
 		{
@@ -176,7 +175,6 @@ public class Spline : MonoBehaviour
 				return;
 			}
 		}
-
 		
 		if (controller != null)
 		{
@@ -339,7 +337,7 @@ public class Spline : MonoBehaviour
 
 		if (t == SplineType.locked)
 		{
-			
+			state = SplineState.locked;
 		}
 
 		if (t == SplineType.normal)
@@ -348,6 +346,22 @@ public class Spline : MonoBehaviour
 		}
 
 		type = t;
+	}
+	
+	public void SwitchState(SplineState t)
+	{
+
+		if (t == SplineState.locked)
+		{
+			LockSpline();
+		}
+
+		if (t == SplineState.on)
+		{
+			Unlock();
+		}
+
+		state = t;
 	}
 	
 	public void ResetVectorLine()
