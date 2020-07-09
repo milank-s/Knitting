@@ -212,9 +212,6 @@ public class StellationController : MonoBehaviour {
 			}
 
 			s.controller = this;
-			
-			
-
 			index++;
 		}
 		

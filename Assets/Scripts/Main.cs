@@ -387,11 +387,10 @@
 		//Services.StartPoint = p;
 		float curSpeed = Services.PlayerBehaviour.curSpeed;
 		float flow = Services.PlayerBehaviour.flow;
-//		Services.PlayerBehaviour.Initialize();
-//		Services.PlayerBehaviour.flow = flow;
-//		Services.PlayerBehaviour.curSpeed = curSpeed;
-
-		Services.PlayerBehaviour.curPoint = p;
+		Services.PlayerBehaviour.Initialize();
+		Services.PlayerBehaviour.flow = flow;
+		Services.PlayerBehaviour.curSpeed = curSpeed;
+		
 	}
 	
 	public void InitializeLevel()
