@@ -32,6 +32,7 @@ public class SplineTurtle : MonoBehaviour {
 	[SerializeField] private InputField zOffsetUI;
 
 	[SerializeField] private ReadToggleValue zigzagUI;
+	[SerializeField] private ReadToggleValue randomlyZagUI;
 	[SerializeField] private ReadToggleValue closeToggle;
 	[SerializeField] private ReadToggleValue connectUI;
 	[SerializeField] private ReadToggleValue ghostToggle;
@@ -83,6 +84,7 @@ public class SplineTurtle : MonoBehaviour {
 	
 	private bool running;
 	private bool redraw;
+	private bool randomlyZag;
 	
 	
 	public Vector3 offsetDirection = Vector3.zero;
@@ -184,6 +186,7 @@ public class SplineTurtle : MonoBehaviour {
 	{
 		closed = closeToggle.val;
 		alternateAngle = zigzagUI.val;
+		randomlyZag = randomlyZagUI.val;
 		Raycast = connectUI.val;
 		maxPoints = (int)numPointsUI.val;
 		minDist = minDistUI.val;
@@ -356,6 +359,15 @@ public class SplineTurtle : MonoBehaviour {
 		//if (LockAngle) {
 			if (alternateAngle) {
 				if (turnleft) {
+					rotation = -ang;
+					turnleft = !turnleft;
+				} else {
+					rotation = ang;
+					turnleft = !turnleft;
+				}
+			}else if (randomlyZag)
+			{
+				if (Random.Range(0, 100) < 50) {
 					rotation = -ang;
 					turnleft = !turnleft;
 				} else {
