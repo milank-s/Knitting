@@ -495,7 +495,11 @@ public class Point : MonoBehaviour
 				
 				case PointTypes.reset:
 
-					Services.main.WarpPlayerToNewPoint(Services.StartPoint);
+					if (Services.StartPoint != this)
+					{
+						Services.main.WarpPlayerToNewPoint(Services.StartPoint);
+					}
+
 					break;
 				
 				case PointTypes.start:

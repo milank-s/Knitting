@@ -443,6 +443,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (CanLeavePoint())
 		{
+			
+			cursorSprite.sprite = traverseSprite;
 
 			if (curPoint.pointType == PointTypes.ghost)
 			{
@@ -458,15 +460,14 @@ public class PlayerBehaviour: MonoBehaviour {
 	
 			}
 
-
 			if (!canTraverse)
 			{
-				cursorSprite.sprite = traverseSprite;
 				l.positionCount = 0;
 				
 			}
 			
 		} 
+		
 		if(!canTraverse){
 
 			if (CanCreatePoint())
@@ -510,8 +511,6 @@ public class PlayerBehaviour: MonoBehaviour {
 //			}
 				else{
 					l.positionCount = 0;
-					
-		 			cursorSprite.sprite = brakeSprite;
 				 }
 			}
 
@@ -657,7 +656,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		l.SetPosition (1, transform.position);
 		
 		playerSprite.transform.localScale = Vector3.Lerp(playerSprite.transform.localScale, new Vector3(Mathf.Clamp(1 - (boostTimer), 0.1f, 0.25f), Mathf.Clamp(boostTimer, 0.25f, 0.75f), 0.25f), Time.deltaTime * 10);
-		
 		
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
 //		if (connectTime < 0) {
@@ -1437,8 +1435,12 @@ public class PlayerBehaviour: MonoBehaviour {
 //					splineDest.Selected = curPoint;
 				curSpline = splineDest;
 				
+				
 				return true;
 			}
+			
+			
+			cursorSprite.sprite = brakeSprite;
 				
 			return false;
 			

@@ -22,16 +22,18 @@ public class ReadSliderValue : MonoBehaviour
     
     public void ChangeInputField(String s)
     {
-        
-        float.TryParse(s, out val);
-        //val = Mathf.Clamp(val, slider.minValue, slider.maxValue);
-        
-        slider.SetValueWithoutNotify(val);
-        input.SetTextWithoutNotify(val.ToString());
 
-        if (updateTurtle)
+        if (float.TryParse(s, out val))
         {
-            turtle.RedrawTurtle();
+            //val = Mathf.Clamp(val, slider.minValue, slider.maxValue);
+
+            slider.SetValueWithoutNotify(val);
+            input.SetTextWithoutNotify(val.ToString());
+
+            if (updateTurtle)
+            {
+                turtle.RedrawTurtle();
+            }
         }
     }
     
