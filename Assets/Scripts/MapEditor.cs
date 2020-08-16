@@ -276,7 +276,7 @@ public class MapEditor : MonoBehaviour
         
         foreach (FileInfo file in allFiles)
         {
-            if (file.Name.Contains("meta"))
+            if (!file.Name.Contains("json") || file.Name.Contains("meta") )
             {
                 
             }
@@ -290,7 +290,6 @@ public class MapEditor : MonoBehaviour
         unlockTypes.options.Add(new Dropdown.OptionData("Laps"));
         unlockTypes.options.Add(new Dropdown.OptionData("Speed"));
         unlockTypes.options.Add(new Dropdown.OptionData("Time"));
-        
         
         _curTool = Tool.select;
         _curTool = Tool.draw;
