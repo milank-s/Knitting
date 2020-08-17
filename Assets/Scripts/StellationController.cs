@@ -343,11 +343,11 @@ public class StellationController : MonoBehaviour {
 				{	
 					if (unlockMethod == UnlockType.speed)
 					{
-						Services.fx.readout.text = (Services.PlayerBehaviour.flow - speed).ToString("F2");
+						//Services.fx.readout.text = (Services.PlayerBehaviour.flow - speed).ToString("F2");
 					
 					}else if (unlockMethod == UnlockType.time)
 					{
-						Services.fx.readout.text = (time - timer).ToString("F2");
+						//Services.fx.readout.text = (time - timer).ToString("F2");
 						timer += Time.deltaTime;
 
 						if (time - timer <= 0)
