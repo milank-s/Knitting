@@ -57,7 +57,10 @@ public class Crawler : MonoBehaviour
         }
         
         curPoint.OnPointEnter();
-        SynthController.instance.PlayNote(0);
+        if (curPoint.pointType != PointTypes.ghost)
+        {
+            SynthController.instance.PlayNote(0);
+        }
     }
 
     public void Stop()

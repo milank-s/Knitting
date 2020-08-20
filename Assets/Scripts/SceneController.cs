@@ -178,6 +178,7 @@ public class SceneController : MonoBehaviour
     
     public void LoadNextStellation(float delay = 0)
     {
+        
         if (curSetIndex == -1)
         {
             return;
@@ -210,6 +211,8 @@ public class SceneController : MonoBehaviour
 
     public void UnloadScene(StellationController s)
     {
+        
+        Services.main.crawlerManager.Reset();
         activeScenes.Remove(s);
         Destroy(s.gameObject);
     }
