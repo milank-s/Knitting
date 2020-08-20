@@ -250,6 +250,7 @@ public class Spline : MonoBehaviour
 		distance = 0;
 		
 			for(int i = 0; i < SplinePoints.Count; i++) {
+				
 				SplinePoints[i].AddSpline(this);
 				if(i != 0){
 					SplinePoints[i].AddPoint(SplinePoints[i-1]);

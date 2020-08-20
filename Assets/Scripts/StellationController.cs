@@ -258,6 +258,11 @@ public class StellationController : MonoBehaviour {
 		{
 			SetCameraBounds();
 		}
+
+		if (unlockMethod == UnlockType.speed)
+		{
+			Services.main.crawlerManager.AddCrawler(splines[0].SplinePoints, speed);
+		}
 		
 		Services.main.state = Main.GameState.playing;
 }
@@ -467,8 +472,8 @@ public class StellationController : MonoBehaviour {
 			float height = Mathf.Abs(upperRight.y - lowerLeft.y);
 			float fov = CameraDolly.FOVForHeightAndDistance(height, -CameraFollow.instance.offset.z) + 10f;
 		
-			CameraFollow.instance.desiredFOV = fov;
-			CameraFollow.instance.cam.fieldOfView = fov;
+			//CameraFollow.instance.desiredFOV = fov;
+			//CameraFollow.instance.cam.fieldOfView = fov;
 			CameraFollow.instance.WarpToPosition(center);
 			//get center position and fov
 	}

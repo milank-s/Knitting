@@ -96,6 +96,7 @@
 
 		
 		StellationController c = editor.Load(m);
+		c.Initialize();
 		
 		if (!MapEditor.editing)
 		{
@@ -395,6 +396,7 @@
 	
 	public void InitializeLevel()
 	{
+		
 		if (Point.Points.Count > 0)
 		{
 			for (int i = Point.Points.Count - 1; i >= 0; i--)
@@ -478,6 +480,7 @@
 					GameObject newController = new GameObject();
 					StellationController c = newController.AddComponent<StellationController>();
 					editor.controller = c;
+					newController.name = "Untitled";
 					newController.transform.parent = splineParent;
 				}
 				
@@ -485,7 +488,6 @@
 				{
 					CloseMenu();
 					
-					 state =  GameState.playing;
 				}
 				foreach (Point p in Point.Points)	
 				{
@@ -500,7 +502,6 @@
 				Vector3 cameraPos = CameraFollow.instance.cam.transform.position;
 				cameraPos.z = 0;
 				CameraFollow.instance.WarpToPosition(cameraPos);
-				
 				
 				SynthController.instance.StopNotes();
 				

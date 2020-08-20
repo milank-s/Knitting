@@ -536,8 +536,8 @@ public class Point : MonoBehaviour
 					else
 					{
 						//Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
-						Services.main.WarpPlayerToNewPoint(Services.StartPoint);
-						Services.fx.ShowUnfinished();
+						//Services.main.WarpPlayerToNewPoint(Services.StartPoint);
+						//Services.fx.ShowUnfinished();
 					}
 					
 					break;

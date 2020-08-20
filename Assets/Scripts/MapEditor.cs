@@ -333,11 +333,8 @@ public class MapEditor : MonoBehaviour
     
     public  void TogglePlayMode()
     {
-        
-        
         controller.Initialize();
         controller.isOn = true;
-        
         
         if (pointSelected)
         {
@@ -350,8 +347,7 @@ public class MapEditor : MonoBehaviour
         }
 
         Cursor.lockState = CursorLockMode.Locked;
-        
-      canvas.gameObject.SetActive(!editing);
+        canvas.gameObject.SetActive(!editing);
       
     }
 
@@ -1342,8 +1338,7 @@ public class MapEditor : MonoBehaviour
             c.desiredFOV = 40;
         }
         
-        c.Initialize();
-        
+        //c.Initialize();
         
         controller = c;
         return c;
@@ -1970,7 +1965,6 @@ void DragCamera()
     }
     void ClearSelection()
     {
-
            for (int i = selectedPoints.Count - 1; i >= 0; i--)
             {
                 RemoveSelectedPoint(selectedPoints[i]);
@@ -2005,7 +1999,6 @@ void DragCamera()
 
     void ShuffleSplineOrder(int i)
     {
-        
         
         if (controller._splines.Count > 1)
         {

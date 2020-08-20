@@ -524,7 +524,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		else{
 			if (curPoint.pointType == PointTypes.end && !curPoint.controller.isComplete)
 			{
-				SwitchState(PlayerState.Animating);
+				StayOnPoint();
+//				SwitchState(PlayerState.Animating);
 			}
 			else
 			{
@@ -1705,7 +1706,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						pointsToTraverse.Add(p);
 					}
 					
-					Services.main.crawlerManager.AddCrawler(pointsToTraverse, calculatedSpeed);
+					//Services.main.crawlerManager.AddCrawler(pointsToTraverse, calculatedSpeed);
 					
 					traversedPoints.Clear();
 					

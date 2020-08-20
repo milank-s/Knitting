@@ -37,7 +37,7 @@ public class CrawlerManager : MonoBehaviour
 
         if (!available)
         {
-            toUse = crawlers[index % crawlers.Count];
+            toUse = crawlers[Mathf.Clamp((index % crawlers.Count) + 1, 0, crawlers.Count-1)];
             index++;
         }
         
