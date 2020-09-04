@@ -1,7 +1,6 @@
 ﻿
 using System.Collections.Generic;
 using System;
-using UnityEditorInternal;
 using UnityEngine;
 
 public class StellationController : MonoBehaviour {
@@ -88,8 +87,10 @@ public class StellationController : MonoBehaviour {
 		
 		isOn = false;
 						
+		//We are in a scene that supports multiple controllers
 		if (StellationManager.instance != null)
 		{
+			//enable next controller. I dont think I'm using this anymore
 			if (hasUnlock)
 			{
 				StellationManager.instance.EnableStellation(unlock);
@@ -97,6 +98,11 @@ public class StellationController : MonoBehaviour {
 				Services.mainCam.fieldOfView = 80;
 				CameraFollow.instance.desiredFOV = 80;
 				CameraFollow.instance.fixedCamera = false;
+			}
+			else
+			{
+			//unload
+				SceneController.instance.LoadNextStellation();
 			}
 		}
 		else

@@ -28,7 +28,7 @@ public class StellationManager : MonoBehaviour
 		curController.isOn = true;
 		
 		Services.main.InitializeLevel();
-
+		
 	}
 
 	public void EnterStellation(StellationController c)
@@ -42,9 +42,7 @@ public class StellationManager : MonoBehaviour
 	
 	public void EnableStellations(bool on)
 	{
-
-		StartCoroutine(ShowStartPoints(on));
-		
+		StartCoroutine(ShowStartPoints(on));	
 	}
 
 	public void EnableStellation(StellationController s)

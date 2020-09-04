@@ -8,7 +8,7 @@ public class LevelSet : ScriptableObject
 {
     public string title = "Stellation";
     public string description = "Good going";
-    public string scene = "sceneName";
+    public bool isScene;
     public Sprite image;
     
     public List<string> levels;

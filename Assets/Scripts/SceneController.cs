@@ -16,7 +16,7 @@ public class SceneController : MonoBehaviour
     public int curSetIndex;
     public int unlockedIndex;
     
-    private LevelSet curLevelSet
+    public LevelSet curLevelSet
     {
         get { return levelSets[curSetIndex]; }
     }
@@ -68,8 +68,6 @@ public class SceneController : MonoBehaviour
         }
     }
 
-
-
     public void Reset()
     {
         foreach (StellationController s in Services.main.splineParent.GetComponentsInChildren<StellationController>())
@@ -80,6 +78,7 @@ public class SceneController : MonoBehaviour
         instance.activeScenes.Clear();
         instance.curLevel = 0;   
     }
+    
     public void OpenEditor()
     {
 
@@ -131,6 +130,7 @@ public class SceneController : MonoBehaviour
         
         SelectLevelSet();
     }
+    
     public void SelectLevelSet()
     {
         Services.main.ShowImage(curLevelSet.image);
@@ -164,10 +164,11 @@ public class SceneController : MonoBehaviour
             Services.main.Reset();
             Services.main.CloseMenu();
 
-            //play level intro. 
-            if (curLevelSet.scene != "")
+            //its a scene 
+            if (curLevelSet.isScene)
             {
-                Services.main.LoadLevel(curLevelSet.scene);
+                Services.main.LoadLevel(curLevelSet.levels[0]);
+                curLevel++;
             }
             else
             {
@@ -187,31 +188,37 @@ public class SceneController : MonoBehaviour
         if(curLevel < curLevelSet.levels.Count){
             
             //MapEditor.Load(levels[curLevel]);
-
-            if (activeScenes.Count > 0)
-            {
-                UnloadScene(activeScenes[0]);
-            }
             
-            Services.main.LoadFile(curLevelSet.levels[curLevel], delay);
-           
+            if (!curLevelSet.isScene)
+            {
+                if (activeScenes.Count > 0)
+                {
+                    UnloadScene(activeScenes[0]);
+                }
 
+                Services.main.LoadFile(curLevelSet.levels[curLevel], delay);
+            }
+            else
+            {
+                Services.main.LoadLevel(curLevelSet.levels[curLevel]);
+            }
+
+            curLevel++;
+            
             //Services.main.InitializeLevel();            
             //Services.PlayerBehaviour.Reset();
-            curLevel++;
+            
         }
         else
         {
-            //Services.main.LoadLevelDelayed("", 2);
+                //reopen menu, empty scene;
+           Services.main.QuitLevel(true);
             
-            //reopen menu, empty scene;
-            Services.main.QuitLevel(true);
         }
     }
 
     public void UnloadScene(StellationController s)
     {
-        
         Services.main.crawlerManager.Reset();
         activeScenes.Remove(s);
         Destroy(s.gameObject);

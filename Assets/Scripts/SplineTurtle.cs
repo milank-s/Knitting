@@ -1,9 +1,5 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.Remoting.Messaging;
 using UnityEngine;
-using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine.UI;
 
 public class SplineTurtle : MonoBehaviour {

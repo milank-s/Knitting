@@ -140,6 +140,10 @@
 
 	public void QuitLevel(bool goNext = false)
 	{
+		if (SceneController.instance.curLevelSet.isScene)
+		{
+			SceneManager.UnloadSceneAsync(curLevel);
+		}
 		
 		Pause(false);
 		Reset();
@@ -634,7 +638,6 @@
 		
 		description.text = "";
 
-		
 //		ShowImage(null, false);
 
 		state = GameState.playing;

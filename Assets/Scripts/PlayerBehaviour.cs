@@ -2,8 +2,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditorInternal;
-using UnityEngine.InputSystem.LowLevel;
 using Vectrosity;
 
 public enum PlayerState{Traversing, Switching, Flying, Animating};
