@@ -34,6 +34,7 @@
 	public GameObject settings;
 	private bool settingsOpen;
 	public CrawlerManager crawlerManager;
+	public StellationController defaultController;
 	
 	[SerializeField]
 	private float fadeLength = 0.1f;
@@ -219,10 +220,11 @@
 
 	void Start()
 	{
+		
+		state = GameState.menu;
 		MapEditor.editing = true;
 		ToggleEditMode();
 		
-		state = GameState.menu;
 
 		if (SceneManager.sceneCount > 1)
 		{
