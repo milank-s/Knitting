@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using AudioHelm;
 using UnityEngine;
 
@@ -18,6 +19,11 @@ public class StellationManager : MonoBehaviour
 	}
 	public void Start()
 	{
+		if (controllers.Count < 1)
+		{
+			controllers = GetComponentsInChildren<StellationController>().ToList();
+		}
+		
 		for(int i = controllers.Count -1; i >= 0; i--){
 			controllers[i].Initialize();
 			controllers[i].Lock(true);

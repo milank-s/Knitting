@@ -319,6 +319,7 @@ public class MapEditor : MonoBehaviour
         sceneTitle.text = controller.name;
         
         StopTyping(controller.name);        
+        controller.GetComponents();
     }
 
     public void ToggleTurtleMode()
@@ -1294,7 +1295,13 @@ public class MapEditor : MonoBehaviour
             {
                 for (int k = 2; k < numPoints; k++)
                 {
-                    newSpline.SplinePoints.Add(newPoints[json["spline" + i]["points"]["p" + k]]);
+
+                    int index = json["spline" + i]["points"]["p" + k].AsInt;
+                    Point pointToAdd = newPoints[index];
+                    if (!newSpline.SplinePoints.Contains(pointToAdd))
+                    {
+                        newSpline.SplinePoints.Add(newPoints[index]);
+                    }
                 }
             }
 
@@ -1530,12 +1537,15 @@ void DragCamera()
                 RemoveSelectedSpline(selectedSpline);
             }
 
+            if (s == null) return;
+            
             if (!selectedSplines.Contains(s))
             {
                 splineindex = controller._splines.IndexOf(s);
+                selectedSplines.Add(selectedSpline);
+                
                 //draw locked stuff diff ? if(selectedSpline.)
                 selectedSpline.SwitchMaterial(3);
-                selectedSplines.Add(selectedSpline);
                 splineSelectedTip.SetActive(true);
             }
 

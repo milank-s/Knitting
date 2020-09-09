@@ -153,13 +153,9 @@ public class StellationController : MonoBehaviour {
 			}
 		}
 	}
-	
-	public void Initialize()
-	{
-		isComplete = false;
 
-		Services.PlayerBehaviour.flow = startSpeed;
-		
+	public void GetComponents()
+	{
 		_points.Clear();
 		_splines.Clear();
 		_splinesToUnlock.Clear();
@@ -190,12 +186,12 @@ public class StellationController : MonoBehaviour {
 			}
 		}
 
-			Spline[] splines = GetComponentsInChildren<Spline>();
-		     Array.Sort(splines, delegate(Spline x, Spline y) { return x.order.CompareTo(y.order); });
+		Spline[] splines = GetComponentsInChildren<Spline>();
+		Array.Sort(splines, delegate(Spline x, Spline y) { return x.order.CompareTo(y.order); });
 
-		     int index = 0;
+		int index = 0;
 
-		     if (splines.Length == 0) return;
+		if (splines.Length == 0) return;
 		     
 		     
 		for (int i = 0; i < splines.Length; i++)
@@ -222,6 +218,8 @@ public class StellationController : MonoBehaviour {
 		}
 		
 
+		_pointshit = new List<Point>();
+		
 		if (_points.Count == 0)
 		{
 			return;
@@ -244,7 +242,6 @@ public class StellationController : MonoBehaviour {
 			title.color = new Color(0,0,0,0);
 		}
 
-		_pointshit = new List<Point>();
 
 		//ffs
 		
@@ -264,10 +261,19 @@ public class StellationController : MonoBehaviour {
 		{
 			SetCameraBounds();
 		}
+		
+	}
+	public void Initialize()
+	{
+		GetComponents();
+		isComplete = false;
+
+		Services.PlayerBehaviour.flow = startSpeed;
+		
 
 		if (unlockMethod == UnlockType.speed)
 		{
-			Services.main.crawlerManager.AddCrawler(splines[0].SplinePoints, speed);
+			Services.main.crawlerManager.AddCrawler(_splines[0].SplinePoints, speed);
 		}
 		
 		Services.main.state = Main.GameState.playing;
