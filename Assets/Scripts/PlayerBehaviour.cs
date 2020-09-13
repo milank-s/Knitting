@@ -1852,8 +1852,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				directionIndicator.enabled = false;
 				
 				state = PlayerState.Switching;
-				
-				
 
 				timeOnPoint = 0;
 				flyingSpeed = curSpeed;
@@ -1893,10 +1891,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				pointDest.proximity = 1;
 				pointDest.OnPointEnter();
 
-				if (curSpline != null)
-				{
-					curSpline.CheckComplete();
-				}
 				
 				//checkpoint shit
 				if (curPoint.pointType == PointTypes.stop)
@@ -1909,6 +1903,11 @@ public class PlayerBehaviour: MonoBehaviour {
 				if (curPoint.pointType == PointTypes.connect)
 				{
 					cursorDistance = 2f;
+				}
+				
+				if (curSpline != null)
+				{
+					curSpline.CheckComplete();
 				}
 				
 				PlayerOnPoint();

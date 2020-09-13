@@ -427,6 +427,7 @@ public class Point : MonoBehaviour
 
 	public void SwitchState(PointState s)
 	{
+		state = s;
 		
 		if (s != state)
 		{
@@ -457,7 +458,7 @@ public class Point : MonoBehaviour
 			}
 		}
 		
-		state = s;
+		
 	}
 	
 	public void OnPointEnter()
@@ -486,7 +487,6 @@ public class Point : MonoBehaviour
 		if(pointType != PointTypes.ghost)
 		{
 
-			
 			switch (pointType)
 			{
 				case PointTypes.normal:

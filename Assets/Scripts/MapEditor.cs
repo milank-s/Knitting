@@ -82,6 +82,7 @@ public class MapEditor : MonoBehaviour
     public GameObject selectedPointIndicator;
     public GameObject pointOptions;
     private List<Image> selectors;
+    [SerializeField] private Text[] pointOrder;
     public Transform container;
     private bool raycastNull;
     private Camera cam;
@@ -365,14 +366,23 @@ public class MapEditor : MonoBehaviour
     {
         if (splineindex >= 0 && splineindex < controller._splines.Count)
         {
-
-
             if (Input.GetKeyDown(KeyCode.Alpha0))
             {
-
                 selectedSpline.ChangeMaterial(selectedSpline.lineMaterial + 1);
             }
 
+            for (int i = 0; i < pointOrder.Length; i++)
+            {
+                if (i < selectedSpline.SplinePoints.Count)
+                {
+                    pointOrder[i].text = i.ToString();
+                    pointOrder[i].transform.position = cam.WorldToScreenPoint(selectedSpline.SplinePoints[i].Pos + Vector3.left * 0.1f);
+                }
+                else
+                {
+                    pointOrder[i].text = "";
+                }
+            }
 
             if (pointSelected)
             {
@@ -1105,7 +1115,6 @@ public class MapEditor : MonoBehaviour
 
         WriteJSONtoFile(Application.streamingAssetsPath + "/Levels", controller.name + ".json", level);
 
-        Debug.Log("saved");
         
         bool contains = false;
         foreach (Dropdown.OptionData d in levelList.options)
