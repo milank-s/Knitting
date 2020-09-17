@@ -272,8 +272,6 @@ public class Point : MonoBehaviour
 		{
 			textMesh.color = Color.black;
 		}
-
-		Services.fx.DrawLine();
 	}
 
 	public void SetPointType(PointTypes t)
