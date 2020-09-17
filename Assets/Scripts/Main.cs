@@ -77,27 +77,37 @@
 	
 	public void ReloadScene()
 	{
-		LoadLevelDelayed(curLevel, 0);
+		LoadSceneDelayed(curLevel, 0);
 	}
 
 	public void LoadFile(string m, float delay = 0)
 	{
-		Time.timeScale = 1;
+		
 		StartCoroutine(LoadFileTransition(m, delay));
 	}
 
 	public IEnumerator LoadFileTransition(string m, float delay = 0)
 	{
-		yield return new WaitForSeconds(delay);
+		Time.timeScale = 0;
+		
+		yield return new WaitForSecondsRealtime(0.5f);
+
+		Time.timeScale = 1;
 
 		if (delay > 0)
 		{
 			yield return StartCoroutine(FadeOut());
 		}
 
+		if (SceneController.instance.activeScenes.Count > 0)
+		{
+			SceneController.instance.UnloadScene(SceneController.instance.activeScenes[0]);
+		}
+		
 		
 		StellationController c = editor.Load(m);
 		c.Initialize();
+		
 		
 		if (!MapEditor.editing)
 		{
@@ -108,30 +118,40 @@
 
 		InitializeLevel();
 
+		
+		
 		if (delay > 0)
 		{
 			StartCoroutine(FadeIn());
 		}
+
+		
 	}
 
-	public void LoadLevelDelayed(string m, float f)
+	public void LoadSceneDelayed(string m, float f)
 	{
-		StartCoroutine(LoadTransition(m,f));
+		StartCoroutine(LoadSceneTransition(m,f));
 	}
 	
-	IEnumerator LoadTransition(string i, float delay = 0)
+	IEnumerator LoadSceneTransition(string i, float delay = 0)
 	{
-		Time.timeScale = 1;
+		Time.timeScale = 0;
 
+		
+		yield return new WaitForSecondsRealtime(0.5f);
+		
+		Time.timeScale = 1;
+		
 		if (delay > 0)
 		{
 			yield return StartCoroutine(FadeOut());
 		}
 
 
+		
 		AudioManager.instance.MuteSynths(true);
 		
-		LoadLevel(i);
+		LoadScene(i);
 
 		if (delay > 0)
 		{
@@ -158,7 +178,7 @@
 		}
 	}
 	
-	public void LoadLevel(string i)
+	public void LoadScene(string i)
 	{
 		
 		if (curLevel != "")
@@ -457,13 +477,15 @@
 			Services.StartPoint = Point.Points[0];
 		}
 		
+		
+		Services.main.fx.Reset();
+		
 		if (!MapEditor.editing)
 		{
 			Services.Player.SetActive(true);
 			Services.PlayerBehaviour.Initialize();
 		}
 		
-		Services.main.fx.Reset();
 	}
 	
 	public void ToggleEditMode()
@@ -532,11 +554,11 @@
 	
 	public IEnumerator FadeIn(){
 		float t = 0;
-		yield return new WaitForSeconds(0.01f);
+		yield return new WaitForSecondsRealtime(0.01f);
 		
 		while (t < fadeLength){
 			PauseScreen.color = Color.Lerp(Color.black, Color.clear, Easing.QuadEaseIn(t/fadeLength));
-			t += Time.deltaTime;
+			t += Time.unscaledDeltaTime;
 			yield return null;
 		}
 		
@@ -654,7 +676,7 @@
 		while (t < fadeLength)
 		{
 			PauseScreen.color = Color.Lerp(Color.clear, Color.black, Easing.QuadEaseIn(t/fadeLength));
-			t += Time.deltaTime;
+			t += Time.unscaledDeltaTime;
 			yield return null;
 		}
 

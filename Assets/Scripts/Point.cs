@@ -273,6 +273,7 @@ public class Point : MonoBehaviour
 			textMesh.color = Color.black;
 		}
 
+		Services.fx.DrawLine();
 	}
 
 	public void SetPointType(PointTypes t)
@@ -475,7 +476,7 @@ public class Point : MonoBehaviour
 			}
 		}
 
-		Services.fx.DrawLine();
+		
 		
 //		stiffness = Mathf.Clamp(stiffness -100, 100, 10000);
 //		damping = Mathf.Clamp(damping - 100, 100, 10000);

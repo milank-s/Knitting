@@ -189,6 +189,8 @@ public class PlayerBehaviour: MonoBehaviour {
         flyingTrail.emitting = false;
         t.emitting = true;
 
+        Services.fx.DrawLine();
+        
 //		Material newMat;
 //		newMat = Services.Prefabs.lines[3];
 //		Texture tex = newMat.mainTexture;

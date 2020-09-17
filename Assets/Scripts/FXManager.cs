@@ -18,6 +18,7 @@ public class FXManager : MonoBehaviour
     private int lineIndex;
     private List<Vector3> linePositions;
     private VectorLine line;
+    public bool drawGraffiti;
     [SerializeField] private GameObject fxPrefab;
   private int index;
  
@@ -74,6 +75,7 @@ public class FXManager : MonoBehaviour
   }
   public void Reset()
   {
+      
       flyingParticleMesh.mesh = new Mesh();
       flyingParticleTrailMesh.mesh = new Mesh();
       flyingTrailMesh.mesh = new Mesh();
@@ -98,7 +100,7 @@ public class FXManager : MonoBehaviour
       line.color = new Color(1,1,1,0.25f);
       line.smoothWidth = true;
       line.smoothColor = true;
-      
+      drawGraffiti = false;
   }
   public void BakeTrail(TrailRenderer t, MeshFilter f)
   {
@@ -244,10 +246,8 @@ public class FXManager : MonoBehaviour
   {
       float t = 0.1f;
 
-      
-      
-      while (t > 0)
-      {
+     // while (t > 0)
+     // {
           lineIndex ++;
           Vector3[] positions = new Vector3[playerTrail.positionCount];
           playerTrail.GetPositions(positions);
@@ -258,10 +258,10 @@ public class FXManager : MonoBehaviour
           {
               for (int i = 0; i < 25; i++)
               {
-                  if (Random.Range(0, 100) < 10)
+                  if ( i > 20  || Random.Range(0, 100) < 50)
                   {
                       pos.Add(positions[Mathf.Clamp(playerTrail.positionCount - i, 0, playerTrail.positionCount - 1)] +
-                              (Vector3) Random.insideUnitCircle / 10f);
+                              (Vector3) Random.insideUnitCircle * (i/25f)/25f);
                   }
               }
 
@@ -271,19 +271,29 @@ public class FXManager : MonoBehaviour
           }
           
 
-          t -= Time.deltaTime;
+          //t -= Time.deltaTime;
 
-          yield return null;
+          yield return new WaitForSecondsRealtime(0.05f);
 
-      }
-      
-      line.points3 = new List<Vector3>();
-      line.Draw3D();
-      
+          if (drawGraffiti)
+          {
+              StartCoroutine(DrawGraffiti());
+          }
+          else
+          {
+              line.points3 = new List<Vector3>();
+              line.Draw3D();
+          }
+
+          // }
+
+          
+
   }
 
   public void DrawLine()
   {
+      drawGraffiti = true;
       StartCoroutine(DrawGraffiti());
   }
  

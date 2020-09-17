@@ -167,7 +167,7 @@ public class SceneController : MonoBehaviour
             //its a scene 
             if (curLevelSet.isScene)
             {
-                Services.main.LoadLevel(curLevelSet.levels[0]);
+                Services.main.LoadScene(curLevelSet.levels[0]);
                 curLevel++;
             }
             else
@@ -185,22 +185,22 @@ public class SceneController : MonoBehaviour
             return;
         }
         
-        if(curLevel < curLevelSet.levels.Count){
+        if(curLevel < curLevelSet.levels.Count){    
             
             //MapEditor.Load(levels[curLevel]);
             
             if (!curLevelSet.isScene)
             {
-                if (activeScenes.Count > 0)
-                {
-                    UnloadScene(activeScenes[0]);
-                }
-
+               
+//                if (SceneController.instance.activeScenes.Count > 0)
+//                {
+//                    SceneController.instance.UnloadScene(SceneController.instance.activeScenes[0]);
+//                }
                 Services.main.LoadFile(curLevelSet.levels[curLevel], delay);
             }
             else
             {
-                Services.main.LoadLevel(curLevelSet.levels[curLevel]);
+                Services.main.LoadScene(curLevelSet.levels[curLevel]);
             }
 
             curLevel++;
