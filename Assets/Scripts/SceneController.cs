@@ -70,11 +70,15 @@ public class SceneController : MonoBehaviour
 
     public void Reset()
     {
-        foreach (StellationController s in Services.main.splineParent.GetComponentsInChildren<StellationController>())
+        foreach (StellationController s in Services.main.stellationParent.GetComponentsInChildren<StellationController>())
         {
             Destroy(s.gameObject);
+            
         }
-
+        Services.main.editor.controller = null;
+        Services.main.pointParent = null;
+        Services.main.splineParent = null;
+        
         instance.activeScenes.Clear();
         instance.curLevel = 0;   
     }

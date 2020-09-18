@@ -26,6 +26,7 @@
 	public static bool usingJoystick;
 	public Transform pointParent;
 	public Transform splineParent;
+	public Transform stellationParent;
 	private string curLevel;
 	public MapEditor editor;
 	public GameObject editorUI;
@@ -161,7 +162,7 @@
 
 	public void QuitLevel(bool goNext = false)
 	{
-		if (SceneController.instance.curLevelSet.isScene)
+		if (SceneController.instance.curSetIndex > 0 && SceneController.instance.curLevelSet.isScene)
 		{
 			SceneManager.UnloadSceneAsync(curLevel);
 		}
@@ -508,6 +509,12 @@
 					GameObject newController = new GameObject();
 					StellationController c = newController.AddComponent<StellationController>();
 					editor.controller = c;
+					newController.transform.parent = stellationParent;
+					splineParent = newController.transform;
+					pointParent = new GameObject().transform;
+					pointParent.transform.parent = splineParent;
+					editor.splinesParent = splineParent;
+					editor.pointsParent = pointParent;
 					newController.name = "Untitled";
 					newController.transform.parent = splineParent;
 				}
