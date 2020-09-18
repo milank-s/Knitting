@@ -1189,7 +1189,7 @@ public class Spline : MonoBehaviour
 		SplinePoints.Reverse();
 	}
 
-	public void AddNewPoint(int i){
+	public Point AddNewPoint(int i){
 		Point newPoint;
 
 		if(SplinePoints.Count > 1)
@@ -1222,6 +1222,8 @@ public class Spline : MonoBehaviour
 			newPoint.transform.parent = transform;
 			newPoint2.transform.parent = transform;
 		}
+
+		return newPoint;
 	}
 
 	public void AddPoint (Point curPoint, Point p)

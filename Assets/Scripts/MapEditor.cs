@@ -511,8 +511,8 @@ public class MapEditor : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.Equals))
                 {
                     SynthController.instance.keys[0].NoteOn(70, 0.5f, 0.5f);
-                    selectedSpline.AddNewPoint(selectedSpline.SplinePoints.IndexOf(activePoint));
-                    
+                    Point p = selectedSpline.AddNewPoint(selectedSpline.SplinePoints.IndexOf(activePoint));
+                    p.transform.parent = pointsParent;
                 }
             }
 
