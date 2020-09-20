@@ -53,17 +53,24 @@ public class SceneController : MonoBehaviour
     public void OnNavigate(InputAction.CallbackContext context)
     {
 
-        if (context.phase == InputActionPhase.Started && levelButton.gameObject == UISystem.currentSelectedGameObject && Services.main.state == Main.GameState.menu)
+        if (context.phase == InputActionPhase.Started && Services.main.state == Main.GameState.menu)
         {
-            Vector2 input = context.ReadValue<Vector2>();
-            if (input.x > 0 && Mathf.Approximately(input.y, 0))
+            if (levelButton.gameObject == UISystem.currentSelectedGameObject)
             {
-                SelectNextLevel(true);
-            }
-            else if(input.x < 0 && Mathf.Approximately(input.y, 0))
-            {
+                Vector2 input = context.ReadValue<Vector2>();
+                if (input.x > 0 && Mathf.Approximately(input.y, 0))
+                {
+                    SelectNextLevel(true);
+                }
+                else if (input.x < 0 && Mathf.Approximately(input.y, 0))
+                {
 
-                SelectNextLevel(true);
+                    SelectNextLevel(true);
+                }
+            }
+            else
+            {
+                Services.main.TryChangeSetting(context);
             }
         }
     }

@@ -7,8 +7,14 @@ using UnityEngine.Audio;
 public class GameSettings : MonoBehaviour
 {
 
-    [SerializeField] private AudioMixer mainAudio;
+    public static GameSettings i;
     
+    [SerializeField] private AudioMixer mainAudio;
+
+    public void ChangeSetting(int i, SettingValue.Setting s)
+    {
+        
+    }
     
     public void SetVolume(Single s)
     {

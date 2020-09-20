@@ -316,7 +316,7 @@
 	{
 		Vector2 input = context.ReadValue<Vector2>();
 		
-		if (context.phase == InputActionPhase.Started && settingsOpen && Services.main.state == Main.GameState.menu)
+		if (settingsOpen)
 		{
 			foreach (SettingValue s in settingValues)
 			{

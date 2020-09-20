@@ -8,25 +8,13 @@ using UnityEngine.UI;
 public class SettingValue : MonoBehaviour
 {
     public UnityEvent valueChanged;
-    
+    public Setting _setting;
+    public enum Setting{volume, resolution }
 
     public void ChangeValue(Single s)
     {
-        if (valueChanged != null)
-        {
-            valueChanged.Invoke();
-        }
+        GameSettings.i.ChangeSetting((int)s, _setting);
     }
 
     public Selectable _selectable;
-
-    public void Input()
-    {
-        bool selected = EventSystem.current.currentSelectedGameObject == gameObject;
-
-        if (selected)
-        {
-            //unity input system 
-        }
-    }
 }
