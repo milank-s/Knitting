@@ -549,7 +549,6 @@ public class MapEditor : MonoBehaviour
 
             AddSelectedSpline(controller._splines[i]);
 
-
             if (!Input.GetKey(KeyCode.LeftShift))
             {
                 DeselectPoints();

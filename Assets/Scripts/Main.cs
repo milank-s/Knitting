@@ -34,9 +34,12 @@
 	public GameObject menu;
 	public GameObject settings;
 	private bool settingsOpen;
+	public GameObject volumeSettings;
+	public GameObject settingsButton;
 	public CrawlerManager crawlerManager;
 	public StellationController defaultController;
-	
+
+	public List<SettingValue> settingValues;
 	[SerializeField]
 	private float fadeLength = 0.1f;
 	public Gamepad controller
@@ -54,13 +57,57 @@
 	public void OpenSettings()
 	{
 		settingsOpen = !settingsOpen;
+		
 		settings.SetActive(settingsOpen);
+		
+		if (settingsOpen)
+		{
+			EventSystem.current.SetSelectedGameObject(volumeSettings);
+		}
+		else
+		{
+			
+			EventSystem.current.SetSelectedGameObject(settingsButton);
+		}
+	}
+
+	public void CancelInput()
+	{
+		if (state == GameState.menu)
+		{
+			if (settingsOpen)
+			{
+				OpenSettings();
+			}
+			else
+			{
+
+				//ask to quit the game?
+			}
+		}
+		else
+		{
+			if (!MapEditor.typing)
+			{
+			
+				if (state == GameState.paused)
+				{
+					Pause(false);
+				
+				}
+				else if(state != GameState.menu)
+				{
+					Pause(true);
+				}
+			}
+		}
 	}
 
 	public void Quit()
 	{
 		Application.Quit();
 	}
+	
 	public void Reset()
 	{	
 		crawlerManager.Reset();
@@ -265,10 +312,24 @@
 		Time.timeScale = 1;
 	}
 
+	public void TryChangeSetting(InputAction.CallbackContext context)
+	{
+		Vector2 input = context.ReadValue<Vector2>();
+		
+		if (context.phase == InputActionPhase.Started && settingsOpen && Services.main.state == Main.GameState.menu)
+		{
+			foreach (SettingValue s in settingValues)
+			{
+				if (s.gameObject == EventSystem.current.currentSelectedGameObject)
+				{
+					s.ChangeValue(1);
+				}
+			}
+		}
+	}
 	public void OpenMenu()
 	{
 
-		EventSystem.current.SetSelectedGameObject(SceneController.instance.levelButton.gameObject);
 		
 		if (SceneController.instance.curSetIndex < 0)
 		{
@@ -291,6 +352,9 @@
 		
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
+		
+		EventSystem.current.SetSelectedGameObject(SceneController.instance.levelButton.gameObject);
+		
 	}
 
 	public void CloseMenu()
@@ -353,19 +417,6 @@
 //			SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
 //		}
 		
-		if (Input.GetKeyDown(KeyCode.Escape) && !MapEditor.typing)
-		{
-			
-			if (state == GameState.paused)
-			{
-				Pause(false);
-				
-			}
-			else if(state != GameState.menu)
-			{
-				Pause(true);
-			}
-		}
 		
 		if(Input.GetKeyDown(KeyCode.Space))
 		{
