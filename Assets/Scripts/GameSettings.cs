@@ -8,6 +8,8 @@ using UnityEngine.Audio;
 
 public class GameSettings : MonoBehaviour
 {
+
+    public AudioSource changeSettingFX;
     public enum Setting{volume, vibration, gamepad, resolution }
 
     private int newWidth;
@@ -24,6 +26,7 @@ public class GameSettings : MonoBehaviour
     }
     public string ChangeSetting(int i, Setting s)
     {
+        changeSettingFX.Play();
         string toReturn = "";
         switch (s)
         {
@@ -128,6 +131,8 @@ public class GameSettings : MonoBehaviour
             
         }
 
+        newWidth = Screen.currentResolution.width;
+        newHeight = Screen.currentResolution.height;
         t = PlayerPrefs.GetInt("ResolutionWidth") + " " + PlayerPrefs.GetInt("ResolutionHeight");
         SetSettingText(t, Setting.resolution);
         
@@ -136,7 +141,9 @@ public class GameSettings : MonoBehaviour
     public string SetResolution(Single s)
     {
         Resolution[] resolutions = Screen.resolutions;
-        Resolution curResolution = Screen.currentResolution;
+        Resolution curResolution = new Resolution();
+        curResolution.width = newWidth;
+        curResolution.height = newHeight;
         
         int indexof = 0;
         for (int i = 0; i < resolutions.Length; i++)
