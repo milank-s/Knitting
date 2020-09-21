@@ -11,6 +11,6 @@ public class SettingToggle : MonoBehaviour
 
     public void ChangeValue(Single s)
     {
-        _text.text = GameSettings.i.ChangeSetting((int)s, _setting);
+        GameSettings.i.ChangeSetting((int)s, _setting);
     }
 }

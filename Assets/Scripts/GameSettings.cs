@@ -24,9 +24,8 @@ public class GameSettings : MonoBehaviour
         i = this;
         gameObject.SetActive(false);
     }
-    public string ChangeSetting(int i, Setting s)
+    public void ChangeSetting(int i, Setting s)
     {
-        changeSettingFX.Play();
         string toReturn = "";
         switch (s)
         {
@@ -48,18 +47,22 @@ public class GameSettings : MonoBehaviour
             
         }
         
-        
+        SetSettingText(toReturn, s);
         PlayerPrefs.Save();
-        return toReturn;
 
     }
 
     public void SetSettingText(string t, Setting s)
     {
+        
         foreach (SettingValue v in settings)
         {
             if (v._setting == s)
             {
+                if (v._text.text != t)
+                {
+                    changeSettingFX.Play();
+                }
                 v._text.text = t;
                 break;
             }
@@ -189,20 +192,16 @@ public class GameSettings : MonoBehaviour
 
     public string SetVibration(Single s)
     {
-        if (s > 0)
-        {
-            Services.main.useVibration = true;
-            return "yes";
-        }else
-        {
-            Services.main.useVibration = false;
+
+        Services.main.useVibration = !Services.main.useVibration;
+            
+      
             if (Services.main.hasGamepad)
             {
                 Services.main.gamepad.ResetHaptics();
             }
 
-            return "no";
-        }
+            return Services.main.useVibration ? "yes" : "no";
     }
 
     string SetGamepad(Single s)
