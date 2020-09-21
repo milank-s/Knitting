@@ -17,7 +17,7 @@ public class controllerText : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Main.usingJoystick)
+        if (Services.main.hasGamepad)
         {
             text.text = controller;
         }

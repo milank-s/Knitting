@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UIElements;
 using Vectrosity;
 
 public enum PlayerState{Traversing, Switching, Flying, Animating};
@@ -222,9 +223,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void Reset()
 	{
 		
-		if (Main.usingJoystick)
+		if (Services.main.hasGamepad)
 		{
-			Services.main.controller.ResetHaptics();
+			Services.main.gamepad.ResetHaptics();
 		}
 		
 		cursorSprite.enabled = true;
@@ -1134,12 +1135,16 @@ public class PlayerBehaviour: MonoBehaviour {
 		// if(pointDest != null && pointDest.hasPointcloud){
 		// }
 
-		if (Main.usingJoystick && state == PlayerState.Traversing)
+		if (Services.main.hasGamepad && state == PlayerState.Traversing)
 		{
 			float hi = Mathf.Pow(Mathf.Clamp01(-accuracy + 1), 3) * curSpeed;
 			float low = Mathf.Clamp01(-accuracy) * flow + Mathf.Clamp01(hi - 1);
-			Services.main.controller.SetMotorSpeeds(low, hi);
-			
+
+			if (Services.main.useVibration)
+			{
+				Services.main.gamepad.SetMotorSpeeds(low, hi);
+			}
+
 		}
 		// GetComponent<Rigidbody> ().velocity = curSpline.GetDirection (progress) * flow;
 
@@ -1489,7 +1494,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	void CursorInput (){
 
 		Vector3 lastCursorDir = cursorDir;
-		if (Main.usingJoystick) {
+		if (Services.main.hasGamepad) {
 
 			// DO TURNING SPEED HERE
 
@@ -1665,9 +1670,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				//Services.fx.BakeParticles(sparks, Services.fx.brakeParticleMesh);
 				
 				
-				if (Main.usingJoystick)
+				if (Services.main.hasGamepad)
 				{
-					Services.main.controller.ResetHaptics();
+					Services.main.gamepad.ResetHaptics();
 				}
 				
 				//turn on sparks
@@ -1760,9 +1765,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		SynthController.instance.SwitchState(newState);
 		
-		if (Main.usingJoystick)
+		if (Services.main.hasGamepad)
 		{
-			Services.main.controller.ResetHaptics();
+			Services.main.gamepad.ResetHaptics();
 		}
 		switch (newState)
 		{

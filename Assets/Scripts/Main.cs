@@ -23,7 +23,7 @@
 	public FXManager fx;
 	public GameObject canvas;
 	public PrefabManager prefabs;
-	public static bool usingJoystick;
+	public bool hasGamepad;
 	public Transform pointParent;
 	public Transform splineParent;
 	public Transform stellationParent;
@@ -38,11 +38,12 @@
 	public GameObject settingsButton;
 	public CrawlerManager crawlerManager;
 	public StellationController defaultController;
-
-	public List<SettingValue> settingValues;
+	public bool useVibration;
+	public bool useGamepad;
+	
 	[SerializeField]
 	private float fadeLength = 0.1f;
-	public Gamepad controller
+	public Gamepad gamepad
 	{
 		get
 		{
@@ -51,6 +52,7 @@
 	}
 	
 
+	
 	[SerializeField] public string loadFileName;
 
 
@@ -66,7 +68,6 @@
 		}
 		else
 		{
-			
 			EventSystem.current.SetSelectedGameObject(settingsButton);
 		}
 	}
@@ -288,6 +289,7 @@
 
 	void Start()
 	{
+		GameSettings.i.InitializeSettings();
 		
 		state = GameState.menu;
 		MapEditor.editing = true;
@@ -318,11 +320,18 @@
 		
 		if (settingsOpen)
 		{
-			foreach (SettingValue s in settingValues)
+			foreach (SettingValue s in GameSettings.i.settings)
 			{
 				if (s.gameObject == EventSystem.current.currentSelectedGameObject)
 				{
-					s.ChangeValue(1);
+					if (input.x > 0f)
+					{
+						s.ChangeValue(1);
+					}
+					else if (input.x < 0)
+					{
+						s.ChangeValue(-1);
+					}
 				}
 			}
 		}
@@ -408,11 +417,6 @@
 	{
 		CameraFollow.instance.uiCam.fieldOfView = CameraFollow.instance.cam.fieldOfView;
 		
-		if (Input.GetAxis ("Joy Y") != 0 && !usingJoystick)
-		{
-			usingJoystick = true;
-		}
-
 //		if (Input.GetKeyDown (KeyCode.R)) {
 //			SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
 //		}
@@ -542,7 +546,6 @@
 	
 	public void ToggleEditMode()
 	{
-			
 			MapEditor.editing = !MapEditor.editing;
 			bool enter = MapEditor.editing;
 			editorUI.SetActive(enter);

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-public class SettingValue : MonoBehaviour
+public class SettingToggle : MonoBehaviour
 {
     public GameSettings.Setting _setting;
     public Text _text;
