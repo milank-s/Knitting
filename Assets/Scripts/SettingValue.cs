@@ -3,18 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 public class SettingValue : MonoBehaviour
 {
-    public UnityEvent valueChanged;
     public Setting _setting;
+    public Text _text;
     public enum Setting{volume, resolution }
 
     public void ChangeValue(Single s)
     {
-        GameSettings.i.ChangeSetting((int)s, _setting);
+        _text.text = GameSettings.i.ChangeSetting((int)s, this);
     }
-
-    public Selectable _selectable;
 }

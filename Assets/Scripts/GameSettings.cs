@@ -6,18 +6,20 @@ using UnityEngine.Audio;
 
 public class GameSettings : MonoBehaviour
 {
-
     public static GameSettings i;
     
     [SerializeField] private AudioMixer mainAudio;
 
-    public void ChangeSetting(int i, SettingValue.Setting s)
+    public string ChangeSetting(int i, SettingValue s)
     {
-        
+        return i.ToString();
     }
     
     public void SetVolume(Single s)
     {
-        mainAudio.SetFloat("Attenuation", s);
+        float curVolume;
+        mainAudio.GetFloat("Attenuation", out curVolume);
+        
+        mainAudio.SetFloat("Attenuation", Mathf.Clamp01(curVolume + s));
     }
 }
