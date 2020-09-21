@@ -9,7 +9,9 @@ using UnityEngine.Audio;
 public class GameSettings : MonoBehaviour
 {
     public enum Setting{volume, vibration, gamepad, resolution }
-    
+
+    private int newWidth;
+    private int newHeight;
     public static GameSettings i;
     public List<SettingValue> settings;
     [SerializeField] private AudioMixer mainAudio;
@@ -18,6 +20,7 @@ public class GameSettings : MonoBehaviour
     {
         settings = GetComponentsInChildren<SettingValue>().ToList();
         i = this;
+        gameObject.SetActive(false);
     }
     public string ChangeSetting(int i, Setting s)
     {
@@ -59,14 +62,22 @@ public class GameSettings : MonoBehaviour
             }
         }   
     }
+
+    public void SubmitSettingChanges()
+    {
+        Screen.SetResolution(newWidth, newHeight, FullScreenMode.ExclusiveFullScreen);
+        PlayerPrefs.SetInt("ResolutionWidth", newWidth);
+        PlayerPrefs.SetInt("ResolutionHeight", newHeight);
+        
+        Services.main.OpenSettings();
+        PlayerPrefs.Save();
+    }
     
-   
     public void InitializeSettings()
     {
         if (PlayerPrefs.HasKey("GameVolume"))
         {
             mainAudio.SetFloat("Volume", Mathf.Lerp(-80, 0, PlayerPrefs.GetFloat("GameVolume")));   
-            SetSettingText((PlayerPrefs.GetFloat("GameVolume") * 10f).ToString("F0") , Setting.volume);
         }
         else
         {
@@ -75,28 +86,36 @@ public class GameSettings : MonoBehaviour
             curVolume = 1-Mathf.Abs(curVolume / 80f);
             PlayerPrefs.SetFloat("GameVolume", curVolume);
         }
+        
+        SetSettingText((PlayerPrefs.GetFloat("GameVolume") * 10f).ToString("F0") , Setting.volume);
 
         if (PlayerPrefs.HasKey("UseGamepad"))
         {
             Services.main.useGamepad = PlayerPrefs.GetInt("UseGamepad") > 0;
-            string t = Services.main.useGamepad ? "yes" : "no";
-            SetSettingText(t, Setting.gamepad);
+            
         }
         else
         {
             PlayerPrefs.SetFloat("UseGameped", 1);
         }
         
+        string t = Services.main.useGamepad ? "yes" : "no";
+        SetSettingText(t, Setting.gamepad);
+        
+        
         if (PlayerPrefs.HasKey("UseVibration"))
         {
             Services.main.useVibration = PlayerPrefs.GetInt("UseVibration") > 0;
-            string t = Services.main.useVibration ? "yes" : "no";
-            SetSettingText(t, Setting.vibration);
+            
         }
         else
         {
             PlayerPrefs.SetFloat("UseVibration", 1);
         }
+        
+        t = Services.main.useVibration ? "yes" : "no";
+        SetSettingText(t, Setting.vibration);
+        
 
         if (PlayerPrefs.HasKey("ResolutionWidth") && PlayerPrefs.HasKey("ResolutionHeight"))
         {
@@ -108,14 +127,17 @@ public class GameSettings : MonoBehaviour
             PlayerPrefs.SetInt("ResolutionHeight", Screen.currentResolution.height);
             
         }
+
+        t = PlayerPrefs.GetInt("ResolutionWidth") + " " + PlayerPrefs.GetInt("ResolutionHeight");
+        SetSettingText(t, Setting.resolution);
         
-        PlayerPrefs.Save();
     }
 
     public string SetResolution(Single s)
     {
         Resolution[] resolutions = Screen.resolutions;
         Resolution curResolution = Screen.currentResolution;
+        
         int indexof = 0;
         for (int i = 0; i < resolutions.Length; i++)
         {
@@ -127,7 +149,7 @@ public class GameSettings : MonoBehaviour
         }
 
         int newIndex = indexof + (int) s;
-        if (newIndex > resolutions.Length)
+        if (newIndex >= resolutions.Length)
         {
             newIndex = 0;
         }else if (newIndex < 0)
@@ -135,7 +157,8 @@ public class GameSettings : MonoBehaviour
             newIndex = resolutions.Length - 1;
         }
 
-        Screen.SetResolution(resolutions[newIndex].width, resolutions[newIndex].height, FullScreenMode.ExclusiveFullScreen);
+        newWidth = resolutions[newIndex].width;
+        newHeight = resolutions[newIndex].height;
         
         return resolutions[newIndex].width + " " + resolutions[newIndex].height;
     }
