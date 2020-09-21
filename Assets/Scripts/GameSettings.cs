@@ -144,14 +144,11 @@ public class GameSettings : MonoBehaviour
     public string SetResolution(Single s)
     {
         Resolution[] resolutions = Screen.resolutions;
-        Resolution curResolution = new Resolution();
-        curResolution.width = newWidth;
-        curResolution.height = newHeight;
-        
+       
         int indexof = 0;
         for (int i = 0; i < resolutions.Length; i++)
         {
-            if (resolutions[i].width == curResolution.width && resolutions[i].height == curResolution.height)
+            if (resolutions[i].width == newWidth && resolutions[i].height == newHeight)
             {
                 indexof = i;
                 break;
