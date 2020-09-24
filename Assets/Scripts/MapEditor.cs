@@ -674,10 +674,10 @@ public class MapEditor : MonoBehaviour
                 
                 SetCursorPosition();
 
-                if(Input.GetKeyDown(KeyCode.PageUp))
+                if(Input.GetKeyDown(KeyCode.Comma))
                 {
                     ShuffleSplineOrder(1);
-                }else if (Input.GetKeyDown(KeyCode.PageDown))
+                }else if (Input.GetKeyDown(KeyCode.Period))
                 {
                     ShuffleSplineOrder(-1);
                 }
