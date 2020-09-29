@@ -8,6 +8,10 @@ public class FXManager : MonoBehaviour
 {
     public enum FXType{fizzle, burst, rotate, pulse, cross, glitch}
 
+    public SpriteRenderer nextPointSprite;
+    public LineRenderer nextSpline;
+    public SpriteRenderer nextSplineArrow;
+    
     public ParticleSystem popParticles, flyingParticles, speedParticles, trailParticles;
     public TrailRenderer playerTrail, flyingTrail;
     public MeshFilter flyingParticleMesh, flyingParticleTrailMesh, flyingTrailMesh, playerTrailMesh, brakeParticleMesh;
@@ -18,6 +22,7 @@ public class FXManager : MonoBehaviour
     private int lineIndex;
     private List<Vector3> linePositions;
     private VectorLine line;
+    private VectorLine splineDir;
     public bool drawGraffiti;
     [SerializeField] private GameObject fxPrefab;
   private int index;
@@ -54,6 +59,43 @@ public class FXManager : MonoBehaviour
       StartCoroutine(ShowUnfinishedPoints());
   }
 
+  public void ShowSplineDirection(Spline s)
+  {
+      nextSplineArrow.enabled = true;
+      DrawSplineDirection(s);
+  }
+    void DrawSplineDirection(Spline s)
+    {
+        Vector3 offset = s.GetVelocity(0);
+        offset = new Vector3(-offset.y, offset.x, 0) / 10f;
+        
+      splineDir.points3.Clear();
+      for (int i = 0; i < s.curveFidelity; i++)
+      {
+          splineDir.points3.Add(s.GetPoint(0.5f/(i + 1f)) + offset);
+          
+      }
+      
+      nextSplineArrow.transform.position = s.GetPoint(0.5f) + offset;
+      nextSplineArrow.transform.up = s.GetDirection(0.5f);
+      
+      splineDir.Draw3D();
+      
+  }
+
+  public void ShowNextPoint(Point p)
+  {
+      nextPointSprite.transform.position = p.Pos;
+      nextPointSprite.enabled = true;
+  }
+  
+  public void HideSplineDirection()
+  {
+      splineDir.points3.Clear();
+      splineDir.Draw3D();
+      nextSplineArrow.enabled = false;
+  }
+  
   IEnumerator ShowUnfinishedPoints()
   {
       Transform glitchfx = PlayAnimationAtPosition(FXType.glitch, Services.Player.transform);
@@ -95,11 +137,28 @@ public class FXManager : MonoBehaviour
       spawnedSprites.Clear();
       
       VectorLine.Destroy(ref line);
+      VectorLine.Destroy(ref splineDir);
       
       line = new VectorLine (name, new List<Vector3> (20), 2, LineType.Continuous, Vectrosity.Joins.Weld);
       line.color = new Color(1,1,1,0.25f);
       line.smoothWidth = true;
       line.smoothColor = true;
+      
+      splineDir = new VectorLine (name, new List<Vector3> (20), 2, LineType.Continuous, Vectrosity.Joins.Weld);
+      splineDir.color = new Color(1,1,1,1);
+      splineDir.smoothWidth = true;
+      splineDir.smoothColor = true;
+      
+      Material newMat = Services.Prefabs.lines[3];
+      Texture tex = newMat.mainTexture;
+      float length = newMat.mainTextureScale.x;
+      float height = newMat.mainTextureScale.y * 0.75f;
+		
+      splineDir.texture = tex;
+      splineDir.textureScale = length;
+      splineDir.lineWidth = height;
+      
+      
       drawGraffiti = false;
   }
   public void BakeTrail(TrailRenderer t, MeshFilter f)

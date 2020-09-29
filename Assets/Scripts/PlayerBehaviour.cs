@@ -397,11 +397,14 @@ public class PlayerBehaviour: MonoBehaviour {
 		 }
 			
 
-		}else if(state == PlayerState.Switching)
+		}
+		//else if? should happen all on same frame?
+		if(state == PlayerState.Switching)
 		{
 			transform.position = curPoint.Pos;
 			gravity = 0;
 			PlayerOnPoint();
+			
 		}
 
 		if (state != PlayerState.Animating && state != PlayerState.Flying && curPoint.HasSplines () && curSpline != null) {
@@ -450,11 +453,19 @@ public class PlayerBehaviour: MonoBehaviour {
 			if (curPoint.pointType == PointTypes.ghost)
 			{
 				canTraverse = true;
+				
+			}
+			else {
+				if (pointDest.pointType != PointTypes.ghost)
+				{
+					Services.fx.ShowNextPoint(pointDest);
+				}
 
+				Services.fx.ShowSplineDirection(curSpline);	
 			}
 
 			//boostTimer >= 1 ||  if you wnna fuck with ppl
-			else if (!joystickLocked && curPoint.CanLeave()) {	
+			if (!joystickLocked && curPoint.CanLeave()) {	
 					
 				//something about locking was here
 				canTraverse = true;
@@ -467,7 +478,12 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 			}
 			
-		} 
+		}
+		else
+		{
+			Services.fx.nextPointSprite.enabled = false;
+			Services.fx.HideSplineDirection();
+		}
 		
 		if(!canTraverse){
 
@@ -520,6 +536,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			// pointInfo.GetComponent<Text>().text = "";
 			SwitchState(PlayerState.Traversing);
+			
+			Services.fx.HideSplineDirection();
+			Services.fx.nextPointSprite.enabled = false;
 			cursorDistance = 25f;
 		}
 		else{
