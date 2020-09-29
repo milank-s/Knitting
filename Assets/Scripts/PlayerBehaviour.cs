@@ -449,7 +449,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		if (CanLeavePoint())
 		{
-			
 			cursorSprite.sprite = traverseSprite;
 
 			if (curPoint.pointType == PointTypes.ghost)
@@ -472,7 +471,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 				else
 				{
-					
 					Services.fx.ShowSplineDirection(curSpline);	
 				}
 				
@@ -576,8 +574,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if (!joystickLocked) {
 
-				pointDest = null;
-				pointDest = SplineUtil.RaycastFromCamera(cursorPos, 1f);
+				
+				Point target = SplineUtil.RaycastFromCamera(cursorPos, 1f);
 
 				bool drawnPointNull;
 				
@@ -585,16 +583,19 @@ public class PlayerBehaviour: MonoBehaviour {
 					drawnPointNull = true;
 				}
 				
-				if (pointDest != null && pointDest.state != Point.PointState.locked && pointDest != curPoint && !pointDest.IsAdjacent(curPoint)) {
+				if (target != null && target.state != Point.PointState.locked && target != curPoint && !target.IsAdjacent(curPoint)) {
 					if(drawnPoint != null){
-						if(drawnPoint != pointDest){
+						if(drawnPoint != target)
+						{
+							pointDest = target;
 							return true;
 					  }
 							return false;
 						
 					}
-						return true;
 					
+					pointDest = target;
+						return true;
 				}
 		}
 

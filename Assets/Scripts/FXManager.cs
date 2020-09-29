@@ -71,19 +71,19 @@ public class FXManager : MonoBehaviour
         
         VectorLine newLine;
         
-        newLine = new VectorLine (name, new List<Vector3> (20), 2, LineType.Continuous, Vectrosity.Joins.Weld);
+        newLine = new VectorLine (name, new List<Vector3> (), 2, LineType.Continuous, Vectrosity.Joins.Weld);
         newLine.color = new Color(1,1,1,1);
         newLine.smoothWidth = true;
         newLine.smoothColor = true;
       
-        Material newMat = Services.Prefabs.lines[3];
+        Material newMat = Services.Prefabs.lines[0];
         Texture tex = newMat.mainTexture;
         float length = newMat.mainTextureScale.x;
         float height = newMat.mainTextureScale.y * 0.75f;
 		
         newLine.texture = tex;
         newLine.textureScale = length;
-        newLine.lineWidth = height;
+        newLine.lineWidth = height * 2;
         
       for (int i = 0; i < s.curveFidelity; i++)
       {
@@ -92,6 +92,7 @@ public class FXManager : MonoBehaviour
           yield return new WaitForSeconds(0.02f);
       }
       
+      nextSplineArrow.enabled = true;
       nextSplineArrow.transform.position = s.GetPoint(0.5f) + offset;
       nextSplineArrow.transform.up = s.GetDirection(0.5f);
       
