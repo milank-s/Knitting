@@ -97,6 +97,8 @@ public class Spline : MonoBehaviour
 	private int highHitPoint = -int.MaxValue;
 	
 	public int lineMaterial = 0;
+	public int lineWidth = 1;
+	private float textureWidth = 1;
 	private float playerProgress{
 		get{return Services.PlayerBehaviour.progress;}
 	}
@@ -282,7 +284,9 @@ public class Spline : MonoBehaviour
 		
 		line.texture = tex;
 		line.textureScale = length;
-		line.lineWidth = height;
+		textureWidth = height;
+		
+		SetLineWidth(lineWidth);
 	}
 
 	public void SwitchMaterial(int i)
@@ -295,7 +299,9 @@ public class Spline : MonoBehaviour
 		
 		line.texture = tex;
 		line.textureScale = length;
-		line.lineWidth = height;
+		textureWidth = height;
+		
+		SetLineWidth(lineWidth);
 	}
 
 	void Awake ()
@@ -358,7 +364,12 @@ public class Spline : MonoBehaviour
 
 		state = t;
 	}
-	
+
+	public void SetLineWidth(int i)
+	{
+		lineWidth = i;
+		line.lineWidth = lineWidth * textureWidth;
+	}
 	public void ResetVectorLine()
 	{
 		DestroyVectorLine();
@@ -384,7 +395,7 @@ public class Spline : MonoBehaviour
 
 		line.smoothWidth = true;
 		line.smoothColor = true;
-		
+		line.lineWidth = lineWidth;
 		
 		ChangeMaterial(lineMaterial);
 	}

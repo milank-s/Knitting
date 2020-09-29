@@ -99,7 +99,11 @@ public class MapEditor : MonoBehaviour
     public Text xPos;
     public Text yPos;
     public Text zPos;
-    
+
+    public ReadSliderValue lineWidthSlider;
+    public ReadSliderValue biasSliderVal;
+    public ReadSliderValue continuitySliderVal;
+    public ReadSliderValue tensionSliderVal;
     public Text startSpeed;
     public Slider speedSlider;
     public Text fov;
@@ -366,6 +370,33 @@ public class MapEditor : MonoBehaviour
     {
         if (splineindex >= 0 && splineindex < controller._splines.Count)
         {
+            selectedSpline.SetLineWidth((int) lineWidthSlider.val);
+            if (Input.GetKeyDown(KeyCode.Alpha9))
+            {
+               
+                bool locked = selectedSpline.type == Spline.SplineType.locked;
+
+                if (locked)
+                {
+                    selectedSpline.SetSplineType(Spline.SplineType.normal);
+
+                    if (controller._splinesToUnlock.Contains(selectedSpline))
+                    {
+                        controller._splinesToUnlock.Remove(selectedSpline);
+                    }
+                }
+                else
+                {
+                    selectedSpline.SetSplineType(Spline.SplineType.locked);
+                    if (!controller._splinesToUnlock.Contains(selectedSpline))
+                    {
+                        controller._splinesToUnlock.Add(selectedSpline);
+                    }
+                }
+                
+            }
+            
+            
             if (Input.GetKeyDown(KeyCode.Alpha0))
             {
                 selectedSpline.ChangeMaterial(selectedSpline.lineMaterial + 1);
@@ -403,7 +434,7 @@ public class MapEditor : MonoBehaviour
             }
 
 
-
+                
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
                 if (pointSelected)
@@ -515,7 +546,6 @@ public class MapEditor : MonoBehaviour
                     p.transform.parent = pointsParent;
                 }
             }
-
         }
     }
 
@@ -815,6 +845,10 @@ public class MapEditor : MonoBehaviour
         if (pointSelected)
         {
 
+            activePoint.bias = biasSliderVal.val;
+            activePoint.tension = tensionSliderVal.val;
+            activePoint.continuity = continuitySliderVal.val;
+            
             marqueeTip.SetActive(false);
             deselectTip.SetActive(true);
             pointSelectedTip.SetActive(true);
@@ -872,32 +906,7 @@ public class MapEditor : MonoBehaviour
             {
                 SetPointType(PointTypes.reset);
             }
-
-            if (Input.GetKeyDown(KeyCode.Alpha9))
-            {
-                if (selectedSpline != null)
-                {
-                    bool locked = selectedSpline.type == Spline.SplineType.locked;
-
-                    if (locked)
-                    {
-                        selectedSpline.SetSplineType(Spline.SplineType.normal);
-
-                        if (controller._splinesToUnlock.Contains(selectedSpline))
-                        {
-                            controller._splinesToUnlock.Remove(selectedSpline);
-                        }
-                    }
-                    else
-                    {
-                        selectedSpline.SetSplineType(Spline.SplineType.locked);
-                        if (!controller._splinesToUnlock.Contains(selectedSpline))
-                        {
-                            controller._splinesToUnlock.Add(selectedSpline);
-                        }
-                    }
-                }
-            }
+             
             
             if (Input.GetKeyDown(KeyCode.Backspace) && curTool != Tool.text)
             {
@@ -935,7 +944,6 @@ public class MapEditor : MonoBehaviour
         {
             marqueeTip.SetActive(true);
             deselectTip.SetActive(false);
-            
         }
     }
 
@@ -1092,6 +1100,7 @@ public class MapEditor : MonoBehaviour
             splineData["numPoints"] = s.SplinePoints.Count;
             splineData["type"].AsInt = (int)s.type;
             splineData["lineTexture"] = s.lineMaterial;
+            splineData["lineWidth"] = s.lineWidth;
             JSONObject pointIndices = new JSONObject();
 
             int pi = 0;
@@ -1315,6 +1324,7 @@ public class MapEditor : MonoBehaviour
 
             int splineType = json["spline" + i]["type"];
             newSpline.type = (Spline.SplineType) splineType;
+            newSpline.lineWidth = Mathf.Clamp(json["spline" + i]["lineWidth"], 1, 10);
             newSpline.lineMaterial = json["spline" + i]["lineTexture"];
             newSpline.closed = json["spline" + i]["closed"];
             newSpline.transform.parent = parent.transform;
@@ -1510,6 +1520,9 @@ void DragCamera()
             
         biasSlider.value = activePoint.bias;
         tensionSlider.value = activePoint.tension;
+        biasSliderVal.ChangeValue(activePoint.bias);
+        continuitySliderVal.ChangeValue(activePoint.continuity);
+        tensionSliderVal.ChangeValue(activePoint.tension);
         selectedPointIndicator.SetActive(pointSelected);
         
     }
@@ -1554,6 +1567,7 @@ void DragCamera()
                 
                 //draw locked stuff diff ? if(selectedSpline.)
                 selectedSpline.SwitchMaterial(3);
+                lineWidthSlider.ChangeValue(selectedSpline.lineWidth);
                 splineSelectedTip.SetActive(true);
             }
 
@@ -1610,9 +1624,7 @@ void DragCamera()
 
                 break;
             case Tool.select:
-
-
-
+                
                 Vector3 screenPos = cam.WorldToViewportPoint(lastPos);
                 Vector3 viewPortPos = cam.ScreenToViewportPoint(curPos);
 
@@ -2004,12 +2016,14 @@ void DragCamera()
     public void SetTension(float t)
     {
         activePoint.tension = t;
+        tensionSliderVal.ChangeValue(t);
     }
     
     
     public void SetBias(float t)
     {
         activePoint.bias = t;
+        biasSliderVal.ChangeValue(t);
     }
 
     void ShuffleSplineOrder(int i)

@@ -445,6 +445,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		bool canTraverse = false;
 
+		Point prevPointDest = pointDest;
+		
 		if (CanLeavePoint())
 		{
 			
@@ -460,8 +462,20 @@ public class PlayerBehaviour: MonoBehaviour {
 				{
 					Services.fx.ShowNextPoint(pointDest);
 				}
-
-				Services.fx.ShowSplineDirection(curSpline);	
+				
+				if (prevPointDest != null)
+				{
+					if (prevPointDest != pointDest)
+					{
+						Services.fx.ShowSplineDirection(curSpline);	
+					}
+				}
+				else
+				{
+					
+					Services.fx.ShowSplineDirection(curSpline);	
+				}
+				
 			}
 
 			//boostTimer >= 1 ||  if you wnna fuck with ppl
@@ -482,7 +496,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		else
 		{
 			Services.fx.nextPointSprite.enabled = false;
-			Services.fx.HideSplineDirection();
 		}
 		
 		if(!canTraverse){
@@ -537,7 +550,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			// pointInfo.GetComponent<Text>().text = "";
 			SwitchState(PlayerState.Traversing);
 			
-			Services.fx.HideSplineDirection();
 			Services.fx.nextPointSprite.enabled = false;
 			cursorDistance = 25f;
 		}
@@ -1355,7 +1367,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	//MAKE SURE THAT YOU CAN STILL PLACE POINTS WHILE NOT FLYING OFF THE EDGE
 	//DONT CONFUSE FLYING WITH
 
-	public bool CanLeavePoint(){
+	public bool CanLeavePoint()
+	{
 
 		angleToSpline = Mathf.Infinity;
 		float angleOffSpline = Mathf.Infinity;

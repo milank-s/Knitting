@@ -47,6 +47,11 @@ public class ReadSliderValue : MonoBehaviour
             turtle.RedrawTurtle();
         }
     }
-    
-  
+
+    public void ChangeValue(Single s)
+    {
+        input.SetTextWithoutNotify(s.ToString());
+        slider.SetValueWithoutNotify(s);
+        val = s;
+    }
 }
