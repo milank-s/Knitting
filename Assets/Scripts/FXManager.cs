@@ -361,8 +361,11 @@ public class FXManager : MonoBehaviour
 
   public void DrawLine()
   {
-      drawGraffiti = true;
-      StartCoroutine(DrawGraffiti());
+      if (!drawGraffiti)
+      {
+          drawGraffiti = true;
+          StartCoroutine(DrawGraffiti());
+      }
   }
  
   

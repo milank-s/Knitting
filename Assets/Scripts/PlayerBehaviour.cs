@@ -183,15 +183,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		transform.position = curPoint.Pos;
 		traversedPoints.Add (curPoint);
 		curPoint.OnPointEnter ();
-		shortTrail.Clear();
-		
-        t.Clear();
-        flyingTrail.Clear();
-        flyingTrail.emitting = false;
-        t.emitting = true;
 
-        Services.fx.DrawLine();
-        
+		ResetFX();
+
 //		Material newMat;
 //		newMat = Services.Prefabs.lines[3];
 //		Texture tex = newMat.mainTexture;
@@ -238,6 +232,14 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		pointDest = null;
 		lastPoint = null;
+	}
+
+	public void ResetFX()
+	{
+		t.Clear();
+		flyingTrail.Clear();
+		flyingTrail.emitting = false;
+		t.emitting = true;
 	}
 
 	public IEnumerator RetraceTrail()
@@ -389,10 +391,15 @@ public class PlayerBehaviour: MonoBehaviour {
 			CheckProgress ();
 
 			if(Mathf.Abs(flow) < 1){
+				
+				Services.fx.drawGraffiti = false;
 			cursorSprite.sprite = traverseSprite;
 		 }else if (Mathf.Abs(flow) < 2){
+				
+				Services.fx.DrawLine();
 			 cursorSprite.sprite = canMoveSprite;
-		 }else{
+		 }else
+			{
 			 cursorSprite.sprite = canFlySprite;
 		 }
 			
@@ -1126,7 +1133,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						flyingSpeed = flow + speed + boost;
 						
 						//IDK ABOUT THIS ONE CHIEF
-						//SwitchState(PlayerState.Flying);
+						SwitchState(PlayerState.Flying);
 					}
 					flow -= (0.5f - accuracy / 2f) * Time.deltaTime;
 				}

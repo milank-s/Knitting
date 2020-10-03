@@ -465,12 +465,23 @@
 		}
 	}
 
+	//this is fucking terrible
 	public void WarpPlayerToNewPoint(Point p)
 	{
 		//Services.StartPoint = p;
 		float curSpeed = Services.PlayerBehaviour.curSpeed;
 		float flow = Services.PlayerBehaviour.flow;
-		Services.PlayerBehaviour.Initialize();
+		
+		Services.PlayerBehaviour.curPoint.OnPointExit();
+		if (Services.PlayerBehaviour.curSpline != null)
+		{
+			Services.PlayerBehaviour.curSpline.OnSplineExit();
+		}
+
+		Services.PlayerBehaviour.ResetFX();
+		Services.PlayerBehaviour.curPoint = p;
+		Services.PlayerBehaviour.curPoint.OnPointEnter();
+		
 		Services.PlayerBehaviour.flow = flow;
 		Services.PlayerBehaviour.curSpeed = curSpeed;
 		
