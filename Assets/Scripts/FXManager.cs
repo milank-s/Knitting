@@ -84,7 +84,9 @@ public class FXManager : MonoBehaviour
         newLine.texture = tex;
         newLine.textureScale = length;
         newLine.lineWidth = height * 2;
-        
+
+        Vector3 endpoint = s.GetPoint(0.5f);
+        Vector3 endDir = s.GetDirection(0.5f);
       for (int i = 0; i < s.curveFidelity; i++)
       {
           newLine.points3.Add(s.GetPoint((0.5f * i)/s.curveFidelity) + offset);
@@ -92,9 +94,10 @@ public class FXManager : MonoBehaviour
           yield return new WaitForSeconds(0.02f);
       }
       
+      
       nextSplineArrow.enabled = true;
-      nextSplineArrow.transform.position = s.GetPoint(0.5f) + offset;
-      nextSplineArrow.transform.up = s.GetDirection(0.5f);
+      nextSplineArrow.transform.position = endpoint;
+      nextSplineArrow.transform.up = endDir;
       
       for (int i = 0; i < s.curveFidelity; i++)
       {
@@ -110,6 +113,7 @@ public class FXManager : MonoBehaviour
 
   public void ShowNextPoint(Point p)
   {
+      PlayAnimationAtPosition(FXType.rotate, p.transform);
       nextPointSprite.transform.position = p.Pos;
       nextPointSprite.enabled = true;
   }

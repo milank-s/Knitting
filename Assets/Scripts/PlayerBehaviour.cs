@@ -463,24 +463,28 @@ public class PlayerBehaviour: MonoBehaviour {
 				canTraverse = true;
 				
 			}
-			else {
-				if (pointDest.pointType != PointTypes.ghost)
-				{
-					Services.fx.ShowNextPoint(pointDest);
-				}
-				
+			else
+			{
+
+				bool newPointSelected = false;
 				if (prevPointDest != null)
 				{
 					if (prevPointDest != pointDest)
 					{
+						newPointSelected = true;
 						Services.fx.ShowSplineDirection(curSpline);	
 					}
 				}
 				else
 				{
+					newPointSelected = true;
 					Services.fx.ShowSplineDirection(curSpline);	
 				}
 				
+				if(newPointSelected && pointDest.pointType != PointTypes.ghost)
+				{
+					Services.fx.ShowNextPoint(pointDest);
+				}
 			}
 
 			//boostTimer >= 1 ||  if you wnna fuck with ppl
@@ -1379,6 +1383,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public bool CanLeavePoint()
 	{
 
+		
 		angleToSpline = Mathf.Infinity;
 		float angleOffSpline = Mathf.Infinity;
 		float angleFromPoint = Mathf.Infinity;
@@ -1387,6 +1392,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			splineDest = null;
 			pointDest = null;
 
+			Point maybeNextPoint = null;
+			Spline maybeNextSpline = null;
 			foreach (Spline s in curPoint.GetSplines()) {
 
 				if(s.locked){
@@ -1453,8 +1460,8 @@ public class PlayerBehaviour: MonoBehaviour {
 								angleFromPoint = angleOffSpline;
 							}
 							angleToSpline = curAngle;
-							splineDest = s;
-							pointDest = p;
+							maybeNextSpline = s;
+							maybeNextPoint = p;
 						}
 					}
 				}
@@ -1465,9 +1472,15 @@ public class PlayerBehaviour: MonoBehaviour {
 
 // && (Input.GetButtonDown("Button1")
 			
-			if ((angleFromPoint <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) && splineDest != null) {
+			if ((angleFromPoint <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) && maybeNextSpline != null)
+			{
+
+				splineDest = maybeNextSpline;
+				pointDest = maybeNextPoint;
+				
 				if(curSpline != null){
 
+					
 					if (curSpline != splineDest)
 					{
 						curSpline.OnSplineExit();
