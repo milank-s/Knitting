@@ -928,6 +928,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			{
 				hasFlown = true;
 				Services.fx.BakeTrail(Services.fx.flyingTrail, Services.fx.flyingTrailMesh);
+				
 				SwitchState(PlayerState.Switching);
 			}
 		}
@@ -1802,7 +1803,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		LeaveState();
 
-		
 		SynthController.instance.SwitchState(newState);
 		
 		if (Services.main.hasGamepad)
@@ -1935,8 +1935,10 @@ public class PlayerBehaviour: MonoBehaviour {
 //					p.TurnOn();
 				}
 
-				pointDest.proximity = 1;
-				pointDest.OnPointEnter();
+				
+				curPoint.proximity = 1;
+				
+				curPoint.OnPointEnter();
 
 				
 				//checkpoint shit
@@ -1952,6 +1954,8 @@ public class PlayerBehaviour: MonoBehaviour {
 					cursorDistance = 2f;
 				}
 				
+				//TODO
+				//SPLINE IS NULL WHEN YOU ARE FLYING, THIS SUCKS
 				if (curSpline != null)
 				{
 					curSpline.CheckComplete();

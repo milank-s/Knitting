@@ -437,7 +437,7 @@ public class Spline : MonoBehaviour
 		foreach (Point p in SplinePoints)
 		{
 		
-			if (p != null && p._connectedSplines.Count <= 1)
+			if (p != null && p.state == Point.PointState.locked && p._connectedSplines.Count <= 1)
 			{
 				p.SwitchState(Point.PointState.off);
 			}
