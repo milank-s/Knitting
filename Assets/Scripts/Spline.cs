@@ -660,9 +660,9 @@ public class Spline : MonoBehaviour
 			
 			NewFrequency(newFrequency * 10);
 			
-			v += distortionVector * (Mathf.Sin(Time.time * frequency + phase - segmentIndex) *
-				                         Mathf.Clamp01(_completion) * Mathf.Clamp01(distanceFromPlayer) *
-				                         Mathf.Clamp01(drawTimer /5f) * 0.025f);
+//			v += distortionVector * (Mathf.Sin(Time.time * frequency + phase - segmentIndex) *
+//				                         Mathf.Clamp01(_completion) * Mathf.Clamp01(distanceFromPlayer) *
+//				                         Mathf.Clamp01(drawTimer /5f) * 0.025f);
 			
 
 		}

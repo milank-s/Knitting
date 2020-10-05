@@ -321,7 +321,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			boostIndicator.enabled = false;
 		}
 		
-		//boostIndicator.transform.localScale = Vector3.Lerp(Vector3.one * 0.2f, Vector3.one , Services.PlayerBehaviour.boostTimer);
+		boostIndicator.transform.localScale = Vector3.Lerp(Vector3.one * 0.2f, Vector3.one , Services.PlayerBehaviour.boostTimer);
 		
 
 		if (Input.GetButtonUp("Button1"))

@@ -113,7 +113,7 @@ public class FXManager : MonoBehaviour
 
   public void ShowNextPoint(Point p)
   {
-      PlayAnimationAtPosition(FXType.rotate, p.transform);
+      PlayAnimationAtPosition(FXType.pulse, p.transform);
       nextPointSprite.transform.position = p.Pos;
       nextPointSprite.enabled = true;
   }

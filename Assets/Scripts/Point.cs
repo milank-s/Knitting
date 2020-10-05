@@ -479,7 +479,6 @@ public class Point : MonoBehaviour
 		
 		SwitchState(PointState.on);
 
-//		SynthController.instance.noteySynth.NoteOn(24, 1, 1);
 
 		if(pointType != PointTypes.ghost)
 		{
@@ -542,7 +541,6 @@ public class Point : MonoBehaviour
 			
 			GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
 			fx.transform.parent = transform;
-			Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, transform);
 			
 			controller.TryToUnlock();
 		}

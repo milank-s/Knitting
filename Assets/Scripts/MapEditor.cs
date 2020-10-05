@@ -319,6 +319,7 @@ public class MapEditor : MonoBehaviour
         fixedCamera.isOn = controller.fixedCam;
         speedSlider.value = controller.startSpeed;
         
+        
         ChangeWinCondition((int)controller.unlockMethod);
         
         sceneTitle.text = controller.name;
