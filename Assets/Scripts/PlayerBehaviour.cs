@@ -1593,6 +1593,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		if (freeCursor)
 		{
+			//TODO
+//			clamp this shit
+			
 			if (Services.main.hasGamepad)
 			{
 				cursorPos += (Vector3)inputVector * cursorMoveSpeed * Time.deltaTime;
@@ -1605,7 +1608,11 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 				cursorPos += (Vector3)inputVector;
 			}
-
+			
+			Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
+			screenPos += new Vector3(cursorDir.x / Services.mainCam.aspect, cursorDir.y, 0)/3f;
+			screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Mathf.Abs(transform.position.z - Services.mainCam.transform.position.z));
+			cursorPos = Services.mainCam.ViewportToWorldPoint(screenPos);
 //			cursorDir2 = cursorPos - transform.position;
 //			cursorDir2.Normalize();
 		}
