@@ -5,7 +5,6 @@
 	 using UnityEngine.UI;
 	 using UnityEngine.SceneManagement;
 	 using UnityEngine.InputSystem;
-	 using UnityEngine.InputSystem.LowLevel;
 
 	 public class Main : MonoBehaviour {
 
@@ -40,6 +39,8 @@
 	public StellationController defaultController;
 	public bool useVibration;
 	public bool useGamepad;
+
+	public PlayerInput playerInput;
 	
 	[SerializeField]
 	private float fadeLength = 0.1f;
@@ -352,6 +353,8 @@
 
 		state = GameState.menu;
 		
+		playerInput.SwitchCurrentActionMap("UI");
+		
 		if (MapEditor.editing)
 		{
 			ToggleEditMode();
@@ -395,9 +398,11 @@
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;
 			state = GameState.paused;
+			playerInput.SwitchCurrentActionMap("UI");
 		}
 		else
 		{
+			
 			SynthController.instance.synths.SetFloat("Volume", 0);
 			
 			if (!MapEditor.editing)
@@ -407,6 +412,7 @@
 
 			Cursor.visible = false;
 			state = GameState.playing;
+			playerInput.SwitchCurrentActionMap("Player");
 		}
 		
 		Time.timeScale = pause ? 0 : 1;
@@ -607,6 +613,8 @@
 				
 				state = GameState.playing;
 				
+				playerInput.SwitchCurrentActionMap("UI");
+				
 				SceneController.instance.curSetIndex = -1;
 				
 				Cursor.lockState = CursorLockMode.None;
@@ -620,6 +628,8 @@
 				if (state != GameState.menu)
 				{
 					editor.TogglePlayMode();
+					
+					playerInput.SwitchCurrentActionMap("Player");
 				}
 			}		
 	}
@@ -738,6 +748,7 @@
 
 		state = GameState.playing;
 		
+		playerInput.SwitchCurrentActionMap("Player");
 	}
 	
 	

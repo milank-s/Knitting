@@ -2,10 +2,11 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UIElements;
 using Vectrosity;
+using UnityEngine.InputSystem;
 
 public enum PlayerState{Traversing, Switching, Flying, Animating};
+
 
 
 //###################################################
@@ -145,8 +146,11 @@ public class PlayerBehaviour: MonoBehaviour {
 	private float buttonPressedBuffer = 0.2f;
 	private float buttonPressedTimer;
 	private float progressRemainder;
-	
-	private GameObject cursor;
+
+	private GameObject cursor
+	{
+		get { return Services.Cursor; }
+	}
 	[HideInInspector]
 	public Vector3 cursorPos;
 	[HideInInspector]
@@ -180,7 +184,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		PointManager.ResetPoints ();
 		Reset();
 		cursorDistance = minCursorDistance;
-		cursor = Services.Cursor;
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
 		traversedPoints.Add (curPoint);
@@ -368,7 +371,6 @@ public class PlayerBehaviour: MonoBehaviour {
 //			connectTime = 1;
 //		}
 
-		CursorInput();
 		Effects ();
 
 		if (state == PlayerState.Flying) {
@@ -468,6 +470,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			else
 			{
 
+				Services.fx.ShowNextPoint(pointDest);
+				
 				bool newPointSelected = false;
 				if (prevPointDest != null)
 				{
@@ -485,7 +489,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				if(newPointSelected && pointDest.pointType != PointTypes.ghost)
 				{
-					Services.fx.ShowNextPoint(pointDest);
+					Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, pointDest.transform);
+					
 				}
 			}
 
@@ -532,9 +537,10 @@ public class PlayerBehaviour: MonoBehaviour {
 //					l.SetPosition(0, pointDest.Pos);
 //					l.SetPosition(1, transform.position);
 
-					cursorOnPoint.SetPosition(0, pointDest.Pos);
-					cursorOnPoint.SetPosition(1, cursorPos);
+//					cursorOnPoint.SetPosition(0, pointDest.Pos);
+//					cursorOnPoint.SetPosition(1, cursorPos);
 					cursorSprite.sprite = canConnectSprite;
+					Services.fx.ShowNextPoint(pointDest);
 				}
 			}
 			else if (TryToFly())
@@ -1553,21 +1559,17 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 	}
 
-	void CursorInput (){
+	public void CursorInput (InputAction.CallbackContext context){
 
+		Vector2 inputVector = context.ReadValue<Vector2>();
 
-		if (freeCursor)
-		{
-			
-		}
-
-		Vector2 inputVector;
-		
-		Vector3 lastCursorDir = cursorDir;
+//		Vector2 inputVector;
+//		
+//		Vector3 lastCursorDir = cursorDir;
 		if (Services.main.hasGamepad) {
 
 
-			inputVector = new Vector3(Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
+			//inputVector = new Vector3(Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
 			if(usingJoystick){
 				inputVector = Quaternion.Euler(0,0,90) * inputVector;
 			}
@@ -1575,18 +1577,18 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		}else {
 
-			inputVector = new Vector2(Input.GetAxis ("Mouse X"), Input.GetAxis ("Mouse Y"));
-			cursorDir2 = cursorDir2 + inputVector;
+			//inputVector = new Vector2(Input.GetAxis ("Mouse X"), Input.GetAxis ("Mouse Y"));
+			cursorDir2 = cursorDir2 + inputVector/100f;
 			
 		}
-			
 		
+		if (cursorDir2.magnitude > 1) {
+			cursorDir2.Normalize ();
+		}
 		
-		
-
 		if (freeCursor)
 		{
-			if (usingJoystick)
+			if (Services.main.hasGamepad)
 			{
 				cursorPos += (Vector3)inputVector * cursorMoveSpeed * Time.deltaTime;
 			}
@@ -1600,7 +1602,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 			cursorDir2 = cursorPos - transform.position;
-			
+			cursorDir2.Normalize();
 		}
 		else
 		{
@@ -1612,9 +1614,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			cursorPos = Services.mainCam.ViewportToWorldPoint(screenPos);
 		}
 
-		if (cursorDir2.magnitude > 1) {
-			cursorDir2.Normalize ();
-		}
+		
 		
 		if (cursorDir2.magnitude <= 0.01f){
 			joystickLocked = true;
@@ -1622,6 +1622,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}else{
 			joystickLocked = false;
 		}
+
 		
 
 //		if(curPoint.HasSplines() && curSpline != null){
