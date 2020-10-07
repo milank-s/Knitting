@@ -312,7 +312,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				transform.position + (Vector3) cursorDir2 * ((Vector3)transform.position - cursorPos).magnitude;
 			boostIndicator.transform.up = cursorDir2;
 			
-			if(charging){
+			if(charging && state != PlayerState.Switching){
 				boostTimer += Time.deltaTime;
 				boostTimer = Mathf.Clamp01(boostTimer);
 			}
@@ -326,9 +326,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			boostIndicator.enabled = false;
 		}
 		
-		boostIndicator.transform.localScale = Vector3.Lerp(Vector3.one * 0.2f, Vector3.one , Services.PlayerBehaviour.boostTimer);
+		boostIndicator.transform.localScale = Vector3.Lerp(Vector3.one * 0.2f, Vector3.one , boostTimer);
 		
-
 		if (Input.GetButtonUp("Button1"))
 		{
 			charging = false;
@@ -693,7 +692,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		timeOnPoint += Time.deltaTime;
 
 		
-		if(Input.GetButton("Button1") && !freeCursor){
+		if(Input.GetButton("Button1") && !freeCursor && pointDest != null){
 			boostTimer += Time.deltaTime / stopTimer;
 			boostIndicator.enabled = true;
 		}else{
@@ -711,7 +710,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		curPoint.PlayerOnPoint(cursorDir, flow);
 		
 		l.positionCount = 2;
-		l.SetPosition (0, Vector3.Lerp(transform.position, cursorPos, Easing.QuadEaseOut(boostTimer)));
+		//l.SetPosition (0, Vector3.Lerp(transform.position, cursorPos, Easing.QuadEaseOut(boostTimer)));
+		l.SetPosition(0, cursorPos);
 		l.SetPosition (1, transform.position);
 		
 		playerSprite.transform.localScale = Vector3.Lerp(playerSprite.transform.localScale, new Vector3(Mathf.Clamp(1 - (boostTimer), 0.1f, 0.25f), Mathf.Clamp(boostTimer, 0.25f, 0.75f), 0.25f), Time.deltaTime * 10);
@@ -1603,8 +1603,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				cursorPos += (Vector3)inputVector;
 			}
 
-			cursorDir2 = cursorPos - transform.position;
-			cursorDir2.Normalize();
+//			cursorDir2 = cursorPos - transform.position;
+//			cursorDir2.Normalize();
 		}
 		else
 		{
