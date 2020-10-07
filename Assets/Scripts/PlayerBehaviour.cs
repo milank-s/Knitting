@@ -693,7 +693,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		timeOnPoint += Time.deltaTime;
 
 		
-		if(Input.GetButton("Button1")){
+		if(Input.GetButton("Button1") && !freeCursor){
 			boostTimer += Time.deltaTime / stopTimer;
 			boostIndicator.enabled = true;
 		}else{
@@ -1568,7 +1568,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //		Vector3 lastCursorDir = cursorDir;
 		if (Services.main.hasGamepad) {
 
-
+			
 			//inputVector = new Vector3(Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
 			if(usingJoystick){
 				inputVector = Quaternion.Euler(0,0,90) * inputVector;
@@ -1578,7 +1578,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		}else {
 
 			//inputVector = new Vector2(Input.GetAxis ("Mouse X"), Input.GetAxis ("Mouse Y"));
-			cursorDir2 = cursorDir2 + inputVector/100f;
+
+			inputVector /= 100f;
+			cursorDir2 = cursorDir2 + inputVector;
 			
 		}
 		
@@ -1645,7 +1647,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 		else
 		{
-			cursorDir = Vector3.Lerp (cursorDir, cursorDir2, (cursorRotateSpeed + flow) * Time.deltaTime);
+			//cursorDir = Vector3.Lerp (cursorDir, cursorDir2, (cursorRotateSpeed + flow) * Time.deltaTime);
+			cursorDir = cursorDir2;
 		}
 
 		playerSprite.transform.up = cursorDir;
