@@ -45,9 +45,10 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float accuracyCoefficient;
 	public float flowAmount = 0.1f;
 	public float stopTimer = 2f;
-	[Space(10)]
-
-	[Header("Cursor Control")]
+	[Space(10)] [Header("Cursor Control")] 
+	public float cursorMoveSpeed = 1;
+	public float minCursorDistance = 25;
+	public float maxCursorDistance = 2;
 	public float cursorDistance;
 	public float cursorRotateSpeed = 1;
 	public float LineAngleDiff = 30;
@@ -60,6 +61,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	float angleToSpline = Mathf.Infinity;
 	private float flyingSpeed;
 	private bool hasFlown = false;
+	private bool freeCursor = false;
 	[Space(10)]
 
 	[HideInInspector]
@@ -177,7 +179,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		PointManager.ResetPoints ();
 		Reset();
-		cursorDistance = 25;
+		cursorDistance = minCursorDistance;
 		cursor = Services.Cursor;
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
@@ -508,6 +510,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 		
 		if(!canTraverse){
+			
+			if (curPoint.pointType == PointTypes.connect)
+			{
+				freeCursor = true;
+			}
 
 			if (CanCreatePoint())
 			{
@@ -519,13 +526,14 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 				else if (curPoint.pointType == PointTypes.connect)
 				{
-					l.positionCount = 2;
-					
-					l.SetPosition(0, pointDest.Pos);
-					l.SetPosition(1, transform.position);
+					//this looks bad rn
+//					l.positionCount = 2;
+//					
+//					l.SetPosition(0, pointDest.Pos);
+//					l.SetPosition(1, transform.position);
+
 					cursorOnPoint.SetPosition(0, pointDest.Pos);
 					cursorOnPoint.SetPosition(1, cursorPos);
-					canTraverse = false;
 					cursorSprite.sprite = canConnectSprite;
 				}
 			}
@@ -560,7 +568,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			SwitchState(PlayerState.Traversing);
 			
 			Services.fx.nextPointSprite.enabled = false;
-			cursorDistance = 25f;
+			cursorDistance = minCursorDistance;
 		}
 		else{
 			if (curPoint.pointType == PointTypes.end && !curPoint.controller.isComplete)
@@ -1138,7 +1146,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						flyingSpeed = flow + speed + boost;
 						
 						//IDK ABOUT THIS ONE CHIEF
-						SwitchState(PlayerState.Flying);
+						//SwitchState(PlayerState.Flying);
 					}
 					flow -= (0.5f - accuracy / 2f) * Time.deltaTime;
 				}
@@ -1547,58 +1555,74 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void CursorInput (){
 
+
+		if (freeCursor)
+		{
+			
+		}
+
+		Vector2 inputVector;
+		
 		Vector3 lastCursorDir = cursorDir;
 		if (Services.main.hasGamepad) {
 
-			// DO TURNING SPEED HERE
 
-			cursorDir2 = new Vector3(Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
+			inputVector = new Vector3(Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
 			if(usingJoystick){
-				cursorDir2 = Quaternion.Euler(0,0,90) * cursorDir2;
+				inputVector = Quaternion.Euler(0,0,90) * inputVector;
 			}
-//			if (cursorDir.magnitude < 0.1f) {
-//				cursorDir = lastCursorDir.normalized/10f;
-//			}
-		if (cursorDir2.magnitude <= 0.1f){
-		  joystickLocked = true;
-			cursorDir2 = Vector3.zero;
-		}else{
-			joystickLocked = false;
-		}
-
-//			cursorDir = Vector3.Lerp (lastCursorDir, cursorDir, (cursorRotateSpeed/(((Mathf.Abs(flow) * 1) + 1)) * Time.deltaTime));
-			//free movement: transform.position = transform.position + new Vector3 (-Input.GetAxis ("Joy X") / 10, Input.GetAxis ("Joy Y") / 10, 0);
-			//angle to joystick position
-			//zAngle = Mathf.Atan2 (Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y")) * Mathf.Rad2Deg;
+			cursorDir2 = inputVector;
+		
 		}else {
-//			cursor.transform.RotateAround(transform.position, transform.forward,  Input.GetAxis ("Horizontal"));
-//			cursor.transform.position = (transform.position - cursor.transform.position) * Mathf.Sign(Input.GetAxis ("Vertical"));
-//			Unused code for Mouse control
 
-//			Vector3 mousePos = new Vector3 (Input.mousePosition.x, Input.mousePosition.y, transform.position.z - Camera.main.transform.position.z);
-//			mousePos = Camera.main.ScreenToWorldPoint (mousePos);
-//			if((mousePos - transform.position).magnitude < 1){
-//				cursorDir = (mousePos - transform.position).normalized;
-//			}else{
-//				cursorDir = (mousePos - transform.position);
-//			}
-
-			cursorDir2 += new Vector2(Input.GetAxis ("Mouse X"), Input.GetAxis ("Mouse Y"));
-			if (cursorDir2.magnitude <= 0.01f){
-			  joystickLocked = true;
-				cursorDir2 = Vector3.zero;
-			}else{
-				joystickLocked = false;
-			}
-//			cursorDir = Vector3.Lerp (lastCursorDir, cursorDir, (cursorRotateSpeed/(Mathf.Abs(flow) + 1) * Time.deltaTime));
+			inputVector = new Vector2(Input.GetAxis ("Mouse X"), Input.GetAxis ("Mouse Y"));
+			cursorDir2 = cursorDir2 + inputVector;
+			
 		}
+			
+		
+		
+		
 
+		if (freeCursor)
+		{
+			if (usingJoystick)
+			{
+				cursorPos += (Vector3)inputVector * cursorMoveSpeed * Time.deltaTime;
+			}
+			else
+			{
+				if (inputVector.magnitude > 1)
+				{
+					inputVector.Normalize();
+				}
+				cursorPos += (Vector3)inputVector;
+			}
+
+			cursorDir2 = cursorPos - transform.position;
+			
+		}
+		else
+		{
+			cursorPos = transform.position + (Vector3)cursorDir2 / (Services.mainCam.fieldOfView * 0.1f);
+			
+			Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
+			screenPos += new Vector3(cursorDir.x / Services.mainCam.aspect, cursorDir.y, 0)/cursorDistance;
+			screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Mathf.Abs(transform.position.z - Services.mainCam.transform.position.z));
+			cursorPos = Services.mainCam.ViewportToWorldPoint(screenPos);
+		}
 
 		if (cursorDir2.magnitude > 1) {
 			cursorDir2.Normalize ();
 		}
-
-
+		
+		if (cursorDir2.magnitude <= 0.01f){
+			joystickLocked = true;
+			cursorDir2 = Vector3.zero;
+		}else{
+			joystickLocked = false;
+		}
+		
 
 //		if(curPoint.HasSplines() && curSpline != null){
 //			cursorDir.z = curSpline.GetDirection (progress).z * Mathf.Sign(accuracy);
@@ -1610,22 +1634,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		// float screenWidth = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, Camera.main.nearClipPlane)).y - transform.position.y;
 		// cursorPos = transform.position + ((Vector3)cursorDir * screenWidth);
 		
-	
-		cursorPos = transform.position + (Vector3)cursorDir2 / (Services.mainCam.fieldOfView * 0.1f);
-//		Vector3 screenPos = ((Vector3)cursorDir/10f + Vector3.one/2f);
-		Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
-		
-		
-		screenPos += new Vector3(cursorDir.x / Services.mainCam.aspect, cursorDir.y, 0)/cursorDistance;
-
-			
-		screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Mathf.Abs(transform.position.z - Services.mainCam.transform.position.z));
-		cursorPos = Services.mainCam.ViewportToWorldPoint(screenPos);
-		
 		
 		cursor.transform.position = cursorPos;
 		cursor.transform.rotation = Quaternion.Euler(0, 0, (float)(Mathf.Atan2(-cursorDir.x, cursorDir.y) / Mathf.PI) * 180f);
-		
 		
 		if(Input.GetButton("Button1") && state == PlayerState.Traversing)
 		{
@@ -1756,6 +1767,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			
 			case PlayerState.Switching:
 				l.positionCount = 0;
+				freeCursor = false;
 				
 				if (traversedPoints.Count >= 2 && (curPoint.pointType == PointTypes.start || curPoint.pointType == PointTypes.end || curPoint.pointType == PointTypes.fly))
 				{
@@ -1961,11 +1973,6 @@ public class PlayerBehaviour: MonoBehaviour {
 //				traversedPoints.Add(curPoint);
 				}
 
-					
-				if (curPoint.pointType == PointTypes.connect)
-				{
-					cursorDistance = 2f;
-				}
 				
 				//TODO
 				//SPLINE IS NULL WHEN YOU ARE FLYING, THIS SUCKS
