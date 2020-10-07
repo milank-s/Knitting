@@ -73,6 +73,14 @@
 		}
 	}
 
+	public void PauseGame()
+	{
+		if(state == GameState.playing)
+			{
+				Pause(true);
+			}
+		
+	}
 	public void CancelInput()
 	{
 		if (state == GameState.menu)
@@ -91,14 +99,9 @@
 		{
 			if (!MapEditor.typing)
 			{
-				if (state == GameState.paused)
-				{
-					Pause(false);
-				}
-				else if(state == GameState.playing)
-				{
-					Pause(true);
-				}
+				
+				Pause(true);
+				
 			}
 		}
 	}
@@ -413,7 +416,7 @@
 		}
 
 		string newMapping = pause ? "UI" : "Player";
-		//playerInput.SwitchCurrentActionMap(newMapping);
+		playerInput.SwitchCurrentActionMap(newMapping);
 		
 		Time.timeScale = pause ? 0 : 1;
 		
@@ -635,6 +638,8 @@
 				
 				if (state != GameState.menu)
 				{
+					editor.Save();
+					//do we force save before playing?
 					editor.TogglePlayMode();
 					
 					playerInput.SwitchCurrentActionMap("Player");
