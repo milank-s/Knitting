@@ -218,8 +218,7 @@ public class MapEditor : MonoBehaviour
     {
 
         instance = this;
-        controller.name = "Untitled";
-        controller = main.splineParent.GetComponentInChildren<StellationController>();
+        
         
         text = new List<GameObject>();
         foreach (Text t in canvas.GetComponentsInChildren<Text>())
@@ -314,6 +313,7 @@ public class MapEditor : MonoBehaviour
     
     public void EnterEditMode()
     {
+        
         fov.text = controller.desiredFOV.ToString("F0");
         fovSlider.value = controller.desiredFOV;
         fixedCamera.isOn = controller.fixedCam;
@@ -322,6 +322,7 @@ public class MapEditor : MonoBehaviour
         
         ChangeWinCondition((int)controller.unlockMethod);
         
+        //load from controller name
         sceneTitle.text = controller.name;
         
         StopTyping(controller.name);        
@@ -1177,7 +1178,7 @@ public class MapEditor : MonoBehaviour
         }
 
         Load(fileName);
-
+        
         EnterEditMode();
     }
 
