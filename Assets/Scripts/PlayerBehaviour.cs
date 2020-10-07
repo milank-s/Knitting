@@ -62,6 +62,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	float angleToSpline = Mathf.Infinity;
 	private float flyingSpeed;
 	private bool hasFlown = false;
+	private bool foundConnection = false;
 	private bool freeCursor = false;
 	[Space(10)]
 
@@ -457,7 +458,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		Point prevPointDest = pointDest;
 		
-		if (CanLeavePoint())
+		if (!foundConnection && CanLeavePoint())
 		{
 			cursorSprite.sprite = traverseSprite;
 
@@ -607,7 +608,10 @@ public class PlayerBehaviour: MonoBehaviour {
 					drawnPointNull = true;
 				}
 				
-				if (target != null && target.state != Point.PointState.locked && target != curPoint && !target.IsAdjacent(curPoint)) {
+				if (target != null && target.state != Point.PointState.locked && target != curPoint && !target.IsAdjacent(curPoint))
+				{
+
+					foundConnection = true;
 					if(drawnPoint != null){
 						if(drawnPoint != target)
 						{
@@ -622,6 +626,8 @@ public class PlayerBehaviour: MonoBehaviour {
 						return true;
 				}
 		}
+
+			foundConnection = false;
 
 		return false;
 	}
@@ -1563,8 +1569,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		Vector2 inputVector = context.ReadValue<Vector2>();
 
-//		Vector2 inputVector;
-//		
 //		Vector3 lastCursorDir = cursorDir;
 		if (Services.main.hasGamepad) {
 
@@ -1579,7 +1583,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			//inputVector = new Vector2(Input.GetAxis ("Mouse X"), Input.GetAxis ("Mouse Y"));
 
-			inputVector /= 100f;
 			cursorDir2 = cursorDir2 + inputVector;
 			
 		}
@@ -1639,7 +1642,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		
 		cursor.transform.position = cursorPos;
-		cursor.transform.rotation = Quaternion.Euler(0, 0, (float)(Mathf.Atan2(-cursorDir.x, cursorDir.y) / Mathf.PI) * 180f);
+		cursor.transform.up = cursorPos - transform.position;
+		
 		
 		if(Input.GetButton("Button1") && state == PlayerState.Traversing)
 		{
@@ -1772,7 +1776,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			case PlayerState.Switching:
 				l.positionCount = 0;
 				freeCursor = false;
-				
+				foundConnection = false;
 				if (traversedPoints.Count >= 2 && (curPoint.pointType == PointTypes.start || curPoint.pointType == PointTypes.end || curPoint.pointType == PointTypes.fly))
 				{
 					List<Point> pointsToTraverse = new List<Point>();
