@@ -1,7 +1,7 @@
 using UnityEngine;
-using System.Collections.Generic;
 using System.Xml;
 using System.IO;
+using Boo.Lang;
 using Vectrosity;
 
 //###################################################
@@ -34,12 +34,12 @@ public class Spline : MonoBehaviour
 	
 	[HideInInspector]
 	public float distortion;
-	public static List<Spline> Splines = new List<Spline> ();
+	public static System.Collections.Generic.List<Spline> Splines = new System.Collections.Generic.List<Spline> ();
 	public static float drawSpeed = 0.01f;
 	
 	
 	[HideInInspector]
-	public List<Point> SplinePoints;
+	public System.Collections.Generic.List<Point> SplinePoints;
 
 	[HideInInspector]
 	public Point Selected;
@@ -306,7 +306,7 @@ public class Spline : MonoBehaviour
 
 	void Awake ()
 	{
-		line = new VectorLine (name, new List<Vector3>(), 1, LineType.Continuous, Vectrosity.Joins.Weld);
+		line = new VectorLine (name, new System.Collections.Generic.List<Vector3>(), 1, LineType.Continuous, Vectrosity.Joins.Weld);
 		stepSize = (1.0f / (float)curveFidelity);
 		Select = this;
 		Splines.Add (this);
@@ -320,6 +320,8 @@ public class Spline : MonoBehaviour
 //		line.textureScale = newMat.mainTextureScale.x;
 	}
 
+	//TODO
+//	I WANT THE BEST Spline DRAWING Function< OF ALL FUCKING TIME>
 	public void Initialize()
 	{	
 		
@@ -380,8 +382,8 @@ public class Spline : MonoBehaviour
 		{
 			pointCount -= curveFidelity;
 		}
-		
-		List<Vector3> linePoints =  new List<Vector3> (pointCount);
+
+		System.Collections.Generic.List<Vector3> linePoints =  new System.Collections.Generic.List<Vector3> (pointCount);
 		
 		line = new VectorLine (name, linePoints, 1, LineType.Continuous, Vectrosity.Joins.Weld);
 		if (MapEditor.editing)
@@ -1152,7 +1154,7 @@ public class Spline : MonoBehaviour
 		}
 	}
 
-	public void SetPoints (List<Point> points)
+	public void SetPoints (System.Collections.Generic.List<Point> points)
 	{
 		SplinePoints.Clear ();
 
@@ -1178,7 +1180,7 @@ public class Spline : MonoBehaviour
 			pointCount = (SplinePoints.Count-1) * curveFidelity;
 		}
 		
-		line.points3 = new List<Vector3>(pointCount);	
+		line.points3 = new System.Collections.Generic.List<Vector3>(pointCount);	
 	}
 		
 	public void RemovePoint(int i){

@@ -353,9 +353,7 @@ public class MapEditor : MonoBehaviour
             Services.main.InitializeLevel();
         }
 
-        Cursor.lockState = CursorLockMode.Locked;
         canvas.gameObject.SetActive(!editing);
-      
     }
 
     void HideUI()

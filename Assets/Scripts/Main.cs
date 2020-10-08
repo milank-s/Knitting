@@ -1,6 +1,7 @@
 	 using System.Collections;
 	using System.Collections.Generic;
 	 using AudioHelm;
+	 using UnityEditor;
 	 using UnityEngine;
 	 using UnityEngine.EventSystems;
 	 using UnityEngine.UI;
@@ -79,7 +80,6 @@
 			{
 				Pause(true);
 			}
-		
 	}
 	public void CancelInput()
 	{
@@ -168,8 +168,6 @@
 		AudioManager.instance.MuteSynths(true);
 
 		InitializeLevel();
-
-		
 		
 		if (delay > 0)
 		{
@@ -198,8 +196,6 @@
 			yield return StartCoroutine(FadeOut());
 		}
 
-
-		
 		AudioManager.instance.MuteSynths(true);
 		
 		LoadScene(i);
@@ -403,7 +399,6 @@
 		}
 		else
 		{
-			
 			SynthController.instance.synths.SetFloat("Volume", 0);
 			
 			if (!MapEditor.editing)
@@ -419,7 +414,6 @@
 		playerInput.SwitchCurrentActionMap(newMapping);
 		
 		Time.timeScale = pause ? 0 : 1;
-		
 	}
 	
 	void Update()
@@ -497,22 +491,25 @@
 	
 	public void InitializeLevel()
 	{
+		//lets try getting rid of this redundant shit
 		
-		if (Point.Points.Count > 0)
-		{
-			for (int i = Point.Points.Count - 1; i >= 0; i--)
-			{
-				if (Point.Points[i] == null)
-				{
-					Point.Points.RemoveAt(i);
-				}
-				else
-				{
-					Point.Points[i].Clear();
-				}
-			}
-		}
-
+//		if (Point.Points.Count > 0)
+//		{
+//			for (int i = Point.Points.Count - 1; i >= 0; i--)
+//			{
+//				if (Point.Points[i] == null)
+//				{
+//					Point.Points.RemoveAt(i);
+//				}
+//				else
+//				{
+//					Point.Points[i].Clear();
+//				}
+//			}
+//		}
+//
+		//the stellation initializes its points on start...
+		//we may be forgiven for only initializing splines?
 		if (Spline.Splines.Count > 0){
 			for (int i = Spline.Splines.Count - 1; i >= 0; i--)
 			{
@@ -529,6 +526,7 @@
 
 		activeStellation.Initialize();
 		activeStellation.EnterStellation();
+		
 //		foreach (StellationController c in SceneController.instance.activeScenes)
 //		{
 //			
@@ -552,16 +550,29 @@
 		{
 			Services.StartPoint = Point.Points[0];
 		}
-		
-		
+
 		Services.main.fx.Reset();
-		
+
 		if (!MapEditor.editing)
 		{
+			playerInput.SwitchCurrentActionMap("Player");
 			Services.Player.SetActive(true);
 			Services.PlayerBehaviour.Initialize();
 		}
 		
+		EnterPlayMode();
+	}
+
+	public void EnterPlayMode()
+	{
+		Cursor.lockState = CursorLockMode.Locked;
+		state = GameState.playing;
+	}
+
+	public void EnterUIMode()
+	{
+		playerInput.SwitchCurrentActionMap("UI");
+		Cursor.lockState = CursorLockMode.None;
 	}
 	
 	public void ToggleEditMode()
@@ -624,14 +635,12 @@
 				
 				SynthController.instance.StopNotes();
 				
+				EnterUIMode();
+				//whyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+				//just so I can bring up the pause menu?
 				state = GameState.playing;
 				
-				playerInput.SwitchCurrentActionMap("UI");
-				
 				SceneController.instance.curSetIndex = -1;
-				
-				Cursor.lockState = CursorLockMode.None;
-
 				editor.EnterEditMode();
 			}
 			else
@@ -643,8 +652,6 @@
 					editor.Save();
 					//do we force save before playing?
 					editor.TogglePlayMode();
-					
-					playerInput.SwitchCurrentActionMap("Player");
 				}
 			}		
 	}
