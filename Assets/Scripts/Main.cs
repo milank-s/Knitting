@@ -1,5 +1,6 @@
 	 using System.Collections;
 	using System.Collections.Generic;
+	 using AudioHelm;
 	 using UnityEngine;
 	 using UnityEngine.EventSystems;
 	 using UnityEngine.UI;
@@ -36,10 +37,9 @@
 	public GameObject volumeSettings;
 	public GameObject settingsButton;
 	public CrawlerManager crawlerManager;
-	public StellationController defaultController;
 	public bool useVibration;
 	public bool useGamepad;
-
+	public StellationController activeStellation;
 	public PlayerInput playerInput;
 	
 	[SerializeField]
@@ -157,7 +157,7 @@
 		
 		
 		StellationController c = editor.Load(m);
-		c.Initialize();
+		
 		
 		
 		if (!MapEditor.editing)
@@ -527,7 +527,8 @@
 			}
 		}
 
-
+		activeStellation.Initialize();
+		activeStellation.EnterStellation();
 //		foreach (StellationController c in SceneController.instance.activeScenes)
 //		{
 //			
@@ -588,6 +589,7 @@
 					GameObject newController = new GameObject();
 					StellationController c = newController.AddComponent<StellationController>();
 					editor.controller = c;
+					activeStellation = c;
 					newController.transform.parent = stellationParent;
 					splineParent = newController.transform;
 					pointParent = new GameObject().transform;

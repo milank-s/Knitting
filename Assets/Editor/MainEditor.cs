@@ -27,15 +27,7 @@ public class MainEditor : Editor
             Undo.RecordObject(mainScript, "savedFile");
             mainScript.editor.Load(mainScript.loadFileName);
         }
-        if(GUILayout.Button("RESET"))
-        {
-            mainScript.editor.controller = mainScript.defaultController;
-        }
-        
-        
-        
-        
-        
+     
     }
   
     

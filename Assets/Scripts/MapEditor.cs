@@ -326,7 +326,8 @@ public class MapEditor : MonoBehaviour
         sceneTitle.text = controller.name;
         
         StopTyping(controller.name);        
-        controller.GetComponents();
+        controller.Initialize();
+        controller.EnterStellation();
     }
 
     public void ToggleTurtleMode()
@@ -338,7 +339,8 @@ public class MapEditor : MonoBehaviour
     
     public  void TogglePlayMode()
     {
-        controller.Initialize();
+
+        Services.main.activeStellation = controller;
         controller.isOn = true;
         
         if (pointSelected)

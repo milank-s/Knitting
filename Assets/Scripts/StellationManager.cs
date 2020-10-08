@@ -9,7 +9,6 @@ public class StellationManager : MonoBehaviour
 
 	public static StellationManager instance;
 	[SerializeField] public List<StellationController> controllers;
-	public StellationController curController;
 	public int index;
 
 
@@ -29,9 +28,10 @@ public class StellationManager : MonoBehaviour
 			controllers[i].Lock(true);
 		}
 	
-		curController = controllers[0];	
-		curController.Lock(false);
-		curController.isOn = true;
+		
+		Services.main.activeStellation = controllers[0];	
+		Services.main.activeStellation.Lock(false);
+		Services.main.activeStellation.isOn = true;
 		
 		Services.main.InitializeLevel();
 		
@@ -39,10 +39,10 @@ public class StellationManager : MonoBehaviour
 
 	public void EnterStellation(StellationController c)
 	{
-		curController = c;
+		c.EnterStellation();
+		Services.main.activeStellation = c;
 		c.Lock(false);
 		EnableStellations(false);
-		c.Initialize();
 		c.start.OnPointEnter();
 	}
 	
@@ -60,7 +60,7 @@ public class StellationManager : MonoBehaviour
 	{
 		foreach (StellationController s in controllers)
 		{
-			if (s != curController)
+			if (s != Services.main.activeStellation)
 			{
 				s.SetActive(on);
 			}

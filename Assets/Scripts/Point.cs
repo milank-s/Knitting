@@ -500,7 +500,7 @@ public class Point : MonoBehaviour
 				
 				case PointTypes.start:
 					if (StellationManager.instance != null &&
-					    StellationManager.instance.curController != controller)
+					    Services.main.activeStellation != controller)
 					{
 						StellationManager.instance.EnterStellation(controller);
 					}

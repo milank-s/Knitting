@@ -250,6 +250,29 @@ public class StellationController : MonoBehaviour {
 			words = text.text.Split (new char[] { ' ' });
 		}
 
+		
+	}
+	public void Initialize()
+	{
+		GetComponents();
+
+		//why is this here
+//		Services.main.state = Main.GameState.playing;
+}
+
+	public void EnterStellation()
+	{
+		isComplete = false;
+		if (Services.PlayerBehaviour.flow < startSpeed)
+		{
+			Services.PlayerBehaviour.flow = startSpeed;
+		}
+
+		if (unlockMethod == UnlockType.speed)
+		{
+			Services.main.crawlerManager.AddCrawler(_splines[0].SplinePoints, speed);
+		}
+		
 		CameraFollow.instance.fixedCamera = fixedCam;
 		CameraFollow.instance.desiredFOV = desiredFOV;
 		if (start != null)
@@ -263,21 +286,6 @@ public class StellationController : MonoBehaviour {
 		}
 		
 	}
-	public void Initialize()
-	{
-		GetComponents();
-		isComplete = false;
-
-		Services.PlayerBehaviour.flow = startSpeed;
-		
-
-		if (unlockMethod == UnlockType.speed)
-		{
-			Services.main.crawlerManager.AddCrawler(_splines[0].SplinePoints, speed);
-		}
-		
-		Services.main.state = Main.GameState.playing;
-}
 
 	public bool CheckCompleteness()
 	{
