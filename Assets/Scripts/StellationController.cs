@@ -52,7 +52,6 @@ public class StellationController : MonoBehaviour {
 	[Space(10)]
 
 	
-	[HideInInspector]
 	public bool isOn;
 	public bool isComplete;
 	private string[] words;
@@ -85,19 +84,13 @@ public class StellationController : MonoBehaviour {
 			return;
 		}
 		
-		isOn = false;
-						
 		//We are in a scene that supports multiple controllers
 		if (StellationManager.instance != null)
 		{
 			//enable next controller. I dont think I'm using this anymore
 			if (hasUnlock)
 			{
-				StellationManager.instance.EnableStellation(unlock);
-				
-				Services.mainCam.fieldOfView = 80;
-				CameraFollow.instance.desiredFOV = 80;
-				CameraFollow.instance.fixedCamera = false;
+				StellationManager.instance.CompleteStellation(this);
 			}
 			else
 			{
@@ -139,6 +132,7 @@ public class StellationController : MonoBehaviour {
 		}
 	}
 
+	//this method fucking sucks
 	public void Lock(bool b)
 	{
 		foreach (Point p in _points)
@@ -262,7 +256,9 @@ public class StellationController : MonoBehaviour {
 
 	public void EnterStellation()
 	{
+		isOn = true;
 		isComplete = false;
+		
 		if (Services.PlayerBehaviour.flow < startSpeed)
 		{
 			Services.PlayerBehaviour.flow = startSpeed;
@@ -280,6 +276,11 @@ public class StellationController : MonoBehaviour {
 			CameraFollow.instance.WarpToPosition(start.transform.position);
 		}
 
+		foreach (Spline s in _splinesToUnlock)
+		{
+			s.SwitchState(Spline.SplineState.locked);
+		}
+		
 		if (fixedCam)
 		{
 			SetCameraBounds();

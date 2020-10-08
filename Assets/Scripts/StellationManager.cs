@@ -45,10 +45,11 @@ public class StellationManager : MonoBehaviour
 
 	public void EnterStellation(StellationController c)
 	{
+		c.Lock(false);
+		Services.main.activeStellation = c;
+		c.isOn = true;
 		c.EnterStellation();
 		Services.main.activeStellation = c;
-		c.Lock(false);
-		EnableStellations(false);
 		c.start.OnPointEnter();
 	}
 	
@@ -62,6 +63,15 @@ public class StellationManager : MonoBehaviour
 		s.SetActive(true);
 	}
 
+	public void CompleteStellation(StellationController c)
+	{
+		EnableStellation(c.unlock);
+				
+		Services.mainCam.fieldOfView = 80;
+		CameraFollow.instance.desiredFOV = 80;
+		CameraFollow.instance.fixedCamera = false;
+		
+	}
 	IEnumerator ShowStartPoints(bool on)
 	{
 		foreach (StellationController s in controllers)

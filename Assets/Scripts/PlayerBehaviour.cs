@@ -1853,7 +1853,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			case PlayerState.Traversing:
 
-				
 				sparks.Play();
 				
 				GranularSynth.moving.TurnOn();
@@ -1900,6 +1899,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				flyingTrail.Clear();
 
 				noRaycast = true;
+				
 				
 				curPoint.usedToFly = true;
 				pointDest = null;

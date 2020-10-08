@@ -499,6 +499,7 @@ public class Point : MonoBehaviour
 					break;
 				
 				case PointTypes.start:
+					
 					if (StellationManager.instance != null &&
 					    Services.main.activeStellation != controller)
 					{
@@ -520,13 +521,8 @@ public class Point : MonoBehaviour
 						Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed + 10, transform);
 						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
 						
-//						Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
-						
-						
-						/*if (SceneController.instance != null && !MapEditor.editing)
-						{
-							SceneController.instance.LoadNextStellation( 1);	
-						}*/
+						Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
+						controller.isOn = false;
 
 					}
 					else

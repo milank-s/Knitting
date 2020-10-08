@@ -56,7 +56,9 @@ public class Crawler : MonoBehaviour
             curSpline = startSpline;
         }
         
-        curPoint.OnPointEnter();
+        //no fucking way crawlers should call this shit atm
+        //curPoint.OnPointEnter();
+        
         if (curPoint.pointType != PointTypes.ghost)
         {
             SynthController.instance.PlayNote(0);

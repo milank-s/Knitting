@@ -55,7 +55,6 @@
 		}
 	}
 	
-
 	
 	[SerializeField] public string loadFileName;
 
@@ -263,9 +262,7 @@
 //			Cursor.lockState = CursorLockMode.None;
 //			Cursor.visible = true;
 //		}
-	
 	}
-	
 	
 	public void Awake ()
 	{
