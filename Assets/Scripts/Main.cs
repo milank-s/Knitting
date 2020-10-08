@@ -99,9 +99,12 @@
 		{
 			if (!MapEditor.typing)
 			{
-				
-				Pause(true);
-				
+				Pause(!PauseMenu.activeSelf);	
+			}
+			else
+			{
+
+				MapEditor.typing = false;
 			}
 		}
 	}
@@ -335,9 +338,7 @@
 		}
 	}
 	public void OpenMenu()
-	{
-
-		
+	{	
 		if (SceneController.instance.curSetIndex < 0)
 		{
 			SceneController.instance.curSetIndex = 0;
@@ -411,8 +412,11 @@
 		}
 
 		string newMapping = pause ? "UI" : "Player";
-		playerInput.SwitchCurrentActionMap(newMapping);
-		
+		if (newMapping != playerInput.currentActionMap.name)
+		{
+			playerInput.SwitchCurrentActionMap(newMapping);
+		}
+
 		Time.timeScale = pause ? 0 : 1;
 	}
 	
@@ -507,7 +511,7 @@
 //				}
 //			}
 //		}
-//
+//EnterPlayMode();
 		//the stellation initializes its points on start...
 		//we may be forgiven for only initializing splines?
 		if (Spline.Splines.Count > 0){
