@@ -42,6 +42,8 @@
 	public bool useGamepad;
 	public StellationController activeStellation;
 	public PlayerInput playerInput;
+
+	private bool pressedPause;
 	
 	[SerializeField]
 	private float fadeLength = 0.1f;
@@ -290,6 +292,7 @@
 
 	void Start()
 	{
+		
 		GameSettings.i.InitializeSettings();
 		
 		state = GameState.menu;
@@ -411,12 +414,8 @@
 			state = GameState.playing;
 		}
 
-		string newMapping = pause ? "UI" : "Player";
-		if (newMapping != playerInput.currentActionMap.name)
-		{
-			playerInput.SwitchCurrentActionMap(newMapping);
-		}
-
+		pressedPause = true;
+		
 		Time.timeScale = pause ? 0 : 1;
 	}
 	
@@ -466,6 +465,26 @@
 				{
 					s.DrawSplineOverride();
 					s.line.Draw3D();
+				}
+			}
+		}
+
+		if (pressedPause)
+		{
+			pressedPause = false;
+			if (state == GameState.paused)
+			{
+				playerInput.SwitchCurrentActionMap("UI");
+			}
+			else
+			{
+				if (state == GameState.menu)
+				{
+					playerInput.SwitchCurrentActionMap("UI");
+				}
+				else if (state == GameState.playing)
+				{
+					playerInput.SwitchCurrentActionMap("Player");
 				}
 			}
 		}
