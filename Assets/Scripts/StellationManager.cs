@@ -23,7 +23,13 @@ public class StellationManager : MonoBehaviour
 			controllers = GetComponentsInChildren<StellationController>().ToList();
 		}
 		
-		for(int i = controllers.Count -1; i >= 0; i--){
+		for(int i = controllers.Count -1; i >= 0; i--)
+		{
+			if (i < controllers.Count - 1) 
+			{
+				controllers[i].unlock = controllers[i + 1];
+			}
+			
 			controllers[i].Initialize();
 			controllers[i].Lock(true);
 		}
