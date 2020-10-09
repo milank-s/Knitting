@@ -258,6 +258,7 @@ public class StellationController : MonoBehaviour {
 	{
 		isOn = true;
 		isComplete = false;
+		Services.main.activeStellation = this;
 		
 		if (Services.PlayerBehaviour.flow < startSpeed)
 		{
