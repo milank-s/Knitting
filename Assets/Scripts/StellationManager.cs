@@ -51,7 +51,6 @@ public class StellationManager : MonoBehaviour
 	
 	public void CompleteStellation()
 	{
-		Debug.Log("completed Stellation");
 
 		if (Services.main.activeStellation.isComplete)
 		{
