@@ -469,8 +469,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 			else
 			{
-
-				Services.fx.ShowNextPoint(pointDest);
 				
 				bool newPointSelected = false;
 				if (prevPointDest != null)
@@ -487,10 +485,15 @@ public class PlayerBehaviour: MonoBehaviour {
 					Services.fx.ShowSplineDirection(curSpline);	
 				}
 				
-				if(newPointSelected && pointDest.pointType != PointTypes.ghost)
+				if( pointDest.pointType != PointTypes.ghost)
 				{
-					Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, pointDest.transform);
 					
+					Services.fx.ShowNextPoint(pointDest);
+					if (newPointSelected)
+					{
+						Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, pointDest.transform);
+					}
+
 				}
 			}
 
@@ -608,7 +611,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					drawnPointNull = true;
 				}
 				
-				if (target != null && target.state != Point.PointState.locked && target != curPoint && !target.IsAdjacent(curPoint))
+				if (target != null && target.state != Point.PointState.locked && target.pointType != PointTypes.ghost && target != curPoint && !target.IsAdjacent(curPoint))
 				{
 
 					foundConnection = true;
