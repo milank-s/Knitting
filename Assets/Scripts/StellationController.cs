@@ -142,11 +142,14 @@ public class StellationController : MonoBehaviour {
 			}
 		}
 
-		if (_splines.Count > 0)
+		if (b)
 		{
-			foreach (Point p in _splines[0].SplinePoints)
+			if (_splines.Count > 0)
 			{
-				p.SwitchState(Point.PointState.off);
+				foreach (Point p in _splines[0].SplinePoints)
+				{
+					p.SwitchState(Point.PointState.off);
+				}
 			}
 		}
 	}

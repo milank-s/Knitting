@@ -37,7 +37,6 @@ public class StellationManager : MonoBehaviour
 		
 		Services.main.activeStellation = controllers[0];	
 		Services.main.activeStellation.EnableStellation(true);
-		Services.main.activeStellation.isOn = true;
 		
 		Services.main.InitializeLevel();
 		
@@ -50,16 +49,6 @@ public class StellationManager : MonoBehaviour
 		c.start.OnPointEnter();
 	}
 	
-	public void EnableStellations(bool on)
-	{
-		StartCoroutine(ShowStartPoints(on));	
-	}
-
-	public void EnableStellation(StellationController s)
-	{
-		s.SetActive(true);
-	}
-
 	public void CompleteStellation()
 	{
 		Debug.Log("completed Stellation");
@@ -80,11 +69,8 @@ public class StellationManager : MonoBehaviour
 			}
 			//we good
 		}
-		//unlock this shit now
-				
-		
-		
 	}
+	
 	IEnumerator ShowStartPoints(bool on)
 	{
 		foreach (StellationController s in controllers)
@@ -97,10 +83,5 @@ public class StellationManager : MonoBehaviour
 			yield return new WaitForSeconds(0.25f);
 		}		
 	}
-	public void EndScene()
-	{
-
-		
-	}
-
+	
 }
