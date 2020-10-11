@@ -57,7 +57,7 @@ public class StellationController : MonoBehaviour {
 	private string[] words;
 	private int wordIndex;
 	private float fade;
-	private bool hasUnlock;
+	public bool hasUnlock;
 	
 	public string GetWord (){
 		wordIndex++;
@@ -88,15 +88,9 @@ public class StellationController : MonoBehaviour {
 		if (StellationManager.instance != null)
 		{
 			//enable next controller. I dont think I'm using this anymore
-			if (hasUnlock)
-			{
-				StellationManager.instance.CompleteStellation(this);
-			}
-			else
-			{
-			//unload
-				SceneController.instance.LoadNextStellation();
-			}
+			
+			StellationManager.instance.CompleteStellation();
+			
 		}
 		else
 		{
@@ -110,8 +104,6 @@ public class StellationController : MonoBehaviour {
 		}
 
 		isComplete = true;
-		
-		Lock(true);
 		
 			//show some type of image
 			//lock instantly
@@ -133,15 +125,26 @@ public class StellationController : MonoBehaviour {
 	}
 
 	//this method fucking sucks
-	public void Lock(bool b)
+	public void EnableStellation(bool b)
 	{
 		foreach (Point p in _points)
 		{
 			if (b)
 			{
-				p.SwitchState(Point.PointState.locked);
+				if (p._connectedSplines.Count == 0)
+				{
+					p.SwitchState(Point.PointState.off);
+				}
 			}
 			else
+			{
+				p.SwitchState(Point.PointState.locked);
+			}
+		}
+
+		if (_splines.Count > 0)
+		{
+			foreach (Point p in _splines[0].SplinePoints)
 			{
 				p.SwitchState(Point.PointState.off);
 			}
@@ -254,6 +257,7 @@ public class StellationController : MonoBehaviour {
 //		Services.main.state = Main.GameState.playing;
 }
 
+	
 	public void EnterStellation()
 	{
 		isOn = true;

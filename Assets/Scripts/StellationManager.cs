@@ -31,12 +31,12 @@ public class StellationManager : MonoBehaviour
 			}
 			
 			controllers[i].Initialize();
-			controllers[i].Lock(true);
+			controllers[i].EnableStellation(false);
 		}
 	
 		
 		Services.main.activeStellation = controllers[0];	
-		Services.main.activeStellation.Lock(false);
+		Services.main.activeStellation.EnableStellation(true);
 		Services.main.activeStellation.isOn = true;
 		
 		Services.main.InitializeLevel();
@@ -45,7 +45,6 @@ public class StellationManager : MonoBehaviour
 
 	public void EnterStellation(StellationController c)
 	{
-		c.Lock(false);
 		c.isOn = true;
 		c.EnterStellation();
 		c.start.OnPointEnter();
@@ -61,13 +60,29 @@ public class StellationManager : MonoBehaviour
 		s.SetActive(true);
 	}
 
-	public void CompleteStellation(StellationController c)
+	public void CompleteStellation()
 	{
-		EnableStellation(c.unlock);
+		Debug.Log("completed Stellation");
+
+		if (Services.main.activeStellation.isComplete)
+		{
+			if (Services.main.activeStellation.hasUnlock)
+			{
+				Services.mainCam.fieldOfView = 80;
+				CameraFollow.instance.desiredFOV = 80;
+				CameraFollow.instance.fixedCamera = false;
+				Services.main.activeStellation.unlock.EnableStellation(true);
+			}
+			
+			else
+			{
+				SceneController.instance.LoadNextStellation();
+			}
+			//we good
+		}
+		//unlock this shit now
 				
-		Services.mainCam.fieldOfView = 80;
-		CameraFollow.instance.desiredFOV = 80;
-		CameraFollow.instance.fixedCamera = false;
+		
 		
 	}
 	IEnumerator ShowStartPoints(bool on)

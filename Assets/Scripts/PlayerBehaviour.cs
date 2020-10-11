@@ -1900,7 +1900,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				noRaycast = true;
 				
-				
 				curPoint.usedToFly = true;
 				pointDest = null;
 				l.positionCount = 0;
@@ -1911,15 +1910,17 @@ public class PlayerBehaviour: MonoBehaviour {
 				//curPoint.OnPointExit();
 				
 				curPoint.proximity = 0;
-				
-				
 				pointDest = null;
-
 				
 				state = PlayerState.Flying;
 				flyingTrail.emitting = true;
 				curSpeed = 0;
 
+				if (StellationManager.instance != null)
+				{
+					StellationManager.instance.CompleteStellation();
+				}
+				
 				break;
 
 			case PlayerState.Switching:
