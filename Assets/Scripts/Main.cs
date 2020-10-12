@@ -212,10 +212,14 @@
 
 	public void QuitLevel(bool goNext = false)
 	{
-		if (SceneController.instance.curSetIndex > 0 && SceneController.instance.curLevelSet.isScene)
+		//why not if its the first level tho
+		//SceneController.instance.curSetIndex > 0 && 
+		if (SceneController.instance.curLevelSet.isScene)
 		{
 			SceneManager.UnloadSceneAsync(curLevel);
 		}
+
+		curLevel = "";
 		
 		Pause(false);
 		Reset();

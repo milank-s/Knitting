@@ -144,6 +144,9 @@ public class StellationController : MonoBehaviour {
 
 		if (b)
 		{
+			start.SwitchState(Point.PointState.on);
+			//particle effect?
+			
 			if (_splines.Count > 0)
 			{
 				foreach (Point p in _splines[0].SplinePoints)
