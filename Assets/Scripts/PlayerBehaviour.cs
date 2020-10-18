@@ -1871,6 +1871,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			Services.main.gamepad.ResetHaptics();
 		}
+		
 		switch (newState)
 		{
 			case PlayerState.Traversing:
@@ -2029,7 +2030,8 @@ public class PlayerBehaviour: MonoBehaviour {
 //				//turn off particles
 //
 				cursorSprite.enabled = false;
-
+				state = PlayerState.Animating;
+				
 				StartCoroutine(ResetPlayerToStartPoint());
 //				if (state == PlayerState.Flying)
 //				{
