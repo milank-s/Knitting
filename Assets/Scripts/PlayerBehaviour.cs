@@ -43,6 +43,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float speed;
 	public float acceleration;
 	public float decay;
+	public float flyingSpeedDecay = 1;
 	public float accuracyCoefficient;
 	public float flowAmount = 0.1f;
 	public float stopTimer = 2f;
@@ -180,6 +181,20 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 	}
 
+	public IEnumerator ResetPlayerToStartPoint()
+	{
+		Services.fx.PlayAnimationOnPlayer(FXManager.FXType.glitch);
+		yield return new WaitForSeconds(1f);
+	
+		if (Services.main.state == Main.GameState.playing)
+		{
+			Services.main.WarpPlayerToNewPoint(Services.main.activeStellation.start);
+			Reset();
+			flow = Services.main.activeStellation.startSpeed;
+			flyingSpeed = 0;
+		}
+		
+	}
 	public void Initialize()
 	{
 		PointManager.ResetPoints ();
@@ -963,18 +978,22 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			if (flyingSpeed > 0)
 			{
-				//flyingSpeed -= Time.deltaTime/2f;
+				flyingSpeed -= Time.deltaTime * flyingSpeedDecay;
 				Vector3 inertia = cursorDir * flyingSpeed;
 				transform.position += inertia * Time.deltaTime;
 			}
 			else
 			{
 				//reset here
+				//play fizzle animation?
+				
 				SwitchState(PlayerState.Animating);
 			}
 		}
 	
 	}
+	
+	
 	
 	void TrackFreeMovement(){
 
@@ -2009,35 +2028,36 @@ public class PlayerBehaviour: MonoBehaviour {
 //				GranularSynth.rewinding.TurnOn();
 //				//turn off particles
 //
-				cursorSprite.enabled = false; 
-				
-				if (state == PlayerState.Flying)
-				{
-					if (!hasFlown)
-					{
-						StartCoroutine(RetraceTrail());
-						state = PlayerState.Animating;
-					}
-					else
-					{
-						PointManager.ResetPoints ();
-						Initialize();
-					}
-				}
-				else
-				{
-					state = PlayerState.Animating;
-					if (!hasFlown)
-					{
-						StartCoroutine(Unwind());
-					}
-					else
-					{
-						PointManager.ResetPoints();
-						Initialize();
-						
-					}
-				}
+				cursorSprite.enabled = false;
+
+				StartCoroutine(ResetPlayerToStartPoint());
+//				if (state == PlayerState.Flying)
+//				{
+//					if (!hasFlown)
+//					{
+//						StartCoroutine(RetraceTrail());
+//						state = PlayerState.Animating;
+//					}
+//					else
+//					{
+//						PointManager.ResetPoints ();
+//						Initialize();
+//					}
+//				}
+//				else
+//				{
+//					state = PlayerState.Animating;
+//					if (!hasFlown)
+//					{
+//						StartCoroutine(Unwind());
+//					}
+//					else
+//					{
+//						PointManager.ResetPoints();
+//						Initialize();
+//						
+//					}
+//				}
 				
 				break;
 		}

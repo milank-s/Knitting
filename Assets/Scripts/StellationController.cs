@@ -131,6 +131,7 @@ public class StellationController : MonoBehaviour {
 		{
 			if (b)
 			{
+				//only unlock points which wont be unlocked via splines
 				if (p._connectedSplines.Count == 0)
 				{
 					p.SwitchState(Point.PointState.off);
@@ -144,8 +145,6 @@ public class StellationController : MonoBehaviour {
 
 		if (b)
 		{
-			start.SwitchState(Point.PointState.on);
-			//particle effect?
 			
 			if (_splines.Count > 0)
 			{
@@ -154,6 +153,12 @@ public class StellationController : MonoBehaviour {
 					p.SwitchState(Point.PointState.off);
 				}
 			}
+			
+			
+			//particle effect?
+
+			start.SwitchState(Point.PointState.on);
+			
 		}
 	}
 
@@ -189,6 +194,11 @@ public class StellationController : MonoBehaviour {
 			}
 		}
 
+		if (start == null)
+		{
+			start = _points[0];
+		}
+		
 		Spline[] splines = GetComponentsInChildren<Spline>();
 		Array.Sort(splines, delegate(Spline x, Spline y) { return x.order.CompareTo(y.order); });
 
