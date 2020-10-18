@@ -84,6 +84,8 @@ public class StellationController : MonoBehaviour {
 			return;
 		}
 		
+		
+		
 		//We are in a scene that supports multiple controllers
 		if (StellationManager.instance != null)
 		{

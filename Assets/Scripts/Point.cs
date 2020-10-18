@@ -140,8 +140,8 @@ public class Point : MonoBehaviour
 		{
 			if (state == PointState.on)
 			{
-				return new Color(c, c, c, 1) + Color.white * (Mathf.Sin(3 * (Time.time + timeOffset)) / 10 + 0.2f);
-				
+			//	return new Color(c, c, c, 1) + Color.white * (Mathf.Sin(3 * (Time.time + timeOffset)) / 10 + 0.2f);
+				return new Color(c,c,c, 1);
 			}
 			
 			return new Color(c, c, c, 1) + (Color.white * 0.25f);
@@ -390,7 +390,11 @@ public class Point : MonoBehaviour
 			SetColor();
 			yield return null;
 		}
+
+		color = Color.white;
+		SetColor();
 	}
+	
 
 	public float NeighbourCount(){
 		return _connectedSplines.Count;
@@ -426,38 +430,39 @@ public class Point : MonoBehaviour
 
 	public void SwitchState(PointState s)
 	{
-		state = s;
-		
-		if (s != state)
+
+		switch (s)
 		{
-			switch (s)
-			{
-				case PointState.locked:
-					
-					if (state == PointState.on)
-					{
-						TurnOff();
-					}
+			case PointState.locked:
 
-					break;
+				if (state != PointState.locked)
+				{
+					TurnOff();
+				}
 
-				case PointState.off:
+				break;
 
-					if (state == PointState.locked)
-					{
+			case PointState.off:
+
+				if (state == PointState.locked)
+				{
 //						fdafadsf
-					}
-					break;
+				}
 
-				case PointState.on:
+				break;
+
+			case PointState.on:
+				if (state != PointState.on)
+				{
 					TurnOn();
-					//PointManager.AddPointHit(this);
+				}
+				//PointManager.AddPointHit(this);
 
-					break;
-			}
+				break;
 		}
+
 		
-		
+		state = s;
 	}
 	
 	public void OnPointEnter()
