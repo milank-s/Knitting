@@ -242,7 +242,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			Services.main.gamepad.ResetHaptics();
 		}
-		
+
+		flow = 0;
 		cursorSprite.enabled = true;
 		progress = 0;
 		state = PlayerState.Switching;
