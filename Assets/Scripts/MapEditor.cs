@@ -866,7 +866,7 @@ public class MapEditor : MonoBehaviour
             }
 
 //                string input = Input.inputString;
-            pointType.text = "Type - " + activePoint.pointType.ToString();
+            pointType.text = activePoint.pointType.ToString();
             xPos.text = "x  " + activePoint.Pos.x.ToString("F2");
             yPos.text = "y  " + activePoint.Pos.y.ToString("F2");
             zPos.text = "z  " + activePoint.Pos.z.ToString("F2");
@@ -1467,6 +1467,9 @@ void DragCamera()
 
             if (pointSelected && activePoint == p)
             {
+                
+                pointCoords.gameObject.SetActive(true);
+                
                 if (curTool == Tool.select)
                 {
                     RemoveSelectedPoint(p);
@@ -1477,8 +1480,9 @@ void DragCamera()
                 }else if (curTool == Tool.move)
                 {
                     DeselectPoints();
-                    pointCoords.gameObject.SetActive(true);
                     AddSelectedPoint(p);
+                    
+                    pointCoords.gameObject.SetActive(true);
                 }
             }else{
                 
@@ -1493,14 +1497,17 @@ void DragCamera()
                     }
                 }
                 
-                if (pointSelected && curTool == Tool.select)
+                if (pointSelected)
                 {
-                    pointOptions.SetActive(true);
-                }
+                    if (curTool == Tool.select)
+                    {
+                        pointOptions.SetActive(true);
+                        pointCoords.gameObject.SetActive(true);
+                    }else if (curTool == Tool.move)
+                    {
 
-                if (pointSelected && curTool == Tool.move)
-                {
-                    pointCoords.gameObject.SetActive(true);
+                        pointCoords.gameObject.SetActive(true);
+                    }
                 }
             }
         }
@@ -2097,7 +2104,7 @@ void DragCamera()
 
                 if (curTool == Tool.draw || curTool == Tool.select)
                 {
-                    pointCoords.gameObject.SetActive(false);
+//                  pointCoords.gameObject.SetActive(false);
                     cursor.rectTransform.pivot = new Vector3(0f, 0f);
                     dragging = false;
                 }else

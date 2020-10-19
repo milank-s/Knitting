@@ -967,6 +967,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			{
 				p.DrawSpline(p.SplinePoints.IndexOf(pointDest));
 			}
+			
 			if (Vector3.Distance(transform.position, pointDest.Pos) < 0.025f)
 			{
 				hasFlown = true;
