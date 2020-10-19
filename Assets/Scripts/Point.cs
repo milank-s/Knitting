@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using AudioHelm;
 using SimpleJSON;
+using UnityEditorInternal;
 
 
 //###################################################
@@ -436,11 +437,14 @@ public class Point : MonoBehaviour
 	public void SwitchState(PointState s)
 	{
 
+		PointState prevState = state;
+		state = s;
+		
 		switch (s)
 		{
 			case PointState.locked:
 
-				if (state != PointState.locked)
+				if (prevState != PointState.locked)
 				{
 					TurnOff();
 				}
@@ -449,7 +453,7 @@ public class Point : MonoBehaviour
 
 			case PointState.off:
 
-				if (state == PointState.locked)
+				if (prevState == PointState.locked)
 				{
 //						fdafadsf
 				}
@@ -457,7 +461,7 @@ public class Point : MonoBehaviour
 				break;
 
 			case PointState.on:
-				if (state != PointState.on)
+				if (prevState != PointState.on)
 				{
 					TurnOn();
 				}
@@ -466,8 +470,6 @@ public class Point : MonoBehaviour
 				break;
 		}
 
-		
-		state = s;
 	}
 	
 	public void OnPointEnter()
@@ -489,6 +491,7 @@ public class Point : MonoBehaviour
 		
 		SwitchState(PointState.on);
 
+		controller.TryToUnlock();
 
 		if(pointType != PointTypes.ghost)
 		{
@@ -548,7 +551,6 @@ public class Point : MonoBehaviour
 			GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
 			fx.transform.parent = transform;
 			
-			controller.TryToUnlock();
 		}
 		
 	}

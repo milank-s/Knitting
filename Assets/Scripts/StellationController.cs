@@ -23,9 +23,9 @@ public class StellationController : MonoBehaviour {
 	
 	public StellationController unlock;
 
-	public int laps;
-	public int speed;
-	public int time;
+	public int laps = 1;
+	public int speed = 1;
+	public int time = 1;
 	public float startSpeed;
 	
 	private float timer;
