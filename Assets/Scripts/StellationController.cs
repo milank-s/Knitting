@@ -1,6 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using System;
+using System.Linq;
 using UnityEngine;
 
 public class StellationController : MonoBehaviour {
@@ -202,44 +203,14 @@ public class StellationController : MonoBehaviour {
 				p.Initialize();
 			}
 		}
-
+		if (_points.Count == 0) return;
+		
 		if (start == null)
 		{
 			start = _points[0];
 		}
+
 		
-		Spline[] splines = GetComponentsInChildren<Spline>();
-		Array.Sort(splines, delegate(Spline x, Spline y) { return x.order.CompareTo(y.order); });
-
-		int index = 0;
-
-		if (splines.Length == 0) return;
-		     
-		     
-		for (int i = 0; i < splines.Length; i++)
-		{
-			Spline s = splines[i];
-			
-			s.order = i;
-			
-			_splines.Add(s);
-			s.SetSplineType(s.type);
-			
-			if (s.type == Spline.SplineType.locked)
-			{
-				_splinesToUnlock.Add(s);
-			}
-
-			if (s.order != 0)
-			{
-				s.SwitchState(Spline.SplineState.locked);
-			}
-
-			s.controller = this;
-			index++;
-		}
-		
-
 		_pointshit = new List<Point>();
 		
 		if (_points.Count == 0)
@@ -272,6 +243,40 @@ public class StellationController : MonoBehaviour {
 			words = text.text.Split (new char[] { ' ' });
 		}
 
+		
+		Spline[] splines = GetComponentsInChildren<Spline>();
+		Array.Sort(splines, delegate(Spline x, Spline y) { return x.order.CompareTo(y.order); });
+
+		int index = 0;
+
+		if (splines.Length == 0)
+		{
+			return;
+		}
+	
+		for (int i = 0; i < splines.Length; i++)
+		{
+			Spline s = splines[i];
+			
+			s.order = i;
+			
+			_splines.Add(s);
+			s.SetSplineType(s.type);
+			
+			if (s.type == Spline.SplineType.locked)
+			{
+				_splinesToUnlock.Add(s);
+			}
+
+			if (s.order != 0)
+			{
+				s.SwitchState(Spline.SplineState.locked);
+			}
+
+			s.controller = this;
+			index++;
+		}
+		
 		
 	}
 	public void Initialize()

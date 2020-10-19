@@ -706,7 +706,7 @@ public class Point : MonoBehaviour
 
 		if (state == PointState.on)
 		{
-			SR.color = _color + color;
+			SR.color = _color;
 		}
 		else if (state == PointState.locked)
 		{
