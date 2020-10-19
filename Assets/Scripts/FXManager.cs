@@ -192,10 +192,11 @@ public class FXManager : MonoBehaviour
   {
 
       GameObject newSprite = GameObject.Instantiate(spawnableSprites[i], t.position, Quaternion.identity);
-      spawnedSprites.Add(newSprite);
+      newSprite.AddComponent<FadeImage>();
+      //spawnedSprites.Add(newSprite);
 
       //StartCoroutine(ScaleObject(newSprite.transform));
-      StartCoroutine(FlashSprite(newSprite.transform));
+      //StartCoroutine(FlashSprite(newSprite.transform));
   }
 
   IEnumerator FlashSprite(Transform tr)
