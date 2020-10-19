@@ -428,6 +428,11 @@ public class Point : MonoBehaviour
 		}
 	}
 
+	public void TryLeaveStellation()
+	{
+		controller.LeaveStellation();
+	}
+
 	public void SwitchState(PointState s)
 	{
 

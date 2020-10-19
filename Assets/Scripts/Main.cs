@@ -161,7 +161,7 @@
 		
 		
 		StellationController c = editor.Load(m);
-		
+		activeStellation = c;
 		
 		
 		if (!MapEditor.editing)
@@ -636,7 +636,7 @@
 				{
 					string levelName = editor.controller.name;
 					Reset();
-					editor.Load(levelName);
+					activeStellation = editor.Load(levelName);
 					
 				}
 				

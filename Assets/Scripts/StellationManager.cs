@@ -54,6 +54,8 @@ public class StellationManager : MonoBehaviour
 
 		if (Services.main.activeStellation.isComplete)
 		{
+			
+			
 			if (Services.main.activeStellation.hasUnlock)
 			{
 				Services.mainCam.fieldOfView = 80;

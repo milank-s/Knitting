@@ -126,6 +126,13 @@ public class StellationController : MonoBehaviour {
 		}
 	}
 
+	public void LeaveStellation()
+	{
+		if (isComplete)
+		{
+			EnableStellation(false);
+		}
+	}
 	//this method fucking sucks
 	public void EnableStellation(bool b)
 	{
