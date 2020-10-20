@@ -513,6 +513,7 @@ public class Spline : MonoBehaviour
 		drawnIn = true;
 		drawingIn = true;
 
+		float lerp = 0;
 		int totalLineSegments = curveFidelity * (SplinePoints.Count - (closed ? 0 : 1));
 		int curDrawIndex = 0;
 		while (curDrawIndex <= totalLineSegments)
@@ -525,12 +526,12 @@ public class Spline : MonoBehaviour
 				for (int k = 0; k < curveFidelity; k++)
 				{
 
-					
 					int index = (i * curveFidelity) + k;
 					float step = (float) k / (float) (curveFidelity - 1);
 
 					if(index == curDrawIndex)
 					{
+						step += stepSize * lerp;
 						curStep = step;
 						curPoint = i;
 						DrawLine(i, index, step);
@@ -546,8 +547,14 @@ public class Spline : MonoBehaviour
 				}
 			}
 
-			curDrawIndex++;
-			yield return new WaitForSeconds(0.1f);
+			lerp += Time.deltaTime / drawSpeed;
+
+			if (lerp >= 1)
+			{
+				lerp = 0;
+				curDrawIndex++;	
+			}
+			yield return null;
 		}
 
 		drawingIn = false;
