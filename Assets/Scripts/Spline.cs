@@ -447,7 +447,6 @@ public class Spline : MonoBehaviour
 		
 		foreach (Point p in SplinePoints)
 		{
-		
 			//why this condition ? p._connectedSplines.Count <= 1
 			if (p != null && p.state == Point.PointState.locked)
 			{
