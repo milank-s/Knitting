@@ -446,9 +446,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				//should always be drawn
 				if(!s.locked)
 				{
-					
-				s.DrawSpline( s.SplinePoints.IndexOf(curPoint));
-					
+					s.DrawSpline( s.SplinePoints.IndexOf(curPoint));
 				}
 			}
 			

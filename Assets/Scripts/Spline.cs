@@ -548,13 +548,13 @@ public class Spline : MonoBehaviour
 				}
 			}
 
-			lerp += (Time.deltaTime / drawSpeed) * ease;
+			lerp += (Time.deltaTime / drawSpeed) * (ease/2f);
 
 			if (lerp >= 1)
 			{
 				lerp = 0;
 				curDrawIndex++;	
-				ease = Easing.CircEaseIn(curDrawIndex / (float) totalLineSegments);
+				ease = 1-Easing.CircEaseIn(curDrawIndex / (float) totalLineSegments);
 			}
 			
 			yield return null;
@@ -565,7 +565,7 @@ public class Spline : MonoBehaviour
 
 	public void DrawSpline(int pointIndex = 0)
 	{
-		if (drawingIn) return;
+		if (drawingIn || drawnIn) return;
 		
 		if (line.GetSegmentNumber() != 0)
 		{
