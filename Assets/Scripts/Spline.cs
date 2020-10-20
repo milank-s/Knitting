@@ -513,6 +513,7 @@ public class Spline : MonoBehaviour
 		drawnIn = true;
 		drawingIn = true;
 
+		float ease = 1;
 		float lerp = 0;
 		int totalLineSegments = curveFidelity * (SplinePoints.Count - (closed ? 0 : 1));
 		int curDrawIndex = 0;
@@ -547,13 +548,15 @@ public class Spline : MonoBehaviour
 				}
 			}
 
-			lerp += Time.deltaTime / drawSpeed;
+			lerp += (Time.deltaTime / drawSpeed) * ease;
 
 			if (lerp >= 1)
 			{
 				lerp = 0;
 				curDrawIndex++;	
+				ease = Easing.CircEaseIn(curDrawIndex / (float) totalLineSegments);
 			}
+			
 			yield return null;
 		}
 
