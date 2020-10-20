@@ -87,7 +87,7 @@ public class EditorUI : MonoBehaviour {
 
 		GUILayout.BeginHorizontal();
 		GUILayout.Label("Max Vertices Curve:",GUILayout.Width(120));
-		Spline.Select.curveFidelity = (int)GUILayout.HorizontalSlider(Spline.Select.curveFidelity,3, 100);
+		Spline.curveFidelity = (int)GUILayout.HorizontalSlider(Spline.curveFidelity,3, 100);
 		GUILayout.EndVertical();
 
 		Spline.Select.closed = GUILayout.Toggle( Spline.Select.closed," Closed");

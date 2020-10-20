@@ -1716,10 +1716,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void DrawVelocity(){
 
-		float s = 1f/(float)curSpline.curveFidelity;
-		for(int i = 0; i < curSpline.curveFidelity * 3; i +=3){
+		float s = 1f/(float)Spline.curveFidelity;
+		for(int i = 0; i < Spline.curveFidelity * 3; i +=3){
 			int index = i/3;
-			float step = (float)index/(float)curSpline.curveFidelity;
+			float step = (float)index/(float)Spline.curveFidelity;
 			if(i >= velocityLine.points3.Count-1){
 				velocityLine.points3.Add(Vector3.zero);
 				velocityLine.points3.Add(Vector3.zero);
@@ -1741,9 +1741,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 			else if(f <= s && f >= 0){
 				if(step == 0){
-					velocityLine.points3[i+1] = pos + curSpline.GetDirection(step + 0.01f) * Mathf.Pow((1-Mathf.Abs(f)), 2) * curSpeed * curSpline.segmentDistance * (s) * curSpline.curveFidelity/2;
+					velocityLine.points3[i+1] = pos + curSpline.GetDirection(step + 0.01f) * Mathf.Pow((1-Mathf.Abs(f)), 2) * curSpeed * curSpline.segmentDistance * (s) * Spline.curveFidelity/2;
 				}else{
-				velocityLine.points3[i+1] = pos + curSpline.GetDirection(step) * Mathf.Pow((1-Mathf.Abs(f)), 2) * curSpeed * curSpline.segmentDistance * (s - f) * curSpline.curveFidelity/2;
+				velocityLine.points3[i+1] = pos + curSpline.GetDirection(step) * Mathf.Pow((1-Mathf.Abs(f)), 2) * curSpeed * curSpline.segmentDistance * (s - f) * Spline.curveFidelity/2;
 				}
 			}else{
 				velocityLine.points3[i + 1] = Vector3.Lerp(velocityLine.points3[i + 1], velocityLine.points3[i], Time.deltaTime);

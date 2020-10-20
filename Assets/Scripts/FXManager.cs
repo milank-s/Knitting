@@ -87,9 +87,9 @@ public class FXManager : MonoBehaviour
 
         Vector3 endpoint = s.GetPoint(0.5f);
         Vector3 endDir = s.GetDirection(0.5f);
-      for (int i = 0; i < s.curveFidelity; i++)
+      for (int i = 0; i < Spline.curveFidelity; i++)
       {
-          newLine.points3.Add(s.GetPoint((0.5f * i)/s.curveFidelity) + offset);
+          newLine.points3.Add(s.GetPoint((0.5f * i)/Spline.curveFidelity) + offset);
           newLine.Draw3D();
           yield return new WaitForSeconds(0.02f);
       }
@@ -99,7 +99,7 @@ public class FXManager : MonoBehaviour
       nextSplineArrow.transform.position = endpoint;
       nextSplineArrow.transform.up = endDir;
       
-      for (int i = 0; i < s.curveFidelity; i++)
+      for (int i = 0; i < Spline.curveFidelity; i++)
       {
           nextSplineArrow.enabled = true;
           newLine.points3.RemoveAt(0);

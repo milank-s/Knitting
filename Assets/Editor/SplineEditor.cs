@@ -45,7 +45,6 @@ public class SplineEditor : Editor {
         GetTarget.Update();
 
         
-	    
         DrawDefaultInspector();
         GUILayout.Space(25);
         
@@ -168,9 +167,9 @@ public class SplineEditor : Editor {
 
             Handles.color = new Color(1,1,1);
 	
-		 		 			for (int k = 0; k < spline.curveFidelity + 1; k++) {
+		 		 			for (int k = 0; k < Spline.curveFidelity + 1; k++) {
 
-								float j = (float)k / (float)(spline.curveFidelity);
+								float j = (float)k / (float)(Spline.curveFidelity);
 								curPos = spline.GetPointAtIndex (i, j);
 
 								if(i == 0 && k ==0){
