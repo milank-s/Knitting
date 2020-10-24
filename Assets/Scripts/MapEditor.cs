@@ -1799,6 +1799,8 @@ void DragCamera()
                     l.SetPosition(0, Vector3.one * 1000);
                     l.SetPosition(1, Vector3.one * 1000);
                 }
+                
+                Point newPoint = null;
 
                 if (hitPoint != null && !Input.GetKey(KeyCode.LeftAlt))
                 {
@@ -1846,10 +1848,11 @@ void DragCamera()
                 }
                 else if (raycastNull || Input.GetKey(KeyCode.LeftAlt))
                 {
+                        
                     if (Input.GetMouseButtonDown(0))
                         if (selectedPoints.Count > 0)
                         {
-                            Point newPoint = SplineUtil.CreatePoint(worldPos);
+                            newPoint = SplineUtil.CreatePoint(worldPos);
                             if (Input.GetKey(KeyCode.LeftShift))
                             {
                                 newPoint.tension = 1;
@@ -1875,15 +1878,15 @@ void DragCamera()
                                 AddSelectedPoint(newPoint);
                                 AddSelectedSpline(spp.s);
                                 
-                               
                             }
+                            
                             pointCreated = true;
 
                         }
                         else
                         {
                             pointCreated = true;
-                            Point newPoint = SplineUtil.CreatePoint(worldPos);
+                            newPoint = SplineUtil.CreatePoint(worldPos);
                             newPoint.transform.parent = pointsParent;
                             AddSelectedPoint(newPoint);
                         }
@@ -1892,7 +1895,10 @@ void DragCamera()
 
                 if (pointCreated)
                 {
-
+                    if (!(Point.Points.Count > 0))
+                    {
+                        newPoint.SetPointType(PointTypes.start);
+                    }
                     SynthController.instance.pads[0].NoteOn(60, 0.5f, 0.1f);
                 }
 
