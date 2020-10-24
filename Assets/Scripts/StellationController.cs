@@ -158,17 +158,21 @@ public class StellationController : MonoBehaviour {
 			
 			if (_splines.Count > 0)
 			{
-				_splines[0].Unlock();
+				_splines[0].SwitchState(Spline.SplineState.on);
 //				foreach (Point p in _splines[0].SplinePoints)
 //				{
 //					p.SwitchState(Point.PointState.off);
 //				}
 			}
+			else
+			{
+				Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, start.transform);
+				start.SwitchState(Point.PointState.on);
+			}
 			
 			
 			//particle effect?
 
-			start.SwitchState(Point.PointState.on);
 			
 		}
 	}
@@ -366,13 +370,14 @@ public class StellationController : MonoBehaviour {
 	public void UnlockSpline(Spline spline)
 	{
 		
+		
 		int index = spline.order + 1;
 		
 		foreach (Spline s in _splines)
 		{
-			if (s.order == index && !_splinesToUnlock.Contains(s))
+			if (s.order == index && !_splinesToUnlock.Contains(s) && s.state == Spline.SplineState.locked) 
 			{
-				s.Unlock();
+				s.SwitchState(Spline.SplineState.on);
 			}
 		}
 	}
@@ -479,7 +484,7 @@ public class StellationController : MonoBehaviour {
 	{
 		foreach (Spline s in _splinesToUnlock)
 		{
-			s.Unlock();
+			s.SwitchState(Spline.SplineState.on);
 		}
 	}
 

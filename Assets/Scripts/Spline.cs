@@ -177,6 +177,7 @@ public class Spline : MonoBehaviour
 		
 		if (controller != null)
 		{
+			
 			controller.UnlockSpline(this);
 		}
 	}
@@ -453,7 +454,8 @@ public class Spline : MonoBehaviour
 				p.SwitchState(Point.PointState.off);
 			}
 		}
-		
+
+		Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, SplinePoints[0].transform);
 		SplinePoints[0].SwitchState(Point.PointState.on);
 
 		state = SplineState.on;
