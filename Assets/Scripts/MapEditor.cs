@@ -973,6 +973,7 @@ public class MapEditor : MonoBehaviour
             {
                 ComparePointPosition(p);
                 SetPointInfo(p, index);
+                p.Step();
                 index++;
             }
         }
@@ -980,6 +981,7 @@ public class MapEditor : MonoBehaviour
         {
             foreach (Point p in Point.Points)
             {
+                p.Step();
                 ComparePointPosition(p);
             }
 

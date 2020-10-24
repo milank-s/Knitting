@@ -453,6 +453,8 @@ public class Spline : MonoBehaviour
 				p.SwitchState(Point.PointState.off);
 			}
 		}
+		
+		SplinePoints[0].SwitchState(Point.PointState.on);
 
 		state = SplineState.on;
 
@@ -486,7 +488,6 @@ public class Spline : MonoBehaviour
 				int index = (i * curveFidelity) + k;
 				float step = (float) k / (float) (curveFidelity-1);
 
-				
 //					DrawLine(i, index, step);
 					Vector3 v = Vector3.zero;
 					v = GetPointAtIndex(i, step);
@@ -739,6 +740,7 @@ public class Spline : MonoBehaviour
 		Vector3 distortionVector = new Vector3(-direction.y, direction.x, direction.z);
 		distortion = Mathf.Lerp(distortion, 0, Time.deltaTime);
 		amplitude = flow / 5;
+		
 		if (isPlayerOn)
 		{
 			 float accuracyDistortion = Mathf.Lerp(0, 1, Mathf.Pow(0.5f - Services.PlayerBehaviour.accuracy / 2, 2)) + distortion;

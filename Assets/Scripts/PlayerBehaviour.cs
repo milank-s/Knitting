@@ -479,7 +479,10 @@ public class PlayerBehaviour: MonoBehaviour {
 			if (curPoint.pointType == PointTypes.ghost)
 			{
 				canTraverse = true;
-				
+				if (curSpline != null)
+				{
+					curSpline.Selected = curPoint;
+				}
 			}
 			else
 			{
