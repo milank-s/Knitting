@@ -387,7 +387,7 @@ public class Point : MonoBehaviour
 		while (f < 1)
 		{
 			color = Color.Lerp(startColor, Color.white, f);
-			f += Time.deltaTime;
+			f += Time.deltaTime * 5f;
 			SetColor();
 			yield return null;
 		}
