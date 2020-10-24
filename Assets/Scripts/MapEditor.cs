@@ -1674,13 +1674,13 @@ void DragCamera()
                         List<Point> splinePoints = new List<Point>();
                         foreach (Point p in s.SplinePoints)
                         {
-                            Point newPoint = null;
+                            Point newP = null;
                             bool alreadyCopied = false;
                             foreach (Point pew in newPoints)
                             {
                                 if (Vector3.Distance(p.Pos, pew.Pos) < 0.05f)
                                 {
-                                    newPoint = pew;
+                                    newP = pew;
                                     alreadyCopied = true;
                                     break;
                                 }
@@ -1688,9 +1688,9 @@ void DragCamera()
 
                             if (!alreadyCopied)
                             {
-                                newPoint = Instantiate(p.gameObject, pointsParent.transform)
+                                newP = Instantiate(p.gameObject, pointsParent.transform)
                                     .GetComponent<Point>();
-                                newPoints.Add(newPoint);
+                                newPoints.Add(newP);
                                 if (pointsToCopy.Contains(p))
                                 {
                                     pointsToCopy.Remove(p);
@@ -1698,7 +1698,7 @@ void DragCamera()
                                 
                             }
 
-                            splinePoints.Add(newPoint);
+                            splinePoints.Add(newP);
                         }
 
                         Spline newSpline = SplineUtil.CreateSplineFromPoints(splinePoints);
