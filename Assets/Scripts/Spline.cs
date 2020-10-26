@@ -2,8 +2,6 @@ using System.Collections;
 using UnityEngine;
 using System.Xml;
 using System.IO;
-using System.Security.Cryptography;
-using Boo.Lang;
 using Vectrosity;
 
 //###################################################
