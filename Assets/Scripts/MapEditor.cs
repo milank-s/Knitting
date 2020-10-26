@@ -2046,7 +2046,7 @@ void DragCamera()
     void ShuffleSplineOrder(int i)
     {
         
-        if (controller._splines.Count > 1)
+        if (controller._splines.Count > 0)
         {
             int newPosition = splineindex + i;
             
