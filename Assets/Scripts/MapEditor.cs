@@ -708,10 +708,10 @@ public class MapEditor : MonoBehaviour
 
                 if(Input.GetKeyDown(KeyCode.Comma))
                 {
-                    ShuffleSplineOrder(1);
+                    ShuffleSplineOrder(-1);
                 }else if (Input.GetKeyDown(KeyCode.Period))
                 {
-                    ShuffleSplineOrder(-1);
+                    ShuffleSplineOrder(1);
                 }
                 
                 
