@@ -345,7 +345,6 @@ public class Point : MonoBehaviour
 		if (!_connectedSplines.Contains (s)) {
 			_connectedSplines.Add (s);
 		}else{
-			Debug.Log("trying to add a spline twice. DONT DO THAT");
 		}
 	}
 
@@ -353,7 +352,6 @@ public class Point : MonoBehaviour
 		if (!_neighbours.Contains (p)) {
 			_neighbours.Add (p);
 		}else{
-			Debug.Log("trying to add a point twice. DONT DO THAT");
 		}
 	}
 
@@ -408,7 +406,7 @@ public class Point : MonoBehaviour
 		_neighbours.Remove (p);
 	}
 
-	public void TurnOff()
+	public void Lock()
 	{
 		state = PointState.locked;
 		StartCoroutine(Fade());
@@ -445,7 +443,7 @@ public class Point : MonoBehaviour
 
 				if (prevState != PointState.locked)
 				{
-					TurnOff();
+					Lock();
 				}
 
 				break;
@@ -479,7 +477,6 @@ public class Point : MonoBehaviour
 		
 		if (controller.CheckSpeed())
 		{
-			
 			if(textMesh != null){
 				textMesh.GetComponent<FadeTextOnPoint>().alpha = 1;
 			}

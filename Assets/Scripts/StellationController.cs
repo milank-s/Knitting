@@ -30,8 +30,7 @@ public class StellationController : MonoBehaviour {
 	public float startSpeed;
 	
 	private float timer;
-	public int lapCount;
-	
+	public int curSplineIndex;
 
 	public Point start;
 	public Vector3 center;
@@ -80,13 +79,6 @@ public class StellationController : MonoBehaviour {
 	
 	public void Won()
 	{
-		if (!isComplete)
-		{
-			return;
-		}
-		
-		
-		
 		//We are in a scene that supports multiple controllers
 		if (StellationManager.instance != null)
 		{
@@ -131,6 +123,7 @@ public class StellationController : MonoBehaviour {
 	{
 		if (isComplete)
 		{
+			Debug.Log("I guess Im complete");
 			EnableStellation(false);
 		}
 	}
@@ -179,11 +172,10 @@ public class StellationController : MonoBehaviour {
 
 	public void GetComponents()
 	{
+		curSplineIndex = 0;
 		_points.Clear();
 		_splines.Clear();
 		_splinesToUnlock.Clear();
-		
-		lapCount = 0;
 		
 		//stupid code for old maps that didnt have scoreCount idk. 
 		if (unlockMethod == UnlockType.laps && laps == 0)
@@ -286,6 +278,8 @@ public class StellationController : MonoBehaviour {
 	}
 	public void Initialize()
 	{
+		curSplineIndex = 0;
+		isComplete = false;
 		GetComponents();
 
 		//why is this here
@@ -297,6 +291,7 @@ public class StellationController : MonoBehaviour {
 	{
 		isOn = true;
 		isComplete = false;
+		curSplineIndex = 0;
 		Services.main.activeStellation = this;
 		
 		if (Services.PlayerBehaviour.flow < startSpeed)
@@ -333,6 +328,12 @@ public class StellationController : MonoBehaviour {
 
 		int minLaps = 1000;
 		bool isDone = true;
+
+		if (curSplineIndex < (_splines.Count - _splinesToUnlock.Count)-1)
+		{
+			return false;
+		}
+		
 		foreach (Point p in _points)
 		{
 			//we arent checking against the points we need to unlock
@@ -363,19 +364,17 @@ public class StellationController : MonoBehaviour {
 	public void Reset()
 	{
 		//Services.main.InitializeLevel();
-		lapCount = 0;
+		curSplineIndex = 0;
 		isComplete = false;
 	}
 
 	public void UnlockSpline(Spline spline)
 	{
-		
-		
-		int index = spline.order + 1;
+		curSplineIndex = spline.order + 1;
 		
 		foreach (Spline s in _splines)
 		{
-			if (s.order == index && !_splinesToUnlock.Contains(s) && s.state == Spline.SplineState.locked) 
+			if (s.order == curSplineIndex && !_splinesToUnlock.Contains(s) && s.state == Spline.SplineState.locked) 
 			{
 				s.SwitchState(Spline.SplineState.on);
 			}
@@ -464,13 +463,6 @@ public class StellationController : MonoBehaviour {
 				break;
 			}
 
-			
-			
-			//Unlock shit
-
-			if(isComplete){
-				Unlock();
-			}
 
 			return isComplete;
 
@@ -480,7 +472,7 @@ public class StellationController : MonoBehaviour {
 
 	}
 
-	void Unlock()
+	public void Unlock()
 	{
 		foreach (Spline s in _splinesToUnlock)
 		{

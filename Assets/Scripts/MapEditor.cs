@@ -313,7 +313,6 @@ public class MapEditor : MonoBehaviour
     
     public void EnterEditMode()
     {
-        
         fov.text = controller.desiredFOV.ToString("F0");
         fovSlider.value = controller.desiredFOV;
         fixedCamera.isOn = controller.fixedCam;

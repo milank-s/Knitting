@@ -2005,9 +2005,20 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				
 				curPoint.proximity = 1;
-				
 				curPoint.OnPointEnter();
+//TODO
+				//SPLINE IS NULL WHEN YOU ARE FLYING, THIS SUCKS
+				if (curSpline != null)
+				{
+					curSpline.CheckComplete();
+				}
+				
+				//can we check for completeness here please
 
+				if (curPoint.controller.isComplete)
+				{
+					curPoint.controller.Unlock();
+				}
 				
 				//checkpoint shit
 				if (curPoint.pointType == PointTypes.stop)
@@ -2016,13 +2027,6 @@ public class PlayerBehaviour: MonoBehaviour {
 //				traversedPoints.Add(curPoint);
 				}
 
-				
-				//TODO
-				//SPLINE IS NULL WHEN YOU ARE FLYING, THIS SUCKS
-				if (curSpline != null)
-				{
-					curSpline.CheckComplete();
-				}
 				
 				PlayerOnPoint();
 
