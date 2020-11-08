@@ -329,7 +329,7 @@ public class StellationController : MonoBehaviour {
 		int minLaps = 1000;
 		bool isDone = true;
 
-		if (curSplineIndex < (_splines.Count - _splinesToUnlock.Count))
+		if (curSplineIndex < (_splines.Count - _splinesToUnlock.Count) - 1)
 		{
 			return false;
 		}

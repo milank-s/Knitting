@@ -1616,6 +1616,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			cursorDir2.Normalize ();
 		}
 		
+		//TODO WHEN ON CONNECTING POINT CURSOR SHOULD MOVE FROM CURRENT MAGNITUDE TO NEW MAGNITUDE
+		
 		if (freeCursor)
 		{
 			//TODO
