@@ -13,7 +13,7 @@ public enum PlayerState{Traversing, Switching, Flying, Animating};
 //###################################################
 
 
-//						TO DO					   
+//						TO DO
 
 
 //Sounds SOUNDS OUNDS OUNDSOUNDSOUNDSOUNDSUON
@@ -38,7 +38,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public Point curPoint;
 	public Point pointDest;
 	public Point lastPoint;
-	
+
 	[Space(10)] [Header("Movement Tuning")]
 	public float speed;
 	public float acceleration;
@@ -47,7 +47,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float accuracyCoefficient;
 	public float flowAmount = 0.1f;
 	public float stopTimer = 2f;
-	[Space(10)] [Header("Cursor Control")] 
+	[Space(10)] [Header("Cursor Control")]
 	public float cursorMoveSpeed = 1;
 	public float minCursorDistance = 25;
 	public float maxCursorDistance = 2;
@@ -69,7 +69,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	[HideInInspector]
 	public bool goingForward = true;
-	
+
 	[HideInInspector] public float progress,
 		accuracy,
 		flow,
@@ -88,17 +88,17 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			float adjustedAccuracy = goingForward ? Mathf.Pow(1 - accuracy, 2) : -Mathf.Clamp(accuracy, -1, -0.5f);
 			float accuracyMultiplier = Mathf.Pow(accuracy, accuracyCoefficient);
-			
+
 			float relaxedAccuracy = (adjustedAccuracy * decelerationTimer);
 			if (progress >= 0.9f && accuracy < 0.5f)
 			{
 				relaxedAccuracy = 0;
 			}
-			
+
 			return Mathf.Clamp(flow + speed + boost, 0, 1000) * cursorDir.magnitude * Mathf.Clamp01(1- relaxedAccuracy);
 		}
 	}
-	
+
 	[Header("Flying tuning")]
 	public float flyingSpeedThreshold = 3;
 	public float PointDrawDistance;
@@ -108,8 +108,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	private bool charging;
 	private List<Transform> newPointList;
 
-	[Space(10)] [Header("Point Creation")] 
-	
+	[Space(10)] [Header("Point Creation")]
+
 	private Spline drawnSpline;
 	private Point drawnPoint;
 	private List<Point> traversedPoints;
@@ -123,7 +123,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	[Space(10)]
 
 	[Header("AV")]
-	
+
 	public Sprite canFlySprite;
 	public Sprite canMoveSprite;
 	public Sprite canConnectSprite;
@@ -143,7 +143,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public LineRenderer cursorOnPoint;
 	private VectorLine velocityLine;
 	private VectorLine velocityLine2;
-	
+
 	public bool buttonPressed;
 	private float buttonPressedBuffer = 0.2f;
 	private float buttonPressedTimer;
@@ -160,14 +160,14 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public Vector2 cursorDir2;
 	public Vector3 cursorPos2;
-	
+
 
 	public void Awake(){
 		joystickLocked = true;
-		
+
 		pointDest = null;
 		traversedPoints = new List<Point> ();
-		
+
 		connectTimeCoefficient = 1;
 		state = PlayerState.Switching;
 		l = GetComponent<LineRenderer> ();
@@ -178,14 +178,14 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		int i = 0;
 		lastPoint = null;
-		
+
 	}
 
 	public IEnumerator ResetPlayerToStartPoint()
 	{
 		Services.fx.PlayAnimationOnPlayer(FXManager.FXType.glitch);
 		yield return new WaitForSeconds(1f);
-	
+
 		if (Services.main.state == Main.GameState.playing)
 		{
 			Services.main.WarpPlayerToNewPoint(Services.main.activeStellation.start);
@@ -193,7 +193,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			flow = Services.main.activeStellation.startSpeed;
 			flyingSpeed = 0;
 		}
-		
+
 	}
 	public void Initialize()
 	{
@@ -237,7 +237,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Reset()
 	{
-		
+
 		if (Services.main.hasGamepad)
 		{
 			Services.main.gamepad.ResetHaptics();
@@ -251,7 +251,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversedPoints.Clear();
 		hasFlown = false;
 		boost = 0;
-		
+
 		pointDest = null;
 		lastPoint = null;
 	}
@@ -267,17 +267,17 @@ public class PlayerBehaviour: MonoBehaviour {
 	public IEnumerator RetraceTrail()
 	{
 		cursorSprite.sprite = null;
-		
+
 		Vector3[] positions = new Vector3[flyingTrail.positionCount];
 		flyingTrail.GetPositions(positions);
 		float f = 0;
 		float lerpSpeed = 0;
 		float distance;
-			
+
 //		Point p = SplineUtil.CreatePoint(transform.position);
 //		p.pointType = PointTypes.connect;
 //		p.Initialize();
-		
+
 		for (int i = positions.Length -1; i >= 0; i--)
 		{
 			float temp = 0;
@@ -298,7 +298,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		Services.fx.BakeTrail(Services.fx.flyingTrail, Services.fx.flyingTrailMesh);
-		
+
 		state = PlayerState.Switching;
 		curSpeed = lerpSpeed;
 		StartCoroutine(Unwind());
@@ -313,7 +313,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			cursorSprite.enabled = true;
 		}
-		
+
 		Point.hitColorLerp = connectTime;
 
 		if (Input.GetButtonDown("Button1"))
@@ -321,19 +321,19 @@ public class PlayerBehaviour: MonoBehaviour {
 			boostIndicator.enabled = true;
 			directionIndicator.enabled = true;
 		}
-		
+
 		if (Input.GetButton("Button1"))
 		{
 
 			boostIndicator.transform.position =
 				transform.position + (Vector3) cursorDir2 * ((Vector3)transform.position - cursorPos).magnitude;
 			boostIndicator.transform.up = cursorDir2;
-			
+
 			if(charging && state != PlayerState.Switching){
 				boostTimer += Time.deltaTime;
 				boostTimer = Mathf.Clamp01(boostTimer);
 			}
-			
+
 			buttonPressed = true;
 			charging = true;
 			buttonPressedTimer = buttonPressedBuffer;
@@ -342,9 +342,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			boostIndicator.enabled = false;
 		}
-		
+
 		boostIndicator.transform.localScale = Vector3.Lerp(Vector3.one * 0.2f, Vector3.one , boostTimer);
-		
+
 		if (Input.GetButtonUp("Button1"))
 		{
 			charging = false;
@@ -365,7 +365,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			buttonPressed = false;
 		}
-		
+
 		float speedCoefficient;
 		if(state == PlayerState.Switching || state == PlayerState.Animating){
 			speedCoefficient = 0;
@@ -379,13 +379,17 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			speedCoefficient = 0;
 		}
-		
+
 		playerSprite.transform.localScale = Vector3.Lerp(playerSprite.transform.localScale, new Vector3(Mathf.Clamp(1 - (speedCoefficient * 2), 0.1f, 0.25f), Mathf.Clamp(speedCoefficient, 0.25f, 0.75f), 0.25f), Time.deltaTime * 10);
 
 //		if (connectTime <= 0 && PointManager._pointsHit.Count > 0) {
 //			PointManager.ResetPoints ();
 //			connectTime = 1;
 //		}
+
+	if(state != PlayerState.Flying && state != PlayerState.Animating && Input.GetMouseButtonDown(1)){
+		SwitchState(PlayerState.Flying);
+	}
 
 		Effects ();
 
@@ -399,30 +403,30 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			boost = 0;
 		}
-		
+
 		if (state == PlayerState.Traversing) {
 			if(curSpline != null){
 				SetCursorAlignment ();
 				transform.position = curSpline.GetPoint(progress);
-				
+
 			}
 
 			PlayerMovement ();
 			CheckProgress ();
 
 			if(Mathf.Abs(flow) < 1){
-				
+
 				Services.fx.drawGraffiti = false;
 			cursorSprite.sprite = traverseSprite;
 		 }else if (Mathf.Abs(flow) < 2){
-				
+
 				Services.fx.DrawLine();
 			 cursorSprite.sprite = canMoveSprite;
 		 }else
 			{
 			 cursorSprite.sprite = canFlySprite;
 		 }
-			
+
 
 		}
 		//else if? should happen all on same frame?
@@ -431,7 +435,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			transform.position = curPoint.Pos;
 			gravity = 0;
 			PlayerOnPoint();
-			
+
 		}
 
 		if (state != PlayerState.Animating && state != PlayerState.Flying && curPoint.HasSplines () && curSpline != null) {
@@ -441,7 +445,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //			ManageSound();
 
 			curPoint.controller.Step();
-			
+
 			foreach(Spline s in curPoint._connectedSplines){
 				//should always be drawn
 				if(!s.locked)
@@ -449,7 +453,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					s.DrawSpline( s.SplinePoints.IndexOf(curPoint));
 				}
 			}
-			
+
 			if(pointDest != null){
 				foreach(Spline s in pointDest._connectedSplines){
 					if(!s.locked && s!=curSpline)
@@ -458,20 +462,20 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 				}
 			}
-			
+
 			if ((Input.GetButton("Button2") || (flow <= 0.01f && state == PlayerState.Traversing))) {
 				// && Mathf.Abs (flow) <= 0)
 				//SwitchState(PlayerState.Animating);
 			}
 		}
 	}
-	
+
 	public void PlayerOnPoint(){
-		
+
 		bool canTraverse = false;
 
 		Point prevPointDest = pointDest;
-		
+
 		if (!foundConnection && CanLeavePoint())
 		{
 			cursorSprite.sprite = traverseSprite;
@@ -486,25 +490,25 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 			else
 			{
-				
+
 				bool newPointSelected = false;
 				if (prevPointDest != null)
 				{
 					if (prevPointDest != pointDest)
 					{
 						newPointSelected = true;
-						Services.fx.ShowSplineDirection(curSpline);	
+						Services.fx.ShowSplineDirection(curSpline);
 					}
 				}
 				else
 				{
 					newPointSelected = true;
-					Services.fx.ShowSplineDirection(curSpline);	
+					Services.fx.ShowSplineDirection(curSpline);
 				}
-				
+
 				if( pointDest.pointType != PointTypes.ghost)
 				{
-					
+
 					Services.fx.ShowNextPoint(pointDest);
 					if (newPointSelected)
 					{
@@ -515,27 +519,27 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 			//boostTimer >= 1 ||  if you wnna fuck with ppl
-			if (!joystickLocked && curPoint.CanLeave()) {	
-					
+			if (!joystickLocked && curPoint.CanLeave()) {
+
 				//something about locking was here
 				canTraverse = true;
-	
+
 			}
 
 			if (!canTraverse)
 			{
 				l.positionCount = 0;
-				
+
 			}
-			
+
 		}
 		else
 		{
 			Services.fx.nextPointSprite.enabled = false;
 		}
-		
+
 		if(!canTraverse){
-			
+
 			if (curPoint.pointType == PointTypes.connect)
 			{
 				freeCursor = true;
@@ -553,7 +557,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				{
 					//this looks bad rn
 //					l.positionCount = 2;
-//					
+//
 //					l.SetPosition(0, pointDest.Pos);
 //					l.SetPosition(1, transform.position);
 
@@ -592,7 +596,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			// pointInfo.GetComponent<Text>().text = "";
 			SwitchState(PlayerState.Traversing);
-			
+
 			Services.fx.nextPointSprite.enabled = false;
 			cursorDistance = minCursorDistance;
 		}
@@ -619,15 +623,15 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if (!joystickLocked) {
 
-				
+
 				Point target = SplineUtil.RaycastFromCamera(cursorPos, 1f);
 
 				bool drawnPointNull;
-				
+
 				if(drawnPoint == null){
 					drawnPointNull = true;
 				}
-				
+
 				if (target != null && target.state != Point.PointState.locked && target.pointType != PointTypes.ghost && target != curPoint && !target.IsAdjacent(curPoint))
 				{
 
@@ -639,9 +643,9 @@ public class PlayerBehaviour: MonoBehaviour {
 							return true;
 					  }
 							return false;
-						
+
 					}
-					
+
 					pointDest = target;
 						return true;
 				}
@@ -657,7 +661,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		//Adding points multiple times to each other is happening HERE
 		//Could restrict points to never try and add their immediate neighbours?
 		l.positionCount = 0;
-		
+
 
 		bool isEntering = false;
 
@@ -688,7 +692,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		sparks.Emit(5);
 	}
-	 
+
 	void Fly(){
 		pointDest = null;
 		l.positionCount = 0;
@@ -717,7 +721,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		decelerationTimer = Mathf.Lerp(decelerationTimer, 0, Time.deltaTime * 2);
 		timeOnPoint += Time.deltaTime;
 
-		
+
 		if(Input.GetButton("Button1") && !freeCursor && pointDest != null){
 			boostTimer += Time.deltaTime / stopTimer;
 			boostIndicator.enabled = true;
@@ -727,21 +731,21 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		boostTimer = Mathf.Clamp01(boostTimer);
-		
+
 		if (curSpline != null)
 		{
 			curSpline.distortion = boostTimer;
 		}
-		
+
 		curPoint.PlayerOnPoint(cursorDir, flow);
-		
+
 		l.positionCount = 2;
 		//l.SetPosition (0, Vector3.Lerp(transform.position, cursorPos, Easing.QuadEaseOut(boostTimer)));
 		l.SetPosition(0, cursorPos);
 		l.SetPosition (1, transform.position);
-		
+
 		playerSprite.transform.localScale = Vector3.Lerp(playerSprite.transform.localScale, new Vector3(Mathf.Clamp(1 - (boostTimer), 0.1f, 0.25f), Mathf.Clamp(boostTimer, 0.25f, 0.75f), 0.25f), Time.deltaTime * 10);
-		
+
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
 //		if (connectTime < 0) {
 //			if (flow > 0) {
@@ -947,7 +951,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			pointDest = null;
 		}
-		
+
 		if (raycastPoint != null && raycastPoint != curPoint && raycastPoint.pointType != PointTypes.ghost && raycastPoint.state != Point.PointState.locked)
 		{
 			noRaycast = false;
@@ -956,11 +960,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		flow = flyingSpeed;
-		
+
 		if (pointDest != null)
 		{
 			pointDest.controller.AdjustCamera();
-			
+
 			flyingSpeed += Time.deltaTime;
 			transform.position += (pointDest.transform.position - transform.position).normalized * Time.deltaTime * flyingSpeed;
 
@@ -968,12 +972,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			{
 				p.DrawSpline(p.SplinePoints.IndexOf(pointDest));
 			}
-			
+
 			if (Vector3.Distance(transform.position, pointDest.Pos) < 0.025f)
 			{
 				hasFlown = true;
 				Services.fx.BakeTrail(Services.fx.flyingTrail, Services.fx.flyingTrailMesh);
-				
+
 				SwitchState(PlayerState.Switching);
 			}
 		}
@@ -989,15 +993,15 @@ public class PlayerBehaviour: MonoBehaviour {
 			{
 				//reset here
 				//play fizzle animation?
-				
+
 				SwitchState(PlayerState.Animating);
 			}
 		}
-	
+
 	}
-	
-	
-	
+
+
+
 	void TrackFreeMovement(){
 
 		Vector3 inertia;
@@ -1134,11 +1138,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			Services.fx.flyingParticles.Pause();
 		}
-		
+
 		if (accuracy > 0.5f && !joystickLocked) {
 
 			if(flow < 0){
-				
+
 				flow += decay *  accuracy * Time.deltaTime;
 				if (flow > 0)
 					flow = 0;
@@ -1150,7 +1154,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(true)
 			{
 				flow += Mathf.Pow(accuracy, 2) * acceleration * Time.deltaTime * cursorDir.magnitude;
-				
+
 				if (curSpline.type == Spline.SplineType.moving)
 				{
 					flow += Mathf.Pow(accuracy, 2) * curSpline.acceleration * Time.deltaTime * cursorDir.magnitude;
@@ -1165,23 +1169,23 @@ public class PlayerBehaviour: MonoBehaviour {
 		// if ((curSpeed > 0 && flow < 0) || (curSpeed < 0 && flow > 0)) {
 		// 	curSpeed = 0;
 		// }
-		
-		
-		
+
+
+
 		if ((accuracy < 0.5f) || joystickLocked) {
 
-			
+
 			if (flow > 0)
 			{
 				decelerationTimer = Mathf.Clamp01(decelerationTimer + Time.deltaTime * (2-accuracy));
-				
+
 				if (decelerationTimer >=1 || flow > curSpline.segmentDistance)
 				{
 					if (decelerationTimer >= 1)
 					{
-						
+
 						flyingSpeed = flow + speed + boost;
-						
+
 						//IDK ABOUT THIS ONE CHIEF
 						//SwitchState(PlayerState.Flying);
 					}
@@ -1197,10 +1201,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		// (adjustedAccuracy + 0.1f)
 		if (!joystickLocked)
 		{
-		
+
 			curSpeed = calculatedSpeed;
 			progress += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
-			
+
 			curSpline.completion += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
 		}
 
@@ -1244,7 +1248,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 
 		cursorSprite.sprite = null;
-		
+
 		float t = curSpeed;
 		bool moving = true;
 		int pIndex = traversedPoints.Count -1;
@@ -1253,7 +1257,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		Point nextPoint =  traversedPoints [pIndex];
 
 		if (state != PlayerState.Switching) {
-		
+
 			moveToLastPoint = true;
 		}
 
@@ -1279,21 +1283,21 @@ public class PlayerBehaviour: MonoBehaviour {
 				} else {
 					progress -= Time.deltaTime * t / curSpline.segmentDistance;
 				}
-				
+
 				curSpline.completion = Mathf.Lerp(curSpline.completion, 0, t);
 //				curSpline.distortion = Mathf.Lerp(curSpline.distortion, 1, progress);
-				
+
 				transform.position = curSpline.GetPoint (progress);
 
 				if (progress > 1 || progress < 0) {
 					moving = false;
 				}
 				curSpline.DrawSpline();
-				
+
 				yield return null;
 			}
-			
-			
+
+
 		}
 
 		for (int i = pIndex; i >= 0; i--)
@@ -1302,20 +1306,20 @@ public class PlayerBehaviour: MonoBehaviour {
 			curPoint = nextPoint;
 			nextPoint = traversedPoints[i];
 			curSpline = curPoint.GetConnectingSpline(nextPoint);
-			
+
 			SetPlayerAtStart(curSpline, nextPoint);
 			moving = true;
 
 			while (moving)
 			{
 				curSpline.DrawSpline();
-				
+
 				curSpline.completion = Mathf.Lerp(curSpline.completion, 0, t);
 				curSpline.distortion = Mathf.Sin(t * Mathf.PI);
 				t += Time.deltaTime;
 				t = Mathf.Clamp(t, 0f, 9f);
 				flow = t;
-				
+
 				if (goingForward)
 				{
 					progress += Time.deltaTime * t / curSpline.segmentDistance;
@@ -1356,11 +1360,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 // THIS IS KINDA SHITTY. DO IT BETTER
 			//accuracy = 1;
-			
+
 			Point PreviousPoint = curPoint;
 			progressRemainder = progress - 1;
 			curPoint.proximity = 0;
-			
+
 //			if (progress > 1) {
 //
 //				progress = 0;
@@ -1399,7 +1403,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			{
 				progress = 0 + Mathf.Epsilon;
 			}
-			
+
 			goingForward = true;
 			s.Selected = curPoint;
 		}
@@ -1428,7 +1432,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public bool CanLeavePoint()
 	{
 
-		
+
 		angleToSpline = Mathf.Infinity;
 		float angleOffSpline = Mathf.Infinity;
 		float angleFromPoint = Mathf.Infinity;
@@ -1516,16 +1520,16 @@ public class PlayerBehaviour: MonoBehaviour {
 			//this is causing bugs
 
 // && (Input.GetButtonDown("Button1")
-			
+
 			if ((angleFromPoint <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) && maybeNextSpline != null)
 			{
 
 				splineDest = maybeNextSpline;
 				pointDest = maybeNextPoint;
-				
+
 				if(curSpline != null){
 
-					
+
 					if (curSpline != splineDest)
 					{
 						curSpline.OnSplineExit();
@@ -1536,19 +1540,19 @@ public class PlayerBehaviour: MonoBehaviour {
 				{
 					splineDest.OnSplineEnter(curPoint, pointDest);
 				}
-					
+
 //					splineDest.Selected = curPoint;
 				curSpline = splineDest;
-				
-				
+
+
 				return true;
 			}
-			
-			
+
+
 			cursorSprite.sprite = brakeSprite;
-				
+
 			return false;
-			
+
 		}
 		return false;
 	}
@@ -1597,32 +1601,32 @@ public class PlayerBehaviour: MonoBehaviour {
 //		Vector3 lastCursorDir = cursorDir;
 		if (Services.main.hasGamepad) {
 
-			
+
 			//inputVector = new Vector3(Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
 			if(usingJoystick){
 				inputVector = Quaternion.Euler(0,0,90) * inputVector;
 			}
 			cursorDir2 = inputVector;
-		
+
 		}else {
 
 			//inputVector = new Vector2(Input.GetAxis ("Mouse X"), Input.GetAxis ("Mouse Y"));
 
 			cursorDir2 = cursorDir2 + inputVector;
-			
+
 		}
-		
+
 		if (cursorDir2.magnitude > 1) {
 			cursorDir2.Normalize ();
 		}
-		
+
 		//TODO WHEN ON CONNECTING POINT CURSOR SHOULD MOVE FROM CURRENT MAGNITUDE TO NEW MAGNITUDE
-		
+
 		if (freeCursor)
 		{
 			//TODO
 //			clamp this shit
-			
+
 			if (Services.main.hasGamepad)
 			{
 				cursorPos += (Vector3)inputVector * cursorMoveSpeed * Time.deltaTime;
@@ -1635,7 +1639,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 				cursorPos += (Vector3)inputVector;
 			}
-			
+
 			Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
 			screenPos += new Vector3(cursorDir.x / Services.mainCam.aspect, cursorDir.y, 0)/3f;
 			screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Mathf.Abs(transform.position.z - Services.mainCam.transform.position.z));
@@ -1646,15 +1650,15 @@ public class PlayerBehaviour: MonoBehaviour {
 		else
 		{
 			cursorPos = transform.position + (Vector3)cursorDir2 / (Services.mainCam.fieldOfView * 0.1f);
-			
+
 			Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
 			screenPos += new Vector3(cursorDir.x / Services.mainCam.aspect, cursorDir.y, 0)/cursorDistance;
 			screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Mathf.Abs(transform.position.z - Services.mainCam.transform.position.z));
 			cursorPos = Services.mainCam.ViewportToWorldPoint(screenPos);
 		}
 
-		
-		
+
+
 		if (cursorDir2.magnitude <= 0.01f){
 			joystickLocked = true;
 			cursorDir2 = Vector3.zero;
@@ -1662,7 +1666,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			joystickLocked = false;
 		}
 
-		
+
 
 //		if(curPoint.HasSplines() && curSpline != null){
 //			cursorDir.z = curSpline.GetDirection (progress).z * Mathf.Sign(accuracy);
@@ -1673,15 +1677,15 @@ public class PlayerBehaviour: MonoBehaviour {
 		// cursorPos = Camera.main.ViewportToWorldPoint(screenPos);
 		// float screenWidth = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, Camera.main.nearClipPlane)).y - transform.position.y;
 		// cursorPos = transform.position + ((Vector3)cursorDir * screenWidth);
-		
-		
+
+
 		cursor.transform.position = cursorPos;
 		cursor.transform.up = cursorPos - transform.position;
-		
-		
+
+
 		if(Input.GetButton("Button1") && state == PlayerState.Traversing)
 		{
-		
+
 		}
 		else
 		{
@@ -1690,8 +1694,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		playerSprite.transform.up = cursorDir;
-		
-		l.positionCount = 2;	
+
+		l.positionCount = 2;
 		// l.SetPosition(0, transform.position);
 		// l.SetPosition(1, cursorPos);
 	}
@@ -1775,38 +1779,38 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			case PlayerState.Traversing:
 				//Services.fx.BakeParticles(sparks, Services.fx.brakeParticleMesh);
-				
-				
+
+
 				if (Services.main.hasGamepad)
 				{
 					Services.main.gamepad.ResetHaptics();
 				}
-				
+
 				//turn on sparks
 				break;
-			
+
 			case PlayerState.Flying:
-				
+
 				GranularSynth.flying.TurnOff();
-				
+
 				if (flow > flyingSpeed)
 				{
 					flow = flyingSpeed;
-					
+
 				}
 
-				
+
 				Services.fx.flyingParticles.Pause();
-				
+
 				curSpeed = flyingSpeed;
-				
+
 				boost = 0;
 				//Services.fx.BakeParticleTrail(Services.fx.flyingParticles, Services.fx.flyingParticleTrailMesh);
-				
+
 				//Services.fx.BakeParticles(Services.fx.flyingParticles, Services.fx.flyingParticleMesh);
-				
+
 				break;
-			
+
 			case PlayerState.Switching:
 				l.positionCount = 0;
 				freeCursor = false;
@@ -1818,19 +1822,19 @@ public class PlayerBehaviour: MonoBehaviour {
 					{
 						pointsToTraverse.Add(p);
 					}
-					
+
 					//Services.main.crawlerManager.AddCrawler(pointsToTraverse, calculatedSpeed);
-					
+
 					traversedPoints.Clear();
-					
+
 					if (curPoint.pointType != PointTypes.fly)
 					{
 						traversedPoints.Add(curPoint);
 					}
 				}
-				
+
 				curPoint.OnPointExit();
-				
+
 				if(curPoint.pointType != PointTypes.ghost){
 
 					if (Services.PlayerBehaviour.buttonPressed)
@@ -1843,27 +1847,27 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 
 					SynthController.instance.PlayNote(0);
-				
+
 				}
 
-				
+
 				connectTime = 1;
 				if (curPoint.pointType != PointTypes.ghost)
 				{
 					charging = false;
 					boostIndicator.enabled = false;
-					
+
 					Services.fx.EmitLinearBurst((int)(boostTimer * 5), boostTimer * 2,transform, cursorDir2);
 					boostTimer = 0;
 				}
 
 				break;
-			
+
 			case PlayerState.Animating:
 
 				cursorSprite.enabled = true;
 				break;
-		}	
+		}
 	}
 
 	public void SwitchState(PlayerState newState)
@@ -1871,21 +1875,21 @@ public class PlayerBehaviour: MonoBehaviour {
 		LeaveState();
 
 		SynthController.instance.SwitchState(newState);
-		
+
 		if (Services.main.hasGamepad)
 		{
 			Services.main.gamepad.ResetHaptics();
 		}
-		
+
 		switch (newState)
 		{
 			case PlayerState.Traversing:
 
 				sparks.Play();
-				
+
 				GranularSynth.moving.TurnOn();
 				curSpline.CalculateDistance ();
-				
+
 				VectorLine v = velocityLine2;
 				velocityLine2 = velocityLine;
 				velocityLine = v;
@@ -1897,16 +1901,16 @@ public class PlayerBehaviour: MonoBehaviour {
 					s.reactToPlayer = true;
 					s.line.Draw3DAuto();
 				}
-		
+
 				//this is making it impossible to get off points that are widows. wtf.
 				SetPlayerAtStart (curSpline, pointDest);
-				
+
 				//curSpline.OnSplineEnter (true, curPoint, pointDest, false);
-				
+
 				SetCursorAlignment ();
-		
+
 				//PlayerMovement ();
-				
+
 				t.emitting = true;
 				if (curSpeed > flyingSpeedThreshold)
 				{
@@ -1920,8 +1924,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				GranularSynth.flying.TurnOn();
 				GranularSynth.moving.TurnOff();
 				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
-				
-				
+
+
 				sparks.Pause();
 				Services.fx.flyingParticles.Play();
 				flyingTrail.Clear();
@@ -1932,15 +1936,15 @@ public class PlayerBehaviour: MonoBehaviour {
 				curPoint.usedToFly = true;
 				pointDest = null;
 				l.positionCount = 0;
-				
+
 				//flyingSpeed = curSpeed;
-				
+
 				//THIS MAY NOT BE NECESSARY UNLESS WE CAN FLY OFF OF SPLINES, NOT JUST POINTS
 				//curPoint.OnPointExit();
-				
+
 				curPoint.proximity = 0;
 				pointDest = null;
-				
+
 				state = PlayerState.Flying;
 				flyingTrail.emitting = true;
 				curSpeed = 0;
@@ -1949,17 +1953,17 @@ public class PlayerBehaviour: MonoBehaviour {
 				{
 					StellationManager.instance.CompleteStellation();
 				}
-				
+
 				break;
 
 			case PlayerState.Switching:
 
 				//stop players from popping off the line as soon as they enter a point
-				
+
 				sparks.Pause();
-				
+
 				decelerationTimer = 0;
-				
+
 				if (curSpline != null)
 				{
 //					curSpline.OnSplineExit();
@@ -1967,13 +1971,13 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 
 				directionIndicator.enabled = false;
-				
+
 				state = PlayerState.Switching;
 
 				timeOnPoint = 0;
 				flyingSpeed = curSpeed;
 				curSpeed = 0;
-				
+
 				if (curPoint == null)
 				{
 
@@ -1981,12 +1985,12 @@ public class PlayerBehaviour: MonoBehaviour {
 				else if (curPoint != pointDest)
 				{
 					traversedPoints.Add(pointDest);
-					
+
 					foreach (Spline s in curPoint._connectedSplines)
 					{
 						s.reactToPlayer = false;
 						s.line.StopDrawing3DAuto();
-						
+
 					}
 
 					lastPoint = curPoint;
@@ -2005,7 +2009,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //					p.TurnOn();
 				}
 
-				
+
 				curPoint.proximity = 1;
 				curPoint.OnPointEnter();
 //TODO
@@ -2014,14 +2018,14 @@ public class PlayerBehaviour: MonoBehaviour {
 				{
 					curSpline.CheckComplete();
 				}
-				
+
 				//can we check for completeness here please
 
 				if (curPoint.controller.isComplete)
 				{
 					curPoint.controller.Unlock();
 				}
-				
+
 				//checkpoint shit
 				if (curPoint.pointType == PointTypes.stop)
 				{
@@ -2029,19 +2033,19 @@ public class PlayerBehaviour: MonoBehaviour {
 //				traversedPoints.Add(curPoint);
 				}
 
-				
+
 				PlayerOnPoint();
 
 				break;
 
 			case PlayerState.Animating:
-				
+
 //				GranularSynth.rewinding.TurnOn();
 //				//turn off particles
 //
 				cursorSprite.enabled = false;
 				state = PlayerState.Animating;
-				
+
 				StartCoroutine(ResetPlayerToStartPoint());
 //				if (state == PlayerState.Flying)
 //				{
@@ -2067,10 +2071,10 @@ public class PlayerBehaviour: MonoBehaviour {
 //					{
 //						PointManager.ResetPoints();
 //						Initialize();
-//						
+//
 //					}
 //				}
-				
+
 				break;
 		}
 	}
@@ -2080,7 +2084,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 
 		ParticleSystem.EmissionModule e = sparks.emission;
-		
+
 		float Absflow = Mathf.Abs(flow);
 
 		if (state == PlayerState.Flying)
@@ -2095,7 +2099,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			{
 				e.rateOverTimeMultiplier = Mathf.Pow((1 - Mathf.Abs(accuracy)), 2) * 100 * Mathf.Abs(flow);
 			}
-			
+
 		}
 
 		if (curSpline != null)
@@ -2116,7 +2120,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //			l.SetPosition(1, transform.position + cursorDir/2);
 //			GetComponentInChildren<Camera>().farClipPlane = Mathf.Lerp(GetComponentInChildren<Camera>().farClipPlane,  flow + 12, Time.deltaTime * 10);
 		}
-	
+
 
 
 // 		switch(state){
