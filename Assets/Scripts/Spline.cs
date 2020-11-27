@@ -31,8 +31,9 @@ public class Spline : MonoBehaviour
 	public SplineType type = SplineType.normal;
 
 	public StellationController controller;
-	
-	[HideInInspector]
+
+	[HideInInspector] 
+	public static float shake;
 	public float distortion;
 	public static System.Collections.Generic.List<Spline> Splines = new System.Collections.Generic.List<Spline> ();
 	public static float drawSpeed = 0.01f;
@@ -743,7 +744,7 @@ public class Spline : MonoBehaviour
 		
 		if (isPlayerOn)
 		{
-			 float accuracyDistortion = Mathf.Lerp(0, 1, Mathf.Pow(0.5f - Services.PlayerBehaviour.accuracy / 2, 2)) + distortion;
+			 float accuracyDistortion = Mathf.Lerp(0, 1, Mathf.Pow(0.5f - Services.PlayerBehaviour.accuracy / 2, 2)) + distortion + shake;
 			v += (distortionVector * UnityEngine.Random.Range(- accuracyDistortion, accuracyDistortion) * invertedDistance) * amplitude;
 			
 			

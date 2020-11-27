@@ -204,7 +204,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		transform.position = curPoint.Pos;
 		traversedPoints.Add (curPoint);
 		curPoint.OnPointEnter ();
-
+		flow = Services.main.activeStellation.startSpeed;
 		ResetFX();
 
 //		Material newMat;
