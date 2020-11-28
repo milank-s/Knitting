@@ -45,7 +45,7 @@ public class SceneController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Period))
         {
-            LoadNextStellation(0);
+            LoadNextStellation(1);
         }
         
     }

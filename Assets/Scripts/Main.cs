@@ -686,12 +686,12 @@
 		
 		while (t < fadeLength){
 			//PauseScreen.color = Color.Lerp(Color.black, Color.clear, Easing.QuadEaseIn(t/fadeLength));
-			GlitchEffect.intensity = Mathf.Lerp(1, 0, t);
+			GlitchEffect.SetValues(1-t);
 			t += Time.unscaledDeltaTime;
 			yield return null;
 		}
 
-		GlitchEffect.intensity = 0;
+		GlitchEffect.SetValues(0);
 		//PauseScreen.color = Color.clear;
 	}
 
@@ -807,12 +807,13 @@
 		{
 			// PauseScreen.color = Color.Lerp(Color.clear, Color.black, Easing.QuadEaseIn(t/fadeLength));
 
-			GlitchEffect.intensity = Mathf.Lerp(0, 1, t);
+			
+			GlitchEffect.SetValues(t);
 			t += Time.unscaledDeltaTime;
 			yield return null;
 		}
 
-		GlitchEffect.intensity = 1;
+		GlitchEffect.SetValues(1);
 		//PauseScreen.color = Color.black;
 	}
 

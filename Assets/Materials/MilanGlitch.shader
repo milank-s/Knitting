@@ -5,6 +5,7 @@
         _MainTex ("Base (RGB)", 2D) = "white" {}
 	    _Intensity ("Glitch Intensity", Range(0.1, 1.0)) = 1
         _Noise ("Glitch Intensity", Range(0.1, 1.0)) = 1
+        _Frequency ("Frequency", Range(1, 100)) = 1
     }
     SubShader
     {
@@ -23,7 +24,8 @@
             
 		    uniform sampler2D _MainTex;
 		    float _Intensity;
-             float _Noise;
+            float _Noise;
+            float _Frequency;
             
             struct appdata
             {
@@ -51,7 +53,7 @@
                //i.uv.y = (1 - (i.uv.y)) * step(i.uv.y, flip_up) + (1 - (i.uv.y)) * step(flip_down, i.uv.y);
 
                 float rounding = pow(sin(i.uv.y * 3.14),2);
-			    i.uv.x += _Intensity * sin((i.uv.y+ _Noise)*100) * rounding;
+			    i.uv.x += _Intensity * sin((i.uv.y+ _Noise)*_Frequency) * rounding;
                 
 			
 			    half4 color = tex2D(_MainTex,  i.uv.xy);

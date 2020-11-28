@@ -22,19 +22,8 @@ public class GlitchEffect : MonoBehaviour
 
 	[Range(0, 1)]
 	public static float intensity;
-
-	// [Range(0, 1)]
-	// public float flipIntensity;
-	//
-	// [Range(0, 1)]
-	// public float colorIntensity;
-	//
-	// private float _glitchup;
-	// private float _glitchdown;
-	// private float flicker;
-	// private float _glitchupTime = 0.05f;
-	// private float _glitchdownTime = 0.05f;
-	// private float _flickerTime = 0.5f;
+	public static float frequency;
+	
 	private Material _material;
 
 	void Start()
@@ -42,11 +31,17 @@ public class GlitchEffect : MonoBehaviour
 		_material = new Material(Shader);
 	}
 
+	public static void SetValues(float t)
+	{
+		intensity = Mathf.Lerp(0, 1f, t);
+		frequency = Mathf.Lerp(1, 50, t);
+	}
 	void OnRenderImage(RenderTexture source, RenderTexture destination)
 	{
 		float yScroll = Time.time/5f;
 		_material.SetFloat("_Intensity", intensity);
 		_material.SetFloat("_Noise", yScroll);
+		_material.SetFloat("_Frequency", frequency);
 		Graphics.Blit(source, destination, _material);
 	}
 	

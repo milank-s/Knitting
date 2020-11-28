@@ -21,6 +21,7 @@ public class Constants : MonoBehaviour {
 	public Image flying;
 	public LineRenderer cursorOnPoint;
 	public LineRenderer playerAxis;
+	
 	public Image buttonPress;
 	public Image canFly;
 	public Text reset;
