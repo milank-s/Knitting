@@ -147,9 +147,6 @@
 
 		GlitchEffect.Fizzle(0.1f);
 		yield return new WaitForSecondsRealtime(0.05f);
-		
-		Time.timeScale = 1;
-		
 		/*if (delay > 0)
 		{
 			yield return StartCoroutine(FadeOut());
@@ -172,6 +169,7 @@
 		
 		AudioManager.instance.MuteSynths(true);
 
+		Time.timeScale = 1;
 		
 		InitializeLevel();
 		
