@@ -145,14 +145,12 @@
 	{
 		Time.timeScale = 0;
 
-		
-
-		Time.timeScale = 1;
-
-		if (delay > 0)
+		GlitchEffect.Fizzle(0.1f);
+		yield return new WaitForSecondsRealtime(0.05f);
+		/*if (delay > 0)
 		{
 			yield return StartCoroutine(FadeOut());
-		}
+		}*/
 
 		if (SceneController.instance.activeScenes.Count > 0)
 		{
@@ -171,12 +169,14 @@
 		
 		AudioManager.instance.MuteSynths(true);
 
+		Time.timeScale = 1;
+		
 		InitializeLevel();
 		
-		if (delay > 0)
+		/*if (delay > 0)
 		{
 			StartCoroutine(FadeIn());
-		}
+		}*/
 		
 		
 	}

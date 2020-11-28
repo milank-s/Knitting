@@ -52,7 +52,6 @@ public class SceneController : MonoBehaviour
 
     public void OnNavigate(InputAction.CallbackContext context)
     {
-
         if (context.phase == InputActionPhase.Started && Services.main.state == Main.GameState.menu)
         {
             if (levelButton.gameObject == UISystem.currentSelectedGameObject)
@@ -144,6 +143,7 @@ public class SceneController : MonoBehaviour
     
     public void SelectLevelSet()
     {
+        GlitchEffect.Fizzle(0.1f);
         Services.main.ShowImage(curLevelSet.image);
         Services.main.ShowWord(curLevelSet.title);    
     }

@@ -9,7 +9,11 @@ to make derivative works
 to make commercial use of the work
 */
 
+using System.Collections;
 using UnityEngine;
+
+using System.Collections.Generic;
+using UnityEngine.Rendering;
 
 [ExecuteInEditMode]
 [AddComponentMenu("Image Effects/GlitchEffect")]
@@ -26,8 +30,10 @@ public class GlitchEffect : MonoBehaviour
 	
 	private Material _material;
 
-	void Start()
+	public static GlitchEffect instance;
+	void Awake()
 	{
+		instance = this;
 		_material = new Material(Shader);
 	}
 
@@ -44,7 +50,24 @@ public class GlitchEffect : MonoBehaviour
 		_material.SetFloat("_Frequency", frequency);
 		Graphics.Blit(source, destination, _material);
 	}
-	
+
+	public static void Fizzle(float time)
+	{
+		instance.StartCoroutine(Shake(time));
+	}
+
+	public static IEnumerator Shake(float time)
+	{
+		float t = 0;
+		while (t < 1)
+		{
+			SetValues(Mathf.Sin(t * Mathf.PI));
+			t += Time.unscaledDeltaTime / time;
+			yield return null;
+		}
+		
+		SetValues(0);
+	}
 	// Called by camera to apply image effect
 	/*void OnRenderImage(RenderTexture source, RenderTexture destination)
 	{
