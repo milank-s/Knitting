@@ -96,7 +96,7 @@ public class FXManager : MonoBehaviour
       
       
       nextSplineArrow.enabled = true;
-      nextSplineArrow.transform.position = endpoint;
+      nextSplineArrow.transform.position = endpoint + offset;
       nextSplineArrow.transform.up = endDir;
       
       for (int i = 0; i < Spline.curveFidelity; i++)
