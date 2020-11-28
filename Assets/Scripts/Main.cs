@@ -144,8 +144,8 @@
 	public IEnumerator LoadFileTransition(string m, float delay = 0)
 	{
 		Time.timeScale = 0;
+
 		
-		yield return new WaitForSecondsRealtime(0.5f);
 
 		Time.timeScale = 1;
 
@@ -177,7 +177,7 @@
 		{
 			StartCoroutine(FadeIn());
 		}
-
+		
 		
 	}
 
@@ -204,6 +204,7 @@
 		
 		LoadScene(i);
 
+		
 		if (delay > 0)
 		{
 			StartCoroutine(FadeIn());
@@ -679,16 +680,19 @@
 	}
 	
 	public IEnumerator FadeIn(){
+		
 		float t = 0;
-		yield return new WaitForSecondsRealtime(0.01f);
+		yield return new WaitForSecondsRealtime(0.33f);
 		
 		while (t < fadeLength){
-			PauseScreen.color = Color.Lerp(Color.black, Color.clear, Easing.QuadEaseIn(t/fadeLength));
+			//PauseScreen.color = Color.Lerp(Color.black, Color.clear, Easing.QuadEaseIn(t/fadeLength));
+			GlitchEffect.intensity = Mathf.Lerp(1, 0, t);
 			t += Time.unscaledDeltaTime;
 			yield return null;
 		}
-		
-		PauseScreen.color = Color.clear;
+
+		GlitchEffect.intensity = 0;
+		//PauseScreen.color = Color.clear;
 	}
 
 	public void ShowWord(string m,  bool show = true)
@@ -797,17 +801,19 @@
 	
 	
 	public IEnumerator FadeOut(){
+		
 		float t = 0;
-		
-		
 		while (t < fadeLength)
 		{
-			PauseScreen.color = Color.Lerp(Color.clear, Color.black, Easing.QuadEaseIn(t/fadeLength));
+			// PauseScreen.color = Color.Lerp(Color.clear, Color.black, Easing.QuadEaseIn(t/fadeLength));
+
+			GlitchEffect.intensity = Mathf.Lerp(0, 1, t);
 			t += Time.unscaledDeltaTime;
 			yield return null;
 		}
 
-		PauseScreen.color = Color.black;
+		GlitchEffect.intensity = 1;
+		//PauseScreen.color = Color.black;
 	}
 
 }

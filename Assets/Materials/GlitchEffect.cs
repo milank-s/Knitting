@@ -21,7 +21,7 @@ public class GlitchEffect : MonoBehaviour
 	[Header("Glitch Intensity")]
 
 	[Range(0, 1)]
-	public float intensity;
+	public static float intensity;
 
 	// [Range(0, 1)]
 	// public float flipIntensity;
@@ -44,7 +44,7 @@ public class GlitchEffect : MonoBehaviour
 
 	void OnRenderImage(RenderTexture source, RenderTexture destination)
 	{
-		float yScroll = Time.time;
+		float yScroll = Time.time/5f;
 		_material.SetFloat("_Intensity", intensity);
 		_material.SetFloat("_Noise", yScroll);
 		Graphics.Blit(source, destination, _material);

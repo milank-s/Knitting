@@ -188,7 +188,7 @@ public class SceneController : MonoBehaviour
         }
     }
     
-    public void LoadNextStellation(float delay = 0)
+    public void LoadNextStellation(float delay = 1)
     {
         
         if (curSetIndex == -1)

@@ -51,7 +51,7 @@
                //i.uv.y = (1 - (i.uv.y)) * step(i.uv.y, flip_up) + (1 - (i.uv.y)) * step(flip_down, i.uv.y);
 
                 float rounding = pow(sin(i.uv.y * 3.14),2);
-			    i.uv.x += _Intensity * sin((i.uv.y+ _Noise)*50) * rounding;
+			    i.uv.x += _Intensity * sin((i.uv.y+ _Noise)*100) * rounding;
                 
 			
 			    half4 color = tex2D(_MainTex,  i.uv.xy);
