@@ -204,7 +204,12 @@ public class PlayerBehaviour: MonoBehaviour {
 		transform.position = curPoint.Pos;
 		traversedPoints.Add (curPoint);
 		curPoint.OnPointEnter ();
-		flow = Services.main.activeStellation.startSpeed;
+		
+		if (flow < Services.main.activeStellation.startSpeed)
+		{
+			flow = Services.main.activeStellation.startSpeed;
+		}
+
 		ResetFX();
 
 //		Material newMat;
@@ -243,7 +248,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			Services.main.gamepad.ResetHaptics();
 		}
 
-		flow = 0;
 		cursorSprite.enabled = true;
 		progress = 0;
 		state = PlayerState.Switching;
