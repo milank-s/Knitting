@@ -72,12 +72,13 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	[HideInInspector] public float progress,
 		accuracy,
-		flow,
+		flow = 0,
 		boost,
 		boostTimer,
 		curSpeed,
 		connectTime,
 		timeOnPoint,
+		
 		connectTimeCoefficient,
 		gravity,
 		decelerationTimer;
