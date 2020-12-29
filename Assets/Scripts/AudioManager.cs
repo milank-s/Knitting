@@ -9,6 +9,8 @@ public class AudioManager : MonoBehaviour
 
     public static AudioManager instance;
     public AudioMixer SynthMaster;
+    [SerializeField] public SplineSinger splineSinger;
+    
     void Start()
     {
         instance = this;

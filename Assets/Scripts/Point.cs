@@ -515,12 +515,9 @@ public class Point : MonoBehaviour
 						StellationManager.instance.EnterStellation(controller);
 					}
 					
-//					SynthController.instance.bassySynth.NoteOn(29, 1, 1);
 					break;
 				
 				case PointTypes.end:
-//					SynthController.instance.bassySynth.NoteOn(29, 1, 1);
-					
 					if (controller.isComplete)
 					{
 						controller.Won();

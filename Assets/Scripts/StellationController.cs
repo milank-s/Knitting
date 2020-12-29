@@ -462,8 +462,6 @@ public class StellationController : MonoBehaviour {
 				isComplete = CheckSpeed();
 				break;
 			}
-
-
 			return isComplete;
 
 		}

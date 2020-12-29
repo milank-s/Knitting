@@ -1213,6 +1213,11 @@ public class PlayerBehaviour: MonoBehaviour {
 			curSpline.completion += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
 		}
 
+		if (AudioManager.instance.splineSinger.isPlaying)
+		{
+			AudioManager.instance.splineSinger.SetClipPlayback(progress);
+		}
+
 		//set player position to a point along the curve
 
 		if (curPoint == curSpline.Selected) {
@@ -1852,7 +1857,6 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 
 					SynthController.instance.PlayNote(0);
-
 				}
 
 
@@ -1892,7 +1896,14 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				sparks.Play();
 
-				GranularSynth.moving.TurnOn();
+				/*
+				GranularSynth.moving.TurnOn();*/
+
+				if (curPoint.pointType != PointTypes.ghost)
+				{
+					AudioManager.instance.splineSinger.Play();
+				}
+
 				curSpline.CalculateDistance ();
 
 				VectorLine v = velocityLine2;
