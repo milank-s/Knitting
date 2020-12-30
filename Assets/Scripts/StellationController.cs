@@ -63,7 +63,11 @@ public class StellationController : MonoBehaviour {
 	public string GetWord (){
 		if(words != null){
 		wordIndex++;
-		return words[(wordIndex-1) % (words.Length)];
+		if(wordIndex > 1){
+			return " " + words[(wordIndex-1) % (words.Length)];
+		}else{
+			return words[(wordIndex-1) % (words.Length)];
+		}
 		}
 		return "";
 	}
@@ -102,6 +106,8 @@ public class StellationController : MonoBehaviour {
 			activateOnCompletion[i].DoBehaviour();
 		}
 
+
+		Services.main.levelText.text = name;
 		isComplete = true;
 		
 			//show some type of image

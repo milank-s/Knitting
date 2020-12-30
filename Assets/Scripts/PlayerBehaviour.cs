@@ -242,6 +242,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 
 		Services.main.text.text = " ";
+		Services.main.levelText.text = " ";
 		if (Services.main.hasGamepad)
 		{
 			Services.main.gamepad.ResetHaptics();

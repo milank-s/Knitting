@@ -43,6 +43,7 @@
 	public StellationController activeStellation;
 	public PlayerInput playerInput;
 	public Text text;
+	public Text levelText;
 
 	private bool pressedPause;
 	
