@@ -26,12 +26,6 @@ using UnityEditor;
 
 public class MapEditor : MonoBehaviour
 {
-
-
-    //[SerializeField] public string controller.name;
-
-
-
     private Point activePoint
     {
         get
@@ -804,7 +798,7 @@ public class MapEditor : MonoBehaviour
                 
                 if (Input.GetKeyDown(KeyCode.Delete))
                 {
-                    File.Delete (Application.streamingAssetsPath + "/Levels/"+controller.name + ".json");
+                    File.Delete (Application.streamingAssetsPath + "/Levels/"+ controller.name + ".json");
                     #if UNITY_EDITOR
                         AssetDatabase.Refresh();
                     #endif
