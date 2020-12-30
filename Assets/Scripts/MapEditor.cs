@@ -324,12 +324,13 @@ public class MapEditor : MonoBehaviour
         
         //load from controller name
         sceneTitle.text = controller.name;
-        if(controllerText.text != ""){
+
+        if(controller.text != ""){
             controllerText.text = controller.text;
         }else{
             controllerText.text = "stellation text";
         }
-        
+
         typing = false;
         controller.Initialize();
         controller.EnterStellation();

@@ -492,9 +492,8 @@ public class Point : MonoBehaviour
 		if(pointType != PointTypes.ghost)
 		{
 
-			if(timesHit <= 1){
 			controller.OnPointEntered();
-			}
+			
 
 			switch (pointType)
 			{
