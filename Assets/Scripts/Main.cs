@@ -42,6 +42,7 @@
 	public bool useGamepad;
 	public StellationController activeStellation;
 	public PlayerInput playerInput;
+	public Text text;
 
 	private bool pressedPause;
 	

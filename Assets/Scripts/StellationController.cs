@@ -48,7 +48,7 @@ public class StellationController : MonoBehaviour {
 	public SpriteRenderer image;
 	public bool fixedCam = false;
 	public int desiredFOV = 30;
-	public TextAsset text;
+	public string text;
 	[Space(10)]
 
 	
@@ -60,8 +60,11 @@ public class StellationController : MonoBehaviour {
 	public bool hasUnlock;
 	
 	public string GetWord (){
+		if(words != null){
 		wordIndex++;
 		return words[(wordIndex-1) % (words.Length)];
+		}
+		return "";
 	}
 
 	public void AdjustCamera()
@@ -236,8 +239,8 @@ public class StellationController : MonoBehaviour {
 		//ffs
 		
 		wordIndex = 0;
-		if(text != null){
-			words = text.text.Split (new char[] { ' ' });
+		if(text != ""){
+			words = text.Split (new char[] { ' ' });
 		}
 
 		
@@ -446,9 +449,15 @@ public class StellationController : MonoBehaviour {
 			}
 
 	}
+
+	public void NextWord(){
+		Services.main.text.text += " " + GetWord();
+	}
+	public void OnPointEntered(){
+		NextWord();
+	}
 	public bool TryToUnlock()
 	{
-		
 		if (!isComplete)
 		{
 			

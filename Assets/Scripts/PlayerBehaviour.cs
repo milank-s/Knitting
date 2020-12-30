@@ -7,11 +7,8 @@ using UnityEngine.InputSystem;
 
 public enum PlayerState{Traversing, Switching, Flying, Animating};
 
-
-
 //###################################################
 //###################################################
-
 
 //						TO DO
 
@@ -244,6 +241,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void Reset()
 	{
 
+		Services.main.text.text = " ";
 		if (Services.main.hasGamepad)
 		{
 			Services.main.gamepad.ResetHaptics();
