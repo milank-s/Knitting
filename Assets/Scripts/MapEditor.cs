@@ -114,6 +114,7 @@ public class MapEditor : MonoBehaviour
     public Text splineOrder;
     public Text splineTypeReadout;
     public InputField sceneTitle;
+    public InputField controllerText;
     public Dropdown levelList;
     public Dropdown unlockTypes;
     
@@ -239,7 +240,7 @@ public class MapEditor : MonoBehaviour
         typing = true;
     }
 
-    public void StopTyping(String name)
+    public void SetStellationName(String name)
     {
         typing = false;
         controller.name = name;
@@ -323,8 +324,13 @@ public class MapEditor : MonoBehaviour
         
         //load from controller name
         sceneTitle.text = controller.name;
+        if(controllerText.text != ""){
+            controllerText.text = controller.text;
+        }else{
+            controllerText.text = "stellation text";
+        }
         
-        StopTyping(controller.name);        
+        typing = false;
         controller.Initialize();
         controller.EnterStellation();
     }
@@ -1091,6 +1097,7 @@ public class MapEditor : MonoBehaviour
         level["time"].AsInt = controller.time;
         level["laps"].AsInt = controller.laps;
         level["startSpeed"].AsFloat = controller.startSpeed;
+        level["text"] = controller.text;
         
         for (int j = 0; j < instance.controller._splines.Count; j++)
         {
@@ -1353,6 +1360,7 @@ public class MapEditor : MonoBehaviour
         c.desiredFOV = json["fov"];
         c.speed = json["speed"];
         c.laps = json["laps"];
+        c.text = json["text"];
         c.time = json["time"];
         c.startSpeed = json["startSpeed"];
         int unlock = json["unlockType"];
@@ -2040,6 +2048,11 @@ void DragCamera()
     {
         activePoint.bias = t;
         biasSliderVal.ChangeValue(t);
+    }
+
+    public void SetStellationText(String s){
+        controller.text = s;
+        typing = false;
     }
 
     void ShuffleSplineOrder(int i)
