@@ -313,15 +313,16 @@ public class MapEditor : MonoBehaviour
         fixedCamera.isOn = controller.fixedCam;
         speedSlider.value = controller.startSpeed;
         
-        
         ChangeWinCondition((int)controller.unlockMethod);
         
         //load from controller name
         sceneTitle.text = controller.name;
 
-        if(controller.text != ""){
+        if(controller.text != null){
+            
             controllerText.text = controller.text;
         }else{
+            controller.text = " ";
             controllerText.text = "stellation text";
         }
 
