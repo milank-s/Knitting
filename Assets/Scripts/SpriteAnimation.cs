@@ -11,16 +11,20 @@ public class SpriteAnimation : MonoBehaviour
     private int index;
 
     private float timer;
+
     // Update is called once per frame
     void Start()
     {
-        timer = 1f / framerate;
+        if(framerate == 0){
+            framerate = 0.0000001f;
+        }
+
         r.sprite = frames[0];
     }
     void Update()
     {
         
-        if (Time.time > timer)
+        if (timer > 1f/framerate)
         {
             index++;
             if (index >= frames.Length)
@@ -29,7 +33,9 @@ public class SpriteAnimation : MonoBehaviour
             }
             
             r.sprite = frames[index];
-            timer = Time.time + 1f / framerate;
+            timer = 0;
         }
+
+        timer += Time.deltaTime;
     }
 }
