@@ -594,8 +594,8 @@ public class Point : MonoBehaviour
 	public bool CanLeave()
 	{
 
-		bool buttonUp = Input.GetButtonUp("Button1");
-		bool buttonDown = Input.GetButton("Button1");
+		bool buttonUp = Services.PlayerBehaviour.buttonUp;
+		bool buttonDown = Services.PlayerBehaviour.buttonDown;
 		
 		if (buttonDown)
 		{

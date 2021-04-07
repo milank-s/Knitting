@@ -84,16 +84,17 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		get
 		{
-			float adjustedAccuracy = goingForward ? Mathf.Pow(1 - accuracy, 2) : -Mathf.Clamp(accuracy, -1, -0.5f);
-			float accuracyMultiplier = Mathf.Pow(accuracy, accuracyCoefficient);
+			float adjustedAccuracy = goingForward ? Mathf.Pow(accuracy, accuracyCoefficient) : -Mathf.Pow(accuracy, accuracyCoefficient);
 
-			float relaxedAccuracy = (adjustedAccuracy * decelerationTimer);
+			//lets just stop using the deceleration timer
+			//float relaxedAccuracy = (adjustedAccuracy * decelerationTimer);
+
 			if (progress >= 0.9f && accuracy < 0.5f)
 			{
-				relaxedAccuracy = 0;
+				adjustedAccuracy = 1;
 			}
 
-			return Mathf.Clamp(flow + speed + boost, 0, 1000) * cursorDir.magnitude * Mathf.Clamp01(1- relaxedAccuracy);
+			return Mathf.Clamp(flow + speed + boost, 0, 1000) * cursorDir.magnitude * Mathf.Clamp01(adjustedAccuracy);
 		}
 	}
 
@@ -142,9 +143,10 @@ public class PlayerBehaviour: MonoBehaviour {
 	private VectorLine velocityLine;
 	private VectorLine velocityLine2;
 
-	public bool buttonPressed;
-	private float buttonPressedBuffer = 0.2f;
-	private float buttonPressedTimer;
+	public bool buttonUp;
+	public bool buttonDown;
+	private float buttonDownBuffer = 0.2f;
+	private float buttonDownTimer;
 	private float progressRemainder;
 
 	private GameObject cursor
@@ -179,10 +181,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	}
 
-	public IEnumerator ResetPlayerToStartPoint()
+	public void ResetPlayerToStartPoint()
 	{
+		if(Services.main.state != Main.GameState.playing){return;}
+
 		Services.fx.PlayAnimationOnPlayer(FXManager.FXType.glitch);
-		yield return new WaitForSeconds(1f);
 
 		if (Services.main.state == Main.GameState.playing)
 		{
@@ -307,6 +310,33 @@ public class PlayerBehaviour: MonoBehaviour {
 		curSpeed = lerpSpeed;
 		StartCoroutine(Unwind());
 	}
+
+	public void PressButton(InputAction.CallbackContext context){
+		//if button down, buttonDown = true;
+		//if button up, buttonDown = false
+
+		if(context.performed){
+			Debug.Log("buttonDown");
+			buttonDown = true;
+		}
+
+		if(context.canceled){
+			Debug.Log("buttonUp");
+			buttonUp = true;
+			buttonDown = false;
+			charging = false;
+			if (state == PlayerState.Traversing)
+			{
+				boostTimer = 0;
+			}
+			buttonDownTimer = buttonDownBuffer;
+			directionIndicator.enabled = false;
+		}
+
+		if(Services.main.state != Main.GameState.playing){return;}
+
+	}
+
 	public void Step()
 	{
 		if (joystickLocked)
@@ -320,15 +350,14 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		Point.hitColorLerp = connectTime;
 
-		if (Input.GetButtonDown("Button1"))
+		if(Input.GetMouseButtonDown(1)){
+			ResetPlayerToStartPoint();
+		}
+
+		if (buttonDown)
 		{
 			boostIndicator.enabled = true;
 			directionIndicator.enabled = true;
-		}
-
-		if (Input.GetButton("Button1"))
-		{
-
 			boostIndicator.transform.position =
 				transform.position + (Vector3) cursorDir2 * ((Vector3)transform.position - cursorPos).magnitude;
 			boostIndicator.transform.up = cursorDir2;
@@ -338,9 +367,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				boostTimer = Mathf.Clamp01(boostTimer);
 			}
 
-			buttonPressed = true;
+			buttonDown = true;
 			charging = true;
-			buttonPressedTimer = buttonPressedBuffer;
+			buttonDownTimer = buttonDownBuffer;
 		}
 		else
 		{
@@ -349,25 +378,16 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		boostIndicator.transform.localScale = Vector3.Lerp(Vector3.one * 0.2f, Vector3.one , boostTimer);
 
-		if (Input.GetButtonUp("Button1"))
+
+
+		if (buttonDown)
 		{
-			charging = false;
-			if (state == PlayerState.Traversing)
-			{
-				boostTimer = 0;
-			}
-			buttonPressedTimer = buttonPressedBuffer;
-			directionIndicator.enabled = false;
+			buttonDownTimer -= Time.deltaTime;
 		}
 
-		if (buttonPressed)
+		if (buttonDownTimer < 0)
 		{
-			buttonPressedTimer -= Time.deltaTime;
-		}
-
-		if (buttonPressedTimer < 0)
-		{
-			buttonPressed = false;
+			buttonDown = false;
 		}
 
 		float speedCoefficient;
@@ -391,9 +411,9 @@ public class PlayerBehaviour: MonoBehaviour {
 //			connectTime = 1;
 //		}
 
-	if(state != PlayerState.Flying && state != PlayerState.Animating && Input.GetMouseButtonDown(1)){
-		SwitchState(PlayerState.Flying);
-	}
+	// if(state != PlayerState.Flying && state != PlayerState.Animating && Input.GetMouseButtonDown(1)){
+	// 	SwitchState(PlayerState.Flying);
+	// }
 
 		Effects ();
 
@@ -467,11 +487,14 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 			}
 
-			if ((Input.GetButton("Button2") || (flow <= 0.01f && state == PlayerState.Traversing))) {
+			//old reset button
+			if (flow <= 0.01f && state == PlayerState.Traversing) {
 				// && Mathf.Abs (flow) <= 0)
 				//SwitchState(PlayerState.Animating);
 			}
 		}
+
+		buttonUp = false;
 	}
 
 	public void PlayerOnPoint(){
@@ -551,7 +574,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if (CanCreatePoint())
 			{
-				if (Input.GetButtonUp("Button1") && curPoint.pointType == PointTypes.connect)
+				if (buttonUp && curPoint.pointType == PointTypes.connect)
 				{
 					CreatePoint();
 					canTraverse = true;
@@ -574,7 +597,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			else if (TryToFly())
 				{
 					cursorSprite.sprite = canFlySprite;
-					if (Input.GetButtonUp("Button1"))
+					if (buttonUp)
 					{
 						Services.PlayerBehaviour.boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
 						SwitchState(PlayerState.Flying);
@@ -584,7 +607,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 //			else if (curPoint.pointType == PointTypes.end)
 //			{
-//				if (Input.GetButtonUp("Button1"))
+//				if (buttonUp)
 //				{
 ////					curPoint.OnPointExit();
 ////					SwitchState(PlayerState.Animating);
@@ -726,7 +749,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		timeOnPoint += Time.deltaTime;
 
 
-		if(Input.GetButton("Button1") && !freeCursor && pointDest != null){
+		if(buttonDown && !freeCursor && pointDest != null){
 			boostTimer += Time.deltaTime / stopTimer;
 			boostIndicator.enabled = true;
 		}else{
@@ -1440,8 +1463,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public bool CanLeavePoint()
 	{
-
-
 		angleToSpline = Mathf.Infinity;
 		float angleOffSpline = Mathf.Infinity;
 		float angleFromPoint = Mathf.Infinity;
@@ -1602,7 +1623,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 		}
 	}
-
 	public void CursorInput (InputAction.CallbackContext context){
 
 		Vector2 inputVector = context.ReadValue<Vector2>();
@@ -1692,7 +1712,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		cursor.transform.up = cursorPos - transform.position;
 
 
-		if(Input.GetButton("Button1") && state == PlayerState.Traversing)
+		if(buttonDown && state == PlayerState.Traversing)
 		{
 
 		}
@@ -1846,7 +1866,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if(curPoint.pointType != PointTypes.ghost){
 
-					if (Services.PlayerBehaviour.buttonPressed)
+					if (Services.PlayerBehaviour.buttonDown)
 					{
 						flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
 						boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
@@ -2061,7 +2081,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				cursorSprite.enabled = false;
 				state = PlayerState.Animating;
 
-				StartCoroutine(ResetPlayerToStartPoint());
+				ResetPlayerToStartPoint();
 //				if (state == PlayerState.Flying)
 //				{
 //					if (!hasFlown)

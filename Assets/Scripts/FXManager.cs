@@ -28,6 +28,10 @@ public class FXManager : MonoBehaviour
   private int index;
  
   private List<Animator> fxInstances = new List<Animator>();
+
+  Coroutine lineDirectionRoutine;
+  Coroutine showPointsRoutine;
+  Coroutine graffitiRoutine;
  
   IEnumerator Start()
   {
@@ -56,12 +60,12 @@ public class FXManager : MonoBehaviour
 
   public void ShowUnfinished()
   {
-      StartCoroutine(ShowUnfinishedPoints());
+      showPointsRoutine = StartCoroutine(ShowUnfinishedPoints());
   }
 
   public void ShowSplineDirection(Spline s)
   {
-     StartCoroutine(DrawSplineDirection(s));
+     lineDirectionRoutine = StartCoroutine(DrawSplineDirection(s));
    
   }
      IEnumerator DrawSplineDirection(Spline s)
@@ -109,6 +113,8 @@ public class FXManager : MonoBehaviour
       nextSplineArrow.enabled = false;
       
       VectorLine.Destroy(ref newLine);
+
+      lineDirectionRoutine = null;
   }
 
   public void ShowNextPoint(Point p)
@@ -136,10 +142,25 @@ public class FXManager : MonoBehaviour
           }
 
       }
+
+      showPointsRoutine = null;
   }
   public void Reset()
   {
-      
+      if(graffitiRoutine != null){
+          StopCoroutine(graffitiRoutine);
+          graffitiRoutine = null;
+      }
+
+      if(showPointsRoutine != null){
+          StopCoroutine(showPointsRoutine);
+          showPointsRoutine = null;
+      }
+
+      if(lineDirectionRoutine != null){
+          StopCoroutine(lineDirectionRoutine);
+          lineDirectionRoutine = null;
+      } 
       flyingParticleMesh.mesh = new Mesh();
       flyingParticleTrailMesh.mesh = new Mesh();
       flyingTrailMesh.mesh = new Mesh();
@@ -349,12 +370,13 @@ public class FXManager : MonoBehaviour
 
           if (drawGraffiti)
           {
-              StartCoroutine(DrawGraffiti());
+              graffitiRoutine = StartCoroutine(DrawGraffiti());
           }
           else
           {
               line.points3 = new List<Vector3>();
               line.Draw3D();
+              graffitiRoutine = null;
           }
 
           // }
@@ -368,7 +390,7 @@ public class FXManager : MonoBehaviour
       if (!drawGraffiti)
       {
           drawGraffiti = true;
-          StartCoroutine(DrawGraffiti());
+          graffitiRoutine = StartCoroutine(DrawGraffiti());
       }
   }
  

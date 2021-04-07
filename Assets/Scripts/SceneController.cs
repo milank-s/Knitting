@@ -36,7 +36,6 @@ public class SceneController : MonoBehaviour
         instance = this;
         curLevel = 0;
         SelectLevelSet();
-   
        
     }
 
@@ -119,6 +118,8 @@ public class SceneController : MonoBehaviour
 
     public void SelectNextLevel(bool increment)
     {
+
+        int index = curSetIndex;
         if (increment)
         {
             curSetIndex++;
@@ -138,14 +139,18 @@ public class SceneController : MonoBehaviour
             }
         }
         
+        if(index != curSetIndex){
+            GlitchEffect.Fizzle(0.1f);
+        }
+
         SelectLevelSet();
     }
     
     public void SelectLevelSet()
     {
-        GlitchEffect.Fizzle(0.1f);
         Services.main.ShowImage(curLevelSet.image);
         Services.main.ShowWord(curLevelSet.title);    
+        
     }
 
     public void LoadLevelSet()
