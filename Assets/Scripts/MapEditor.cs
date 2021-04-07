@@ -328,7 +328,7 @@ public class MapEditor : MonoBehaviour
 
         typing = false;
         controller.Initialize();
-        controller.EnterStellation();
+        controller.Setup();
     }
 
     public void ToggleTurtleMode()

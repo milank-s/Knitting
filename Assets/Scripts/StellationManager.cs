@@ -45,7 +45,7 @@ public class StellationManager : MonoBehaviour
 	public void EnterStellation(StellationController c)
 	{
 		c.isOn = true;
-		c.EnterStellation();
+		c.Setup();
 		c.start.OnPointEnter();
 	}
 	

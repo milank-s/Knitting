@@ -416,6 +416,7 @@ public class Spline : MonoBehaviour
 		SplinePoints.Clear();
 		closed = false;
 		ResetVectorLine();
+		line.StopDrawing3DAuto();
 		
 	}
 
@@ -512,6 +513,8 @@ public class Spline : MonoBehaviour
 	
 	public IEnumerator DrawSplineIn()
 	{
+		
+		line.Draw3DAuto();
 		drawnIn = true;
 		drawingIn = true;
 
@@ -818,6 +821,7 @@ public class Spline : MonoBehaviour
 					}
 
 					c += (Color.white * Mathf.Clamp01(_completion - 1));
+					c.a = 1;
 					line.SetColor(c, segmentIndex);
 				}
 			}
@@ -828,6 +832,7 @@ public class Spline : MonoBehaviour
 					Color c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step);
 					//c = Color.Lerp(c, Color.white, invertedDistance);
 					c += (Color.white * Mathf.Clamp01(_completion - 1));
+					c.a = 1;
 					line.SetColor(c, segmentIndex);
 				}
 			}

@@ -550,7 +550,8 @@
 		}
 
 		activeStellation.Initialize();
-		activeStellation.EnterStellation();
+		activeStellation.Setup();
+		activeStellation.Draw();
 		
 //		foreach (StellationController c in SceneController.instance.activeScenes)
 //		{

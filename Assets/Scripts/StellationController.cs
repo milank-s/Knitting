@@ -297,8 +297,12 @@ public class StellationController : MonoBehaviour {
 //		Services.main.state = Main.GameState.playing;
 }
 
-	
-	public void EnterStellation()
+	public void Draw(){
+		foreach(Spline s in _splines){
+			StartCoroutine(s.DrawSplineIn());
+		}
+	}
+	public void Setup()
 	{
 		isOn = true;
 		isComplete = false;
