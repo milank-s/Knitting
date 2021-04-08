@@ -316,12 +316,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		//if button up, buttonDown = false
 
 		if(context.performed){
-			Debug.Log("buttonDown");
 			buttonDown = true;
 		}
 
 		if(context.canceled){
-			Debug.Log("buttonUp");
 			buttonUp = true;
 			buttonDown = false;
 			charging = false;
