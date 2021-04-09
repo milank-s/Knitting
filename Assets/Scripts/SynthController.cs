@@ -7,15 +7,14 @@ using UnityEngine.Audio;
 public class SynthController : MonoBehaviour
 {
     public HelmController movementSynth;
-
     public HelmController noiseySynth;
     public HelmController flyingSynth;
+	
+	public HelmController keys;
+	
     // Start is called before the first frame update
 
     public AudioMixer synths;
-    
-    public List<HelmController> pads;
-    public List<HelmController> keys;
     public bool hasStartedNoise;
     public static SynthController instance;
     private int[] notes = {60, 64, 67, 71};
@@ -60,16 +59,7 @@ public class SynthController : MonoBehaviour
     public void StopNotes()
     {
 
-	    foreach (HelmController h in pads)
-	    {
-		    h.AllNotesOff();
-	    }
-
-	    foreach (HelmController h in keys)
-	    {
-			h.AllNotesOff();   
-	    }
-	    
+	    flyingSynth.AllNotesOff(); 
 	    movementSynth.AllNotesOff();
 	    noiseySynth.AllNotesOff();
     }
@@ -78,41 +68,41 @@ public class SynthController : MonoBehaviour
     {
 	    if (Input.GetKeyDown(KeyCode.Alpha1))
 	    {
-		    if (pads[0].IsNoteOn(60))
+		    if (movementSynth.IsNoteOn(60))
 		    {
-			    pads[0].AllNotesOff();
+			    movementSynth.AllNotesOff();
 		    }
 		    else
 		    {
-			    pads[0].NoteOn(60);
+			    movementSynth.NoteOn(60);
 		    }
 	    }
 	    
 	    if (Input.GetKeyDown(KeyCode.Alpha2))
 	    {
-		    if (pads[1].IsNoteOn(60))
+		    if (noiseySynth.IsNoteOn(60))
 		    {
-			    pads[1].AllNotesOff();
+			    noiseySynth.AllNotesOff();
 		    }
 		    else
 		    {
-			    pads[1].NoteOn(60);
+			    noiseySynth.NoteOn(60);
 		    }
 	    }
 	    
 	    if (Input.GetKeyDown(KeyCode.Alpha3))
 	    {
 		   
-			    keys[0].NoteOn(80,1);
-		    
+			if (flyingSynth.IsNoteOn(60))
+		    {
+			    flyingSynth.AllNotesOff();
+		    }
+		    else
+		    {
+			    flyingSynth.NoteOn(60);
+		    }
 	    }
 	    
-	    if (Input.GetKeyDown(KeyCode.Alpha4))
-	    {
-		    
-			    keys[1].NoteOn(60, 1);
-		    
-	    }
     }
     
     
