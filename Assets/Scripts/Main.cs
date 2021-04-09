@@ -360,7 +360,7 @@
 			ToggleEditMode();
 		}
 		
-		SynthController.instance.StopNotes();
+		//SynthController.instance.StopNotes();
 		
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
@@ -656,7 +656,7 @@
 				cameraPos.z = 0;
 				CameraFollow.instance.WarpToPosition(cameraPos);
 				
-				SynthController.instance.StopNotes();
+				//SynthController.instance.StopNotes();
 				
 				EnterUIMode();
 				//whyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
@@ -668,7 +668,7 @@
 			}
 			else
 			{
-				SynthController.instance.StopNotes();
+				//SynthController.instance.StopNotes();
 				
 				if (state != GameState.menu)
 				{

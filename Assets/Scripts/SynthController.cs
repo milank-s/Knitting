@@ -11,7 +11,7 @@ public class SynthController : MonoBehaviour
     public HelmController flyingSynth;
 	
 	public HelmController keys;
-	
+
     // Start is called before the first frame update
 
     public AudioMixer synths;
@@ -68,6 +68,8 @@ public class SynthController : MonoBehaviour
     {
 	    if (Input.GetKeyDown(KeyCode.Alpha1))
 	    {
+			Debug.Log("movement synth");
+
 		    if (movementSynth.IsNoteOn(60))
 		    {
 			    movementSynth.AllNotesOff();
@@ -108,12 +110,13 @@ public class SynthController : MonoBehaviour
     
     void Update()
     {
-	    //TestNotes();
-	    
+		
+	    TestNotes();
+
         float accuracy = Mathf.Clamp01(Services.PlayerBehaviour.accuracy);
 	
         //Sound of noise when player goes of accuracy
-        noiseySynth.SetParameterValue(Param.kVolume,Mathf.Clamp01( 1 - (Services.PlayerBehaviour.accuracy + 0.2f)) * Mathf.Clamp01(Services.PlayerBehaviour.flow/5f));
+        //noiseySynth.SetParameterValue(Param.kVolume,Mathf.Clamp01( 1 - (Services.PlayerBehaviour.accuracy + 0.2f)) * Mathf.Clamp01(Services.PlayerBehaviour.flow/5f));
         
         //slight pitch bend on accuracy
         //pads[1].SetParameterPercent(Param.kOsc2Tune, accuracy);
