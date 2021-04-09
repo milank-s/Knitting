@@ -67,6 +67,15 @@ public class PlayerBehaviour: MonoBehaviour {
 	[HideInInspector]
 	public bool goingForward = true;
 
+
+	public delegate void StateChange();
+	public StateChange OnPointEnter;
+	public StateChange OnStartFlying;
+	public StateChange OnStartTraversing;
+	public StateChange OnTraversing;
+	public StateChange OnFlying;
+	public StateChange OnStoppedFlying;
+	public StateChange OnStoppedTraversing;
 	[HideInInspector] public float progress,
 		accuracy,
 		flow = 0,
@@ -253,7 +262,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		cursorSprite.enabled = true;
 		progress = 0;
+		AudioManager.instance.HandleReset(state);
 		state = PlayerState.Switching;
+
 		curSpline = null;
 		traversedPoints.Clear();
 		hasFlown = false;
@@ -416,6 +427,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		Effects ();
 
 		if (state == PlayerState.Flying) {
+				if(OnFlying != null){
+					OnFlying.Invoke();
+				}
 			FreeMovement ();
 			return;
 		}
@@ -430,7 +444,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(curSpline != null){
 				SetCursorAlignment ();
 				transform.position = curSpline.GetPoint(progress);
-
+				if(OnTraversing != null){
+					OnTraversing.Invoke();
+				}
 			}
 
 			PlayerMovement ();
@@ -1233,10 +1249,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			curSpline.completion += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
 		}
 
-		if (AudioManager.instance.splineSinger.isPlaying)
-		{
-			AudioManager.instance.splineSinger.SetClipPlayback(progress);
-		}
 
 		//set player position to a point along the curve
 
@@ -1265,6 +1277,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if (Services.main.useVibration)
 			{
+				Debug.Log("low=" + low);
+				Debug.Log("high= " + hi);
 				Services.main.gamepad.SetMotorSpeeds(low, hi);
 			}
 
@@ -1625,14 +1639,15 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		Vector2 inputVector = context.ReadValue<Vector2>();
 
+		// if(context.control.name == "stick"){
+		// 		inputVector = Quaternion.Euler(0,0,90) * inputVector;
+		// }
+	
 //		Vector3 lastCursorDir = cursorDir;
-		if (Services.main.hasGamepad) {
-
+		if (Services.main.hasGamepad || context.control.name == "stick") {
 
 			//inputVector = new Vector3(Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
-			if(usingJoystick){
-				inputVector = Quaternion.Euler(0,0,90) * inputVector;
-			}
+			
 			cursorDir2 = inputVector;
 
 		}else {
@@ -1807,6 +1822,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			case PlayerState.Traversing:
 				//Services.fx.BakeParticles(sparks, Services.fx.brakeParticleMesh);
 
+				if(OnStoppedTraversing != null){
+					OnStoppedTraversing.Invoke();
+				}
 
 				if (Services.main.hasGamepad)
 				{
@@ -1818,7 +1836,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Flying:
 
-				GranularSynth.flying.TurnOff();
+
+				if(OnStoppedFlying != null){
+					OnStoppedFlying.Invoke();
+				}
 
 				if (flow > flyingSpeed)
 				{
@@ -1872,8 +1893,6 @@ public class PlayerBehaviour: MonoBehaviour {
 						Services.fx.EmitRadialBurst(10,boostTimer + 1, curPoint.transform);
 						Services.fx.EmitLinearBurst(5, boostTimer + 1, curPoint.transform, cursorDir);
 					}
-
-					SynthController.instance.PlayNote(0);
 				}
 
 
@@ -1900,8 +1919,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		LeaveState();
 
-		SynthController.instance.SwitchState(newState);
-
 		if (Services.main.hasGamepad)
 		{
 			Services.main.gamepad.ResetHaptics();
@@ -1918,7 +1935,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if (curPoint.pointType != PointTypes.ghost)
 				{
-					AudioManager.instance.splineSinger.Play();
+					if(OnStartTraversing != null){
+						OnStartTraversing.Invoke();
+					}
 				}
 
 				curSpline.CalculateDistance ();
@@ -1954,8 +1973,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Flying:
 
-				GranularSynth.flying.TurnOn();
-				GranularSynth.moving.TurnOff();
+				if(OnStartFlying != null){
+					OnStartFlying.Invoke();
+				}
+
 				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
 
 
@@ -2045,6 +2066,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				curPoint.proximity = 1;
 				curPoint.OnPointEnter();
+				
+				if(OnPointEnter != null && curPoint.pointType != PointTypes.ghost){
+					OnPointEnter.Invoke();
+				}
 //TODO
 				//SPLINE IS NULL WHEN YOU ARE FLYING, THIS SUCKS
 				if (curSpline != null)

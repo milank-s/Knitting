@@ -492,6 +492,7 @@ public class Point : MonoBehaviour
 		if(pointType != PointTypes.ghost)
 		{
 
+			
 			controller.OnPointEntered();
 			
 

@@ -14,16 +14,12 @@ public class SynthController : MonoBehaviour
 
     public AudioMixer synths;
     
-
     public List<HelmController> pads;
     public List<HelmController> keys;
     public bool hasStartedNoise;
     public static SynthController instance;
-    private int[] notes = {60, 65, 70, 75, 80, 82, 90};
+    private int[] notes = {60, 64, 67, 71};
     private int[] lowNotes = {30, 32, 36};
-
-    
-    private bool a, b, c, d;
 
     private int padNote = 42;
 
@@ -39,10 +35,10 @@ public class SynthController : MonoBehaviour
         //how many should play?
         //which note and which patch?
         //how do you modulate the frequency once the note is being played?
-        GetNotes(keyNote, 1, keys[0]);
+
     }
 
-    void GetNotes(int[] n, int amount, HelmController c)
+    void PlayRandomChord(int[] n, int amount, HelmController c)
     {
 	    n = new int[amount];
 	    
@@ -58,39 +54,6 @@ public class SynthController : MonoBehaviour
 	    for (int i = 0; i < notes.Length; i++)
 	    {
 		    c.NoteOff(notes[i]);
-	    }
-    }
-
-    public void SwitchState(PlayerState s)
-    {
-	    LeaveState(Services.PlayerBehaviour.state);
-
-	    switch (s)
-	    {
-		    case PlayerState.Traversing:
-
-			    if (Services.PlayerBehaviour.curPoint.pointType != PointTypes.ghost)
-			    {
-				    pads[1].NoteOn(padNote, Services.PlayerBehaviour.flow / 5f);
-				    
-				    //pads[0].NoteOn(notes[Random.Range(0, notes.Length)]);
-				    //pads[1].NoteOn(lowNotes[Random.Range(0, lowNotes.Length)]);
-				    noiseySynth.NoteOn(50, 1);
-			    }
-
-			    break;
-
-		    case PlayerState.Flying:
-			    
-			    synths.SetFloat("Volume", -80);
-			    flyingSynth.NoteOn(60, 1);
-			    break;
-
-		    case PlayerState.Switching:
-
-				
-
-			    break;
 	    }
     }
 
@@ -110,38 +73,6 @@ public class SynthController : MonoBehaviour
 	    movementSynth.AllNotesOff();
 	    noiseySynth.AllNotesOff();
     }
-
-    public void LeaveState(PlayerState s)
-		{
-			switch (s)
-			{
-				case PlayerState.Traversing:
-
-					if (Services.PlayerBehaviour.pointDest.pointType != PointTypes.ghost)
-					{
-						pads[1].NoteOff(padNote);
-
-						foreach (HelmController c in pads)
-						{
-							c.AllNotesOff();
-						}
-
-						noiseySynth.NoteOff(50);
-					}
-
-					break;
-
-				case PlayerState.Flying:
-					synths.SetFloat("Volume", 0);
-					flyingSynth.NoteOff(60);
-					break;
-
-				case PlayerState.Switching:
-					break;
-			}
-			
-		}
-
 
     void TestNotes()
     {

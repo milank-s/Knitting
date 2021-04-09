@@ -24,7 +24,7 @@
 	public FXManager fx;
 	public GameObject canvas;
 	public PrefabManager prefabs;
-	public bool hasGamepad;
+	public bool hasGamepad => Gamepad.current != null;
 	public Transform pointParent;
 	public Transform splineParent;
 	public Transform stellationParent;
@@ -168,8 +168,6 @@
 		{
 			SceneController.instance.activeScenes.Add(c);
 		}
-		
-		AudioManager.instance.MuteSynths(true);
 
 		Time.timeScale = 1;
 		
@@ -202,7 +200,6 @@
 			yield return StartCoroutine(FadeOut());
 		}
 
-		AudioManager.instance.MuteSynths(true);
 		
 		LoadScene(i);
 
@@ -424,7 +421,7 @@
 	void Update()
 	{
 		CameraFollow.instance.uiCam.fieldOfView = CameraFollow.instance.cam.fieldOfView;
-		
+	
 //		if (Input.GetKeyDown (KeyCode.R)) {
 //			SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
 //		}
