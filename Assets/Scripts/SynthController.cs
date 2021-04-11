@@ -37,6 +37,28 @@ public class SynthController : MonoBehaviour
 
     }
 
+	public void PlayMovementSynth(){
+		PlayRandomChord(notes, 1, movementSynth);
+		noiseySynth.NoteOn(64);
+	}
+
+	public void UpdateMovementSynth(){
+		
+			float normalizedAccuracy = (1 - Services.PlayerBehaviour.accuracy)/2f;;
+
+			//pitch bending
+			movementSynth.SetParameterPercent(Param.kOsc2Tune, normalizedAccuracy);
+
+			//distortion
+			float distortion = normalizedAccuracy;
+			noiseySynth.SetParameterPercent(Param.kDistortionMix, distortion);
+	}
+
+	public void StopMovementSynth(){
+		noiseySynth.AllNotesOff();
+	}
+
+
     void PlayRandomChord(int[] n, int amount, HelmController c)
     {
 	    n = new int[amount];
@@ -111,7 +133,6 @@ public class SynthController : MonoBehaviour
     void Update()
     {
 		
-	    TestNotes();
 
         float accuracy = Mathf.Clamp01(Services.PlayerBehaviour.accuracy);
 	

@@ -46,6 +46,7 @@ public class AudioManager : MonoBehaviour
 
     public void EnterTraversing(){
         clock.pause = false;
+        SynthController.instance.PlayMovementSynth();
     }
 
     public void ExitFlying(){
@@ -54,6 +55,7 @@ public class AudioManager : MonoBehaviour
 
     public void ExitTraversing(){
 
+        SynthController.instance.StopMovementSynth();
     }
 
     public void OnTraversing(){

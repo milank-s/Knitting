@@ -36,7 +36,7 @@ public class Spline : MonoBehaviour
 	public static float shake;
 	public float distortion;
 	public static System.Collections.Generic.List<Spline> Splines = new System.Collections.Generic.List<Spline> ();
-	public static float drawSpeed = 0.01f;
+	public static float drawSpeed = 500f;
 	
 	
 	[HideInInspector]
@@ -471,15 +471,6 @@ public class Spline : MonoBehaviour
 		}
 	}
 
-	void DrawLineSegment(){
-		if(drawTimer < 0){
-			drawIndex++;
-			drawTimer = drawSpeed;
-		}else{
-			drawTimer -= Time.deltaTime;
-		}
-	}
-
 	public void DrawSplineOverride()
 	{
 		
@@ -553,7 +544,7 @@ public class Spline : MonoBehaviour
 				}
 			}
 
-			lerp += (Time.deltaTime / drawSpeed) * (ease/2f);
+			lerp += (Time.deltaTime * drawSpeed) * (ease/2f);
 
 			if (lerp >= 1)
 			{

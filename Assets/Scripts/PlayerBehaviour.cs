@@ -1897,6 +1897,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 				connectTime = 1;
+				
 				if (curPoint.pointType != PointTypes.ghost)
 				{
 					charging = false;
