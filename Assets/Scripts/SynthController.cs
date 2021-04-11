@@ -47,10 +47,12 @@ public class SynthController : MonoBehaviour
 			float normalizedAccuracy = (1 - Services.PlayerBehaviour.accuracy)/2f;;
 
 			//pitch bending
-			movementSynth.SetParameterPercent(Param.kOsc2Tune, normalizedAccuracy);
+			movementSynth.SetParameterPercent(Param.kArpFrequency, normalizedAccuracy);
+			movementSynth.SetParameterPercent(Param.kOsc1Tune, normalizedAccuracy);
 
 			//distortion
-			float distortion = normalizedAccuracy;
+			float distortion = Mathf.Pow(1 - normalizedAccuracy, 3f);
+			noiseySynth.SetParameterPercent(Param.kVolume, distortion);
 			noiseySynth.SetParameterPercent(Param.kDistortionMix, distortion);
 	}
 

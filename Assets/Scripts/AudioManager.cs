@@ -59,7 +59,7 @@ public class AudioManager : MonoBehaviour
     }
 
     public void OnTraversing(){
-
+        SynthController.instance.UpdateMovementSynth();
     }
 
     public void OnFlying(){
