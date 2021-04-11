@@ -39,25 +39,27 @@ public class SynthController : MonoBehaviour
 
 	public void PlayMovementSynth(){
 		PlayRandomChord(notes, 1, movementSynth);
-		noiseySynth.NoteOn(64);
+		//noiseySynth.NoteOn(64);
 	}
 
 	public void UpdateMovementSynth(){
 		
-			float normalizedAccuracy = (1 - Services.PlayerBehaviour.accuracy)/2f;;
+			float normalizedAccuracy = (1 + Services.PlayerBehaviour.accuracy)/2f;;
 
 			//pitch bending
-			movementSynth.SetParameterPercent(Param.kArpFrequency, normalizedAccuracy);
+			//movementSynth.SetParameterPercent(Param.kArpFrequency, normalizedAccuracy);
 			movementSynth.SetParameterPercent(Param.kOsc1Tune, normalizedAccuracy);
-
+			
+			
 			//distortion
-			float distortion = Mathf.Pow(1 - normalizedAccuracy, 3f);
-			noiseySynth.SetParameterPercent(Param.kVolume, distortion);
-			noiseySynth.SetParameterPercent(Param.kDistortionMix, distortion);
+			float distortion = Mathf.Clamp01((1 - normalizedAccuracy) * 2)/2f;
+			movementSynth.SetParameterPercent(Param.kDistortionMix, distortion);
+			//noiseySynth.SetParameterPercent(Param.kVolume, distortion);
 	}
 
 	public void StopMovementSynth(){
 		noiseySynth.AllNotesOff();
+		movementSynth.AllNotesOff();
 	}
 
 
@@ -68,7 +70,7 @@ public class SynthController : MonoBehaviour
 	    for (int i = 0; i < amount; i++)
 	    {
 		    n[i] = notes[Random.Range(0, notes.Length)];
-		    c.NoteOn(n[i], 0.2f, 0.05f);
+		    c.NoteOn(n[i]);
 	    }
     }
 

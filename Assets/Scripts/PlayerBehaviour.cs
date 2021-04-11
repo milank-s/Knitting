@@ -1822,14 +1822,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			case PlayerState.Traversing:
 				//Services.fx.BakeParticles(sparks, Services.fx.brakeParticleMesh);
 
-				if(OnStoppedTraversing != null){
-					OnStoppedTraversing.Invoke();
-				}
-
-				if (Services.main.hasGamepad)
-				{
-					Services.main.gamepad.ResetHaptics();
-				}
+				//this isn't accurate, its called on ghost points
 
 				//turn on sparks
 				break;
@@ -2045,7 +2038,6 @@ public class PlayerBehaviour: MonoBehaviour {
 					{
 						s.reactToPlayer = false;
 						s.line.StopDrawing3DAuto();
-
 					}
 
 					lastPoint = curPoint;
@@ -2068,8 +2060,20 @@ public class PlayerBehaviour: MonoBehaviour {
 				curPoint.proximity = 1;
 				curPoint.OnPointEnter();
 				
-				if(OnPointEnter != null && curPoint.pointType != PointTypes.ghost){
-					OnPointEnter.Invoke();
+				if(curPoint.pointType != PointTypes.ghost){
+					if(OnPointEnter != null){
+						OnPointEnter.Invoke();
+					}
+
+					if(OnStoppedTraversing != null){
+						OnStoppedTraversing.Invoke();
+					}
+				
+					if (Services.main.hasGamepad)
+					{
+						Services.main.gamepad.ResetHaptics();
+					}
+				
 				}
 //TODO
 				//SPLINE IS NULL WHEN YOU ARE FLYING, THIS SUCKS

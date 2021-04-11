@@ -650,8 +650,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   channel: 1
-  synthParamValue0: 1
-  synthParamValue1: 1
+  synthParamValue0: 0
+  synthParamValue1: 0
   synthParamValue2: 0
   synthParamValue3: 0
   synthParamValue4: 0
@@ -666,7 +666,13 @@ MonoBehaviour:
   synthParamValue13: 0
   synthParamValue14: 0
   synthParamValue15: 0
-  synthParameters: []
+  synthParameters:
+  - parameter_: 142
+    scaleType: 1
+    parent: {fileID: 606922755}
+    minimumRange: 0
+    maximumRange: 1.4143
+    paramValue_: 0
 --- !u!1 &621779900
 GameObject:
   m_ObjectHideFlags: 0
@@ -826,9 +832,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   channel: 0
-  synthParamValue0: 1
+  synthParamValue0: 0
   synthParamValue1: 0
-  synthParamValue2: 0.6363636
+  synthParamValue2: 0
   synthParamValue3: 0
   synthParamValue4: 0
   synthParamValue5: 0
@@ -843,12 +849,24 @@ MonoBehaviour:
   synthParamValue14: 0
   synthParamValue15: 0
   synthParameters:
-  - parameter_: 8
+  - parameter_: 11
+    scaleType: 1
+    parent: {fileID: 621779902}
+    minimumRange: -30
+    maximumRange: 11
+    paramValue_: 0
+  - parameter_: 61
+    scaleType: 1
+    parent: {fileID: 0}
+    minimumRange: 0
+    maximumRange: 1
+    paramValue_: 0
+  - parameter_: 24
     scaleType: 1
     parent: {fileID: 621779902}
     minimumRange: 0
     maximumRange: 1
-    paramValue_: 1
+    paramValue_: 0
 --- !u!1 &802565296
 GameObject:
   m_ObjectHideFlags: 0

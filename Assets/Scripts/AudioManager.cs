@@ -24,19 +24,19 @@ public class AudioManager : MonoBehaviour
         clock.pause = true;
         instance = this;
         Services.PlayerBehaviour.OnPointEnter += EnterPoint;
-        Services.PlayerBehaviour.OnStartFlying += EnterPoint;
+        Services.PlayerBehaviour.OnStartFlying += EnterFlying;
         Services.PlayerBehaviour.OnStartTraversing += EnterTraversing;
         Services.PlayerBehaviour.OnStoppedFlying += ExitFlying;
         Services.PlayerBehaviour.OnTraversing += OnTraversing;
         Services.PlayerBehaviour.OnFlying += OnFlying;
-        Services.PlayerBehaviour.OnStoppedTraversing += EnterTraversing;
+        Services.PlayerBehaviour.OnStoppedTraversing += ExitTraversing;
     }
 
     //calculate position for pitch then play on sampler?
     //or just play based on a sequence
 
     public void EnterPoint(){
-        clarinetSampler.NoteOn(64);
+        //clarinetSampler.NoteOn(64);
         clock.pause = true;
     }
 
