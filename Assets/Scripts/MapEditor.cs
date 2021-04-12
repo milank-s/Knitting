@@ -341,6 +341,7 @@ public class MapEditor : MonoBehaviour
     public  void TogglePlayMode()
     {
 
+		AudioManager.instance.Reset();
         Services.main.activeStellation = controller;
         controller.isOn = true;
         

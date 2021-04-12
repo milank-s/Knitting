@@ -262,7 +262,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		cursorSprite.enabled = true;
 		progress = 0;
-		AudioManager.instance.HandleReset(state);
+		AudioManager.instance.HandlePlayerReset(state);
 		state = PlayerState.Switching;
 
 		curSpline = null;

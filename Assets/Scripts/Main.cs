@@ -360,7 +360,7 @@
 			ToggleEditMode();
 		}
 		
-		//SynthController.instance.StopNotes();
+		AudioManager.instance.Reset();
 		
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
@@ -391,10 +391,11 @@
 	public void Pause(bool pause)
 	{
 		PauseMenu.SetActive(pause);
+		AudioManager.instance.Pause(pause);
 		
 		if (pause)
 		{
-			SynthController.instance.synths.SetFloat("Volume", -80);
+			
 			EventSystem.current.SetSelectedGameObject(pauseResumeButton);
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;
@@ -402,8 +403,7 @@
 		}
 		else
 		{
-			SynthController.instance.synths.SetFloat("Volume", 0);
-			
+
 			if (!MapEditor.editing)
 			{
 				Cursor.lockState = CursorLockMode.Locked;
@@ -612,7 +612,7 @@
 			
 			if (enter)
 			{
-				
+				AudioManager.instance.Reset();
 				if (state == GameState.menu)
 				{
 					CloseMenu();

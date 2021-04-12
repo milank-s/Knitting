@@ -506,7 +506,6 @@ public class Spline : MonoBehaviour
 	{
 		
 		line.Draw3DAuto();
-		drawnIn = true;
 		drawingIn = true;
 
 		float ease = 1;
@@ -557,12 +556,15 @@ public class Spline : MonoBehaviour
 		}
 
 		drawingIn = false;
+		drawnIn = true;
 	}
 
 	public void DrawSpline(int pointIndex = 0)
 	{
-		if (drawingIn || drawnIn) return;
+		if (drawingIn || !drawnIn) return;
 		
+
+		//what the fuck does this even do
 		if (line.GetSegmentNumber() != 0)
 		{
 			drawIndex += 1;
@@ -577,6 +579,7 @@ public class Spline : MonoBehaviour
 		{
 			line.textureOffset -= Time.deltaTime * 10;
 		}
+
 		int startIndex;
 		if (isPlayerOn)
 		{

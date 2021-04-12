@@ -14,7 +14,6 @@ public class SynthController : MonoBehaviour
 
     // Start is called before the first frame update
 
-    public AudioMixer synths;
     public bool hasStartedNoise;
     public static SynthController instance;
     private int[] notes = {60, 64, 67, 71};
@@ -82,9 +81,8 @@ public class SynthController : MonoBehaviour
 	    }
     }
 
-    public void StopNotes()
+    public void ResetSynths()
     {
-
 	    flyingSynth.AllNotesOff(); 
 	    movementSynth.AllNotesOff();
 	    noiseySynth.AllNotesOff();

@@ -19,10 +19,13 @@ public class AudioManager : MonoBehaviour
     public Sampler pianoSampler;
     [SerializeField] public SplineSinger splineSinger;
     
+    void Awake(){
+        instance = this;
+    }
     void Start()
     {
         clock.pause = true;
-        instance = this;
+        
         Services.PlayerBehaviour.OnPointEnter += EnterPoint;
         Services.PlayerBehaviour.OnStartFlying += EnterFlying;
         Services.PlayerBehaviour.OnStartTraversing += EnterTraversing;
@@ -66,39 +69,28 @@ public class AudioManager : MonoBehaviour
 
     }
 
-    public void HandleReset(PlayerState state){
+    public void Reset(){
+        SynthController.instance.ResetSynths();   
+        SynthMaster.SetFloat("Volume", 0f);
+        clock.pause = false;
+    }
+
+    public void HandlePlayerReset(PlayerState state){
         //do what we need to do
     }
+    public void Pause(bool pause){
+        
+        clock.pause = pause;
 
-    public void MuteSynths(bool mute)
-    {
-        foreach (GranularSynth s in GranularSynth.synths)
-        {
-            if (mute)
-            {
-                s.TurnOff();
-            }
-            else
-            {
-                s.TurnOn();
-            }
+        if(pause){
+            SynthMaster.SetFloat("Volume", -80f);
+        }else{
+            SynthMaster.SetFloat("Volume", 0f);
         }
     }
-
     public void FlyingSound(){
         
-				GranularSynth.flying.TurnOn();
+		GranularSynth.flying.TurnOn();
     }
-    void Update()
-    {
-        if (Services.PlayerBehaviour.state == PlayerState.Traversing)
-        {
-            SynthMaster.SetFloat("Distortion", Mathf.Clamp(0.5f - (Services.PlayerBehaviour.accuracy / 2f), 0, 0.5f));
-        }
-        else
-        {
-            SynthMaster.SetFloat("Distortion", 0);
-        }
-    }
-    // Update is called once per frame
+
 }
