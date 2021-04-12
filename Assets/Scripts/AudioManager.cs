@@ -53,7 +53,7 @@ public class AudioManager : MonoBehaviour
     }
 
     public void ExitFlying(){
-
+        SynthController.instance.StopFlying();
     }
 
     public void ExitTraversing(){
@@ -65,6 +65,8 @@ public class AudioManager : MonoBehaviour
     public void OnTraversing(){
 
         SynthController.instance.UpdateMovementSynth();
+        clock.bpm = Services.PlayerBehaviour.curSpeed * 30 + 50 * (1-Services.PlayerBehaviour.decelerationTimer);
+        Debug.Log(clock.bpm);
     }
 
     public void OnFlying(){

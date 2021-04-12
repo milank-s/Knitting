@@ -10,6 +10,7 @@ public class SynthController : MonoBehaviour
 
 	public HelmSequencer movementSequencer;
     public HelmController movementPad;
+    public HelmController noisePad;
     public HelmController flyingSynth;
 	
 	public HelmController keys;
@@ -64,13 +65,19 @@ public class SynthController : MonoBehaviour
 		flyingSynth.NoteOn(64);
 	}
 
+	public void StopFlying(){
+		flyingSynth.AllNotesOff();
+	}
+
 	public void PlayNoteOnPoint(){
 		PlayRandomChord(notes, 3, keys, 1, 1);
 	}
 	public void PlayMovementSynth(){
 		//start the arp
 		ChooseRandomTriad();
-		PlayRandomChord(notes, 1, movementPad);
+		noisePad.NoteOn(60, 1);
+		noisePad.NoteOn(55, 1);
+		PlayRandomChord(lowNotes, 1, movementPad);
 	}
 
 	public void UpdateMovementSynth(){
@@ -81,16 +88,19 @@ public class SynthController : MonoBehaviour
 			movementKeys.SetParameterPercent(Param.kArpFrequency, normalizedAccuracy);
 			
 			
-			//distortion
-			float distortion = Mathf.Clamp01((1 - normalizedAccuracy) * 2);
+			//distortion isn't really working
+			float distortion = Mathf.Pow((1 - normalizedAccuracy), 2);
 			movementPad.SetParameterPercent(Param.kDistortionMix, distortion);
-			movementPad.SetParameterValue(Param.kDistortionOn, 1);
+
+			//noise time
+			noisePad.SetParameterPercent(Param.kVolume, distortion);
 			
 	}
 
 	public void StopMovementSynth(){
 		movementPad.AllNotesOff();
 		movementKeys.AllNotesOff();
+		noisePad.AllNotesOff();
 	}
 
 
