@@ -15,8 +15,6 @@ public class SynthController : MonoBehaviour
 	
 	public HelmController keys;
 
-    // Start is called before the first frame update
-
     public bool hasStartedNoise;
     public static SynthController instance;
     private int[] notes = {60, 64, 67, 71};
@@ -70,7 +68,7 @@ public class SynthController : MonoBehaviour
 	}
 
 	public void PlayNoteOnPoint(){
-		PlayRandomChord(notes, 3, keys, 1, 1);
+		PlayRandomChord(notes, 1, keys, 0.1f, 0.1f);
 	}
 	public void PlayMovementSynth(){
 		//set up the arp

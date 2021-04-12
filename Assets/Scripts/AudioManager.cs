@@ -80,9 +80,6 @@ public class AudioManager : MonoBehaviour
         clock.pause = true;
     }
 
-    public void HandlePlayerReset(PlayerState state){
-        //do what we need to do
-    }
     public void Pause(bool pause){
         
         clock.pause = pause;
