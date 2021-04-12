@@ -44,7 +44,7 @@ public class AudioManager : MonoBehaviour
     }
 
     public void EnterFlying(){
-
+        SynthController.instance.PlayFlyingSynth();
     }
 
     public void EnterTraversing(){

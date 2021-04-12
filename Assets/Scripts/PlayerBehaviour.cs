@@ -58,7 +58,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		get { return Mathf.Clamp01(curSpeed / 2); }
 	}
 	float angleToSpline = Mathf.Infinity;
-	private float flyingSpeed;
+	public float flyingSpeed;
 	private bool hasFlown = false;
 	private bool foundConnection = false;
 	private bool freeCursor = false;
@@ -98,7 +98,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			float adjustedAccuracy = goingForward ? Mathf.Pow(accuracy, accuracyCoefficient) : -Mathf.Pow(accuracy, accuracyCoefficient);
 
 			//lets just stop using the deceleration timer
-			//float relaxedAccuracy = (adjustedAccuracy * decelerationTimer);
+			adjustedAccuracy = (adjustedAccuracy * (1-decelerationTimer));
 
 			if (progress >= 0.9f && accuracy < 0.5f)
 			{

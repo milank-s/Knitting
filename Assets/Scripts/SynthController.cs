@@ -36,6 +36,13 @@ public class SynthController : MonoBehaviour
 
     }
 
+	public void UpdateFlyingSynth(){
+		
+	}
+	public void PlayFlyingSynth(){
+		flyingSynth.NoteOn(64);
+	}
+
 	public void PlayMovementSynth(){
 		PlayRandomChord(notes, 2, movementKeys, 1, 1);
 		PlayRandomChord(notes, 1, movementPad);
