@@ -74,7 +74,7 @@ public class SynthController : MonoBehaviour
 	}
 	public void PlayMovementSynth(){
 		//set up the arp
-		//ChooseRandomTriad();
+		 ChooseRandomTriad();
 
 		noisePad.NoteOn(60, 1);
 		noisePad.NoteOn(55, 1);
@@ -85,13 +85,14 @@ public class SynthController : MonoBehaviour
 		
 			float normalizedAccuracy = (1 + Services.PlayerBehaviour.accuracy)/2f;;
 
-			//pitch bending
-			movementKeys.SetParameterPercent(Param.kArpFrequency, normalizedAccuracy);
+			//old code for using arp on the synth instead of using a sequencer
+			//movementKeys.SetParameterPercent(Param.kArpFrequency, normalizedAccuracy);
 			
 			
 			//distortion isn't really working
 			float distortion = Mathf.Pow((1 - normalizedAccuracy), 2);
 			movementPad.SetParameterPercent(Param.kDistortionMix, distortion);
+			movementPad.SetParameterPercent(Param.kVolume, Mathf.Clamp(Services.PlayerBehaviour.curSpeed, 0, 0.5f));
 
 			//noise time
 			noisePad.SetParameterPercent(Param.kVolume, distortion);

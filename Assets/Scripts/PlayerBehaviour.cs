@@ -100,7 +100,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			//lets just stop using the deceleration timer
 			adjustedAccuracy = (adjustedAccuracy * (1-decelerationTimer));
 
-			if (progress >= 0.9f && accuracy < 0.5f)
+			if (progress >= 0.9f && accuracy < 0.5f && pointDest.pointType != PointTypes.ghost)
 			{
 				adjustedAccuracy = 1;
 			}

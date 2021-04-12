@@ -41,6 +41,7 @@ public class AudioManager : MonoBehaviour
     public void EnterPoint(){
         //clarinetSampler.NoteOn(64);
         clock.pause = true;
+        SynthController.instance.PlayNoteOnPoint();
     }
 
     public void EnterFlying(){
@@ -70,7 +71,7 @@ public class AudioManager : MonoBehaviour
     }
 
     public void OnFlying(){
-
+        SynthController.instance.UpdateFlyingSynth();
     }
 
     public void Reset(){
