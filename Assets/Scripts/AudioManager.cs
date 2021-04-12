@@ -57,11 +57,13 @@ public class AudioManager : MonoBehaviour
     }
 
     public void ExitTraversing(){
-
+        
+        clock.pause = true;
         SynthController.instance.StopMovementSynth();
     }
 
     public void OnTraversing(){
+
         SynthController.instance.UpdateMovementSynth();
     }
 
@@ -72,7 +74,7 @@ public class AudioManager : MonoBehaviour
     public void Reset(){
         SynthController.instance.ResetSynths();   
         SynthMaster.SetFloat("Volume", 0f);
-        clock.pause = false;
+        clock.pause = true;
     }
 
     public void HandlePlayerReset(PlayerState state){

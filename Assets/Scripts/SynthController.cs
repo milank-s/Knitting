@@ -7,6 +7,8 @@ using UnityEngine.Audio;
 public class SynthController : MonoBehaviour
 {
     public HelmController movementKeys;
+
+	public HelmSequencer movementSequencer;
     public HelmController movementPad;
     public HelmController flyingSynth;
 	
@@ -17,6 +19,9 @@ public class SynthController : MonoBehaviour
     public bool hasStartedNoise;
     public static SynthController instance;
     private int[] notes = {60, 64, 67, 71};
+
+	public string[] triadKeys;
+	private int[][] triads;
     private int[] lowNotes = {30, 32, 36};
 
     private int padNote = 42;
@@ -26,25 +31,44 @@ public class SynthController : MonoBehaviour
     public void Awake()
     {
         instance = this;
+		ConvertStringToTriad();
     }
 
-    public void PlayNote(int i)
-    {
-        //how many should play?
-        //which note and which patch?
-        //how do you modulate the frequency once the note is being played?
+	void ConvertStringToTriad(){
+		triads = new int[triadKeys.Length][];
+		for(int i = 0; i < triadKeys.Length; i++){
+			string[] triadString = triadKeys[i].Split(new char[] {' '});
+			int[] triadNotes = new int[triadString.Length];
+			for(int j = 0; j < triadNotes.Length; j++){
+				int curNote;
+				if(int.TryParse(triadString[i], out curNote)){
+					triadNotes[j] = curNote;
+				}
+			}
+		}
+	}
 
-    }
-
+	public void ChooseRandomTriad(){
+		int[] triad = triads[Random.Range(0, triads.Length)];
+		movementSequencer.Clear();
+		for(int i = 0; i < triad.Length; i++){
+			movementSequencer.AddNote(triad[i], i, i + 1, 1);
+		}
+		movementSequencer.length = triad.Length;
+	}
 	public void UpdateFlyingSynth(){
-		
+		flyingSynth.SetParameterPercent(Param.kVolume, Mathf.Clamp01(Services.PlayerBehaviour.flyingSpeed));
 	}
 	public void PlayFlyingSynth(){
 		flyingSynth.NoteOn(64);
 	}
 
+	public void PlayNoteOnPoint(){
+		PlayRandomChord(notes, 3, keys, 1, 1);
+	}
 	public void PlayMovementSynth(){
-		PlayRandomChord(notes, 2, movementKeys, 1, 1);
+		//start the arp
+		ChooseRandomTriad();
 		PlayRandomChord(notes, 1, movementPad);
 	}
 
@@ -53,8 +77,7 @@ public class SynthController : MonoBehaviour
 			float normalizedAccuracy = (1 + Services.PlayerBehaviour.accuracy)/2f;;
 
 			//pitch bending
-			//movementKeys.SetParameterPercent(Param.kArpFrequency, normalizedAccuracy);
-			movementKeys.SetParameterPercent(Param.kOsc1Tune, normalizedAccuracy);
+			movementKeys.SetParameterPercent(Param.kArpFrequency, normalizedAccuracy);
 			
 			
 			//distortion
