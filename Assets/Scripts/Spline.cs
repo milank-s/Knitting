@@ -149,6 +149,7 @@ public class Spline : MonoBehaviour
 
 	public void OnSplineExit ()
 	{
+		Debug.Log("leaving spline called");
 		draw = false;
 		isPlayerOn = false;
 		reactToPlayer = false;
@@ -231,6 +232,7 @@ public class Spline : MonoBehaviour
 		}
 
 		CalculateDistance ();
+
 		isPlayerOn = true;
 
 		/*								Old sound stuff
@@ -512,7 +514,10 @@ public class Spline : MonoBehaviour
 		float lerp = 0;
 		int totalLineSegments = curveFidelity * (SplinePoints.Count - (closed ? 0 : 1));
 		int curDrawIndex = 0;
-		while (curDrawIndex <= totalLineSegments)
+		
+		//never exiting while loop
+
+		while (curDrawIndex < totalLineSegments)
 		{
 			float curStep = 0;
 			int curPoint = 0;
@@ -562,15 +567,14 @@ public class Spline : MonoBehaviour
 	public void DrawSpline(int pointIndex = 0)
 	{
 		if (drawingIn || !drawnIn) return;
-		
 
 		//what the fuck does this even do
-		if (line.GetSegmentNumber() != 0)
-		{
-			drawIndex += 1;
-		}
+		// if (line.GetSegmentNumber() != 0)
+		// {
+		// 	drawIndex += 1;
+		// }
 		
-		if (reactToPlayer || isPlayerOn)
+		if (isPlayerOn || reactToPlayer)
 		{
 			drawIndex = GetPlayerLineSegment(pointIndex);
 		}
@@ -581,6 +585,7 @@ public class Spline : MonoBehaviour
 		}
 
 		int startIndex;
+
 		if (isPlayerOn)
 		{
 			startIndex = 0;
@@ -728,34 +733,37 @@ public class Spline : MonoBehaviour
 		//closeness to the player. 0 = one curve away
 		invertedDistance = 1f - Mathf.Clamp01(Mathf.Abs(distanceFromPlayer));
 
-		float flow = Mathf.Abs(Services.PlayerBehaviour.flow);
-		float newFrequency = Mathf.Abs(flow);
+		float newFrequency = Mathf.Abs(Services.PlayerBehaviour.curSpeed);
 
 		//use accuracy to show static
 		float amplitude;
 		
-		Vector3 direction = GetVelocityAtIndex(pointIndex, step);
+		Vector3 direction = GetVelocityAtIndex(pointIndex, step).normalized;
 		Vector3 distortionVector = new Vector3(-direction.y, direction.x, direction.z);
-		distortion = Mathf.Lerp(distortion, 0, Time.deltaTime);
-		amplitude = flow / 5;
-		
-		if (isPlayerOn)
-		{
-			 float accuracyDistortion = Mathf.Lerp(0, 1, Mathf.Pow(0.5f - Services.PlayerBehaviour.accuracy / 2, 2)) + distortion + shake;
-			v += (distortionVector * UnityEngine.Random.Range(- accuracyDistortion, accuracyDistortion) * invertedDistance) * amplitude;
-			
-			
-			NewFrequency(newFrequency * 10);
-			
-//			v += distortionVector * (Mathf.Sin(Time.time * frequency + phase - segmentIndex) *
-//				                         Mathf.Clamp01(_completion) * Mathf.Clamp01(distanceFromPlayer) *
-//				                         Mathf.Clamp01(drawTimer /5f) * 0.025f);
-			
+	
+		amplitude = Mathf.Clamp01(Services.PlayerBehaviour.potentialSpeed/5f)/2f + shake;
+		distortion = Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f)* amplitude;
 
-		}
-		else
-		{
-			v += (distortionVector * UnityEngine.Random.Range(-distortion, distortion) * Mathf.Clamp01(-indexDiff + 1)) * amplitude;
+		if(!drawingIn){
+			if (isPlayerOn)
+			{
+				
+				v += (distortionVector * UnityEngine.Random.Range(- distortion, distortion) * invertedDistance) * amplitude;
+				
+				
+				NewFrequency(newFrequency * 10);
+				
+	//			v += distortionVector * (Mathf.Sin(Time.time * frequency + phase - segmentIndex) *
+	//				                         Mathf.Clamp01(_completion) * Mathf.Clamp01(distanceFromPlayer) *
+	//				                         Mathf.Clamp01(drawTimer /5f) * 0.025f);
+				
+
+			}
+			else
+			{
+				v += (distortionVector * UnityEngine.Random.Range(-distortion, distortion) * Mathf.Clamp01(-indexDiff + 1)) * amplitude;
+			}
+
 		}
 
 

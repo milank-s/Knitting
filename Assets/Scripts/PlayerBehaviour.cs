@@ -89,7 +89,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		gravity,
 		decelerationTimer;
 
-	float calculatedSpeed
+	public float normalizedAccuracy => (1 + accuracy)/2f;
+	public float potentialSpeed => flow + speed + boost;
+	float actualSpeed
 	{
 		get
 		{
@@ -1242,8 +1244,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		// (adjustedAccuracy + 0.1f)
 		if (!joystickLocked)
 		{
-
-			curSpeed = calculatedSpeed;
+			curSpeed = actualSpeed;
 			progress += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
 
 			curSpline.completion += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
@@ -2160,7 +2161,7 @@ public class PlayerBehaviour: MonoBehaviour {
 // (accuracy < 0 && flow > 0) || accuracy > 0 && flow <
 			if (state != PlayerState.Switching)
 			{
-				e.rateOverTimeMultiplier = Mathf.Pow((1 - Mathf.Abs(accuracy)), 2) * 100 * Mathf.Abs(flow);
+				e.rateOverTimeMultiplier = Mathf.Pow(1-decelerationTimer, 0.5f) * 25 * potentialSpeed * Mathf.Pow(1-normalizedAccuracy, 2);
 			}
 
 		}
