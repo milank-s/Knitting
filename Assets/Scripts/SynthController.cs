@@ -41,10 +41,11 @@ public class SynthController : MonoBehaviour
 			int[] triadNotes = new int[triadString.Length];
 			for(int j = 0; j < triadNotes.Length; j++){
 				int curNote;
-				if(int.TryParse(triadString[i], out curNote)){
+				if(int.TryParse(triadString[j], out curNote)){
 					triadNotes[j] = curNote;
 				}
 			}
+			triads[i] = triadNotes;
 		}
 	}
 
