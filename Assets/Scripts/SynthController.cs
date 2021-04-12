@@ -73,8 +73,9 @@ public class SynthController : MonoBehaviour
 		PlayRandomChord(notes, 3, keys, 1, 1);
 	}
 	public void PlayMovementSynth(){
-		//start the arp
-		ChooseRandomTriad();
+		//set up the arp
+		//ChooseRandomTriad();
+
 		noisePad.NoteOn(60, 1);
 		noisePad.NoteOn(55, 1);
 		PlayRandomChord(lowNotes, 1, movementPad);
