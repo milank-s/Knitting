@@ -5,7 +5,6 @@ using UnityEngine;
 public class Crawler : MonoBehaviour
 {
     public float progress;
-    public List<Point> points;
     private Spline spline;
     private int curIndex;
     public float speed;
@@ -14,16 +13,6 @@ public class Crawler : MonoBehaviour
     public bool running;
 
     [SerializeField] private SpriteRenderer mesh;
-    
-    private Point curPoint
-    {
-        get { return points[curIndex]; }
-    }
-    
-    private Point nextPoint
-    {
-        get { return points[curIndex + 1]; }
-    }
     
     void Update()
     {
@@ -55,7 +44,7 @@ public class Crawler : MonoBehaviour
         }
         
         
-        curPoint.OnPointEnter();
+        spline.SplinePoints[curIndex].OnPointEnter();
         
     }
 

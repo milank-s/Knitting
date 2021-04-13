@@ -214,7 +214,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
 		traversedPoints.Add (curPoint);
-		curPoint.OnPointEnter ();
+		curPoint.OnPlayerEnterPoint();
 		
 		if (flow < Services.main.activeStellation.startSpeed)
 		{
@@ -2057,8 +2057,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 
 
-				curPoint.proximity = 1;
-				curPoint.OnPointEnter();
+				curPoint.OnPlayerEnterPoint();
 				
 				if(curPoint.pointType != PointTypes.ghost){
 					

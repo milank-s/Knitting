@@ -46,7 +46,7 @@ public class StellationManager : MonoBehaviour
 	{
 		c.isOn = true;
 		c.Setup();
-		c.start.OnPointEnter();
+		c.start.OnPlayerEnterPoint();
 	}
 	
 	public void CompleteStellation()

@@ -24,7 +24,7 @@ public class AudioManager : MonoBehaviour
     {
         clock.pause = true;
         
-        
+
         Services.main.OnPointEnter += EnterPoint;
         Services.main.OnLoadLevel += SoundSetup;
         Services.PlayerBehaviour.OnStartFlying += EnterFlying;
@@ -75,7 +75,6 @@ public class AudioManager : MonoBehaviour
 
         SynthController.instance.UpdateMovementSynth();
         clock.bpm = Services.PlayerBehaviour.curSpeed * 30 + 50 * (1-Services.PlayerBehaviour.decelerationTimer);
-        Debug.Log(clock.bpm);
     }
 
     public void OnFlying(){

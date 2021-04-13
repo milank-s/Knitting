@@ -468,12 +468,24 @@ public class Point : MonoBehaviour
 		}
 
 	}
+
+	public void OnPointEnter(){
+		if(pointType != PointTypes.ghost){
+			if(Services.main.OnPointEnter != null){
+				Services.main.OnPointEnter(this);
+			}
+
+			GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
+			fx.transform.parent = transform;
+		}
+	}
 	
-	public void OnPointEnter()
+	public void OnPlayerEnterPoint()
 	{
 		proximity = 1;
 		timeOnPoint = 0;
 		timesHit++;
+		OnPointEnter();
 		
 		if (controller.CheckSpeed())
 		{
@@ -492,17 +504,13 @@ public class Point : MonoBehaviour
 		if(pointType != PointTypes.ghost)
 		{
 
-			if(Services.main.OnPointEnter != null){
-				Services.main.OnPointEnter(this);
-			}
-
 			controller.NextWord();
 			
 
 			switch (pointType)
 			{
 				case PointTypes.normal:
-					//Services.Sounds.PlayPointAttack(Services.PlayerBehaviour.clampedSpeed/10);
+				
 					break;
 				
 				case PointTypes.reset:
@@ -547,10 +555,7 @@ public class Point : MonoBehaviour
 					
 					break;
 			}
-			
-			GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
-			fx.transform.parent = transform;
-			
+		
 		}
 		
 	}

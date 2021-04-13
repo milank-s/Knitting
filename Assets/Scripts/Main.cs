@@ -521,7 +521,7 @@
 
 		Services.PlayerBehaviour.ResetFX();
 		Services.PlayerBehaviour.curPoint = p;
-		Services.PlayerBehaviour.curPoint.OnPointEnter();
+		Services.PlayerBehaviour.curPoint.OnPlayerEnterPoint();
 		
 		Services.PlayerBehaviour.flow = flow;
 		Services.PlayerBehaviour.curSpeed = curSpeed;
