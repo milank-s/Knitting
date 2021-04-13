@@ -5,8 +5,6 @@ using UnityEngine.Audio;
 using AudioHelm;
 public class AudioManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-
     public static AudioManager instance;
     
     public AudioHelmClock clock;
@@ -26,7 +24,9 @@ public class AudioManager : MonoBehaviour
     {
         clock.pause = true;
         
+        
         Services.main.OnPointEnter += EnterPoint;
+        Services.main.OnLoadLevel += SoundSetup;
         Services.PlayerBehaviour.OnStartFlying += EnterFlying;
         Services.PlayerBehaviour.OnStartTraversing += EnterTraversing;
         Services.PlayerBehaviour.OnStoppedFlying += ExitFlying;
@@ -34,13 +34,18 @@ public class AudioManager : MonoBehaviour
         Services.PlayerBehaviour.OnFlying += OnFlying;
         Services.PlayerBehaviour.OnStoppedTraversing += ExitTraversing;
     }
+    
+    public void SoundSetup(StellationController stellation){
 
-    public void OnLoadStellation(){
+        foreach(Spline s in stellation._splines){
+            //
+        }
+        //iterate through splines
+        //iterate through points
+        //use bounds to determine pitch
+        //quantize it or whatever
 
     }
-    //calculate position for pitch then play on sampler?
-    //or just play based on a sequence
-
     public void EnterPoint(Point p){
         //clarinetSampler.NoteOn(64);
         clock.pause = true;

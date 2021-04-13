@@ -299,6 +299,7 @@ public class StellationController : MonoBehaviour {
 
 	public void Draw(){
 		foreach(Spline s in _splines){
+			Services.main.crawlerManager.AddCrawler(s);
 			StartCoroutine(s.DrawSplineIn());
 		}
 	}
@@ -314,10 +315,7 @@ public class StellationController : MonoBehaviour {
 			Services.PlayerBehaviour.flow = startSpeed;
 		}
 
-		if (unlockMethod == UnlockType.speed)
-		{
-			Services.main.crawlerManager.AddCrawler(_splines[0].SplinePoints, speed);
-		}
+
 		
 		CameraFollow.instance.fixedCamera = fixedCam;
 		CameraFollow.instance.desiredFOV = desiredFOV;
@@ -336,10 +334,6 @@ public class StellationController : MonoBehaviour {
 			SetCameraBounds();
 		}
 
-		if(Services.main.OnLoadLevel != null){
-			Services.main.OnLoadLevel(this);
-		}
-		
 	}
 
 	public bool CheckCompleteness()

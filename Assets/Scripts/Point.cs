@@ -492,8 +492,11 @@ public class Point : MonoBehaviour
 		if(pointType != PointTypes.ghost)
 		{
 
-			
-			controller.OnPointEntered();
+			if(Services.main.OnPointEnter != null){
+				Services.main.OnPointEnter(this);
+			}
+
+			controller.NextWord();
 			
 
 			switch (pointType)

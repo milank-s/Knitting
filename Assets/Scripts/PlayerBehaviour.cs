@@ -2061,10 +2061,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				curPoint.OnPointEnter();
 				
 				if(curPoint.pointType != PointTypes.ghost){
-					if(Services.main.OnPointEnter != null){
-						Services.main.OnPointEnter(curPoint);
-					}
-
+					
 					if(OnStoppedTraversing != null){
 						OnStoppedTraversing.Invoke();
 					}

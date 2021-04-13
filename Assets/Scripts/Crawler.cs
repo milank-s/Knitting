@@ -6,7 +6,7 @@ public class Crawler : MonoBehaviour
 {
     public float progress;
     public List<Point> points;
-    private Spline curSpline;
+    private Spline spline;
     private int curIndex;
     public float speed;
     public Spline startSpline;
@@ -32,7 +32,7 @@ public class Crawler : MonoBehaviour
             if (progress < 1)
             {
                 progress += Time.deltaTime * speed;
-                transform.position = curSpline.GetPointAtIndex(curSpline.SplinePoints.IndexOf(curPoint), progress);
+                transform.position = spline.GetPointAtIndex(curIndex, progress);
             }
             else
             {
@@ -45,19 +45,17 @@ public class Crawler : MonoBehaviour
     {
         progress = 0;
         
-        if(curIndex < points.Count - 1)
+        if(curIndex < spline.SplinePoints.Count - 1)
         {
-            curSpline = curPoint.GetConnectingSpline(nextPoint);
             curIndex++;
         }
         else
         {
             curIndex = 0;
-            curSpline = startSpline;
         }
         
-        //no fucking way crawlers should call this shit atm
-        //curPoint.OnPointEnter();
+        
+        curPoint.OnPointEnter();
         
     }
 
@@ -67,10 +65,11 @@ public class Crawler : MonoBehaviour
         mesh.enabled = false;
     }
 
-    public void Init()
+    public void Init(Spline s)
     {
         curIndex = 0;
-        curSpline = startSpline;
+        spline = s;
+        speed = Services.main.activeStellation.speed;
         running = true;
         mesh.enabled = true;
     }

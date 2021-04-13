@@ -20,7 +20,7 @@ public class CrawlerManager : MonoBehaviour
         }
     }
 
-    public void AddCrawler(List<Point> p, float f)
+    public void AddCrawler(Spline s)
     {
         
         bool available = false;
@@ -41,11 +41,8 @@ public class CrawlerManager : MonoBehaviour
             index++;
         }
         
-        toUse.startSpline = p[0].GetConnectingSpline(p[1]);
-        toUse.points = p;
-        toUse.speed = f;
         
-        toUse.Init();
+        toUse.Init(s);
     }
 
     public void Reset()

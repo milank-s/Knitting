@@ -145,6 +145,7 @@ public class SynthController : MonoBehaviour
 	    flyingSynth.AllNotesOff(); 
 	    movementKeys.AllNotesOff();
 	    movementPad.AllNotesOff();
+		noisePad.AllNotesOff();
     }
 
     void TestNotes()
