@@ -69,7 +69,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 	public delegate void StateChange();
-	public StateChange OnPointEnter;
 	public StateChange OnStartFlying;
 	public StateChange OnStartTraversing;
 	public StateChange OnTraversing;
@@ -2062,8 +2061,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				curPoint.OnPointEnter();
 				
 				if(curPoint.pointType != PointTypes.ghost){
-					if(OnPointEnter != null){
-						OnPointEnter.Invoke();
+					if(Services.main.OnPointEnter != null){
+						Services.main.OnPointEnter(curPoint);
 					}
 
 					if(OnStoppedTraversing != null){

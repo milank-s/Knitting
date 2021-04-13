@@ -335,6 +335,10 @@ public class StellationController : MonoBehaviour {
 		{
 			SetCameraBounds();
 		}
+
+		if(Services.main.OnLoadLevel != null){
+			Services.main.OnLoadLevel(this);
+		}
 		
 	}
 

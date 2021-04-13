@@ -3906,7 +3906,7 @@ ParticleSystem:
         m_RotationOrder: 4
     maxLights: 20
   TrailModule:
-    enabled: 0
+    enabled: 1
     mode: 0
     ratio: 1
     lifetime:
@@ -10502,13 +10502,18 @@ MonoBehaviour:
   speed: 0.1
   acceleration: 0.1
   decay: 1
+  flyingSpeedDecay: 1
   accuracyCoefficient: 2
   flowAmount: 0.1
   stopTimer: 1
+  cursorMoveSpeed: 1
+  minCursorDistance: 25
+  maxCursorDistance: 2
   cursorDistance: 0.5
   cursorRotateSpeed: 3
   LineAngleDiff: 1
   StopAngleDiff: 40
+  flyingSpeed: 0
   goingForward: 1
   progress: 0
   accuracy: 0
@@ -10541,7 +10546,8 @@ MonoBehaviour:
   boostIndicator: {fileID: 869662897}
   directionIndicator: {fileID: 597226892}
   cursorOnPoint: {fileID: 355773165}
-  buttonPressed: 0
+  buttonUp: 0
+  buttonDown: 0
   cursorPos: {x: 0, y: 0, z: 0}
   cursorDir: {x: 0, y: 0}
   cursorDir2: {x: 0, y: 0}

@@ -13,6 +13,9 @@
 	public enum GameState {playing, paused, editing, menu}
 
 	public GameState state;
+
+	
+	[Header("Components")]
 	public GameObject cursor;
 	public GameObject Player;
 	public Image PauseScreen;
@@ -44,6 +47,20 @@
 	public PlayerInput playerInput;
 	public Text text;
 	public Text levelText;
+
+
+	public delegate void StellationLoad(StellationController c);
+	public delegate void PointAction(Point p);
+	public delegate void SplineAction(Spline s);
+
+	public StellationLoad OnLoadLevel;
+	public PointAction OnPointEnter;
+	public PointAction OnPointExit;
+	public PointAction OnPlayerEnterPoint;
+	public PointAction OnPlayerExitPoint;
+	public SplineAction OnSplineEnter;
+	public SplineAction OnSplineExit;
+
 
 	private bool pressedPause;
 	
@@ -549,6 +566,10 @@
 		activeStellation.Initialize();
 		activeStellation.Setup();
 		activeStellation.Draw();
+
+		if(OnLoadLevel != null){
+			OnLoadLevel(activeStellation);
+		}
 		
 //		foreach (StellationController c in SceneController.instance.activeScenes)
 //		{

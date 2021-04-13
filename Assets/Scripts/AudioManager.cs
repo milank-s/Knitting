@@ -26,7 +26,7 @@ public class AudioManager : MonoBehaviour
     {
         clock.pause = true;
         
-        Services.PlayerBehaviour.OnPointEnter += EnterPoint;
+        Services.main.OnPointEnter += EnterPoint;
         Services.PlayerBehaviour.OnStartFlying += EnterFlying;
         Services.PlayerBehaviour.OnStartTraversing += EnterTraversing;
         Services.PlayerBehaviour.OnStoppedFlying += ExitFlying;
@@ -35,10 +35,13 @@ public class AudioManager : MonoBehaviour
         Services.PlayerBehaviour.OnStoppedTraversing += ExitTraversing;
     }
 
+    public void OnLoadStellation(){
+
+    }
     //calculate position for pitch then play on sampler?
     //or just play based on a sequence
 
-    public void EnterPoint(){
+    public void EnterPoint(Point p){
         //clarinetSampler.NoteOn(64);
         clock.pause = true;
         SynthController.instance.PlayNoteOnPoint();

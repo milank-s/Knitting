@@ -33,6 +33,17 @@ public class SynthController : MonoBehaviour
 		ConvertStringToTriad();
     }
 
+	// TODO
+	// Create different patches (or pitches?) for different point types
+	// big ole switch statement for PlayNoteOnPoint
+	// Choose arpeggio based on some factor. Player speed, line length?
+	
+	// try looping through the stellation and playing notes from a sequencer.
+			// for each spline, set up a sequencer. 
+			// populate this sequencer with notes for each point, with distance measured between them for rhythym, and pitch based on position
+
+	// on play, set up crawlers to hit these notes along with the beat
+
 	void ConvertStringToTriad(){
 		triads = new int[triadKeys.Length][];
 		for(int i = 0; i < triadKeys.Length; i++){
