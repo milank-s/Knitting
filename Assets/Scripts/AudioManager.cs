@@ -25,7 +25,8 @@ public class AudioManager : MonoBehaviour
         clock.pause = true;
         
 
-        Services.main.OnPointEnter += EnterPoint;
+        // Services.main.OnPointEnter += EnterPoint;
+        Services.main.OnPlayerEnterPoint += EnterPoint;
         Services.main.OnLoadLevel += SoundSetup;
         Services.PlayerBehaviour.OnStartFlying += EnterFlying;
         Services.PlayerBehaviour.OnStartTraversing += EnterTraversing;

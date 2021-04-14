@@ -83,7 +83,7 @@ public class SynthController : MonoBehaviour
 
 	public void PlayNoteOnPoint(Point p){
 		int note = GetNote(p);
-		//keys.NoteOn(note, 0.1f, 0.1f);
+		keys.NoteOn(note, 0.1f, 0.1f);
 	}
 
 	int GetNote(Point p){
@@ -124,8 +124,7 @@ public class SynthController : MonoBehaviour
 			//divide bounds into 12 pitches
 			//based on the note's assigned pitch, move the wheel a portion of that amount to the target pitch
 
-			float playerY = Services.main.activeStellation.GetNormalizedHeight(Services.Player.transform.position);
-			float step = 0.125f;
+			//float playerY = Services.main.activeStellation.GetNormalizedHeight(Services.Player.transform.position);
 
 			Vector3 curPointPos = Services.PlayerBehaviour.curPoint.Pos;
 			Vector3 pointDestPos = Services.PlayerBehaviour.pointDest.Pos;
@@ -140,12 +139,12 @@ public class SynthController : MonoBehaviour
 			
 			float floor = diff.y > 0? curPointPos.y : pointDestPos.y;
 			float scaledPlayerY = (Services.Player.transform.position.y - floor) / diff.magnitude;
-
+			scaledPlayerY = diff.y > 0 ? scaledPlayerY : scaledPlayerY -1;
 			movementPad.SetParameterValue(Param.kPitchBendRange, Mathf.Abs(noteDiff));
 
 			//linear for now
-			Debug.Log(scaledPlayerY * Mathf.Sign(noteDiff));
-			movementPad.SetPitchWheel(scaledPlayerY * Mathf.Sign(noteDiff));
+			
+			movementPad.SetPitchWheel(scaledPlayerY);
 
 
 			//noise time
