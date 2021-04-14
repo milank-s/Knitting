@@ -129,23 +129,23 @@ public class SynthController : MonoBehaviour
 
 			Vector3 curPointPos = Services.PlayerBehaviour.curPoint.Pos;
 			Vector3 pointDestPos = Services.PlayerBehaviour.pointDest.Pos;
-			Vector3 distance = curPointPos - pointDestPos;
+			Vector3 diff = pointDestPos - curPointPos;
 
-			//snap player y to closest step. then find the diff to the next point
 			int curNote = GetNote(Services.PlayerBehaviour.curPoint); 
 			int targetNote = GetNote(Services.PlayerBehaviour.pointDest);
 
-			int diff = Mathf.Abs(targetNote - curNote);
+			int noteDiff = targetNote - curNote;
 
-			float pitchBend = Utils.MidiChangeToRatio(diff);
+			//float pitchBend = Utils.MidiChangeToRatio(diff);
 			
-			float floor = distance.y < 0? floor = curPointPos.y : pointDestPos.y;
-			float scaledPlayerY = (playerY - floor) / distance.magnitude;
+			float floor = diff.y > 0? curPointPos.y : pointDestPos.y;
+			float scaledPlayerY = (Services.Player.transform.position.y - floor) / diff.magnitude;
 
-			movementPad.SetParameterValue(Param.kPitchBendRange, diff);
+			movementPad.SetParameterValue(Param.kPitchBendRange, Mathf.Abs(noteDiff));
 
 			//linear for now
-			movementPad.SetPitchWheel(scaledPlayerY);
+			Debug.Log(scaledPlayerY * Mathf.Sign(noteDiff));
+			movementPad.SetPitchWheel(scaledPlayerY * Mathf.Sign(noteDiff));
 
 
 			//noise time
