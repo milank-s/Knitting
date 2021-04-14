@@ -15,6 +15,9 @@ public class SynthController : MonoBehaviour
 	
 	public HelmController keys;
 
+	public static int[] major = {0, 2, 4, 5, 7, 9, 11, 12};
+	public static int[] minor = {0, 2, 3, 5, 7, 8, 10, 12};
+
     public bool hasStartedNoise;
     public static SynthController instance;
     private int[] notes = {60, 64, 67, 71};
@@ -78,16 +81,31 @@ public class SynthController : MonoBehaviour
 		flyingSynth.AllNotesOff();
 	}
 
-	public void PlayNoteOnPoint(){
-		PlayRandomChord(notes, 1, keys, 0.1f, 0.1f);
+	public void PlayNoteOnPoint(Point p){
+		int note = GetNote(p);
+		//keys.NoteOn(note, 0.1f, 0.1f);
+	}
+
+	int GetNote(Point p){
+		StellationController s = p.controller;
+		//get bounds of stellation 
+
+		float magnitude = (s.upperRight.y - s.lowerLeft.y);
+		float normalizedY = p.Pos.y - s.lowerLeft.y;
+		normalizedY /= magnitude;
+		normalizedY = Mathf.Clamp01(normalizedY);
+		
+		int note = p.controller.rootKey + major[(int)Mathf.Floor(normalizedY * 7f)];
+		
+		return note;
 	}
 	public void PlayMovementSynth(){
 		//set up the arp
-		 ChooseRandomTriad();
+		//ChooseRandomTriad();
 
 		noisePad.NoteOn(60, 1);
 		noisePad.NoteOn(55, 1);
-		PlayRandomChord(lowNotes, 1, movementPad);
+		movementPad.NoteOn(GetNote(Services.PlayerBehaviour.curPoint));
 	}
 
 	public void UpdateMovementSynth(){
@@ -103,9 +121,36 @@ public class SynthController : MonoBehaviour
 			movementPad.SetParameterPercent(Param.kDistortionMix, distortion);
 			movementPad.SetParameterPercent(Param.kVolume, Mathf.Clamp(Services.PlayerBehaviour.curSpeed, 0, 0.5f));
 
+			//divide bounds into 12 pitches
+			//based on the note's assigned pitch, move the wheel a portion of that amount to the target pitch
+
+			float playerY = Services.main.activeStellation.GetNormalizedHeight(Services.Player.transform.position);
+			float step = 0.125f;
+
+			Vector3 curPointPos = Services.PlayerBehaviour.curPoint.Pos;
+			Vector3 pointDestPos = Services.PlayerBehaviour.pointDest.Pos;
+			Vector3 distance = curPointPos - pointDestPos;
+
+			//snap player y to closest step. then find the diff to the next point
+			int curNote = GetNote(Services.PlayerBehaviour.curPoint); 
+			int targetNote = GetNote(Services.PlayerBehaviour.pointDest);
+
+			int diff = Mathf.Abs(targetNote - curNote);
+
+			float pitchBend = Utils.MidiChangeToRatio(diff);
+			
+			float floor = distance.y < 0? floor = curPointPos.y : pointDestPos.y;
+			float scaledPlayerY = (playerY - floor) / distance.magnitude;
+
+			movementPad.SetParameterValue(Param.kPitchBendRange, diff);
+
+			//linear for now
+			movementPad.SetPitchWheel(scaledPlayerY);
+
+
 			//noise time
 			noisePad.SetParameterPercent(Param.kVolume, distortion);
-			
+			// AudioManager.instance.pianoSampler
 	}
 
 	public void StopMovementSynth(){

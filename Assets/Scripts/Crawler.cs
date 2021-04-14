@@ -20,7 +20,7 @@ public class Crawler : MonoBehaviour
         {
             if (progress < 1)
             {
-                progress += Time.deltaTime * speed;
+                progress += Time.deltaTime * speed; // spline.distance;
                 transform.position = spline.GetPointAtIndex(curIndex, progress);
             }
             else
@@ -57,8 +57,9 @@ public class Crawler : MonoBehaviour
     public void Init(Spline s)
     {
         curIndex = 0;
+        progress = 0;
         spline = s;
-        speed = Services.main.activeStellation.speed;
+        speed = 2;
         running = true;
         mesh.enabled = true;
     }

@@ -19,11 +19,14 @@ public class StellationController : MonoBehaviour {
 	[HideInInspector]
 	public List<Point> _points;
 
+	public Vector3 lowerLeft, upperRight;
+
 	public List<Spline> _splines;
 	public List<Spline> _splinesToUnlock;
 	
 	public StellationController unlock;
 
+	public int rootKey;
 	public int laps = 1;
 	public int speed = 1;
 	public int time = 1;
@@ -217,6 +220,8 @@ public class StellationController : MonoBehaviour {
 			start = _points[0];
 		}
 
+
+		GetBounds();
 		
 		_pointshit = new List<Point>();
 		
@@ -291,6 +296,7 @@ public class StellationController : MonoBehaviour {
 	{
 		curSplineIndex = 0;
 		isComplete = false;
+
 		GetComponents();
 
 		//why is this here
@@ -304,7 +310,8 @@ public class StellationController : MonoBehaviour {
 		}
 	}
 	public void Setup()
-	{
+	{	
+		rootKey = UnityEngine.Random.Range(48, 61);
 		isOn = true;
 		isComplete = false;
 		curSplineIndex = 0;
@@ -314,8 +321,6 @@ public class StellationController : MonoBehaviour {
 		{
 			Services.PlayerBehaviour.flow = startSpeed;
 		}
-
-
 		
 		CameraFollow.instance.fixedCamera = fixedCam;
 		CameraFollow.instance.desiredFOV = desiredFOV;
@@ -497,13 +502,14 @@ public class StellationController : MonoBehaviour {
 		}
 	}
 
-	public void SetCameraBounds()
-	{
-		
-			int index = 0;
+	public float GetNormalizedHeight(Vector3 pos){
+		return pos.y - lowerLeft.y / (upperRight.y - lowerLeft.y);
+	}
 
-			Vector3 lowerLeft = new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
-			Vector3 upperRight = new Vector3(-Mathf.Infinity, -Mathf.Infinity, -Mathf.Infinity);
+	void GetBounds(){
+
+		lowerLeft = new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
+			upperRight = new Vector3(-Mathf.Infinity, -Mathf.Infinity, -Mathf.Infinity);
 
 			foreach (Point p in _points)
 			{
@@ -538,6 +544,10 @@ public class StellationController : MonoBehaviour {
 				}
 			}
 
+	}
+	public void SetCameraBounds()
+	{
+		
 			center = Vector3.Lerp(lowerLeft, upperRight, 0.5f);
 
 			float height = Mathf.Abs(upperRight.y - lowerLeft.y);

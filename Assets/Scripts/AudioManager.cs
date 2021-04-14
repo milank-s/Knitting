@@ -11,7 +11,7 @@ public class AudioManager : MonoBehaviour
     
     public AudioMixer SynthMaster;
     
-    public SampleSequencer drumSeqeuncer;
+    public Sampler drumSampler;
 
     public Sampler clarinetSampler;
     public Sampler pianoSampler;
@@ -49,10 +49,11 @@ public class AudioManager : MonoBehaviour
     public void EnterPoint(Point p){
         //clarinetSampler.NoteOn(64);
         clock.pause = true;
-        SynthController.instance.PlayNoteOnPoint();
+        SynthController.instance.PlayNoteOnPoint(p);
     }
 
     public void EnterFlying(){
+        SynthController.instance.StopMovementSynth();
         SynthController.instance.PlayFlyingSynth();
     }
 
@@ -66,15 +67,14 @@ public class AudioManager : MonoBehaviour
     }
 
     public void ExitTraversing(){
-        
-        clock.pause = true;
         SynthController.instance.StopMovementSynth();
+        clock.pause = true;
     }
 
     public void OnTraversing(){
 
         SynthController.instance.UpdateMovementSynth();
-        clock.bpm = Services.PlayerBehaviour.curSpeed * 30 + 50 * (1-Services.PlayerBehaviour.decelerationTimer);
+        //clock.bpm = Services.PlayerBehaviour.curSpeed * 30 + 50 * (1-Services.PlayerBehaviour.decelerationTimer);
     }
 
     public void OnFlying(){
