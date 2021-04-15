@@ -1222,13 +1222,21 @@ public class Spline : MonoBehaviour
 
 	public float CompareAngleAtPoint (Vector3 direction, Point p, bool reversed = false)
 	{
+		Vector3 dir = Vector3.zero;
 		if (reversed) {
-			return Vector2.Angle (direction, GetReversedInitVelocity (p));
+			dir = GetReversedInitVelocity (p);
 		} else {
-			return Vector2.Angle (direction, GetInitVelocity (p));
+			dir = GetInitVelocity (p);
 		}
-	}
 
+		Vector3 splineStartPoint = Services.mainCam.WorldToScreenPoint(p.Pos);
+		Vector3 screenPointAtEnd = Services.mainCam.WorldToScreenPoint(p.Pos + dir.normalized);
+		Vector3 screenSpaceDirection = (screenPointAtEnd - splineStartPoint).normalized;
+
+		Debug.DrawLine(p.Pos, p.Pos + screenSpaceDirection, Color.red);
+
+		return Vector2.Angle(direction, screenSpaceDirection);
+	}
 
 	public void DestroySpline (Point toDelete, Point toAnchor)
 	{

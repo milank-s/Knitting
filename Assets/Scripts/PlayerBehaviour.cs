@@ -656,7 +656,17 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	public void SetCursorAlignment(){
-		float alignment = Vector2.Angle (cursorDir, curSpline.GetDirection (progress));
+		
+		Vector3 splineDir = curSpline.GetDirection (progress);
+
+		Vector3 screenPointAtStart = Services.mainCam.WorldToScreenPoint(transform.position);
+		Vector3 screenPointAtEnd = Services.mainCam.WorldToScreenPoint(transform.position + splineDir.normalized);
+		Vector3 screenSpaceDirection = (screenPointAtEnd - screenPointAtStart).normalized;
+
+		Debug.DrawLine(transform.position, transform.position + screenSpaceDirection, Color.green);
+
+		float alignment = Vector2.Angle (cursorDir, screenSpaceDirection);
+
 		accuracy = (90 - alignment) / 90;
 		StopAngleDiff = Mathf.Lerp (20, 50, Mathf.Abs(flow));
 	}
@@ -1529,10 +1539,15 @@ public class PlayerBehaviour: MonoBehaviour {
 //										curAngle = 0;
 //									}
 //								}else{
+
+
 									curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
-									angleOffSpline = curAngle;
-									float angleToPoint = Vector3.Angle(cursorDir, (s.GetPointAtIndex(s.SplinePoints.IndexOf(curPoint), 0.99f) - curPoint.Pos).normalized);
-									curAngle = Mathf.Lerp(curAngle, angleToPoint, 0.75f);
+									
+									//code that cheats towards the end position of the point could still be useful
+									//angleOffSpline = curAngle;
+									//float angleToPoint = Vector3.Angle(cursorDir, (s.GetPointAtIndex(s.SplinePoints.IndexOf(curPoint), 0.99f) - curPoint.Pos).normalized);
+									//curAngle = Mathf.Lerp(curAngle, angleToPoint, 0.75f);
+									
 									if (curAngle < angleOffSpline)
 									{
 										angleOffSpline = curAngle;

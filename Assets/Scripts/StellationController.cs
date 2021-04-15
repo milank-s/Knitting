@@ -283,7 +283,7 @@ public class StellationController : MonoBehaviour {
 
 			if (s.order != 0)
 			{
-				//s.SwitchState(Spline.SplineState.locked);
+				s.SwitchState(Spline.SplineState.locked);
 			}
 
 			s.controller = this;
@@ -304,9 +304,12 @@ public class StellationController : MonoBehaviour {
 }
 
 	public void Draw(){
-		foreach(Spline s in _splines){
-			Services.main.crawlerManager.AddCrawler(s);
-			StartCoroutine(s.DrawSplineIn());
+		// foreach(Spline s in _splines){
+		// 	Services.main.crawlerManager.AddCrawler(s);
+		// 	StartCoroutine(s.DrawSplineIn());
+		// }
+		if(_splines.Count > 0){
+			_splines[0].DrawSplineIn();
 		}
 	}
 	public void Setup()

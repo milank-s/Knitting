@@ -338,7 +338,7 @@ public class Point : MonoBehaviour
 		Vector3 acceleration = force / mass;
 
 		_velocity += acceleration * Time.deltaTime;
-		transform.position += _velocity/100;
+		transform.position += _velocity/200;
 	}
 
 	public void AddSpline(Spline s){
