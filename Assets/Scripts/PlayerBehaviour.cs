@@ -456,7 +456,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(Mathf.Abs(flow) < 1){
 
 				Services.fx.drawGraffiti = false;
-			cursorSprite.sprite = traverseSprite;
+				cursorSprite.sprite = null;
 		 }else if (Mathf.Abs(flow) < 2){
 
 				Services.fx.DrawLine();

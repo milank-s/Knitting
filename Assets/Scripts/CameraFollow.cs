@@ -41,6 +41,19 @@ public class CameraFollow : MonoBehaviour {
 		if (!fixedCamera)
 		{
 			targetPos = Services.Player.transform.position;
+
+			Vector3 nudge = Vector3.zero;
+			if(Services.PlayerBehaviour.curSpline != null){
+				if(Services.PlayerBehaviour.state == PlayerState.Traversing){
+					nudge = Services.PlayerBehaviour.curSpline.GetVelocity(Services.PlayerBehaviour.progress);
+				}else if(Services.PlayerBehaviour.state == PlayerState.Switching){
+					nudge = Services.PlayerBehaviour.curSpline.GetVelocity(0.1f);
+				}
+			}
+
+			nudge /= 10f;
+			targetPos += nudge;
+
 		}
 		
 		cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, desiredFOV, Time.deltaTime * 3);
