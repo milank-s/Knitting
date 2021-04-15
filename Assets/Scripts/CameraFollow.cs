@@ -51,7 +51,7 @@ public class CameraFollow : MonoBehaviour {
 				}
 			}
 
-			nudge /= 10f;
+			nudge /= 4f;
 			targetPos += nudge;
 
 		}
