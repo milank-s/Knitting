@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-
+using System.Collections.Generic;
 public class SplineTurtle : MonoBehaviour {
 
 	public MapEditor editor;
@@ -38,7 +38,9 @@ public class SplineTurtle : MonoBehaviour {
 
 	public string name;
 
-	
+	int pointCount;
+	public List<Point> points;
+
 	public bool createSplines;
 	public bool Randomize;
 
@@ -49,7 +51,7 @@ public class SplineTurtle : MonoBehaviour {
 	public Transform pivot;
 	public Transform turtle;
 	
-	public float stepSpeed;
+	public float stepSpeed = 0.1f;
 	
 	public float angleChange = 0;
 	public float angleVariance = 10;
@@ -80,8 +82,8 @@ public class SplineTurtle : MonoBehaviour {
 	
 	private bool running;
 	private bool redraw;
+	public bool updatePoints;
 	private bool randomlyZag;
-	
 	
 	public Vector3 offsetDirection = Vector3.zero;
 
@@ -103,7 +105,8 @@ public class SplineTurtle : MonoBehaviour {
 			StopCoroutine(drawing);
 		}
 	
-		
+		points.Clear();
+		pointCount = 0;
 		turtle.position = Vector3.zero;
 		turtle.rotation = Quaternion.identity;
 		pivot.position = turtle.position + Vector3.up * pivotDistanceUI.val;
@@ -121,7 +124,6 @@ public class SplineTurtle : MonoBehaviour {
 	}
 	public void Generate()
 	{
-
 		Reset();
 		StartCoroutine(WaitOneFrameThenGenerate());
 		
@@ -168,7 +170,11 @@ public class SplineTurtle : MonoBehaviour {
 			
 			Generate();
 			redraw = false;
+		}
 
+		if(updatePoints){
+			ChangePointSettings();
+			updatePoints = false;
 		}
 	}
 
@@ -209,12 +215,9 @@ public class SplineTurtle : MonoBehaviour {
 	IEnumerator Draw(){
 		
 		
-		for(int i = 2; i < maxPoints; i++) {
+		for(int i = pointCount; i < maxPoints; i++) {
 			Step ();
 			NewPoint ();
-
-			
-
 
 				if (stepSpeed > 0)
 				{
@@ -243,7 +246,6 @@ public class SplineTurtle : MonoBehaviour {
 
 		
 		running = false;
-		turtle.rotation = Quaternion.identity;
 
 		foreach (Spline s in Spline.Splines)
 		{
@@ -269,8 +271,11 @@ public class SplineTurtle : MonoBehaviour {
 //				
 //			}
 
+			pointCount = 1;
+
 			curPoint = SpawnPointPrefab.CreatePoint (turtle.position);
 			curPoint.transform.parent = editor.pointsParent.transform;
+			points.Add(curPoint);
 
 			Step ();
 			NewPoint();
@@ -312,7 +317,57 @@ public class SplineTurtle : MonoBehaviour {
 		return newTurtle;
 	}
 
+	public void TryConnectPoints(){
+		//iterate through all points, raycast down, create new splines
+		
+	}
+
+	public void ChangeClosed(){
+		if(curSpline != null){
+			curSpline.closed = closed;
+		}
+	}
+	public void ChangePointAmount(){
+		if(!running){
+			if(pointCount < maxPoints){
+				drawing = StartCoroutine(Draw());
+			}else if(pointCount > maxPoints){
+				int curPointCount = points.Count;
+
+				for(int i = 0; i < pointCount - maxPoints; i++){
+					pointCount --;
+					Point p = points[points.Count - 1 -i];
+					points.Remove(p);
+					Services.main.editor.DeletePoint(p);
+				}
+
+				if(points.Count > 0){
+					curPoint = points[points.Count -1];
+					turtle.transform.position = curPoint.Pos;
+					turtle.transform.up = curPoint.transform.up;
+				}else{
+					curPoint = null;
+				}
+			}
+
+		}
+	}
+	public void ChangePointSettings(){
+		foreach(Point p in Point.Points){
+			p.continuity = continuity;
+			p.tension = tension;
+			if(p._connectedSplines.Count > 1){
+				if(p.pointType == PointTypes.ghost) p.SetPointType(PointTypes.stop);
+			}else if(ghostPoints){
+				p.SetPointType(PointTypes.ghost);
+			}else{
+				p.SetPointType(PointTypes.normal);
+			}
+		}
+	}
+
 	public void NewPoint(){
+
 
 		if (Random.Range (0f, 100f) < branchFactor) {
 			if (maxTotalPoints < 100) {
@@ -333,6 +388,11 @@ public class SplineTurtle : MonoBehaviour {
 			newPoint = SpawnPointPrefab.CreatePoint (turtle.position);
 		}
 
+		if(newPoint != curPoint){
+			pointCount ++;
+			points.Add(newPoint);
+		}
+
 		if (createSplines) {
 			spp = SplineUtil.ConnectPoints (curSpline, curPoint, newPoint);
 			curSpline = spp.s;
@@ -343,10 +403,12 @@ public class SplineTurtle : MonoBehaviour {
 			newPoint.transform.parent = editor.pointsParent.transform;
 		}
 
-		if (ghostPoints)
+		if (newPoint._connectedSplines.Count < 2 && ghostPoints)
 		{
 			newPoint.SetPointType(PointTypes.ghost);
 		}
+
+		
 		
 	}
 

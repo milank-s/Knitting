@@ -283,7 +283,7 @@ public class StellationController : MonoBehaviour {
 
 			if (s.order != 0)
 			{
-				s.SwitchState(Spline.SplineState.locked);
+				//s.SwitchState(Spline.SplineState.locked);
 			}
 
 			s.controller = this;
@@ -324,6 +324,7 @@ public class StellationController : MonoBehaviour {
 		
 		CameraFollow.instance.fixedCamera = fixedCam;
 		CameraFollow.instance.desiredFOV = desiredFOV;
+
 		if (start != null)
 		{
 			CameraFollow.instance.WarpToPosition(start.transform.position);

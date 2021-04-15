@@ -486,7 +486,6 @@ public class Point : MonoBehaviour
 		timeOnPoint = 0;
 		timesHit++;
 		OnPointEnter();
-
 		
 		if (controller.CheckSpeed())
 		{
@@ -507,6 +506,7 @@ public class Point : MonoBehaviour
 			if(Services.main.OnPlayerEnterPoint != null){
 				Services.main.OnPlayerEnterPoint(this);
 			}
+			
 			controller.NextWord();
 			
 

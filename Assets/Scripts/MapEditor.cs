@@ -917,7 +917,18 @@ public class MapEditor : MonoBehaviour
                 Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, activePoint.transform);
                 SynthController.instance.keys.NoteOn(40, 0.5f, 0.5f);
                 
-                Point pointToDelete = activePoint;
+                DeletePoint(activePoint);
+            }
+        }
+        else
+        {
+            marqueeTip.SetActive(true);
+            deselectTip.SetActive(false);
+        }
+    }
+
+    public void DeletePoint(Point pointToDelete){
+        
                 RemoveSelectedPoint(activePoint);
                 
                 foreach (Spline s in controller._splines)
@@ -925,15 +936,19 @@ public class MapEditor : MonoBehaviour
                     if (s.SplinePoints.Contains(pointToDelete))
                     {
                         s.SplinePoints.Remove(pointToDelete);
-                        selectedSpline.ResetLineLength();
+                        if(splineindex != -1){
+                            selectedSpline.ResetLineLength();
+                        }
                     }
 
                     if (s.SplinePoints.Count < 2)
                     {
-                        if (selectedSplines.Contains(s))
-                        {
-                            selectedSplines.Remove(s);
-                        }
+                         if(splineindex != -1){
+                            if (selectedSplines.Contains(s))
+                            {
+                                selectedSplines.Remove(s);
+                            }
+                         }
                         
                         Destroy(s);
                         
@@ -942,13 +957,6 @@ public class MapEditor : MonoBehaviour
                 }
 
                 Destroy(pointToDelete.gameObject);
-            }
-        }
-        else
-        {
-            marqueeTip.SetActive(true);
-            deselectTip.SetActive(false);
-        }
     }
 
     void ReassignSplineOrder()

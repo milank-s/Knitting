@@ -29,14 +29,12 @@ public class SceneController : MonoBehaviour
     public int curLevel;
     void Awake()
     {
-        
         //read from json file to set unlocked index; 
         unlockedIndex = levelSets.Count;
         activeScenes = new List<StellationController>();
         instance = this;
         curLevel = 0;
         SelectLevelSet();
-       
     }
 
     void Update()

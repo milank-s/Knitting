@@ -4127,54 +4127,18 @@ PrefabInstance:
       propertyPath: ghostToggle
       value: 
       objectReference: {fileID: 735021962}
-    - target: {fileID: 606922755, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
-      propertyPath: synthParameters.Array.size
-      value: 4
+    - target: {fileID: 481758686, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
+      propertyPath: stepSpeed
+      value: 0.02
       objectReference: {fileID: 0}
-    - target: {fileID: 606922755, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
-      propertyPath: synthParamValue2
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 606922755, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
-      propertyPath: synthParameters.Array.data[2].parameter_
-      value: 61
-      objectReference: {fileID: 0}
-    - target: {fileID: 606922755, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
-      propertyPath: synthParameters.Array.data[2].minimumRange
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 606922755, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
-      propertyPath: synthParameters.Array.data[2].paramValue_
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 606922755, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
-      propertyPath: synthParameters.Array.data[3].parameter_
-      value: 76
-      objectReference: {fileID: 0}
-    - target: {fileID: 606922755, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
-      propertyPath: synthParameters.Array.data[3].maximumRange
-      value: 48
-      objectReference: {fileID: 0}
-    - target: {fileID: 606922755, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
-      propertyPath: synthParameters.Array.data[3].scaleType
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 606922755, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
-      propertyPath: synthParamValue3
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 606922755, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
-      propertyPath: synthParameters.Array.data[3].parent
+    - target: {fileID: 606922757, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
+      propertyPath: m_audioClip
       value: 
-      objectReference: {fileID: 458821257}
-    - target: {fileID: 606922755, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
-      propertyPath: synthParameters.Array.data[3].paramValue_
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 621779902, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
-      propertyPath: synthParameters.Array.size
-      value: 0
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 930119708}
+    - target: {fileID: 621779904, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 795122914}
     - target: {fileID: 853866046, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
       propertyPath: mixer
       value: 
@@ -4242,6 +4206,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 24100000, guid: fc0390f100c39c34fa48b69c10f5e680,
         type: 2}
+    - target: {fileID: 1633612820, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 739433377}
+    - target: {fileID: 1692647279, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 1270577865}
     - target: {fileID: 1039608416024856, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
       propertyPath: m_Name
       value: Main
@@ -4385,6 +4357,11 @@ PrefabInstance:
       propertyPath: levelText
       value: 
       objectReference: {fileID: 720382407}
+    - target: {fileID: 542247292828354108, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
+        type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 1541106462}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
 --- !u!1 &452987573
@@ -4523,18 +4500,34 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &458821257 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 606922755, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
-    type: 3}
-  m_PrefabInstance: {fileID: 452133012}
+--- !u!83 &471368810
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e4430ff3452e4a85ac2530e457beb05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &480445099
 GameObject:
   m_ObjectHideFlags: 0
@@ -5336,6 +5329,34 @@ RectTransform:
   m_AnchoredPosition: {x: -250, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 1, y: 0}
+--- !u!83 &536044796
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &556736044
 GameObject:
   m_ObjectHideFlags: 0
@@ -6939,6 +6960,34 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 651906541}
   m_CullTransparentMesh: 0
+--- !u!83 &662402617
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &665198862
 GameObject:
   m_ObjectHideFlags: 0
@@ -11462,6 +11511,34 @@ MonoBehaviour:
     m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: Level Name
+--- !u!83 &1031029342
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1001 &1037191820
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19314,6 +19391,34 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2063036922}
   m_CullTransparentMesh: 0
+--- !u!83 &2064826039
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &2069195870
 GameObject:
   m_ObjectHideFlags: 0
@@ -21711,26 +21816,81 @@ PrefabInstance:
       propertyPath: turtle
       value: 
       objectReference: {fileID: 481758686}
+    - target: {fileID: 888785755873146040, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: updateTurtle
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 888785756026821514, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: turtle
+      value: 
+      objectReference: {fileID: 481758686}
+    - target: {fileID: 888785756026821514, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: updateTurtle
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 888785756075632588, guid: f27d1e824492bef4ba8947cf644fa717,
         type: 3}
       propertyPath: turtle
       value: 
       objectReference: {fileID: 481758686}
     - target: {fileID: 888785756075632588, guid: f27d1e824492bef4ba8947cf644fa717,
         type: 3}
+      propertyPath: updateTurtle
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 888785756178463457, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
       propertyPath: turtle
       value: 
       objectReference: {fileID: 481758686}
     - target: {fileID: 888785756178463457, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: updatePoints
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 888785757415889438, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: OnChangeValue.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 888785757415889438, guid: f27d1e824492bef4ba8947cf644fa717,
         type: 3}
       propertyPath: turtle
       value: 
       objectReference: {fileID: 481758686}
     - target: {fileID: 888785757415889438, guid: f27d1e824492bef4ba8947cf644fa717,
         type: 3}
-      propertyPath: turtle
+      propertyPath: OnChangeValue.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 888785757415889438, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: OnChangeValue.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 888785757415889438, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: OnChangeValue.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 481758686}
+    - target: {fileID: 888785757415889438, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: OnChangeValue.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChangeClosed
+      objectReference: {fileID: 0}
+    - target: {fileID: 888785757415889438, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: OnChangeValue.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 888785757415889438, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: updateTurtle
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4875773623267207094, guid: f27d1e824492bef4ba8947cf644fa717,
         type: 3}
       propertyPath: turtle
@@ -21958,9 +22118,44 @@ PrefabInstance:
       objectReference: {fileID: 481758686}
     - target: {fileID: 4875773625100246061, guid: f27d1e824492bef4ba8947cf644fa717,
         type: 3}
+      propertyPath: OnChangeValue.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4875773625100246061, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
       propertyPath: turtle
       value: 
       objectReference: {fileID: 481758686}
+    - target: {fileID: 4875773625100246061, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: updateTurtle
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4875773625100246061, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: OnChangeValue.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4875773625100246061, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: OnChangeValue.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4875773625100246061, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: OnChangeValue.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 481758686}
+    - target: {fileID: 4875773625100246061, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: OnChangeValue.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChangePointAmount
+      objectReference: {fileID: 0}
+    - target: {fileID: 4875773625100246061, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: OnChangeValue.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 4875773625106671924, guid: f27d1e824492bef4ba8947cf644fa717,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -22021,6 +22216,16 @@ PrefabInstance:
       propertyPath: turtle
       value: 
       objectReference: {fileID: 481758686}
+    - target: {fileID: 8177521558796687655, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: updateTurtle
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8177521558796687655, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: updatePoints
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8177521558870718727, guid: f27d1e824492bef4ba8947cf644fa717,
         type: 3}
       propertyPath: m_AnchorMin.x
@@ -22091,6 +22296,16 @@ PrefabInstance:
       propertyPath: turtle
       value: 
       objectReference: {fileID: 481758686}
+    - target: {fileID: 8177521559105424559, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: updateTurtle
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8177521559105424559, guid: f27d1e824492bef4ba8947cf644fa717,
+        type: 3}
+      propertyPath: updatePoints
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8177521559184832446, guid: f27d1e824492bef4ba8947cf644fa717,
         type: 3}
       propertyPath: turtle
