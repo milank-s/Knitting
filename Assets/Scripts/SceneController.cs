@@ -8,24 +8,19 @@ using UnityEngine.InputSystem;
 
 public class SceneController : MonoBehaviour
 {
-    // Start is called before the first frame update
-
     public Point startPoint;
     public List<StellationController> activeScenes;
 
     public int curSetIndex;
     public int unlockedIndex;
-    
     public LevelSet curLevelSet
     {
         get { return levelSets[curSetIndex]; }
     }
-
     public EventSystem UISystem;
     public Button levelButton;
     
     public List<LevelSet> levelSets;
-    
     public int curLevel;
     void Awake()
     {
@@ -114,6 +109,9 @@ public class SceneController : MonoBehaviour
     
     public static SceneController instance;
 
+    public string GetCurLevel(){
+        return curLevelSet.levels[curLevel];
+    }
     public void SelectNextLevel(bool increment)
     {
 
@@ -181,7 +179,7 @@ public class SceneController : MonoBehaviour
             //its a scene 
             if (curLevelSet.isScene)
             {
-                Services.main.LoadScene(curLevelSet.levels[0]);
+                Services.main.LoadScene();
                 curLevel++;
             }
             else
@@ -191,8 +189,20 @@ public class SceneController : MonoBehaviour
         }
     }
     
+    public void LoadStellation(float delay = 1){
+         if (!curLevelSet.isScene)
+            {
+                Services.main.LoadFile(delay);
+            }
+            else
+            {
+                Services.main.LoadScene();
+            }
+    }
     public void LoadNextStellation(float delay = 1)
     {
+
+        curLevel++;
         
         if (curSetIndex == -1)
         {
@@ -210,14 +220,14 @@ public class SceneController : MonoBehaviour
 //                {
 //                    SceneController.instance.UnloadScene(SceneController.instance.activeScenes[0]);
 //                }
-                Services.main.LoadFile(curLevelSet.levels[curLevel], delay);
+                Services.main.LoadFile(delay);
             }
             else
             {
-                Services.main.LoadScene(curLevelSet.levels[curLevel]);
+                Services.main.LoadScene();
             }
 
-            curLevel++;
+            
             
             //Services.main.InitializeLevel();            
             //Services.PlayerBehaviour.Reset();

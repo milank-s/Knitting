@@ -151,16 +151,15 @@
 	
 	public void ReloadScene()
 	{
-		LoadSceneDelayed(curLevel, 0);
+		LoadSceneDelayed(0);
 	}
 
-	public void LoadFile(string m, float delay = 0)
+	public void LoadFile(float delay = 0)
 	{
-		
-		StartCoroutine(LoadFileTransition(m, delay));
+		StartCoroutine(LoadFileTransition(delay));
 	}
 
-	public IEnumerator LoadFileTransition(string m, float delay = 0)
+	public IEnumerator LoadFileTransition(float delay = 0)
 	{
 		Time.timeScale = 0;
 
@@ -171,15 +170,17 @@
 			yield return StartCoroutine(FadeOut());
 		}*/
 
+		//ermmmmm, I guess I can assign it here?
+
+		curLevel = SceneController.instance.GetCurLevel();
+
 		if (SceneController.instance.activeScenes.Count > 0)
 		{
 			SceneController.instance.UnloadScene(SceneController.instance.activeScenes[0]);
 		}
 		
-		
-		StellationController c = editor.Load(m);
+		StellationController c = editor.Load(curLevel);
 		activeStellation = c;
-		
 		
 		if (!MapEditor.editing)
 		{
@@ -188,8 +189,12 @@
 
 		Time.timeScale = 1;
 		
+
 		InitializeLevel();
 		
+		//awkwardddddd
+		//start audio
+		AudioManager.instance.PlayLevelSounds();
 		/*if (delay > 0)
 		{
 			StartCoroutine(FadeIn());
@@ -198,12 +203,12 @@
 		
 	}
 
-	public void LoadSceneDelayed(string m, float f)
+	public void LoadSceneDelayed(float f)
 	{
-		StartCoroutine(LoadSceneTransition(m,f));
+		StartCoroutine(LoadSceneTransition(f));
 	}
 	
-	IEnumerator LoadSceneTransition(string i, float delay = 0)
+	IEnumerator LoadSceneTransition(float delay = 0)
 	{
 		Time.timeScale = 0;
 
@@ -217,9 +222,7 @@
 			yield return StartCoroutine(FadeOut());
 		}
 
-		
-		LoadScene(i);
-
+		LoadScene();
 		
 		if (delay > 0)
 		{
@@ -240,7 +243,6 @@
 		Reset();
 		
 		OpenMenu();
-
 		
 		if (goNext)
 		{
@@ -248,7 +250,7 @@
 		}
 	}
 	
-	public void LoadScene(string i)
+	public void LoadScene()
 	{
 		
 		if (curLevel != "")
@@ -256,20 +258,18 @@
 			SceneManager.UnloadSceneAsync(curLevel);
 		}
 
-		
+		//this could be bugged
 		Services.PlayerBehaviour.Reset();
-
-		if (i != "")
+		curLevel = SceneController.instance.GetCurLevel();
+		if (curLevel != "")
 		{
-			SceneManager.LoadScene(i, LoadSceneMode.Additive);
+			SceneManager.LoadScene(curLevel, LoadSceneMode.Additive);
 		}
 		else
 		{
 			Reset();
 			//OpenMenu();
 		}
-
-		curLevel = i;
 
 //		if (curLevel != "Editor")
 //		{
@@ -809,7 +809,7 @@
 		yield return null;
 		
 		Word.gameObject.SetActive(true);
-		SceneController.instance.LoadNextStellation();
+		SceneController.instance.LoadStellation();
 		
 		description.text = "";
 

@@ -6,7 +6,8 @@ using AudioHelm;
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
-    
+        
+    public AudioSource audioRecordings;
     public AudioHelmClock clock;
     
     public AudioMixer SynthMaster;
@@ -24,7 +25,6 @@ public class AudioManager : MonoBehaviour
     {
         clock.pause = true;
         
-
         // Services.main.OnPointEnter += EnterPoint;
         Services.main.OnPlayerEnterPoint += EnterPoint;
         Services.main.OnLoadLevel += SoundSetup;
@@ -36,6 +36,13 @@ public class AudioManager : MonoBehaviour
         Services.PlayerBehaviour.OnStoppedTraversing += ExitTraversing;
     }
     
+
+    public void PlayLevelSounds(){
+        if(SceneController.instance.curLevelSet.audio != null){
+            audioRecordings.clip = SceneController.instance.curLevelSet.audio;
+            audioRecordings.Play();
+        }
+    }
     public void SoundSetup(StellationController stellation){
 
         foreach(Spline s in stellation._splines){
@@ -45,7 +52,6 @@ public class AudioManager : MonoBehaviour
         //iterate through points
         //use bounds to determine pitch
         //quantize it or whatever
-
     }
     public void EnterPoint(Point p){
         //clarinetSampler.NoteOn(64);
@@ -85,11 +91,15 @@ public class AudioManager : MonoBehaviour
     public void Reset(){
         SynthController.instance.ResetSynths();   
         SynthMaster.SetFloat("Volume", 0f);
+        audioRecordings.Stop();
         clock.pause = true;
     }
 
     public void Pause(bool pause){
         
+        if(pause) audioRecordings.Pause();
+        if(!pause) audioRecordings.Play();
+
         clock.pause = pause;
 
         if(pause){
