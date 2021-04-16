@@ -1195,8 +1195,8 @@ public class Spline : MonoBehaviour
 
 	public Vector3 GetDirection (float t)
 	{
-		Vector2 noZ = GetVelocity (t);
-		return new Vector2 (noZ.x, noZ.y).normalized;
+		//Vector2 noZ = GetVelocity (t);
+		return GetVelocity (t).normalized;
 	}
 
 	public int GetPointIndex (Point point)
@@ -1229,11 +1229,14 @@ public class Spline : MonoBehaviour
 			dir = GetInitVelocity (p);
 		}
 
+		
+		Debug.DrawLine(p.Pos, p.Pos + dir, Color.red);
+
 		Vector3 splineStartPoint = Services.mainCam.WorldToScreenPoint(p.Pos);
 		Vector3 screenPointAtEnd = Services.mainCam.WorldToScreenPoint(p.Pos + dir.normalized);
 		Vector3 screenSpaceDirection = (screenPointAtEnd - splineStartPoint).normalized;
 
-		Debug.DrawLine(p.Pos, p.Pos + screenSpaceDirection, Color.red);
+		Debug.DrawLine(p.Pos, p.Pos + screenSpaceDirection, Color.green);
 
 		return Vector2.Angle(direction, screenSpaceDirection);
 	}

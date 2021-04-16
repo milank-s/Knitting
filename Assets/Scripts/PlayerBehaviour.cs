@@ -443,8 +443,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (state == PlayerState.Traversing) {
 			if(curSpline != null){
-				SetCursorAlignment ();
 				transform.position = curSpline.GetPoint(progress);
+				SetCursorAlignment ();
 				if(OnTraversing != null){
 					OnTraversing.Invoke();
 				}
@@ -660,11 +660,19 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		Vector3 splineDir = curSpline.GetDirection (progress);
 
+		Debug.DrawLine(transform.position, transform.position + splineDir, Color.red,1, false);
+		//might be best to remove the z
+		//splineDir.z = 0;
+
+		
+		Debug.DrawLine(transform.position, transform.position + splineDir, Color.yellow, 1, false);
+
 		Vector3 screenPointAtStart = Services.mainCam.WorldToScreenPoint(transform.position);
-		Vector3 screenPointAtEnd = Services.mainCam.WorldToScreenPoint(transform.position + splineDir.normalized);
+		Vector3 screenPointAtEnd = Services.mainCam.WorldToScreenPoint(transform.position + splineDir);
+
 		Vector3 screenSpaceDirection = (screenPointAtEnd - screenPointAtStart).normalized;
 
-		Debug.DrawLine(transform.position, transform.position + screenSpaceDirection, Color.green);
+		Debug.DrawLine(transform.position, transform.position + screenSpaceDirection, Color.green, 1, false);
 
 		float alignment = Vector2.Angle (cursorDir, screenSpaceDirection);
 
@@ -1969,7 +1977,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				//curSpline.OnSplineEnter (true, curPoint, pointDest, false);
 
-				SetCursorAlignment ();
+				//SetCursorAlignment ();
 
 				//PlayerMovement ();
 
