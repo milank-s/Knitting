@@ -10,7 +10,7 @@ public class LevelSet : ScriptableObject
     public string description = "Good going";
     public bool isScene;
     public Sprite image;
-    public AudioClip audio;
+    public AudioClip[] audio;
     
     public List<string> levels;
 }

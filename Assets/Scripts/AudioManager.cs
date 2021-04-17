@@ -38,8 +38,8 @@ public class AudioManager : MonoBehaviour
     
 
     public void PlayLevelSounds(){
-        if(SceneController.instance.curLevelSet.audio != null){
-            audioRecordings.clip = SceneController.instance.curLevelSet.audio;
+        if(SceneController.instance.curLevelSet.audio[SceneController.instance.curLevel] != null){
+            audioRecordings.clip = SceneController.instance.curLevelSet.audio[SceneController.instance.curLevel];
             audioRecordings.Play();
         }
     }

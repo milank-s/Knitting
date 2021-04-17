@@ -659,20 +659,20 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void SetCursorAlignment(){
 		
 		Vector3 splineDir = curSpline.GetDirection (progress);
-
-		Debug.DrawLine(transform.position, transform.position + splineDir, Color.red,1, false);
+		
+		Debug.DrawLine(transform.position, transform.position + splineDir, Color.red);
 		//might be best to remove the z
 		//splineDir.z = 0;
 
 		
-		Debug.DrawLine(transform.position, transform.position + splineDir, Color.yellow, 1, false);
+		Debug.DrawLine(transform.position, transform.position + splineDir, Color.yellow);
 
 		Vector3 screenPointAtStart = Services.mainCam.WorldToScreenPoint(transform.position);
 		Vector3 screenPointAtEnd = Services.mainCam.WorldToScreenPoint(transform.position + splineDir);
 
 		Vector3 screenSpaceDirection = (screenPointAtEnd - screenPointAtStart).normalized;
 
-		Debug.DrawLine(transform.position, transform.position + screenSpaceDirection, Color.green, 1, false);
+		Debug.DrawLine(transform.position, transform.position + screenSpaceDirection, Color.green);
 
 		float alignment = Vector2.Angle (cursorDir, screenSpaceDirection);
 
