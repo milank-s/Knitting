@@ -11,6 +11,5 @@ public class LevelSet : ScriptableObject
     public bool isScene;
     public Sprite image;
     public AudioClip[] audio;
-    
     public List<string> levels;
 }

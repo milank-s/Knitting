@@ -1094,8 +1094,6 @@ public class MapEditor : MonoBehaviour
             level["p" + i] = points[i].Save(i);
         }
         
-        level["fixedCamera"].AsBool = controller.fixedCam;
-        level["fov"].AsInt = controller.desiredFOV;
         level["splineCount"].AsInt = controller._splines.Count;
         level["unlockType"].AsInt = (int) controller.unlockMethod;
         level["speed"].AsInt = controller.speed; 
@@ -1103,7 +1101,14 @@ public class MapEditor : MonoBehaviour
         level["laps"].AsInt = controller.laps;
         level["startSpeed"].AsFloat = controller.startSpeed;
         level["text"] = controller.text;
-        
+        JSONObject cameraData = new JSONObject();
+        cameraData["x"].AsFloat = controller.cameraPos.x;
+        cameraData["y"].AsFloat =  controller.cameraPos.y;
+        cameraData["setPos"].AsBool = controller.setCameraPos;
+        cameraData["fixCam"].AsBool = controller.fixedCam;
+        cameraData["fov"].AsInt = controller.desiredFOV;
+        level["camera"] = cameraData;
+
         for (int j = 0; j < instance.controller._splines.Count; j++)
         {
             Spline s = instance.controller._splines[j];
@@ -1174,6 +1179,13 @@ public class MapEditor : MonoBehaviour
         return result;
     }
 
+    public void SetCameraPos(){
+        controller.cameraPos = Services.mainCam.transform.position;
+    }
+
+    public void UseCameraPos(bool b){
+        controller.setCameraPos  = b;
+    }
 
     public void LoadFromDropDown(Int32 i)
     {
@@ -1361,8 +1373,6 @@ public class MapEditor : MonoBehaviour
         StellationController c = parent.AddComponent<StellationController>();
 
         c.name = parent.name;
-        c.fixedCam = json["fixedCamera"];
-        c.desiredFOV = json["fov"];
         c.speed = json["speed"];
         c.laps = json["laps"];
         c.text = json["text"];
@@ -1370,13 +1380,19 @@ public class MapEditor : MonoBehaviour
         c.startSpeed = json["startSpeed"];
         int unlock = json["unlockType"];
         c.unlockMethod = (StellationController.UnlockType) unlock;
-        
+        c.setCameraPos = json["camera"]["setPos"];
+        c.cameraPos.x = json["camera"]["x"];
+        c.cameraPos.y = json["camera"]["y"];
+        c.fixedCam = json["camera"]["fixedCamera"];
+        c.desiredFOV = json["camera"]["fov"];
+
         if (c.desiredFOV == 0)
         {
             c.desiredFOV = 40;
         }
         
-        //c.Initialize();
+
+        //c.Initialize();   
         
         controller = c;
         return c;

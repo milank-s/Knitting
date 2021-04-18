@@ -97,11 +97,11 @@ public class PlayerBehaviour: MonoBehaviour {
 			float adjustedAccuracy = goingForward ? Mathf.Pow(accuracy, accuracyCoefficient) : -Mathf.Pow(accuracy, accuracyCoefficient);
 
 			//lets just stop using the deceleration timer
-			adjustedAccuracy = (adjustedAccuracy * (1-decelerationTimer));
+			//adjustedAccuracy = (adjustedAccuracy * (1-decelerationTimer));
 
 			if (progress >= 0.9f && accuracy < 0.5f && pointDest.pointType != PointTypes.ghost)
 			{
-				adjustedAccuracy = 1;
+				//adjustedAccuracy = 1;
 			}
 
 			return Mathf.Clamp(flow + speed + boost, 0, 1000) * cursorDir.magnitude * Mathf.Clamp01(adjustedAccuracy);

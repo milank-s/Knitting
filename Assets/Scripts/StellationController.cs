@@ -55,7 +55,8 @@ public class StellationController : MonoBehaviour {
 
 	[Space(10)]
 
-	
+	public Vector3 cameraPos = Vector3.zero;
+	public bool setCameraPos = false;
 	public bool isOn;
 	public bool isComplete;
 	private string[] words;
@@ -65,20 +66,34 @@ public class StellationController : MonoBehaviour {
 	
 	public string GetWord (){
 		if(words != null){
-		wordIndex++;
-		if(wordIndex > 1){
-			return " " + words[(wordIndex-1) % (words.Length)];
+
+		string toReturn = "";
+		if(wordIndex > 0){
+			if(wordIndex >= words.Length){
+				return "";
+			}
+
+			if(wordIndex % words.Length == 0){
+				toReturn = '\n' + words[(wordIndex) % (words.Length)];
+			}else{
+				toReturn = " " + words[(wordIndex) % (words.Length)];
+			}
 		}else{
-			return words[(wordIndex-1) % (words.Length)];
+			toReturn = words[(wordIndex) % (words.Length)];
 		}
+		
+		wordIndex ++;
+
+		return toReturn;
 		}
+	
 		return "";
 	}
 
 	public void AdjustCamera()
 	{
 		CameraFollow.instance.desiredFOV = desiredFOV;
-		
+
 	}
 
 	public void Awake()
@@ -507,7 +522,11 @@ public class StellationController : MonoBehaviour {
 	}
 
 	public float GetNormalizedHeight(Vector3 pos){
-		return pos.y - lowerLeft.y / (upperRight.y - lowerLeft.y);
+		return Mathf.Clamp01(pos.y - lowerLeft.y / (upperRight.y - lowerLeft.y));
+	}
+
+	public float GetNormalizedDepth(Vector3 pos){
+		return Mathf.Clamp01(pos.z - lowerLeft.z / (upperRight.z - lowerLeft.z));
 	}
 
 	void GetBounds(){
@@ -559,7 +578,12 @@ public class StellationController : MonoBehaviour {
 		
 			//CameraFollow.instance.desiredFOV = fov;
 			//CameraFollow.instance.cam.fieldOfView = fov;
-			CameraFollow.instance.WarpToPosition(center);
+			
+			if(setCameraPos){
+				CameraFollow.instance.WarpToPosition(cameraPos);
+			}else{
+				CameraFollow.instance.WarpToPosition(center);
+			}
 			//get center position and fov
 	}
 	

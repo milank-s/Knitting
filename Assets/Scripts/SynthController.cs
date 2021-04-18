@@ -90,12 +90,16 @@ public class SynthController : MonoBehaviour
 		StellationController s = p.controller;
 		//get bounds of stellation 
 
-		float magnitude = (s.upperRight.y - s.lowerLeft.y);
-		float normalizedY = p.Pos.y - s.lowerLeft.y;
-		normalizedY /= magnitude;
-		normalizedY = Mathf.Clamp01(normalizedY);
+		float depth  = p.controller.GetNormalizedDepth(p.Pos);
+		int octave = (int)Mathf.Floor(depth * 4f)-2;
+		octave *= 12;
+		float height = p.controller.GetNormalizedHeight(p.Pos);
+		// float magnitude = (s.upperRight.y - s.lowerLeft.y);
+		// float normalizedY = p.Pos.y - s.lowerLeft.y;
+		// normalizedY /= magnitude;
+		// normalizedY = Mathf.Clamp01(normalizedY);
 		
-		int note = p.controller.rootKey + major[(int)Mathf.Floor(normalizedY * 7f)];
+		int note = p.controller.rootKey + major[(int)Mathf.Floor(height * 7f)] + octave;
 		
 		return note;
 	}
