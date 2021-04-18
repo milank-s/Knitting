@@ -102,6 +102,7 @@ public class MapEditor : MonoBehaviour
     public Slider speedSlider;
     public Text fov;
     public Slider fovSlider;
+    public Toggle useCamPos;
     public Slider scoreSlider;
     public Text scoreText;
     public Toggle fixedCamera;
@@ -312,6 +313,7 @@ public class MapEditor : MonoBehaviour
         fovSlider.value = controller.desiredFOV;
         fixedCamera.isOn = controller.fixedCam;
         speedSlider.value = controller.startSpeed;
+        useCamPos.isOn = controller.setCameraPos;
         
         ChangeWinCondition((int)controller.unlockMethod);
         
@@ -1383,7 +1385,7 @@ public class MapEditor : MonoBehaviour
         c.setCameraPos = json["camera"]["setPos"];
         c.cameraPos.x = json["camera"]["x"];
         c.cameraPos.y = json["camera"]["y"];
-        c.fixedCam = json["camera"]["fixedCamera"];
+        c.fixedCam = json["camera"]["fixCam"];
         c.desiredFOV = json["camera"]["fov"];
 
         if (c.desiredFOV == 0)
