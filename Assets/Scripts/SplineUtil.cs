@@ -18,6 +18,12 @@ public class SplineUtil : MonoBehaviour {
 		return newPoint;
 	}
 
+	public static Vector3 GetScreenSpaceDirection(Vector3 pos, Vector3 dir){
+		Vector3 splineStartPoint = Services.mainCam.WorldToScreenPoint(pos);
+		Vector3 screenPointAtEnd = Services.mainCam.WorldToScreenPoint(pos + dir.normalized);
+		Vector3 screenSpaceDirection = (screenPointAtEnd - splineStartPoint).normalized;
+		return screenSpaceDirection;
+	}
 	static public SplinePointPair ConnectPoints(Spline s, Point p1, Point p2){
 
 		SplinePointPair result = new SplinePointPair();

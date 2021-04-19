@@ -1229,17 +1229,9 @@ public class Spline : MonoBehaviour
 			dir = GetInitVelocity (p);
 		}
 
-		
-		Debug.DrawLine(p.Pos, p.Pos + dir, Color.red);
-
-		Vector3 splineStartPoint = Services.mainCam.WorldToScreenPoint(p.Pos);
-		Vector3 screenPointAtEnd = Services.mainCam.WorldToScreenPoint(p.Pos + dir.normalized);
-		Vector3 screenSpaceDirection = (screenPointAtEnd - splineStartPoint).normalized;
-
-		Debug.DrawLine(p.Pos, p.Pos + screenSpaceDirection, Color.green);
-
-		return Vector2.Angle(direction, screenSpaceDirection);
+		return Vector2.Angle(direction, SplineUtil.GetScreenSpaceDirection(p.Pos, dir));
 	}
+
 
 	public void DestroySpline (Point toDelete, Point toAnchor)
 	{

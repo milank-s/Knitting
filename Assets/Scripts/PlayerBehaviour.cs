@@ -273,12 +273,16 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		pointDest = null;
 		lastPoint = null;
+
+		ResetFX();
+
 	}
 
 	public void ResetFX()
 	{
 		t.Clear();
 		flyingTrail.Clear();
+		shortTrail.Clear();
 		flyingTrail.emitting = false;
 		t.emitting = true;
 	}
@@ -1553,9 +1557,10 @@ public class PlayerBehaviour: MonoBehaviour {
 									curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
 									
 									//code that cheats towards the end position of the point could still be useful
-									//angleOffSpline = curAngle;
-									//float angleToPoint = Vector3.Angle(cursorDir, (s.GetPointAtIndex(s.SplinePoints.IndexOf(curPoint), 0.99f) - curPoint.Pos).normalized);
-									//curAngle = Mathf.Lerp(curAngle, angleToPoint, 0.75f);
+									Vector3 next = curSpline.GetPoint(0.99f);
+									Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
+									float angleToPoint = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
+									curAngle = Mathf.Lerp(curAngle, angleToPoint, 0.75f);
 									
 									if (curAngle < angleOffSpline)
 									{

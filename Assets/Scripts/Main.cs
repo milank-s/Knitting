@@ -519,13 +519,14 @@
 			Services.PlayerBehaviour.curSpline.OnSplineExit();
 		}
 
-		Services.PlayerBehaviour.ResetFX();
 		Services.PlayerBehaviour.curPoint = p;
+		Services.PlayerBehaviour.transform.position = p.Pos;
 		Services.PlayerBehaviour.curPoint.OnPlayerEnterPoint();
 		
 		Services.PlayerBehaviour.flow = flow;
 		Services.PlayerBehaviour.curSpeed = curSpeed;
 		
+		Services.PlayerBehaviour.ResetFX();
 	}
 	
 	public void InitializeLevel()

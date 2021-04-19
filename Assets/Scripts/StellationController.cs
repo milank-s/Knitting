@@ -236,11 +236,14 @@ public class StellationController : MonoBehaviour {
 
 		if (_points.Count == 0) return;
 		
+	
+		_startPoints.Sort((p1,p2)=>TryComparePoints(p1, p2));
+			
+
 		if (start == null)
 		{
 			if(_startPoints.Count > 1)
 			{
-				_startPoints.Sort((p1,p2)=>TryComparePoints(p1, p2));
 				start = _startPoints[0];
 				
 			}else{
