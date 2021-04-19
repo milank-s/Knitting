@@ -236,11 +236,11 @@ public class StellationController : MonoBehaviour {
 
 		if (_points.Count == 0) return;
 		
-		_startPoints.Sort((p1,p2)=>p1._connectedSplines[0].order.CompareTo(p2._connectedSplines[0].order));
-
 		if (start == null)
 		{
-			if(_startPoints.Count > 0){
+			if(_startPoints.Count > 1)
+			{
+				_startPoints.Sort((p1,p2)=>TryComparePoints(p1, p2));
 				start = _startPoints[0];
 				
 			}else{
@@ -318,8 +318,14 @@ public class StellationController : MonoBehaviour {
 			s.controller = this;
 			index++;
 		}
-		
-		
+	}
+
+	public int TryComparePoints(Point p1, Point p2){
+		if(p1._connectedSplines.Count > 0 && p2._connectedSplines.Count > 0){
+			return p1._connectedSplines[0].order.CompareTo(p2._connectedSplines[0].order);
+		}
+
+		return 0;
 	}
 	public void Initialize()
 	{
