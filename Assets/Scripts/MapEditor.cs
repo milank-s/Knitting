@@ -1498,8 +1498,7 @@ void DragCamera()
             }
 
             if (pointSelected && activePoint == p)
-            {
-                
+            {                
                 pointCoords.gameObject.SetActive(true);
                 
                 if (curTool == Tool.select)

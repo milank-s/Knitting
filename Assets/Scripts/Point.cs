@@ -304,7 +304,6 @@ public class Point : MonoBehaviour
 			
 			case PointTypes.start:
 				
-				Services.StartPoint = this;
 				break;
 			
 			case PointTypes.end:
@@ -520,7 +519,7 @@ public class Point : MonoBehaviour
 
 					if (Services.StartPoint != this)
 					{
-						Services.main.WarpPlayerToNewPoint(Services.StartPoint);
+						Services.main.WarpPlayerToNewPoint(controller.GetStartPoint());
 					}
 
 					break;
@@ -533,6 +532,8 @@ public class Point : MonoBehaviour
 						StellationManager.instance.EnterStellation(controller);
 					}
 					
+					controller.startIndex ++;
+
 					break;
 				
 				case PointTypes.end:

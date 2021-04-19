@@ -16,11 +16,12 @@ public class StellationController : MonoBehaviour {
 	public UnlockType unlockMethod = UnlockType.laps;
 	[HideInInspector]
 	public List<Point> _pointshit;
+
 	[HideInInspector]
 	public List<Point> _points;
 
 	public Vector3 lowerLeft, upperRight;
-
+	public List<Point> _startPoints;
 	public List<Spline> _splines;
 	public List<Spline> _splinesToUnlock;
 	
@@ -29,6 +30,7 @@ public class StellationController : MonoBehaviour {
 	public int rootKey;
 	public int laps = 1;
 	public int speed = 1;
+	public int startIndex;
 	public int time = 1;
 	public float startSpeed;
 	
@@ -44,6 +46,7 @@ public class StellationController : MonoBehaviour {
 	public float damping = 600f;
 	public float stiffness = 100f;
 	public float mass = 50f;
+
 	[Space(10)]
 
 	[Header("Visuals")]
@@ -101,6 +104,7 @@ public class StellationController : MonoBehaviour {
 		_points = new List<Point>();
 		_splines = new List<Spline>();
 		_splinesToUnlock = new List<Spline>();
+		_startPoints = new List<Point>();
 	}
 	
 	public void Won()
@@ -201,10 +205,11 @@ public class StellationController : MonoBehaviour {
 	public void GetComponents()
 	{
 		curSplineIndex = 0;
+		
 		_points.Clear();
 		_splines.Clear();
 		_splinesToUnlock.Clear();
-		
+		_startPoints.Clear();
 		//stupid code for old maps that didnt have scoreCount idk. 
 		if (unlockMethod == UnlockType.laps && laps == 0)
 		{
@@ -215,7 +220,7 @@ public class StellationController : MonoBehaviour {
 
 			if (p.pointType == PointTypes.start)
 			{
-				start = p;
+				_startPoints.Add(p);
 			}
 
 			//expensive but easy
@@ -228,13 +233,22 @@ public class StellationController : MonoBehaviour {
 				p.Initialize();
 			}
 		}
+
 		if (_points.Count == 0) return;
 		
+		_startPoints.Sort((p1,p2)=>p1._connectedSplines[0].order.CompareTo(p2._connectedSplines[0].order));
+
 		if (start == null)
 		{
-			start = _points[0];
+			if(_startPoints.Count > 0){
+				start = _startPoints[0];
+				
+			}else{
+				start = _points[0];
+			}
 		}
 
+		Services.StartPoint = start;
 
 		GetBounds();
 		
@@ -402,9 +416,13 @@ public class StellationController : MonoBehaviour {
 	{
 		//Services.main.InitializeLevel();
 		curSplineIndex = 0;
+		startIndex = 0;
 		isComplete = false;
 	}
 
+	public Point GetStartPoint(){
+		return _startPoints[startIndex % _startPoints.Count];
+	}
 	public void UnlockSpline(Spline spline)
 	{
 		curSplineIndex = spline.order + 1;
