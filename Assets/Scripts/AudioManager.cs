@@ -14,6 +14,8 @@ public class AudioManager : MonoBehaviour
     
     public Sampler drumSampler;
 
+    public Sampler celloAttack;
+    public Sampler celloSustain;
     public Sampler clarinetSampler;
     public Sampler pianoSampler;
     [SerializeField] public SplineSinger splineSinger;

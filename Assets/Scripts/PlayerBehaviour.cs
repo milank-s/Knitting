@@ -1557,7 +1557,7 @@ public class PlayerBehaviour: MonoBehaviour {
 									curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
 									
 									//code that cheats towards the end position of the point could still be useful
-									Vector3 next = curSpline.GetPoint(0.99f);
+									Vector3 next = s.GetPoint(0.99f);
 									Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
 									float angleToPoint = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
 									curAngle = Mathf.Lerp(curAngle, angleToPoint, 0.75f);
