@@ -244,8 +244,6 @@ public class SynthController : MonoBehaviour
     void Update()
     {
 		
-
-        float accuracy = Mathf.Clamp01(Services.PlayerBehaviour.accuracy);
 	
         //Sound of noise when player goes of accuracy
         //movementPad.SetParameterValue(Param.kVolume,Mathf.Clamp01( 1 - (Services.PlayerBehaviour.accuracy + 0.2f)) * Mathf.Clamp01(Services.PlayerBehaviour.flow/5f));

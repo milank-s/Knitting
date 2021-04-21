@@ -151,7 +151,7 @@ public class Spline : MonoBehaviour
 
 	public void OnSplineExit ()
 	{
-		Debug.Log("leaving spline called");
+		
 		draw = false;
 		isPlayerOn = false;
 		reactToPlayer = false;

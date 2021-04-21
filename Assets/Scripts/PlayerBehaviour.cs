@@ -57,7 +57,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		get { return Mathf.Clamp01(curSpeed / 2); }
 	}
-	float angleToSpline = Mathf.Infinity;
 	public float flyingSpeed;
 	private bool hasFlown = false;
 	private bool foundConnection = false;
@@ -101,13 +100,17 @@ public class PlayerBehaviour: MonoBehaviour {
 			
 			//lets just stop using the deceleration timer
 			//adjustedAccuracy = (adjustedAccuracy * (1-decelerationTimer));
+			
+			// if(boost < curSpline.speed && !curSpline.bidirectional){
+			// 	boost = curSpline.speed;
+			// }
 
 			if (progress >= 0.9f && accuracy < 0.5f && pointDest.pointType != PointTypes.ghost)
 			{
 				//adjustedAccuracy = 1;
 			}
 
-			return Mathf.Clamp(flow + speed + boost, 0, 1000) * cursorDir.magnitude * adjustedAccuracy;
+			return Mathf.Clamp(flow + speed + boost, 0, 1000) * cursorDir.magnitude * adjustedAccuracy + curSpline.speed;
 		}
 	}
 
@@ -1212,27 +1215,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(flow < 0){
 
 				flow += decay *  directionAdjustedAccuracy * Time.deltaTime;
-				if (flow > 0)
-					flow = 0;
+
 			}else{
-				//
-//			maxSpeed = curSpline.distance * 2;
 
-			//need non-shitty way to cap speed
-			if(true)
-			{
+				//	maxSpeed = curSpline.distance * 2;
 				flow += Mathf.Pow(directionAdjustedAccuracy, 2) * acceleration * Time.deltaTime * cursorDir.magnitude;
-
-				//fix it bro
-
-				if (!curSpline.bidirectional)
-				{
-					flow += Mathf.Pow(directionAdjustedAccuracy, 2) * curSpline.speed * Time.deltaTime * cursorDir.magnitude;
-				}
-
 				decelerationTimer = Mathf.Clamp01(decelerationTimer - Time.deltaTime * 2f);
-			}
-
 		}
 	}
 		// curSpeed =  speed * Mathf.Sign (accuracy) * accuracyCoefficient;
@@ -1504,9 +1492,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public bool CanLeavePoint()
 	{
-		angleToSpline = Mathf.Infinity;
-		float angleOffSpline = Mathf.Infinity;
-		float angleFromPoint = Mathf.Infinity;
+		float minAngle = Mathf.Infinity;
+		float minAngleToPoint = Mathf.Infinity;
 		if (curPoint.HasSplines ()) {
 
 			splineDest = null;
@@ -1555,13 +1542,8 @@ public class PlayerBehaviour: MonoBehaviour {
 								Vector3 next = p.Pos;
 								Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
 								float angleToPoint = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
-								curAngle = Mathf.Lerp(curAngle, angleToPoint, 0.75f);
-									
-								if (curAngle < angleOffSpline)
-								{
-									angleOffSpline = curAngle;
-								}
-								//curAngle = Mathf.Infinity;
+								curAngle = (angleToPoint + curAngle) / 2f;
+
 
 							} else {
 
@@ -1583,24 +1565,13 @@ public class PlayerBehaviour: MonoBehaviour {
 									float angleToPoint = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
 									curAngle = Mathf.Lerp(curAngle, angleToPoint, 0.75f);
 									
-									if (curAngle < angleOffSpline)
-									{
-										angleOffSpline = curAngle;
-									}
+									curAngle = (angleToPoint + curAngle) / 2f;
 //								}
 							}
 						
-						if (curAngle < angleToSpline) {
-							if (angleOffSpline < angleFromPoint)
-							{
-								angleFromPoint = angleOffSpline;
-							}
+						if (curAngle < minAngle) {
 
-							if (curAngle < angleOffSpline)
-							{
-								angleFromPoint = angleOffSpline;
-							}
-							angleToSpline = curAngle;
+							minAngle = curAngle;
 							maybeNextSpline = s;
 							maybeNextPoint = p;
 						}
@@ -1613,7 +1584,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 // && (Input.GetButtonDown("Button1")
 
-			if ((angleFromPoint <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) && maybeNextSpline != null)
+			if ((minAngle <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) && maybeNextSpline != null)
 			{
 
 				splineDest = maybeNextSpline;
