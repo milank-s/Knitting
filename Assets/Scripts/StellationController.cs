@@ -69,6 +69,16 @@ public class StellationController : MonoBehaviour {
 	
 	public string GetWord (){
 		if(words != null){
+			string toReturn = "";
+			toReturn = words[(wordIndex) % (words.Length)];
+			return toReturn;
+		}
+
+		return "";
+	}
+
+	public string GetNextWord (){
+		if(words != null){
 
 		string toReturn = "";
 		if(wordIndex > 0){
@@ -512,7 +522,7 @@ public class StellationController : MonoBehaviour {
 	}
 
 	public void NextWord(){
-		Services.main.text.text += GetWord();
+		Services.main.text.text += GetNextWord();
 	}
 	public void OnPointEntered(){
 		NextWord();

@@ -36,6 +36,7 @@ public class AudioManager : MonoBehaviour
         Services.PlayerBehaviour.OnTraversing += OnTraversing;
         Services.PlayerBehaviour.OnFlying += OnFlying;
         Services.PlayerBehaviour.OnStoppedTraversing += ExitTraversing;
+        Services.main.OnReset += Reset;
     }
     
 

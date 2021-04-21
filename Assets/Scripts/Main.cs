@@ -52,8 +52,11 @@
 	public delegate void StellationLoad(StellationController c);
 	public delegate void PointAction(Point p);
 	public delegate void SplineAction(Spline s);
+	public delegate void GenericAction();
 
 	public StellationLoad OnLoadLevel;
+
+	public GenericAction OnReset;
 	public PointAction OnPointEnter;
 	public PointAction OnPointExit;
 	public PointAction OnPlayerEnterPoint;
@@ -377,7 +380,9 @@
 			ToggleEditMode();
 		}
 		
-		AudioManager.instance.Reset();
+		if(OnReset != null){
+			OnReset.Invoke();
+		}
 		
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
@@ -634,7 +639,7 @@
 			
 			if (enter)
 			{
-				AudioManager.instance.Reset();
+				OnReset.Invoke();
 				if (state == GameState.menu)
 				{
 					CloseMenu();

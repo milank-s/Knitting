@@ -7,6 +7,7 @@ public class PrefabManager : MonoBehaviour {
 
 	public GameObject soundEffectObject;
 	public GameObject spawnedText;
+	public GameObject text;
 	public GameObject circleEffect;
 	public ParticleSystem particleEffect;
 	public GameObject point;
