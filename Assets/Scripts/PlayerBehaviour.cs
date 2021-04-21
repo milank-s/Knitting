@@ -88,14 +88,17 @@ public class PlayerBehaviour: MonoBehaviour {
 		gravity,
 		decelerationTimer;
 
-	public float normalizedAccuracy => (1 + accuracy)/2f;
+	public float normalizedAccuracy => (1 + directionAdjustedAccuracy)/2f;
 	public float potentialSpeed => flow + speed + boost;
-	float actualSpeed
+	public float directionAdjustedAccuracy => goingForward ? accuracy : accuracy * -1;
+	float accuracyAdjustedSpeed
 	{
 		get
 		{
-			float adjustedAccuracy = goingForward ? Mathf.Pow(accuracy, accuracyCoefficient) : -Mathf.Pow(accuracy, accuracyCoefficient);
-
+			// float adjustedAccuracy = goingForward ? Mathf.Pow(accuracy, accuracyCoefficient) : -Mathf.Pow(accuracy, accuracyCoefficient);
+			
+			float adjustedAccuracy = Mathf.Pow(accuracy, accuracyCoefficient);
+			
 			//lets just stop using the deceleration timer
 			//adjustedAccuracy = (adjustedAccuracy * (1-decelerationTimer));
 
@@ -104,7 +107,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				//adjustedAccuracy = 1;
 			}
 
-			return Mathf.Clamp(flow + speed + boost, 0, 1000) * cursorDir.magnitude * Mathf.Clamp01(adjustedAccuracy);
+			return Mathf.Clamp(flow + speed + boost, 0, 1000) * cursorDir.magnitude * adjustedAccuracy;
 		}
 	}
 
@@ -1204,11 +1207,11 @@ public class PlayerBehaviour: MonoBehaviour {
 			Services.fx.flyingParticles.Pause();
 		}
 
-		if (accuracy > 0.5f && !joystickLocked) {
+		if (directionAdjustedAccuracy > 0.5f && !joystickLocked) {
 
 			if(flow < 0){
 
-				flow += decay *  accuracy * Time.deltaTime;
+				flow += decay *  directionAdjustedAccuracy * Time.deltaTime;
 				if (flow > 0)
 					flow = 0;
 			}else{
@@ -1218,11 +1221,11 @@ public class PlayerBehaviour: MonoBehaviour {
 			//need non-shitty way to cap speed
 			if(true)
 			{
-				flow += Mathf.Pow(accuracy, 2) * acceleration * Time.deltaTime * cursorDir.magnitude;
+				flow += Mathf.Pow(directionAdjustedAccuracy, 2) * acceleration * Time.deltaTime * cursorDir.magnitude;
 
 				if (curSpline.type == Spline.SplineType.moving)
 				{
-					flow += Mathf.Pow(accuracy, 2) * curSpline.acceleration * Time.deltaTime * cursorDir.magnitude;
+					flow += Mathf.Pow(directionAdjustedAccuracy, 2) * curSpline.acceleration * Time.deltaTime * cursorDir.magnitude;
 				}
 
 				decelerationTimer = Mathf.Clamp01(decelerationTimer - Time.deltaTime * 2f);
@@ -1237,12 +1240,12 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 
-		if ((accuracy < 0.5f) || joystickLocked) {
+		if ((directionAdjustedAccuracy < 0.5f) || joystickLocked) {
 
 
 			if (flow > 0)
 			{
-				decelerationTimer = Mathf.Clamp01(decelerationTimer + Time.deltaTime * (2-accuracy));
+				decelerationTimer = Mathf.Clamp01(decelerationTimer + Time.deltaTime * (2 - normalizedAccuracy));
 
 				if (decelerationTimer >=1 || flow > curSpline.segmentDistance)
 				{
@@ -1266,8 +1269,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		// (adjustedAccuracy + 0.1f)
 		if (!joystickLocked)
 		{
-			curSpeed = actualSpeed;
-			progress += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
+			curSpeed = accuracyAdjustedSpeed;
+			float finalSpeed = (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
+			progress += goingForward ? finalSpeed : -finalSpeed;
 
 			curSpline.completion += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
 		}
@@ -1459,6 +1463,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (indexdiff == -1 || indexdiff > 1) {
 			s.Selected = p2;
 			goingForward = false;
+			
 			progress = 1 - Mathf.Epsilon;
 
 		} else {
@@ -1474,6 +1479,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			goingForward = true;
 			s.Selected = curPoint;
 		}
+
+		Debug.Log(goingForward);
 
 	}
 
@@ -1534,13 +1541,14 @@ public class PlayerBehaviour: MonoBehaviour {
 							if((p == s.StartPoint && curPoint == s.EndPoint) || (p == s.EndPoint && curPoint == s.StartPoint)){
 								looping = true;
 							}
+
 						if(((indexDifference > 1 || indexDifference < -1) && !s.closed) || ((indexDifference > 1 || indexDifference < -1) && !looping)){
 								//this kind of movement should be illegal
 						}else{
 							if (indexDifference == -1 || indexDifference > 1) {
 
-								curAngle = s.CompareAngleAtPoint (cursorDir, curPoint, true);	
-								Vector3 next = s.GetPointAtIndex(s.SplinePoints.IndexOf(p), 0f);
+								curAngle = s.CompareAngleAtPoint (cursorDir, p, true);	
+								Vector3 next = p.Pos;
 								Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
 								float angleToPoint = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
 								curAngle = Mathf.Lerp(curAngle, angleToPoint, 0.75f);
@@ -1566,7 +1574,7 @@ public class PlayerBehaviour: MonoBehaviour {
 									curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
 									
 									//code that cheats towards the end position of the point could still be useful
-									Vector3 next = s.GetPoint(0.99f);
+									Vector3 next = p.Pos;
 									Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
 									float angleToPoint = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
 									curAngle = Mathf.Lerp(curAngle, angleToPoint, 0.75f);
@@ -1739,9 +1747,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 
-		if (cursorDir2.magnitude <= 0.01f){
+		if (cursorDir2.magnitude <= 0.25f){
 			joystickLocked = true;
-			cursorDir2 = Vector3.zero;
+			//cursorDir2 = Vector3.zero;
 		}else{
 			joystickLocked = false;
 		}
@@ -1996,6 +2004,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				//PlayerMovement ();
 
 				t.emitting = true;
+
 				if (curSpeed > flyingSpeedThreshold)
 				{
 					Services.fx.flyingParticles.Play();

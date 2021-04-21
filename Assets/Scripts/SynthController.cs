@@ -116,7 +116,7 @@ public class SynthController : MonoBehaviour
 
 	public void UpdateMovementSynth(){
 		
-			float normalizedAccuracy = (1 + Services.PlayerBehaviour.accuracy)/2f;;
+			float normalizedAccuracy = Services.PlayerBehaviour.normalizedAccuracy;
 
 			//old code for using arp on the synth instead of using a sequencer
 			//movementKeys.SetParameterPercent(Param.kArpFrequency, normalizedAccuracy);
