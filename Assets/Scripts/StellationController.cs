@@ -553,6 +553,9 @@ public class StellationController : MonoBehaviour {
 	}
 
 	public float GetNormalizedDepth(Vector3 pos){
+		if(Mathf.Abs(upperRight.z - lowerLeft.z) < 0.25f){
+			return 0.5f;
+		}
 		return Mathf.Clamp01(pos.z - lowerLeft.z / (upperRight.z - lowerLeft.z));
 	}
 

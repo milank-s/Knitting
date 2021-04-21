@@ -1673,16 +1673,16 @@ public class PlayerBehaviour: MonoBehaviour {
 		// }
 	
 //		Vector3 lastCursorDir = cursorDir;
-		if (Services.main.hasGamepad || context.control.name == "stick") {
+		if (context.control.name == "stick" || context.control.name == "Left Stick") {
 
 			//inputVector = new Vector3(Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
 			
 			cursorDir2 = inputVector;
-
+ 
 		}else {
 
 			//inputVector = new Vector2(Input.GetAxis ("Mouse X"), Input.GetAxis ("Mouse Y"));
-
+			
 			cursorDir2 = cursorDir2 + inputVector;
 
 		}

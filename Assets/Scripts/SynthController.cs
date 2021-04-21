@@ -91,9 +91,11 @@ public class SynthController : MonoBehaviour
 		//get bounds of stellation 
 
 		float depth  = p.controller.GetNormalizedDepth(p.Pos);
-		int octave = (int)Mathf.Floor(depth * 4f)-2;
+		int octave = (int)Mathf.Floor((1-depth) * 4f)-2;
+
 		octave *= 12;
 		float height = p.controller.GetNormalizedHeight(p.Pos);
+
 		// float magnitude = (s.upperRight.y - s.lowerLeft.y);
 		// float normalizedY = p.Pos.y - s.lowerLeft.y;
 		// normalizedY /= magnitude;
