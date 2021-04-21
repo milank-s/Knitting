@@ -61,6 +61,7 @@ public class StellationController : MonoBehaviour {
 	public Vector3 cameraPos = Vector3.zero;
 	public bool setCameraPos = false;
 	public bool isOn;
+	public bool lockSplines;
 	public bool isComplete;
 	private string[] words;
 	private int wordIndex;
@@ -228,11 +229,7 @@ public class StellationController : MonoBehaviour {
 		
 		foreach(Point p in GetComponentsInChildren<Point>()){
 
-			if (p.pointType == PointTypes.start)
-			{
-				_startPoints.Add(p);
-			}
-
+	
 			//expensive but easy
 			if (!_points.Contains(p))
 			{
@@ -242,6 +239,12 @@ public class StellationController : MonoBehaviour {
 				p.SR.color = Color.white * 0.2f;
 				p.Initialize();
 			}
+
+				if (p.pointType == PointTypes.start)
+			{
+				_startPoints.Add(p);
+			}
+
 		}
 
 		if (_points.Count == 0) return;
@@ -252,7 +255,7 @@ public class StellationController : MonoBehaviour {
 
 		if (start == null)
 		{
-			if(_startPoints.Count > 1)
+			if(_startPoints.Count > 0)
 			{
 				start = _startPoints[0];
 				
@@ -323,7 +326,7 @@ public class StellationController : MonoBehaviour {
 				_splinesToUnlock.Add(s);
 			}
 
-			if (s.order != 0)
+			if (lockSplines && s.order != 0)
 			{
 				s.SwitchState(Spline.SplineState.locked);
 			}
@@ -333,6 +336,7 @@ public class StellationController : MonoBehaviour {
 		}
 	}
 
+	
 	public int TryComparePoints(Point p1, Point p2){
 		if(p1._connectedSplines.Count > 0 && p2._connectedSplines.Count > 0){
 			return p1._connectedSplines[0].order.CompareTo(p2._connectedSplines[0].order);

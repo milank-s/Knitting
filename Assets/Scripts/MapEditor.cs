@@ -103,6 +103,7 @@ public class MapEditor : MonoBehaviour
     public Text fov;
     public Slider fovSlider;
     public Toggle useCamPos;
+    public Toggle splineLockToggle;
     public Slider scoreSlider;
     public Text scoreText;
     public Toggle fixedCamera;
@@ -253,7 +254,9 @@ public class MapEditor : MonoBehaviour
         controller.startSpeed = s;
         startSpeed.text = s.ToString("F1");
     }
-    
+    public void SetStellationLock(bool b){
+		controller.lockSplines = b;
+	}
     public void FixCamera(bool b)
     {
         controller.fixedCam = b;
@@ -314,7 +317,7 @@ public class MapEditor : MonoBehaviour
         fixedCamera.isOn = controller.fixedCam;
         speedSlider.value = controller.startSpeed;
         useCamPos.isOn = controller.setCameraPos;
-        
+        splineLockToggle.isOn = controller.lockSplines;
         ChangeWinCondition((int)controller.unlockMethod);
         
         //load from controller name
@@ -1102,6 +1105,7 @@ public class MapEditor : MonoBehaviour
         level["laps"].AsInt = controller.laps;
         level["startSpeed"].AsFloat = controller.startSpeed;
         level["text"] = controller.text;
+        level["forceOrder"] = controller.lockSplines;
         JSONObject cameraData = new JSONObject();
         cameraData["x"].AsFloat = controller.cameraPos.x;
         cameraData["y"].AsFloat =  controller.cameraPos.y;
@@ -1386,6 +1390,7 @@ public class MapEditor : MonoBehaviour
         c.cameraPos.y = json["camera"]["y"];
         c.fixedCam = json["camera"]["fixCam"];
         c.desiredFOV = json["camera"]["fov"];
+        c.lockSplines = json["forceOrder"];
 
         if (c.desiredFOV == 0)
         {
