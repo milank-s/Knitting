@@ -111,6 +111,7 @@ public class MapEditor : MonoBehaviour
     public Toggle fixedCamera;
     public Text splineOrder;
     public Text splineTypeReadout;
+    public Text splineDirectionReadout;
     public InputField sceneTitle;
     public InputField controllerText;
     public Dropdown levelList;
@@ -186,8 +187,10 @@ public class MapEditor : MonoBehaviour
 
                 splineOrder.text = "spline " + controller._splines[splineindex].order;
                 splineTypeReadout.text = controller._splines[splineindex].type.ToString();
+                splineDirectionReadout.text = controller._splines[splineindex].bidirectional ? "<—>" : "—>";
                 splineOrder.transform.position = cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.1f);
                 splineTypeReadout.transform.position =  cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.05f);
+                splineDirectionReadout.transform.position =  cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.1f + Vector3.right * 0.25f);
                 return controller._splines[splineindex];
             }
             else
@@ -440,6 +443,11 @@ public class MapEditor : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.X))
             {
                 selectedSpline.ReverseSpline();
+            }
+            
+            if (Input.GetKeyDown(KeyCode.U))
+            {
+                selectedSpline.bidirectional = !selectedSpline.bidirectional;
             }
 
 
@@ -1625,6 +1633,8 @@ void DragCamera()
                 //draw locked stuff diff ? if(selectedSpline.)
                 selectedSpline.SwitchMaterial(3);
                 lineWidthSlider.ChangeValue(selectedSpline.lineWidth);
+                splineSpeedVal.SetValueWithoutNotify(selectedSpline.speed);
+                splineSpeedReadout.text = selectedSpline.speed.ToString("F1");
                 splineSelectedTip.SetActive(true);
             }
 

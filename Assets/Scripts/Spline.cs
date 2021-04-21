@@ -343,11 +343,6 @@ public class Spline : MonoBehaviour
 
 	public void SetSplineType(SplineType t)
 	{
-		if (t == SplineType.moving)
-		{
-			lineMaterial = 3;
-			speed = 0.25f;
-		}
 
 		if (t == SplineType.locked)
 		{
@@ -581,9 +576,9 @@ public class Spline : MonoBehaviour
 			drawIndex = GetPlayerLineSegment(pointIndex);
 		}
 		
-		if (type == SplineType.moving)
+		if (!bidirectional)
 		{
-			line.textureOffset -= Time.deltaTime * 10;
+			line.textureOffset -= Time.deltaTime * speed;
 		}
 
 		int startIndex;

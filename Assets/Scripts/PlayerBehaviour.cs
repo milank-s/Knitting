@@ -1541,11 +1541,16 @@ public class PlayerBehaviour: MonoBehaviour {
 								looping = true;
 							}
 
-						if(((indexDifference > 1 || indexDifference < -1) && !s.closed) || ((indexDifference > 1 || indexDifference < -1) && !looping)){
+							bool movingBackwards = indexDifference == -1 || indexDifference > 1; 
+
+							bool loopingBackwards = looping && movingBackwards;
+							// indexDifference > 1 means we looped backwards
+							// indexDifference == -1 means we went backward one point
+
+						if((loopingBackwards || movingBackwards) && !s.bidirectional){
 								//this kind of movement should be illegal
 						}else{
-							if ((indexDifference == -1 && !s.bidirectional) || indexDifference > 1) {
-
+							if (looping || movingBackwards) {
 								curAngle = s.CompareAngleAtPoint (cursorDir, p, true);	
 								Vector3 next = p.Pos;
 								Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
