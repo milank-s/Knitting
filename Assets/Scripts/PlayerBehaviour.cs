@@ -1223,9 +1223,11 @@ public class PlayerBehaviour: MonoBehaviour {
 			{
 				flow += Mathf.Pow(directionAdjustedAccuracy, 2) * acceleration * Time.deltaTime * cursorDir.magnitude;
 
-				if (curSpline.type == Spline.SplineType.moving)
+				//fix it bro
+
+				if (!curSpline.bidirectional)
 				{
-					flow += Mathf.Pow(directionAdjustedAccuracy, 2) * curSpline.acceleration * Time.deltaTime * cursorDir.magnitude;
+					flow += Mathf.Pow(directionAdjustedAccuracy, 2) * curSpline.speed * Time.deltaTime * cursorDir.magnitude;
 				}
 
 				decelerationTimer = Mathf.Clamp01(decelerationTimer - Time.deltaTime * 2f);
@@ -1479,9 +1481,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			goingForward = true;
 			s.Selected = curPoint;
 		}
-
-		Debug.Log(goingForward);
-
 	}
 
 	public void SetPlayerAtEnd(Spline s, Point p2){
@@ -1545,7 +1544,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						if(((indexDifference > 1 || indexDifference < -1) && !s.closed) || ((indexDifference > 1 || indexDifference < -1) && !looping)){
 								//this kind of movement should be illegal
 						}else{
-							if (indexDifference == -1 || indexDifference > 1) {
+							if ((indexDifference == -1 && !s.bidirectional) || indexDifference > 1) {
 
 								curAngle = s.CompareAngleAtPoint (cursorDir, p, true);	
 								Vector3 next = p.Pos;

@@ -51,6 +51,8 @@ public class Spline : MonoBehaviour
 	[HideInInspector]
 	public float completion;		
 
+	public bool bidirectional = true;
+
 	private float _completion
 	{
 		get { return completion / SplinePoints.Count; }
@@ -59,7 +61,7 @@ public class Spline : MonoBehaviour
 	private float accuracyCoefficient;
 	
 	[HideInInspector]
-	public float maxSpeed, boost, acceleration;
+	public float maxSpeed, boost, speed;
 	
 	public static Spline Select;
 	[Space(15)]
@@ -344,7 +346,7 @@ public class Spline : MonoBehaviour
 		if (t == SplineType.moving)
 		{
 			lineMaterial = 3;
-			acceleration = 0.25f;
+			speed = 0.25f;
 		}
 
 		if (t == SplineType.locked)

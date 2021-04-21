@@ -99,6 +99,8 @@ public class MapEditor : MonoBehaviour
     public ReadSliderValue continuitySliderVal;
     public ReadSliderValue tensionSliderVal;
     public Text startSpeed;
+    public Text splineSpeedReadout;
+    public Slider splineSpeedVal;
     public Slider speedSlider;
     public Text fov;
     public Slider fovSlider;
@@ -253,6 +255,12 @@ public class MapEditor : MonoBehaviour
     {
         controller.startSpeed = s;
         startSpeed.text = s.ToString("F1");
+    }
+
+    public void ChangeSplineSpeed(System.Single s)
+    {
+        selectedSpline.speed = s;
+        splineSpeedReadout.text = s.ToString("F1");
     }
     public void SetStellationLock(bool b){
 		controller.lockSplines = b;
@@ -861,7 +869,6 @@ public class MapEditor : MonoBehaviour
             deselectTip.SetActive(true);
             pointSelectedTip.SetActive(true);
 
-
             if (Input.GetKeyDown(KeyCode.Z))
             {
 
@@ -870,6 +877,8 @@ public class MapEditor : MonoBehaviour
                     p.tension = Mathf.PingPong(p.tension + 1, 1);
                 }
             }
+
+            tensionSliderVal.val = activePoint.tension;
 
 //                string input = Input.inputString;
             pointType.text = activePoint.pointType.ToString();
@@ -1126,6 +1135,8 @@ public class MapEditor : MonoBehaviour
             splineData["type"].AsInt = (int)s.type;
             splineData["lineTexture"] = s.lineMaterial;
             splineData["lineWidth"] = s.lineWidth;
+            splineData["bidirectional"].AsBool = s.bidirectional;
+            splineData["speed"].AsFloat = s.speed;
             JSONObject pointIndices = new JSONObject();
 
             int pi = 0;
@@ -1361,6 +1372,8 @@ public class MapEditor : MonoBehaviour
             newSpline.closed = json["spline" + i]["closed"];
             newSpline.transform.parent = parent.transform;
             newSpline.order =  json["spline" + i]["order"];
+            newSpline.bidirectional = json["spline" + i]["bidirectional"];
+            newSpline.speed = json["spline" + i]["speed"];
             newSpline.gameObject.name = newSpline.order.ToString();
         }
 

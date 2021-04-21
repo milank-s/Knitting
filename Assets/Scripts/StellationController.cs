@@ -355,10 +355,16 @@ public class StellationController : MonoBehaviour {
 //		Services.main.state = Main.GameState.playing;
 }
 
+	public void LeftStartPoint(){
+		if(startIndex == 0){
+			//start the timer bro;
+		}
+		startIndex ++;
+	}
 	public void Draw(){
 		
 				// Services.main.crawlerManager.AddCrawler(s);
-				
+
 		if(lockSplines){
 			if(_splines.Count > 0){
 				_splines[0].DrawSplineIn();

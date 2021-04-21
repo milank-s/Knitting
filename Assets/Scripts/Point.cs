@@ -532,8 +532,7 @@ public class Point : MonoBehaviour
 						StellationManager.instance.EnterStellation(controller);
 					}
 					
-					controller.startIndex ++;
-
+					
 					break;
 				
 				case PointTypes.end:
@@ -585,7 +584,7 @@ public class Point : MonoBehaviour
 			
 			case PointTypes.start:
 
-				//Services.Sounds.PlayPointAttack(0.5f);
+				controller.LeftStartPoint();
 				break;
 			
 			case PointTypes.end:

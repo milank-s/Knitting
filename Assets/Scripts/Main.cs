@@ -56,6 +56,9 @@
 
 	public StellationLoad OnLoadLevel;
 
+	
+	public GenericAction OnLeaveFirstPoint;
+
 	public GenericAction OnReset;
 	public PointAction OnPointEnter;
 	public PointAction OnPointExit;
