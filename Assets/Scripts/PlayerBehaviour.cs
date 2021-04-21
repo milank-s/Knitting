@@ -663,7 +663,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void SetCursorAlignment(){
 		
 		Vector3 splineDir = curSpline.GetDirection (progress);
-		
+		if(!goingForward){splineDir = -splineDir;}
 		Debug.DrawLine(transform.position, transform.position + splineDir, Color.red);
 		//might be best to remove the z
 		//splineDir.z = 0;
@@ -1539,8 +1539,17 @@ public class PlayerBehaviour: MonoBehaviour {
 						}else{
 							if (indexDifference == -1 || indexDifference > 1) {
 
-								//curAngle = s.CompareAngleAtPoint (cursorDir, p, true);
-								curAngle = Mathf.Infinity;
+								curAngle = s.CompareAngleAtPoint (cursorDir, curPoint, true);	
+								Vector3 next = s.GetPointAtIndex(s.SplinePoints.IndexOf(p), 0f);
+								Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
+								float angleToPoint = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
+								curAngle = Mathf.Lerp(curAngle, angleToPoint, 0.75f);
+									
+								if (curAngle < angleOffSpline)
+								{
+									angleOffSpline = curAngle;
+								}
+								//curAngle = Mathf.Infinity;
 
 							} else {
 
@@ -1568,7 +1577,7 @@ public class PlayerBehaviour: MonoBehaviour {
 									}
 //								}
 							}
-
+						
 						if (curAngle < angleToSpline) {
 							if (angleOffSpline < angleFromPoint)
 							{

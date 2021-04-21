@@ -356,12 +356,18 @@ public class StellationController : MonoBehaviour {
 }
 
 	public void Draw(){
-		// foreach(Spline s in _splines){
-		// 	Services.main.crawlerManager.AddCrawler(s);
-		// 	StartCoroutine(s.DrawSplineIn());
-		// }
-		if(_splines.Count > 0){
-			_splines[0].DrawSplineIn();
+		
+				// Services.main.crawlerManager.AddCrawler(s);
+				
+		if(lockSplines){
+			if(_splines.Count > 0){
+				_splines[0].DrawSplineIn();
+			}
+		}else{
+			foreach(Spline s in _splines){
+				Services.main.crawlerManager.AddCrawler(s);
+				StartCoroutine(s.DrawSplineIn());
+			}
 		}
 	}
 	public void Setup()
