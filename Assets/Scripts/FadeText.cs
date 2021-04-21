@@ -6,6 +6,7 @@ public class FadeText: MonoBehaviour {
 
 	bool fading = false;
 	public float alpha;
+	public float speed = 5f;
 	TextMesh t;
 	private bool hasPoint;
 	public bool startOn;
@@ -36,7 +37,7 @@ public class FadeText: MonoBehaviour {
 		}
 		else
 		{
-				alpha = Mathf.Clamp01(alpha - Time.deltaTime / 3);
+				alpha = Mathf.Clamp01(alpha - Time.deltaTime  * speed);
 				t.color = new Color(1, 1, 1, alpha);
 			
 		}
