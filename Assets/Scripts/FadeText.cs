@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FadeTextOnPoint: MonoBehaviour {
+public class FadeText: MonoBehaviour {
 
 	bool fading = false;
 	public float alpha;
 	TextMesh t;
-	public Point p;
 	private bool hasPoint;
 	public bool startOn;
 	public bool stayOn;
@@ -26,13 +25,6 @@ public class FadeTextOnPoint: MonoBehaviour {
 			alpha = 0;
 			t.color = Color.black;
 		}
-
-		
-			p = GetComponentInParent<Point>();
-			if (p != null)
-			{
-				hasPoint = true;
-			}
 	
 	}
 	// Update is called once per frame
@@ -44,27 +36,9 @@ public class FadeTextOnPoint: MonoBehaviour {
 		}
 		else
 		{
-			if (hasPoint)
-			{
-				if (stayOn)
-				{
-					if (p.state == Point.PointState.on)
-					{
-						t.color = new Color(1, 1, 1, 1);
-					}
-
-					else
-					{
-						//alpha = Mathf.Clamp01(alpha - Time.deltaTime);
-						t.color = new Color(1, 1, 1, alpha);
-					}
-				}
-			}
-			else if (!startOn)
-			{
 				alpha = Mathf.Clamp01(alpha - Time.deltaTime / 3);
 				t.color = new Color(1, 1, 1, alpha);
-			}
+			
 		}
 
 		if (alpha <= 0 && destroy) {

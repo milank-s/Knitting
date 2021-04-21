@@ -16,13 +16,14 @@ public class Printer : MonoBehaviour
     public void SpawnWord(){
         Point p = Services.PlayerBehaviour.pointDest;
         string word = p.controller.GetWord();
-        if(p.timesHit == 0 && word != ""){
+        if(word != ""){
             TextMesh newText = Instantiate(Services.Prefabs.text, Services.Player.transform.position, Quaternion.identity).GetComponent<TextMesh>();   
             newText.text = word;
             newText.color = Color.white;
             newText.transform.parent = textContainer.transform;
             Vector3 forward = Services.PlayerBehaviour.curSpline.GetVelocity(Services.PlayerBehaviour.progress);
-            forward = new Vector3(forward.z, forward.y, forward.x);
+            forward.Normalize();
+            forward = new Vector3(-forward.y, forward.x, 0);
             newText.transform.right = forward;
         }
     }
