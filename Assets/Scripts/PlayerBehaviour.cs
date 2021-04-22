@@ -1460,8 +1460,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			s.Selected = p2;
 			goingForward = false;
 			
-			progress = 0.99f;
-			Debug.Log("going back");
+			progress = 1 - Mathf.Epsilon;
 		} else {
 			// if (timeOnPoint == 0)
 			// {
@@ -1474,7 +1473,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			goingForward = true;
 			s.Selected = curPoint;
-			Debug.Log("going forward");
 		}
 	}
 
