@@ -357,7 +357,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Step()
 	{
-
 		if (joystickLocked)
 		{
 			cursorSprite.enabled = false;
@@ -1461,8 +1460,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			s.Selected = p2;
 			goingForward = false;
 			
-			progress = 1 - Mathf.Epsilon;
-
+			progress = 0.99f;
+			Debug.Log("going back");
 		} else {
 			// if (timeOnPoint == 0)
 			// {
@@ -1475,6 +1474,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			goingForward = true;
 			s.Selected = curPoint;
+			Debug.Log("going forward");
 		}
 	}
 
@@ -1569,11 +1569,17 @@ public class PlayerBehaviour: MonoBehaviour {
 					
 						
 						if (adjustedAngle < minAngle) {
-
+							
 							minAngle = adjustedAngle;
 							actualAngle = curAngle;
 							maybeNextSpline = s;
 							maybeNextPoint = p;
+
+							if(forward){
+								maybeNextSpline.Selected = curPoint;
+							}else{
+								maybeNextSpline.Selected = maybeNextPoint;
+							}
 						}
 					}
 				}
@@ -1591,7 +1597,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if(curSpline != null){
 
-
 					if (curSpline != splineDest)
 					{
 						curSpline.OnSplineExit();
@@ -1603,7 +1608,6 @@ public class PlayerBehaviour: MonoBehaviour {
 					splineDest.OnSplineEnter(curPoint, pointDest);
 				}
 
-//					splineDest.Selected = curPoint;
 				curSpline = splineDest;
 
 
@@ -2069,6 +2073,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						s.line.Draw3DAuto();
 					}
 				}
+
 				curPoint = pointDest;
 
 				foreach (Point p in curPoint._neighbours)

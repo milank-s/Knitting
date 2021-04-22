@@ -1026,6 +1026,7 @@ public class Spline : MonoBehaviour
 
 	public int GetPlayerLineSegment ( int i)
 	{
+		
 		return (SplinePoints.IndexOf(Selected) * curveFidelity) + (int)Mathf.Floor((float)curveFidelity * (float)Services.PlayerBehaviour.progress);
 	}
 
