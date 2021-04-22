@@ -159,6 +159,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public bool buttonUp;
 	public bool buttonDown;
+
+	public bool buttonWasPressed => buttonDownTimer > 0;
 	private float buttonDownBuffer = 0.5f;
 	private float buttonDownTimer;
 	private float progressRemainder;
@@ -391,7 +393,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			buttonDown = true;
 			charging = true;
-			buttonDownTimer = buttonDownBuffer;
+			//buttonDownTimer = buttonDownBuffer;
 		}
 		else
 		{
@@ -402,15 +404,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 
-		if (buttonDown)
-		{
-			buttonDownTimer -= Time.deltaTime;
-		}
-
-		if (buttonDownTimer < 0)
-		{
-			buttonDown = false;
-		}
+		buttonDownTimer -= Time.deltaTime;
+		
 
 		float speedCoefficient;
 		if(state == PlayerState.Switching || state == PlayerState.Animating){
@@ -625,7 +620,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			else if (TryToFly())
 				{
 					cursorSprite.sprite = canFlySprite;
-					if (buttonUp)
+					if (buttonWasPressed)
 					{
 						boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
 						SwitchState(PlayerState.Flying);
@@ -1905,7 +1900,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if(curPoint.pointType != PointTypes.ghost){
 
-					if (buttonUp)
+					if (buttonWasPressed)
 					{
 						Debug.Log("boost added");
 						flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
