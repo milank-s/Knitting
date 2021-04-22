@@ -274,7 +274,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		boost = 0;
 		flow = 0;
 
-		
+
 		pointDest = null;
 		lastPoint = null;
 
@@ -686,7 +686,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		float alignment = Vector2.Angle (cursorDir, screenSpaceDirection);
 
 		accuracy = (90 - alignment) / 90;
-		StopAngleDiff = Mathf.Lerp (20, 50, Mathf.Abs(flow));
+		//StopAngleDiff = Mathf.Lerp (20, 50, Mathf.Abs(flow));
 	}
 
 	bool CanCreatePoint(){
@@ -1542,13 +1542,13 @@ public class PlayerBehaviour: MonoBehaviour {
 						bool backwards = loopingBackwards || movingBackwards;
 						bool isGhostPoint = curPoint.pointType == PointTypes.ghost;
 						
-						bool canMoveBackward = (!isGhostPoint && s.bidirectional) || (!goingForward && isGhostPoint);
+						bool canMoveBackward = !isGhostPoint || (!goingForward && isGhostPoint);
 						bool canMoveForward = !isGhostPoint || (isGhostPoint && goingForward);
 						// indexDifference > 1 means we looped backwards
 						// indexDifference == -1 means we went backward one point
 
 					
-						if (canMoveBackward && backwards) {
+						if (canMoveBackward && backwards && s.bidirectional) {
 							
 							curAngle = s.CompareAngleAtPoint (cursorDir, p, true);	
 							Vector3 next = p.Pos;

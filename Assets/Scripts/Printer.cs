@@ -31,7 +31,7 @@ public class Printer : MonoBehaviour
     public void TrySpawnWord(){
         if(Mathf.Abs(Services.PlayerBehaviour.progress - lastProgress) > frequency){
             lastProgress = Services.PlayerBehaviour.progress;
-            SpawnWord();
+            //SpawnWord();
         }
     }
 
