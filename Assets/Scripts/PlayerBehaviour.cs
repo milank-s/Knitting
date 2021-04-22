@@ -101,16 +101,16 @@ public class PlayerBehaviour: MonoBehaviour {
 			//lets just stop using the deceleration timer
 			//adjustedAccuracy = (adjustedAccuracy * (1-decelerationTimer));
 			
-			// if(boost < curSpline.speed && !curSpline.bidirectional){
-			// 	boost = curSpline.speed;
-			// }
+			if(boost < curSpline.speed && !curSpline.bidirectional){
+				boost = curSpline.speed;
+			}
 
 			if (progress >= 0.9f && accuracy < 0.5f && pointDest.pointType != PointTypes.ghost)
 			{
 				//adjustedAccuracy = 1;
 			}
 
-			return Mathf.Clamp(flow + speed + boost, 0, 1000) * cursorDir.magnitude * adjustedAccuracy + curSpline.speed;
+			return Mathf.Clamp(flow + speed, 0, 1000) * cursorDir.magnitude * adjustedAccuracy + boost;
 		}
 	}
 

@@ -578,7 +578,7 @@ public class Spline : MonoBehaviour
 		
 		if (!bidirectional)
 		{
-			line.textureOffset -= Time.deltaTime * speed;
+			line.textureOffset -= Time.deltaTime * speed * 5f;
 		}
 
 		int startIndex;
