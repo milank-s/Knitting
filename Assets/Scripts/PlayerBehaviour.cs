@@ -159,7 +159,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public bool buttonUp;
 	public bool buttonDown;
-	private float buttonDownBuffer = 0.2f;
+	private float buttonDownBuffer = 0.5f;
 	private float buttonDownTimer;
 	private float progressRemainder;
 
@@ -370,6 +370,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if(Input.GetMouseButtonDown(1)){
 			ResetPlayerToStartPoint();
+		}
+
+		if(progress > 2){
+			Debug.Log("progress exceeded");
 		}
 
 		if (buttonDown)
