@@ -384,11 +384,6 @@ public class StellationController : MonoBehaviour {
 		curSplineIndex = 0;
 		Services.main.activeStellation = this;
 		
-		// if (Services.PlayerBehaviour.flow < startSpeed)
-		// {
-		// 	Services.PlayerBehaviour.flow = startSpeed;
-		// }
-		
 		CameraFollow.instance.fixedCamera = fixedCam;
 		CameraFollow.instance.desiredFOV = desiredFOV;
 

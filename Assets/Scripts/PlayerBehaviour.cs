@@ -87,10 +87,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		gravity,
 		decelerationTimer;
 
-	public float normalizedAccuracy => (1 + directionAdjustedAccuracy)/2f;
+	public float normalizedAccuracy => (1 + accuracy)/2f;
 	public float potentialSpeed => flow + speed + boost;
-	public float directionAdjustedAccuracy => goingForward ? accuracy : accuracy * -1;
-
 	public float easedAccuracy => Mathf.Pow(normalizedAccuracy, accuracyCoefficient);
 	float accuracyAdjustedSpeed
 	{
@@ -110,7 +108,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				//adjustedAccuracy = 1;
 			}
 
-			return Mathf.Clamp(speed, 0, 1000) * cursorDir.magnitude * easedAccuracy + flow + boost;
+			return (speed) * cursorDir.magnitude * easedAccuracy + flow + boost;
 		}
 	}
 
@@ -207,7 +205,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			Services.main.WarpPlayerToNewPoint(Services.main.activeStellation.start);
 			Reset();
-			flow = Services.main.activeStellation.startSpeed;
+			speed = Services.main.activeStellation.startSpeed;
 			flyingSpeed = 0;
 		}
 
@@ -221,11 +219,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		transform.position = curPoint.Pos;
 		traversedPoints.Add (curPoint);
 		curPoint.OnPlayerEnterPoint();
+		flow = 0;
+		speed = Services.main.activeStellation.startSpeed;
 		
-		if (flow < Services.main.activeStellation.startSpeed)
-		{
-			flow = Services.main.activeStellation.startSpeed;
-		}
 
 		ResetFX();
 
@@ -276,7 +272,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversedPoints.Clear();
 		hasFlown = false;
 		boost = 0;
-
+		flow = 0;
 		pointDest = null;
 		lastPoint = null;
 
@@ -1263,7 +1259,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		// (adjustedAccuracy + 0.1f)
 #endregion
 		
-		flow += (easedAccuracy-0.5f) * acceleration * Time.deltaTime;
+		flow += (easedAccuracy - 0.9f) * acceleration * Time.deltaTime;
 		flow = Mathf.Clamp(flow, 0, 1000);
 
 		if (!joystickLocked)
