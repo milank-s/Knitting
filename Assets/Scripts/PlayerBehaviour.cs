@@ -90,19 +90,19 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float normalizedAccuracy => (1 + directionAdjustedAccuracy)/2f;
 	public float potentialSpeed => flow + speed + boost;
 	public float directionAdjustedAccuracy => goingForward ? accuracy : accuracy * -1;
+
+	public float easedAccuracy => Mathf.Pow(normalizedAccuracy, accuracyCoefficient);
 	float accuracyAdjustedSpeed
 	{
 		get
 		{
 			// float adjustedAccuracy = goingForward ? Mathf.Pow(accuracy, accuracyCoefficient) : -Mathf.Pow(accuracy, accuracyCoefficient);
 			
-			float adjustedAccuracy = Mathf.Pow(accuracy, accuracyCoefficient);
-			
 			//lets just stop using the deceleration timer
 			//adjustedAccuracy = (adjustedAccuracy * (1-decelerationTimer));
 			
-			if(boost < curSpline.speed && !curSpline.bidirectional){
-				boost = curSpline.speed;
+			if(flow < curSpline.speed && !curSpline.bidirectional){
+				flow = curSpline.speed;
 			}
 
 			if (progress >= 0.9f && accuracy < 0.5f && pointDest.pointType != PointTypes.ghost)
@@ -110,7 +110,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				//adjustedAccuracy = 1;
 			}
 
-			return Mathf.Clamp(flow + speed, 0, 1000) * cursorDir.magnitude * adjustedAccuracy + boost;
+			return Mathf.Clamp(speed, 0, 1000) * cursorDir.magnitude * easedAccuracy + flow + boost;
 		}
 	}
 
@@ -359,6 +359,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Step()
 	{
+
 		if (joystickLocked)
 		{
 			cursorSprite.enabled = false;
@@ -1210,19 +1211,22 @@ public class PlayerBehaviour: MonoBehaviour {
 			Services.fx.flyingParticles.Pause();
 		}
 
-		if (directionAdjustedAccuracy > 0.5f && !joystickLocked) {
+#region "shitty accuracy code"
 
-			if(flow < 0){
 
-				flow += decay *  directionAdjustedAccuracy * Time.deltaTime;
+		// if (directionAdjustedAccuracy > 0.5f && !joystickLocked) {
 
-			}else{
+		// 	if(flow < 0){
 
-				//	maxSpeed = curSpline.distance * 2;
-				flow += Mathf.Pow(directionAdjustedAccuracy, 2) * acceleration * Time.deltaTime * cursorDir.magnitude;
-				decelerationTimer = Mathf.Clamp01(decelerationTimer - Time.deltaTime * 2f);
-		}
-	}
+		// 		flow += decay *  directionAdjustedAccuracy * Time.deltaTime;
+
+		// 	}else{
+
+		// 		//	maxSpeed = curSpline.distance * 2;
+		// 		flow += Mathf.Pow(directionAdjustedAccuracy, 2) * acceleration * Time.deltaTime * cursorDir.magnitude;
+		// 		decelerationTimer = Mathf.Clamp01(decelerationTimer - Time.deltaTime * 2f);
+		// }
+		// }
 		// curSpeed =  speed * Mathf.Sign (accuracy) * accuracyCoefficient;
 		// if ((curSpeed > 0 && flow < 0) || (curSpeed < 0 && flow > 0)) {
 		// 	curSpeed = 0;
@@ -1230,33 +1234,38 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 
-		if ((directionAdjustedAccuracy < 0.5f) || joystickLocked) {
+		// if ((directionAdjustedAccuracy < 0.5f) || joystickLocked) {
 
 
-			if (flow > 0)
-			{
-				decelerationTimer = Mathf.Clamp01(decelerationTimer + Time.deltaTime * (2 - normalizedAccuracy));
+		// 	if (flow > 0)
+		// 	{
+		// 		decelerationTimer = Mathf.Clamp01(decelerationTimer + Time.deltaTime * (2 - normalizedAccuracy));
 
-				if (decelerationTimer >=1 || flow > curSpline.segmentDistance)
-				{
-					if (decelerationTimer >= 1)
-					{
+		// 		if (decelerationTimer >=1 || flow > curSpline.segmentDistance)
+		// 		{
+		// 			if (decelerationTimer >= 1)
+		// 			{
 
-						flyingSpeed = flow + speed + boost;
+		// 				flyingSpeed = flow + speed + boost;
 
-						//IDK ABOUT THIS ONE CHIEF
-						//SwitchState(PlayerState.Flying);
-					}
-					flow -= (0.5f - accuracy / 2f) * Time.deltaTime;
-				}
+		// 				//IDK ABOUT THIS ONE CHIEF
+		// 				//SwitchState(PlayerState.Flying);
+		// 			}
+		// 			flow -= (0.5f - accuracy / 2f) * Time.deltaTime;
+		// 		}
 
-				if (flow < 0)
-					flow = 0;
-			}
+		// 		if (flow < 0)
+		// 			flow = 0;
+		// 	}
 
-		}
+		// }
 
 		// (adjustedAccuracy + 0.1f)
+#endregion
+		
+		flow += (easedAccuracy-0.5f) * acceleration * Time.deltaTime;
+		flow = Mathf.Clamp(flow, 0, 1000);
+
 		if (!joystickLocked)
 		{
 			curSpeed = accuracyAdjustedSpeed;
@@ -1422,8 +1431,8 @@ public class PlayerBehaviour: MonoBehaviour {
 // THIS IS KINDA SHITTY. DO IT BETTER
 			//accuracy = 1;
 
-			Point PreviousPoint = curPoint;
-			progressRemainder = progress - 1;
+			//Point PreviousPoint = curPoint;
+			progressRemainder = progress;
 			curPoint.proximity = 0;
 
 //			if (progress > 1) {
@@ -1457,14 +1466,14 @@ public class PlayerBehaviour: MonoBehaviour {
 			progress = 1 - Mathf.Epsilon;
 
 		} else {
-			if (timeOnPoint == 0)
-			{
-				progress = progressRemainder;
-			}
-			else
-			{
+			// if (timeOnPoint == 0)
+			// {
+			// 	progress = progressRemainder;
+			// }
+			// else
+			// {
 				progress = 0 + Mathf.Epsilon;
-			}
+			// }
 
 			goingForward = true;
 			s.Selected = curPoint;
@@ -1507,9 +1516,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				float curAngle = Mathf.Infinity;
 
 				if(s.locked){
-
-				}else
-				{
+					continue;
+				}else{
 
 					s.Selected = curPoint;
 
@@ -1520,39 +1528,47 @@ public class PlayerBehaviour: MonoBehaviour {
 					} else {
 						int indexDifference = s.SplinePoints.IndexOf (p) - s.SplinePoints.IndexOf (curPoint);
 
-							//make sure that you're not making an illegal move
-							bool looping = false;
+						//make sure that you're not making an illegal move
+						bool looping = false;
 
-							if((p == s.StartPoint && curPoint == s.EndPoint) || (p == s.EndPoint && curPoint == s.StartPoint)){
-								looping = true;
-							}
+						if((p == s.StartPoint && curPoint == s.EndPoint) || (p == s.EndPoint && curPoint == s.StartPoint)){
+							looping = true;
+						}
 
-							bool movingBackwards = indexDifference == -1 || indexDifference > 1; 
+						bool movingBackwards = indexDifference == -1 || indexDifference > 1; 
 
-							bool loopingBackwards = looping && movingBackwards;
-							// indexDifference > 1 means we looped backwards
-							// indexDifference == -1 means we went backward one point
+						bool loopingBackwards = looping && movingBackwards;
+						bool loopingForwards = looping && !movingBackwards;
 
-						if((loopingBackwards || movingBackwards) && !s.bidirectional){
-								//this kind of movement should be illegal
-						}else{
-							if (looping || movingBackwards) {
-								curAngle = s.CompareAngleAtPoint (cursorDir, p, true);	
-								Vector3 next = p.Pos;
-								Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
-								adjustedAngle = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
-								adjustedAngle = (adjustedAngle + curAngle) / 2f;
+						bool forward = loopingForwards || indexDifference == 1;
+						bool backwards = loopingBackwards || movingBackwards;
+						bool isGhostPoint = curPoint.pointType == PointTypes.ghost;
+						
+						bool canMoveBackward = (!isGhostPoint && s.bidirectional) || (!goingForward && isGhostPoint);
+						bool canMoveForward = !isGhostPoint || (isGhostPoint && goingForward);
+						// indexDifference > 1 means we looped backwards
+						// indexDifference == -1 means we went backward one point
 
-							} else {
+					
+						if (canMoveBackward && backwards) {
+							
+							curAngle = s.CompareAngleAtPoint (cursorDir, p, true);	
+							Vector3 next = p.Pos;
+							Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
+							adjustedAngle = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
+							adjustedAngle = (adjustedAngle + curAngle) / 2f;
 
-								curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
-								
-								//code that cheats towards the end position of the point could still be useful
-								Vector3 next = p.Pos;
-								Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
-								float angleToPoint = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
-								adjustedAngle = (angleToPoint + curAngle) / 2f;
-							}
+						} else if(canMoveForward && forward){
+
+							curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
+							
+							//code that cheats towards the end position of the point could still be useful
+							Vector3 next = p.Pos;
+							Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
+							float angleToPoint = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
+							adjustedAngle = (angleToPoint + curAngle) / 2f;
+						}
+					
 						
 						if (adjustedAngle < minAngle) {
 
@@ -1563,7 +1579,6 @@ public class PlayerBehaviour: MonoBehaviour {
 						}
 					}
 				}
-			}
 			}
 		}
 			//this is causing bugs
