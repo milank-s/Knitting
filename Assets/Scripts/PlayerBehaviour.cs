@@ -273,6 +273,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		hasFlown = false;
 		boost = 0;
 		flow = 0;
+
+		
 		pointDest = null;
 		lastPoint = null;
 

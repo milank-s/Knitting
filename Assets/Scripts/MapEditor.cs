@@ -188,9 +188,9 @@ public class MapEditor : MonoBehaviour
                 splineOrder.text = "spline " + controller._splines[splineindex].order;
                 splineTypeReadout.text = controller._splines[splineindex].type.ToString();
                 splineDirectionReadout.text = controller._splines[splineindex].bidirectional ? "<—>" : "—>";
-                splineOrder.transform.position = cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.1f);
+                splineOrder.transform.position = cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.15f);
                 splineTypeReadout.transform.position =  cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.05f);
-                splineDirectionReadout.transform.position =  cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.1f + Vector3.right * 0.25f);
+                splineDirectionReadout.transform.position =  cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.1f + Vector3.right * 0.5f);
                 return controller._splines[splineindex];
             }
             else
@@ -876,6 +876,8 @@ public class MapEditor : MonoBehaviour
             marqueeTip.SetActive(false);
             deselectTip.SetActive(true);
             pointSelectedTip.SetActive(true);
+            selectedPointIndicator.SetActive(true);
+            pointCoords.gameObject.SetActive(true);
 
             if (Input.GetKeyDown(KeyCode.Z))
             {
@@ -2211,13 +2213,12 @@ void DragCamera()
     public void DeselectPoints()
     {
         selectedPoints.Clear();
-        selectedPointIndicator.SetActive(false);
-        pointSelectedTip.SetActive(false);
         foreach (Image i in selectors)
         {
             i.color = Color.clear;
         }
-        
+        selectedPointIndicator.SetActive(false);
+        pointSelectedTip.SetActive(false);
         pointOptions.SetActive(false);
         pointCoords.gameObject.SetActive(false);
     }
