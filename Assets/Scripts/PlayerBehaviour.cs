@@ -623,7 +623,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					cursorSprite.sprite = canFlySprite;
 					if (buttonUp)
 					{
-						Services.PlayerBehaviour.boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
+						boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
 						SwitchState(PlayerState.Flying);
 
 						return;
@@ -1878,6 +1878,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				l.positionCount = 0;
 				freeCursor = false;
 				foundConnection = false;
+
 				if (traversedPoints.Count >= 2 && (curPoint.pointType == PointTypes.start || curPoint.pointType == PointTypes.end || curPoint.pointType == PointTypes.fly))
 				{
 					List<Point> pointsToTraverse = new List<Point>();
@@ -1900,27 +1901,24 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if(curPoint.pointType != PointTypes.ghost){
 
-					if (Services.PlayerBehaviour.buttonDown)
+					if (buttonUp)
 					{
+						Debug.Log("boost added");
 						flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
 						boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
 						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
 						Services.fx.EmitRadialBurst(10,boostTimer + 1, curPoint.transform);
 						Services.fx.EmitLinearBurst(5, boostTimer + 1, curPoint.transform, cursorDir);
 					}
-				}
 
-
-				connectTime = 1;
-				
-				if (curPoint.pointType != PointTypes.ghost)
-				{
 					charging = false;
 					boostIndicator.enabled = false;
 
 					Services.fx.EmitLinearBurst((int)(boostTimer * 5), boostTimer * 2,transform, cursorDir2);
 					boostTimer = 0;
 				}
+
+				connectTime = 1;
 
 				break;
 

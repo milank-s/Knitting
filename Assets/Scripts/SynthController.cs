@@ -111,7 +111,7 @@ public class SynthController : MonoBehaviour
 
 		noisePad.NoteOn(60, 1);
 		noisePad.NoteOn(55, 1);
-		movementPad.NoteOn(GetNote(Services.PlayerBehaviour.curPoint));
+		//movementPad.NoteOn(GetNote(Services.PlayerBehaviour.curPoint));
 	}
 
 	public void UpdateMovementSynth(){
