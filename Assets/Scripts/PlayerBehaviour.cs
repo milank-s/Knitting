@@ -1493,7 +1493,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	public bool CanLeavePoint()
 	{
 		float minAngle = Mathf.Infinity;
-		float minAngleToPoint = Mathf.Infinity;
+		float adjustedAngle = Mathf.Infinity;
+		float actualAngle = Mathf.Infinity;
 		if (curPoint.HasSplines ()) {
 
 			splineDest = null;
@@ -1502,6 +1503,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			Point maybeNextPoint = null;
 			Spline maybeNextSpline = null;
 			foreach (Spline s in curPoint.GetSplines()) {
+
+				float curAngle = Mathf.Infinity;
 
 				if(s.locked){
 
@@ -1513,12 +1516,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				foreach (Point p in curPoint.GetNeighbours()) {
 
 					if (!p._connectedSplines.Contains (s)) {
-						float curAngle = Mathf.Infinity;
 						//do nothing if the point is in another spline
 					} else {
-
-						float curAngle = Mathf.Infinity;
-
 						int indexDifference = s.SplinePoints.IndexOf (p) - s.SplinePoints.IndexOf (curPoint);
 
 							//make sure that you're not making an illegal move
@@ -1541,37 +1540,24 @@ public class PlayerBehaviour: MonoBehaviour {
 								curAngle = s.CompareAngleAtPoint (cursorDir, p, true);	
 								Vector3 next = p.Pos;
 								Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
-								float angleToPoint = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
-								curAngle = (angleToPoint + curAngle) / 2f;
-
+								adjustedAngle = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
+								adjustedAngle = (adjustedAngle + curAngle) / 2f;
 
 							} else {
 
-//								if(curPoint.pointType == PointTypes.ghost){
-//									if(p.pointType == PointTypes.ghost){
-//										curAngle = 0;
-//									}else{
-//										// curAngle = s.CompareAngleAtPoint (lastPoint.GetConnectingSpline(curPoint).GetVelocity(0.99f), curPoint);
-//										curAngle = 0;
-//									}
-//								}else{
-
-
-									curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
-									
-									//code that cheats towards the end position of the point could still be useful
-									Vector3 next = p.Pos;
-									Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
-									float angleToPoint = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
-									curAngle = Mathf.Lerp(curAngle, angleToPoint, 0.75f);
-									
-									curAngle = (angleToPoint + curAngle) / 2f;
-//								}
+								curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
+								
+								//code that cheats towards the end position of the point could still be useful
+								Vector3 next = p.Pos;
+								Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
+								float angleToPoint = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
+								adjustedAngle = (angleToPoint + curAngle) / 2f;
 							}
 						
-						if (curAngle < minAngle) {
+						if (adjustedAngle < minAngle) {
 
-							minAngle = curAngle;
+							minAngle = adjustedAngle;
+							actualAngle = curAngle;
 							maybeNextSpline = s;
 							maybeNextPoint = p;
 						}
@@ -1584,7 +1570,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 // && (Input.GetButtonDown("Button1")
 
-			if ((minAngle <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) && maybeNextSpline != null)
+			if ((actualAngle <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) && maybeNextSpline != null)
 			{
 
 				splineDest = maybeNextSpline;
