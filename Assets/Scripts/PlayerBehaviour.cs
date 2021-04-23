@@ -1902,7 +1902,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 					if (buttonWasPressed)
 					{
-						Debug.Log("boost added");
+						
 						flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
 						boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
 						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
