@@ -506,7 +506,9 @@ public class Point : MonoBehaviour
 				Services.main.OnPlayerEnterPoint(this);
 			}
 			
+			if(pointType != PointTypes.start || (pointType != PointTypes.start && controller.startIndex != 0)){
 			controller.NextWord();
+			}
 			
 
 			switch (pointType)
@@ -551,6 +553,7 @@ public class Point : MonoBehaviour
 					}
 					else
 					{
+						Services.main.WarpPlayerToNewPoint(controller.GetStartPoint());
 						//Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
 						//Services.main.WarpPlayerToNewPoint(Services.StartPoint);
 						//Services.fx.ShowUnfinished();

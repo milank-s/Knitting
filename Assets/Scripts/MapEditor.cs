@@ -1819,14 +1819,24 @@ void DragCamera()
                 if (Input.GetMouseButton(0))
                 {
                     cursor.transform.position = cam.WorldToScreenPoint(rotationPivot);
-                    float angle = Mathf.Sign(delta.x) * delta.magnitude * 100f;
-                    cursor.transform.Rotate(0, 0, angle);
+                    float xAngle = Mathf.Sign(delta.x) * delta.magnitude * 100f;
+                    float yAngle = Mathf.Sign(delta.y) * delta.magnitude * 100f;
+                    
+                    cursor.transform.Rotate(0, 0, xAngle);
 
                     foreach (Point p in selectedPoints)
                     {
-                        Vector3 pivot = new Vector3(rotationPivot.x, rotationPivot.y, p.Pos.z);
-
-                        p.transform.RotateAround(pivot, Vector3.forward, angle);
+                        
+                        if(Input.GetKey(KeyCode.LeftAlt)){
+                            Vector3 pivot = new Vector3(rotationPivot.x, rotationPivot.y, rotationPivot.z);
+                            p.transform.RotateAround(pivot, Vector3.up, -xAngle);
+                        }else if(Input.GetKey(KeyCode.RightAlt)){
+                            Vector3 pivot = new Vector3(rotationPivot.x, rotationPivot.y, rotationPivot.z);
+                            p.transform.RotateAround(pivot, Vector3.right, yAngle);
+                        }else{
+                            Vector3 pivot = new Vector3(rotationPivot.x, rotationPivot.y, p.Pos.z);
+                            p.transform.RotateAround(pivot, Vector3.forward, xAngle);
+                        }
 
                     }
 

@@ -535,9 +535,6 @@ public class StellationController : MonoBehaviour {
 	public void NextWord(){
 		Services.main.text.text += GetNextWord();
 	}
-	public void OnPointEntered(){
-		NextWord();
-	}
 	public bool TryToUnlock()
 	{
 		if (!isComplete)
