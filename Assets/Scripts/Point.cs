@@ -541,7 +541,7 @@ public class Point : MonoBehaviour
 					{
 						controller.Won();
 						
-						Services.fx.SpawnSprite(0, transform);
+						// Services.fx.SpawnSprite(0, transform);
 						//Services.Sounds.PlayPointAttack(0.5f);
 						Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed + 10, transform);
 						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);

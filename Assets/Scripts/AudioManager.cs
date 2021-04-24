@@ -41,7 +41,7 @@ public class AudioManager : MonoBehaviour
     
 
     public void PlayLevelSounds(){
-        if(SceneController.instance.curLevelSet.audio[SceneController.instance.curLevel] != null){
+        if(SceneController.instance.curLevelSet.audio.Length > 0 && SceneController.instance.curLevelSet.audio.Length < SceneController.instance.curLevel){
             audioRecordings.clip = SceneController.instance.curLevelSet.audio[SceneController.instance.curLevel];
             audioRecordings.Play();
         }
