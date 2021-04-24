@@ -1990,7 +1990,7 @@ void DragCamera()
                         dragging = true;
                     }
 
-                    if (activePoint.textMesh == null && typing)
+                    if (activePoint.textMesh == null)
                     {
                         GameObject newText = Instantiate(Services.Prefabs.spawnedText,
                             activePoint.transform);

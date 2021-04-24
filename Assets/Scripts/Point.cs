@@ -222,7 +222,6 @@ public class Point : MonoBehaviour
 
 		textMesh = GetComponentInChildren<TextMesh>();
 		
-		
 		if(textMesh != null){
 			textMesh.GetComponent<FadeTextOnPoint>().p = this;
 		}
