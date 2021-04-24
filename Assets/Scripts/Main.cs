@@ -149,7 +149,6 @@
 		
 		editor.DeselectPoints();
 		editor.DeselectSpline();
-		
 		Point.Points.Clear();
 		Spline.Splines.Clear();
 		Services.PlayerBehaviour.Reset();
@@ -170,8 +169,8 @@
 	{
 		Time.timeScale = 0;
 
-		GlitchEffect.Fizzle(0.1f);
-		yield return new WaitForSecondsRealtime(0.05f);
+		GlitchEffect.Fizzle(0.25f);
+		yield return new WaitForSecondsRealtime(0.25f);
 		/*if (delay > 0)
 		{
 			yield return StartCoroutine(FadeOut());
@@ -719,10 +718,10 @@
 		float t = 0;
 		yield return new WaitForSecondsRealtime(0.33f);
 		
-		while (t < fadeLength){
+		while (t < 1){
 			//PauseScreen.color = Color.Lerp(Color.black, Color.clear, Easing.QuadEaseIn(t/fadeLength));
 			GlitchEffect.SetValues(1-t);
-			t += Time.unscaledDeltaTime;
+			t += Time.unscaledDeltaTime/fadeLength;
 			yield return null;
 		}
 
@@ -838,13 +837,11 @@
 	public IEnumerator FadeOut(){
 		
 		float t = 0;
-		while (t < fadeLength)
+		while (t < 1)
 		{
 			// PauseScreen.color = Color.Lerp(Color.clear, Color.black, Easing.QuadEaseIn(t/fadeLength));
-
-			
 			GlitchEffect.SetValues(t);
-			t += Time.unscaledDeltaTime;
+			t += Time.unscaledDeltaTime/fadeLength;
 			yield return null;
 		}
 

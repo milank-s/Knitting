@@ -262,11 +262,17 @@ public class PlayerBehaviour: MonoBehaviour {
 			Services.main.gamepad.ResetHaptics();
 		}
 
+		
+		cursorDir = Vector3.zero;
+		cursorDir2 = Vector3.zero;
+
 		cursorSprite.enabled = true;
 		progress = 0;
 		Services.main.OnReset.Invoke();
 		state = PlayerState.Switching;
 
+
+		freeCursor = false;
 		curSpline = null;
 		traversedPoints.Clear();
 		hasFlown = false;
@@ -688,15 +694,14 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if (!joystickLocked) {
 
-
-				Point target = SplineUtil.RaycastFromCamera(cursorPos, 1f);
+				Point target = SplineUtil.RaycastFromCamera(cursorPos, 5f);
 
 				bool drawnPointNull;
 
 				if(drawnPoint == null){
 					drawnPointNull = true;
 				}
-
+			
 				if (target != null && target.state != Point.PointState.locked && target.pointType != PointTypes.ghost && target != curPoint && !target.IsAdjacent(curPoint))
 				{
 
@@ -1010,7 +1015,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void FreeMovement()
 	{
-		Point raycastPoint = SplineUtil.RaycastFromCamera(cursorPos, 1f);
+		Point raycastPoint = SplineUtil.RaycastFromCamera(cursorPos, 5f);
 
 		if (noRaycast)
 		{

@@ -40,7 +40,7 @@ public class GlitchEffect : MonoBehaviour
 	public static void SetValues(float t)
 	{
 		intensity = Mathf.Lerp(0, 1f, t);
-		frequency = Mathf.Lerp(1, 50, t);
+		frequency = Mathf.Lerp(1, 20, t);
 	}
 	void OnRenderImage(RenderTexture source, RenderTexture destination)
 	{
@@ -68,6 +68,7 @@ public class GlitchEffect : MonoBehaviour
 		
 		SetValues(0);
 	}
+
 	// Called by camera to apply image effect
 	/*void OnRenderImage(RenderTexture source, RenderTexture destination)
 	{

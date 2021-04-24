@@ -546,7 +546,7 @@ public class Point : MonoBehaviour
 						Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed + 10, transform);
 						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
 						
-						Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
+						//Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
 						controller.isOn = false;
 
 					}
@@ -654,7 +654,17 @@ public class Point : MonoBehaviour
 				{
 					return false;
 				}
-		
+				break;
+			case PointTypes.connect:
+			if (buttonUp)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+				break;
 			
 			default:
 				return true;
