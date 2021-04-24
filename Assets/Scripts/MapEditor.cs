@@ -114,6 +114,7 @@ public class MapEditor : MonoBehaviour
     public Text splineDirectionReadout;
     public InputField sceneTitle;
     public InputField controllerText;
+    public InputField controllerTitle;
     public Dropdown levelList;
     public Dropdown unlockTypes;
     
@@ -340,6 +341,13 @@ public class MapEditor : MonoBehaviour
         }else{
             controller.text = " ";
             controllerText.text = "stellation text";
+        }
+
+        if(controller.title != null){
+            controllerTitle.text = controller.title;
+        }else{
+            controller.title = " ";
+            controllerTitle.text = "stellation title";
         }
 
         typing = false;
@@ -1124,6 +1132,7 @@ public class MapEditor : MonoBehaviour
         level["laps"].AsInt = controller.laps;
         level["startSpeed"].AsFloat = controller.startSpeed;
         level["text"] = controller.text;
+        level["title"] = controller.title;
         level["forceOrder"] = controller.lockSplines;
         JSONObject cameraData = new JSONObject();
         cameraData["x"].AsFloat = controller.cameraPos.x;
@@ -1413,6 +1422,7 @@ public class MapEditor : MonoBehaviour
         c.cameraPos.y = json["camera"]["y"];
         c.fixedCam = json["camera"]["fixCam"];
         c.desiredFOV = json["camera"]["fov"];
+        c.title = json["title"];
         c.lockSplines = json["forceOrder"];
 
         if (c.desiredFOV == 0)
@@ -2006,6 +2016,8 @@ void DragCamera()
                         textCursor.transform.localScale = new Vector3(0.1f, 1, 1) * (activePoint.textMesh.fontSize /64f);
                         foreach (char c in Input.inputString)
                         {
+                            
+
                             if (c == '\b') // has backspace/delete been pressed?
                             {
                                 if (pointText.Length != 0)
@@ -2035,7 +2047,6 @@ void DragCamera()
                         }
                         activePoint.text = pointText;
                         activePoint.textMesh.text = pointText;
-                        
                     }
                     else
                     {
@@ -2113,6 +2124,11 @@ void DragCamera()
 
     public void SetStellationText(String s){
         controller.text = s;
+        typing = false;
+    }
+
+    public void SetStellationTitle(String s){
+        controller.title = s;
         typing = false;
     }
 

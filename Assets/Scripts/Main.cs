@@ -572,6 +572,10 @@
 			}
 		}
 
+		
+		Services.main.text.text = " ";
+		Services.main.levelText.text = " ";
+		
 		activeStellation.Initialize();
 		activeStellation.Setup();
 		activeStellation.Draw();

@@ -50,11 +50,12 @@ public class StellationController : MonoBehaviour {
 	[Space(10)]
 
 	[Header("Visuals")]
-	public TextMesh title;
+	public TextMesh titleTextMesh;
 	public SpriteRenderer image;
 	public bool fixedCam = false;
 	public int desiredFOV = 30;
 	public string text = "";
+	public string title = "";
 
 	[Space(10)]
 
@@ -166,7 +167,6 @@ public class StellationController : MonoBehaviour {
 	{
 		if (isComplete)
 		{
-			Debug.Log("I guess Im complete");
 			EnableStellation(false);
 		}
 	}
@@ -288,8 +288,8 @@ public class StellationController : MonoBehaviour {
 			image.color = new Color(0,0,0,0);
 		}
 
-		if(title != null){
-			title.color = new Color(0,0,0,0);
+		if(titleTextMesh != null){
+			titleTextMesh.color = new Color(0,0,0,0);
 		}
 		
 		wordIndex = 0;
@@ -383,7 +383,7 @@ public class StellationController : MonoBehaviour {
 		isComplete = false;
 		curSplineIndex = 0;
 		Services.main.activeStellation = this;
-		
+
 		CameraFollow.instance.fixedCamera = fixedCam;
 		CameraFollow.instance.desiredFOV = desiredFOV;
 
@@ -401,6 +401,9 @@ public class StellationController : MonoBehaviour {
 		{
 			SetCameraBounds();
 		}
+
+		
+		Services.main.text.text = text;
 
 	}
 
@@ -515,13 +518,13 @@ public class StellationController : MonoBehaviour {
 				}
 				
 			
-				if(title != null){
-					title.color = Color.Lerp(title.color, new Color (1, 1, 1, 1), Time.deltaTime);
+				if(titleTextMesh != null){
+					titleTextMesh.color = Color.Lerp(titleTextMesh.color, new Color (1, 1, 1, 1), Time.deltaTime);
 				}
 				fade = Mathf.Clamp(fade + Time.deltaTime/20, 0, 0.1f);
 			} else {
-				if(title != null){
-					title.color = Color.Lerp(title.color, new Color (1, 1, 1, 0), Time.deltaTime);
+				if(titleTextMesh != null){
+					titleTextMesh.color = Color.Lerp(titleTextMesh.color, new Color (1, 1, 1, 0), Time.deltaTime);
 				}
 				fade = Mathf.Clamp01(fade - Time.deltaTime/10);
 			}
@@ -533,13 +536,12 @@ public class StellationController : MonoBehaviour {
 	}
 
 	public void NextWord(){
-		Services.main.text.text += GetNextWord();
+		//Services.main.text.text += GetNextWord();
 	}
 	public bool TryToUnlock()
 	{
 		if (!isComplete)
 		{
-			
 			switch (unlockMethod)
 			{
 			case UnlockType.laps:
