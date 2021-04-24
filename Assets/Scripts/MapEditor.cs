@@ -339,14 +339,14 @@ public class MapEditor : MonoBehaviour
             
             controllerText.text = controller.text;
         }else{
-            controller.text = " ";
+            controller.text = "";
             controllerText.text = "stellation text";
         }
 
         if(controller.title != null){
             controllerTitle.text = controller.title;
         }else{
-            controller.title = " ";
+            controller.title = "";
             controllerTitle.text = "stellation title";
         }
 
@@ -2036,9 +2036,9 @@ void DragCamera()
                             }
                             else if ((c == '\n') || (c == '\r'))
                             {
-                                typing = false;
+                                pointText += System.Environment.NewLine;
+                                // pointText += '\n';
                                 
-                                return;
                             }
                             else
                             {

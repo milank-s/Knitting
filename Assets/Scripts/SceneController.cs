@@ -146,7 +146,7 @@ public class SceneController : MonoBehaviour
     {
         Services.main.ShowImage(curLevelSet.image);
         Services.main.ShowWord(curLevelSet.title);    
-        
+        Services.main.levelReadout.text = curSetIndex + ".";
     }
 
     public void LoadLevelSet()

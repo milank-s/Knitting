@@ -22,6 +22,7 @@
 	public GameObject PauseMenu;
 	public GameObject pauseResumeButton;
 	public Text Word;
+	public Text levelReadout;
 	public Text description;
 	public Image image;
 	public FXManager fx;
@@ -575,7 +576,7 @@
 		
 		Services.main.text.text = " ";
 		Services.main.levelText.text = " ";
-		
+
 		activeStellation.Initialize();
 		activeStellation.Setup();
 		activeStellation.Draw();

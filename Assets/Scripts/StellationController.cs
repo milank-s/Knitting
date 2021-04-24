@@ -141,7 +141,6 @@ public class StellationController : MonoBehaviour {
 		}
 
 
-		Services.main.levelText.text = name;
 		isComplete = true;
 		
 			//show some type of image
@@ -358,6 +357,8 @@ public class StellationController : MonoBehaviour {
 	public void LeftStartPoint(){
 		if(startIndex == 0){
 			//start the timer bro;
+			Services.main.levelText.text = "";
+			Services.main.text.text = "";
 		}
 		startIndex ++;
 	}
@@ -404,6 +405,8 @@ public class StellationController : MonoBehaviour {
 
 		
 		Services.main.text.text = text;
+		Services.main.levelText.text = title;
+
 
 	}
 
