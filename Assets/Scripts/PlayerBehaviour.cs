@@ -625,6 +625,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					cursorSprite.sprite = canFlySprite;
 					if (buttonWasPressed)
 					{
+						buttonDownTimer = 0;
 						boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
 						SwitchState(PlayerState.Flying);
 
@@ -1904,7 +1905,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 					if (buttonWasPressed)
 					{
-						
+						buttonDownTimer = 0;
 						flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
 						boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
 						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
