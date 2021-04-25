@@ -164,7 +164,8 @@ public class MapEditor : MonoBehaviour
         marquee,
         clone, 
         rotate,
-        text
+        text,
+        scale
     }
 
 
@@ -303,7 +304,6 @@ public class MapEditor : MonoBehaviour
         unlockTypes.options.Add(new Dropdown.OptionData("Speed"));
         unlockTypes.options.Add(new Dropdown.OptionData("Time"));
         
-        _curTool = Tool.select;
         _curTool = Tool.draw;
 
         for (int i = 0; i < tooltips.Length; i++)
@@ -712,7 +712,7 @@ public class MapEditor : MonoBehaviour
             _curTool = Tool.marquee;
 
         }
-        else if (Input.GetKey(KeyCode.R))
+        else if (Input.GetKey(KeyCode.E))
         {
             _curTool = Tool.rotate;
 
@@ -724,6 +724,10 @@ public class MapEditor : MonoBehaviour
         else if (Input.GetKey(KeyCode.T))
         {
             _curTool = Tool.text;
+        }  else if (Input.GetKey(KeyCode.R))
+        {
+            _curTool = Tool.scale;
+            l.enabled = true;
         }
     }
 
@@ -1770,7 +1774,11 @@ void DragCamera()
                         }
 
                         Spline newSpline = SplineUtil.CreateSplineFromPoints(splinePoints);
-                        newSpline.closed = selectedSpline.closed;
+                        newSpline.closed = s.closed;
+                        newSpline.bidirectional = s.bidirectional;
+                        newSpline.speed = s.speed;
+                        newSpline.lineWidth = s.lineWidth;
+                        newSpline.lineMaterial = s.lineMaterial;
                         newSpline.transform.parent = splinesParent;
                         newSplines.Add(newSpline);
                         

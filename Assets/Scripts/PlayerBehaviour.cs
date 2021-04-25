@@ -733,7 +733,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		//Could restrict points to never try and add their immediate neighbours?
 		l.positionCount = 0;
 
-
+		pointDest.tension = 1;
+		
 		bool isEntering = false;
 
 		if (curSpline != null && curSpline != spp.s) {
