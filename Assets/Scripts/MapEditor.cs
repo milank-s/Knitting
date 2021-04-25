@@ -2001,13 +2001,15 @@ void DragCamera()
                     
                     bool stopTyping = false;
 
-                    if (!typing && Input.GetMouseButtonDown(0))
+                    if (!typing && Input.GetMouseButtonDown(0) && hitPoint != null)
                     {
                         typing = true;
+                    }else 
 
-                    }else if (typing && Input.GetMouseButtonDown(0) && hitPoint == null)
+                    if (Input.GetMouseButtonDown(0) && hitPoint == null)
                     {
                         dragging = true;
+                        typing = false;
                     }
 
                     if (activePoint.textMesh == null)
