@@ -154,6 +154,9 @@ public class MapEditor : MonoBehaviour
     private Vector3 lastPos;
     private Vector3 worldPos;
     private Vector3 rotationPivot;
+    private Vector3 scalePivot;
+    private Vector3 scaleDelta;
+    private Vector3 scaleOrigin;
 
     
     public enum Tool
@@ -727,7 +730,6 @@ public class MapEditor : MonoBehaviour
         }  else if (Input.GetKey(KeyCode.R))
         {
             _curTool = Tool.scale;
-            l.enabled = true;
         }
     }
 
@@ -2088,6 +2090,44 @@ void DragCamera()
                 else
                 {
                     typing = false;
+                }
+
+                break;
+
+                case Tool.scale:
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    scaleDelta = Vector3.zero;
+                    if (Input.GetKey(KeyCode.LeftShift))
+                    {
+                        scalePivot = worldPos;
+                    }
+
+                    else
+                    {
+                        scalePivot = center;
+                    }
+
+                    foreach (Point p in selectedPoints)
+                    {
+                       p.initPos = p.transform.position;
+                    }
+                }
+
+                if (Input.GetMouseButton(0))
+                {
+                    
+                    cursor.transform.position = cam.WorldToScreenPoint(scalePivot);
+                    scaleDelta += delta;
+                    foreach (Point p in selectedPoints)
+                    {
+                        Vector3 diff = p.initPos - scalePivot;
+                        diff.Normalize();
+
+                        p.transform.position = p.initPos + diff * Mathf.Sign(scaleDelta.x) * scaleDelta.magnitude;
+                    }
+
                 }
 
                 break;
