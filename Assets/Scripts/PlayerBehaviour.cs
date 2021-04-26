@@ -199,7 +199,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void ResetPlayerToStartPoint()
 	{
-		if(Services.main.state != Main.GameState.playing){return;}
+		if(Services.main.state != Main.GameState.playing && !MapEditor.editing){return;}
 
 		Services.fx.PlayAnimationOnPlayer(FXManager.FXType.glitch);
 
@@ -224,7 +224,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		flow = 0;
 		speed = Services.main.activeStellation.startSpeed;
 		
-
 		ResetFX();
 
 //		Material newMat;
@@ -372,10 +371,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		Point.hitColorLerp = connectTime;
-
-		if(Input.GetMouseButtonDown(1)){
-			ResetPlayerToStartPoint();
-		}
 
 		if(progress > 2){
 			Debug.Log("progress exceeded");

@@ -156,7 +156,7 @@ public class MapEditor : MonoBehaviour
     private Vector3 rotationPivot;
     private Vector3 scalePivot;
     private Vector3 scaleDelta;
-    private Vector3 scaleOrigin;
+    private bool recenterScalePivot;
 
     
     public enum Tool
@@ -1998,8 +1998,6 @@ void DragCamera()
                 {
                     
                     pointText = activePoint.text;
-                    
-                    bool stopTyping = false;
 
                     if (!typing && Input.GetMouseButtonDown(0) && hitPoint != null)
                     {
@@ -2104,11 +2102,13 @@ void DragCamera()
                     if (Input.GetKey(KeyCode.LeftShift))
                     {
                         scalePivot = worldPos;
+                        recenterScalePivot = false;
                     }
 
                     else
                     {
                         scalePivot = center;
+                        recenterScalePivot = true;
                     }
 
                     foreach (Point p in selectedPoints)
@@ -2119,13 +2119,13 @@ void DragCamera()
 
                 if (Input.GetMouseButton(0))
                 {
+                    if(recenterScalePivot) scalePivot = center;
                     
                     cursor.transform.position = cam.WorldToScreenPoint(scalePivot);
                     scaleDelta += delta;
                     foreach (Point p in selectedPoints)
                     {
                         Vector3 diff = p.initPos - scalePivot;
-                        diff.Normalize();
 
                         p.transform.position = p.initPos + diff * Mathf.Sign(scaleDelta.x) * scaleDelta.magnitude;
                     }
