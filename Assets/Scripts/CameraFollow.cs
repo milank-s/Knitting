@@ -9,7 +9,8 @@ public class CameraFollow : MonoBehaviour {
 	public Vector3 offset;
 	public Camera cam;
 	public bool fixedCamera;
-	public bool followOnZ;
+
+	public bool lockX, lockY, lockZ;
 	public float desiredFOV;
 	public static Vector3 targetPos;
 	
@@ -27,7 +28,7 @@ public class CameraFollow : MonoBehaviour {
 	public void WarpToPosition(Vector3 pos)
 	{
 		targetPos = pos;
-		transform.position = new Vector3(targetPos.x, targetPos.y, Services.Player.transform.position.z + offset.z);		
+		transform.position = pos;	
 		cam.fieldOfView = desiredFOV;
 	}
 
@@ -39,22 +40,33 @@ public class CameraFollow : MonoBehaviour {
 		//find its bounds
 		// get around them
 
-		if (!fixedCamera)
-		{
-			targetPos = Services.Player.transform.position;
+		Vector3 desiredPos = Services.Player.transform.position;
+		desiredPos.z = Services.Player.transform.position.z + offset.z;
+		
 
-			Vector3 nudge = Vector3.zero;
-			if(Services.PlayerBehaviour.curSpline != null){
-				if(Services.PlayerBehaviour.state == PlayerState.Traversing){
-					nudge = Services.PlayerBehaviour.curSpline.GetVelocity(Services.PlayerBehaviour.progress);
-				}else if(Services.PlayerBehaviour.state == PlayerState.Switching){
-					nudge = Services.PlayerBehaviour.curSpline.GetVelocity(0.1f);
-				}
+		Vector3 nudge = Vector3.zero;
+		if(Services.PlayerBehaviour.curSpline != null){
+			if(Services.PlayerBehaviour.state == PlayerState.Traversing){
+				nudge = Services.PlayerBehaviour.curSpline.GetVelocity(Services.PlayerBehaviour.progress);
+			}else if(Services.PlayerBehaviour.state == PlayerState.Switching){
+				nudge = Services.PlayerBehaviour.curSpline.GetVelocity(0.1f);
 			}
+		}
 
-			nudge /= 4f;
-			targetPos += nudge;
+		nudge /= 4f;
+		desiredPos += nudge;
 
+		
+		if(!lockX){
+			targetPos.x = desiredPos.x;
+		}
+
+		if(!lockY){
+			targetPos.y = desiredPos.y;
+		}
+
+		if(!lockZ){
+			targetPos.z = desiredPos.z;
 		}
 		
 		cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, desiredFOV, Time.deltaTime * 3);
@@ -70,12 +82,7 @@ public class CameraFollow : MonoBehaviour {
 				  Services.PlayerBehaviour.flow, 0, 0.5f)
 			: Vector3.zero;
 
-
-		
-
 		Vector3 finalPos = new Vector3(targetPos.x, targetPos.y, targetPos.z);
-		
-		if(followOnZ){finalPos.z = Services.Player.transform.position.z + offset.z;}
 		
 		transform.position = Vector3.SmoothDamp(transform.position, finalPos + shake,
 			ref velocity, 0.25f);

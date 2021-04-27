@@ -26,6 +26,7 @@ public class StellationController : MonoBehaviour {
 	public List<Spline> _splinesToUnlock;
 	
 	public StellationController unlock;
+    public bool lockX, lockY, lockZ;
 
 	public int rootKey;
 	public int laps = 1;
@@ -398,10 +399,9 @@ public class StellationController : MonoBehaviour {
 			s.SwitchState(Spline.SplineState.locked);
 		}
 		
-		if (fixedCam)
-		{
-			SetCameraBounds();
-		}
+	
+		SetCameraInfo();
+	
 
 		
 		Services.main.text.text = text;
@@ -621,7 +621,7 @@ public class StellationController : MonoBehaviour {
 			}
 
 	}
-	public void SetCameraBounds()
+	public void SetCameraInfo()
 	{
 		
 			center = Vector3.Lerp(lowerLeft, upperRight, 0.5f);
@@ -631,17 +631,24 @@ public class StellationController : MonoBehaviour {
 		
 			//CameraFollow.instance.desiredFOV = fov;
 			//CameraFollow.instance.cam.fieldOfView = fov;
-			
+			CameraFollow.instance.lockX = lockX;
+			CameraFollow.instance.lockY = lockY;
+			CameraFollow.instance.lockZ = lockZ;
+
+			Vector3 targetPos = start.Pos;
+			targetPos.z = Services.Player.transform.position.z + CameraFollow.instance.offset.z;
+
+
 			if(setCameraPos){
 				CameraFollow.instance.WarpToPosition(cameraPos);
-				CameraFollow.instance.followOnZ = false;
 			}else{
-				CameraFollow.instance.WarpToPosition(center);
-				CameraFollow.instance.followOnZ = true;
+				CameraFollow.instance.WarpToPosition(targetPos);
 			}
+
+			
 		
 			//I think we need to set far clipping plane and fog here
-			
+
 	}
 	
 	public bool CheckSpeed()

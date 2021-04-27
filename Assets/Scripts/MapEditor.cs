@@ -109,6 +109,9 @@ public class MapEditor : MonoBehaviour
     public Slider scoreSlider;
     public Text scoreText;
     public Toggle fixedCamera;
+    public Toggle lockXToggle;
+    public Toggle lockYToggle;
+    public Toggle lockZToggle;
     public Text splineOrder;
     public Text splineTypeReadout;
     public Text splineDirectionReadout;
@@ -117,7 +120,7 @@ public class MapEditor : MonoBehaviour
     public InputField controllerTitle;
     public Dropdown levelList;
     public Dropdown unlockTypes;
-    
+
     private static float cameraDistance = 2;
     private List<GameObject> text;
 
@@ -278,6 +281,17 @@ public class MapEditor : MonoBehaviour
         controller.fixedCam = b;
     }
 
+    public void LockX(bool b){
+        controller.lockX = b;
+    }
+
+    public void LockY(bool b){
+        controller.lockY = b;
+    }
+
+    public void LockZ(bool b){
+        controller.lockZ = b;
+    }
     IEnumerator Start()
     {
         cam = Services.mainCam;
@@ -333,6 +347,9 @@ public class MapEditor : MonoBehaviour
         speedSlider.value = controller.startSpeed;
         useCamPos.isOn = controller.setCameraPos;
         splineLockToggle.isOn = controller.lockSplines;
+        lockXToggle.isOn = controller.lockX;
+        lockYToggle.isOn = controller.lockY;
+        lockZToggle.isOn = controller.lockZ;
         ChangeWinCondition((int)controller.unlockMethod);
         
         //load from controller name
@@ -1139,8 +1156,12 @@ public class MapEditor : MonoBehaviour
         level["startSpeed"].AsFloat = controller.startSpeed;
         level["text"] = controller.text;
         level["title"] = controller.title;
+        
         level["forceOrder"] = controller.lockSplines;
         JSONObject cameraData = new JSONObject();
+        cameraData["lockX"] = controller.lockX;
+        cameraData["lockY"] = controller.lockY;
+        cameraData["lockZ"] = controller.lockZ;
         cameraData["x"].AsFloat = controller.cameraPos.x;
         cameraData["y"].AsFloat =  controller.cameraPos.y;
         cameraData["z"].AsFloat =  controller.cameraPos.z;
@@ -1428,6 +1449,9 @@ public class MapEditor : MonoBehaviour
         c.cameraPos.x = json["camera"]["x"];
         c.cameraPos.y = json["camera"]["y"];
         c.cameraPos.z = json["camera"]["z"];
+        c.lockX = json["camera"]["lockX"];
+        c.lockY = json["camera"]["lockY"];
+        c.lockZ = json["camera"]["lockZ"];
         c.fixedCam = json["camera"]["fixCam"];
         c.desiredFOV = json["camera"]["fov"];
         c.title = json["title"];
