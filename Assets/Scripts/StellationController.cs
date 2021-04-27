@@ -33,7 +33,7 @@ public class StellationController : MonoBehaviour {
 	public int speed = 1;
 	public int startIndex;
 	public int time = 1;
-	public float startSpeed;
+	public float startSpeed = 1;
 	
 	private float timer;
 	public int curSplineIndex;
@@ -635,8 +635,8 @@ public class StellationController : MonoBehaviour {
 			CameraFollow.instance.lockY = lockY;
 			CameraFollow.instance.lockZ = lockZ;
 
-			Vector3 targetPos = start.Pos;
-			targetPos.z = Services.Player.transform.position.z + CameraFollow.instance.offset.z;
+			Vector3 targetPos = Services.Player.transform.position;
+			targetPos.z += CameraFollow.instance.offset.z;
 
 
 			if(setCameraPos){
