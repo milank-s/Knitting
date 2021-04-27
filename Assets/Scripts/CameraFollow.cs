@@ -9,6 +9,7 @@ public class CameraFollow : MonoBehaviour {
 	public Vector3 offset;
 	public Camera cam;
 	public bool fixedCamera;
+	public bool followOnZ;
 	public float desiredFOV;
 	public static Vector3 targetPos;
 	
@@ -71,7 +72,10 @@ public class CameraFollow : MonoBehaviour {
 
 
 		
-		Vector3 finalPos = new Vector3(targetPos.x, targetPos.y, Services.Player.transform.position.z + offset.z);
+
+		Vector3 finalPos = new Vector3(targetPos.x, targetPos.y, targetPos.z);
+		
+		if(followOnZ){finalPos.z = Services.Player.transform.position.z + offset.z;}
 		
 		transform.position = Vector3.SmoothDamp(transform.position, finalPos + shake,
 			ref velocity, 0.25f);

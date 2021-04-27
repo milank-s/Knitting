@@ -634,10 +634,14 @@ public class StellationController : MonoBehaviour {
 			
 			if(setCameraPos){
 				CameraFollow.instance.WarpToPosition(cameraPos);
+				CameraFollow.instance.followOnZ = false;
 			}else{
 				CameraFollow.instance.WarpToPosition(center);
+				CameraFollow.instance.followOnZ = true;
 			}
-			//get center position and fov
+		
+			//I think we need to set far clipping plane and fog here
+			
 	}
 	
 	public bool CheckSpeed()

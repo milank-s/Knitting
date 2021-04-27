@@ -1143,6 +1143,7 @@ public class MapEditor : MonoBehaviour
         JSONObject cameraData = new JSONObject();
         cameraData["x"].AsFloat = controller.cameraPos.x;
         cameraData["y"].AsFloat =  controller.cameraPos.y;
+        cameraData["z"].AsFloat =  controller.cameraPos.z;
         cameraData["setPos"].AsBool = controller.setCameraPos;
         cameraData["fixCam"].AsBool = controller.fixedCam;
         cameraData["fov"].AsInt = controller.desiredFOV;
@@ -1426,6 +1427,7 @@ public class MapEditor : MonoBehaviour
         c.setCameraPos = json["camera"]["setPos"];
         c.cameraPos.x = json["camera"]["x"];
         c.cameraPos.y = json["camera"]["y"];
+        c.cameraPos.z = json["camera"]["z"];
         c.fixedCam = json["camera"]["fixCam"];
         c.desiredFOV = json["camera"]["fov"];
         c.title = json["title"];
@@ -2119,8 +2121,8 @@ void DragCamera()
 
                 if (Input.GetMouseButton(0))
                 {
-                    if(recenterScalePivot) scalePivot = center;
-                    
+                    //if(recenterScalePivot) scalePivot = center;  //this leads to an infinite loop
+
                     cursor.transform.position = cam.WorldToScreenPoint(scalePivot);
                     scaleDelta += delta;
                     foreach (Point p in selectedPoints)
