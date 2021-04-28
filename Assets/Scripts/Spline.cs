@@ -516,6 +516,7 @@ public class Spline : MonoBehaviour
 
 		while (curDrawIndex < totalLineSegments)
 		{
+			
 			float curStep = 0;
 			int curPoint = 0;
 			for (int i = 0; i < SplinePoints.Count - (closed ? 0 : 1); i++)
@@ -555,6 +556,11 @@ public class Spline : MonoBehaviour
 			}
 			
 			yield return null;
+
+			if (!bidirectional)
+		{
+			line.textureOffset -= Time.deltaTime * speed * 5f;
+		}
 		}
 
 		drawingIn = false;
