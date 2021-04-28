@@ -39,7 +39,10 @@ public class PlayerBehaviour: MonoBehaviour {
 	[Space(10)] [Header("Movement Tuning")]
 	public float speed;
 	public float acceleration;
+	public AnimationCurve accelerationCurve;
 	public float decay;
+
+	public float maxSpeed = 10;
 	public float flyingSpeedDecay = 1;
 	public float accuracyCoefficient;
 	public float flowAmount = 0.1f;
@@ -1258,8 +1261,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		// (adjustedAccuracy + 0.1f)
 #endregion
 		
-		flow += (easedAccuracy - 0.9f) * acceleration * Time.deltaTime;
-		flow = Mathf.Clamp(flow, 0, 1000);
+		float speedGain = (easedAccuracy - 0.75f);
+		
+		flow += speedGain * accelerationCurve.Evaluate(flow/maxSpeed) * acceleration * Time.deltaTime;
+		flow = Mathf.Clamp(flow, 0, maxSpeed);
 
 		if (!joystickLocked)
 		{

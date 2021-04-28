@@ -45,7 +45,6 @@ public class CrawlerManager : MonoBehaviour
         
         toUse.Init(s);
     }
-
     public void Reset()
     {
         foreach (Crawler c in crawlers)

@@ -171,7 +171,7 @@ public class FXManager : MonoBehaviour
       flyingTrail.emitting = false;
       flyingTrail.Clear();
       playerTrail.Clear();
-      
+      readout.text = "";
       for (int i = spawnedSprites.Count - 1; i >= 0; i--)
       {
           Destroy(spawnedSprites[i]);

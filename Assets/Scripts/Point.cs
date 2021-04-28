@@ -497,7 +497,6 @@ public class Point : MonoBehaviour
 		
 		SwitchState(PointState.on);
 
-		controller.TryToUnlock();
 
 		if(pointType != PointTypes.ghost)
 		{
@@ -537,6 +536,9 @@ public class Point : MonoBehaviour
 					break;
 				
 				case PointTypes.end:
+				
+					controller.TryToUnlock();
+
 					if (controller.isComplete)
 					{
 						controller.Won();
@@ -552,7 +554,10 @@ public class Point : MonoBehaviour
 					}
 					else
 					{
-						Services.main.WarpPlayerToNewPoint(controller.GetStartPoint());
+						//DO WE RESET THE LEVEL OR LET IT PLAY
+						if(_neighbours.Count < 2){
+							Services.main.WarpPlayerToNewPoint(controller.GetStartPoint());
+						}
 						//Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
 						//Services.main.WarpPlayerToNewPoint(Services.StartPoint);
 						//Services.fx.ShowUnfinished();

@@ -28,6 +28,7 @@ public class StellationController : MonoBehaviour {
 	public StellationController unlock;
     public bool lockX, lockY, lockZ;
 
+	int lapCount;
 	public int rootKey;
 	public int laps = 1;
 	public int speed = 1;
@@ -65,6 +66,8 @@ public class StellationController : MonoBehaviour {
 	public bool isOn;
 	public bool lockSplines;
 	public bool isComplete;
+
+	bool won = false;
 	private string[] words;
 	private int wordIndex;
 	private float fade;
@@ -142,7 +145,7 @@ public class StellationController : MonoBehaviour {
 		}
 
 
-		isComplete = true;
+		won = true;
 		
 			//show some type of image
 			//lock instantly
@@ -356,8 +359,9 @@ public class StellationController : MonoBehaviour {
 }
 
 	public void LeftStartPoint(){
-		if(startIndex == 0){
+		if(startIndex%_startPoints.Count == 0){
 			//start the timer bro;
+			timer = 0;
 			Services.main.levelText.text = "";
 			Services.main.text.text = "";
 		}
@@ -429,23 +433,19 @@ public class StellationController : MonoBehaviour {
 				continue;
 			}
 			
-			if (p.timesHit < laps)
+			if (p.timesHit < minLaps)
 			{
-//				if (p.timesHit < minLaps)
-//				{
-//					minLaps = p.timesHit;
-//				}
-//				
-//				if (minLaps > lapCount)
-//				{
-//					lapCount = minLaps;
-//				}
 
-				return false;
+				minLaps = p.timesHit;
+				lapCount = minLaps;
 			}
 		}
 		
-		return isDone;
+		if(laps > 1){
+			Services.fx.readout.text = lapCount.ToString("F0") + "/" + laps.ToString("F0");
+		}
+
+		return lapCount >= laps;
 	}
 
 	//call this for flying off and resetting, player right clicking, and time running out
@@ -455,7 +455,9 @@ public class StellationController : MonoBehaviour {
 		curSplineIndex = 0;
 		startIndex = 0;
 		timer = 0;
+		lapCount = 0;
 		isComplete = false;
+		won = false;
 	}
 
 	public Point GetStartPoint(){
@@ -496,32 +498,35 @@ public class StellationController : MonoBehaviour {
 					p.Step();
 				}
 				
-				Services.main.fx.readout.transform.position = Services.main.Player.transform.position;
+				//Services.main.fx.readout.transform.position = Services.main.Player.transform.position;
 
-				if (!isComplete)
+				if (!won)
 				{	
 					if (unlockMethod == UnlockType.speed)
 					{
-						//Services.fx.readout.text = (Services.PlayerBehaviour.flow - speed).ToString("F2");
+						Services.fx.readout.text = Services.PlayerBehaviour.potentialSpeed.ToString("F1") + "/" + speed.ToString("F0");
 					
 					}else if (unlockMethod == UnlockType.time)
 					{
-						Services.fx.readout.text = (time - timer).ToString("F2");
+						
 
 						if(startIndex > 0){
 							timer += Time.deltaTime;
+							Services.fx.readout.text = Mathf.Clamp((time - timer), 0, 1000).ToString("F2");
 
 							if (time - timer <= 0)
 							{
-								ResetLevel();
+								//ResetLevel();
+								Services.fx.readout.text = "";
 							}
 
 						}
 					
 					}else if (unlockMethod == UnlockType.laps){
 					
-						//Services.fx.readout.text = scoreCount.ToString("F0") + "/" + score.ToString("F0");
-						Services.fx.readout.text = "";
+						if(laps > 1){
+							Services.fx.readout.text = lapCount.ToString("F0") + "/" + laps.ToString("F0");
+						}
 					}
 
 				}
@@ -559,6 +564,9 @@ public class StellationController : MonoBehaviour {
 			
 			case UnlockType.speed:
 				isComplete = CheckSpeed();
+				break;
+			case UnlockType.time:
+				isComplete = time - timer > 0;
 				break;
 			}
 			return isComplete;
