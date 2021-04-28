@@ -16,8 +16,9 @@ public class CrawlerManager : MonoBehaviour
         {
             Crawler newCrawler = Instantiate(crawler, transform).GetComponent<Crawler>();
             crawlers.Add(newCrawler);
-            
         }
+
+        Services.main.OnReset += Reset;
     }
 
     public void AddCrawler(Spline s)

@@ -243,7 +243,6 @@ public class SceneController : MonoBehaviour
 
     public void UnloadScene(StellationController s)
     {
-        Services.main.crawlerManager.Reset();
         activeScenes.Remove(s);
         Destroy(s.gameObject);
     }

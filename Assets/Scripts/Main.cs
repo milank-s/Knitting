@@ -143,7 +143,9 @@
 	
 	public void Reset()
 	{	
-		crawlerManager.Reset();
+		if(OnReset != null){
+			OnReset.Invoke();
+		}
 		
 		SceneController.instance.Reset();
 		

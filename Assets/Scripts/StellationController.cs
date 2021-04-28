@@ -448,11 +448,13 @@ public class StellationController : MonoBehaviour {
 		return isDone;
 	}
 
-	public void Reset()
+	//call this for flying off and resetting, player right clicking, and time running out
+	public void ResetLevel()
 	{
-		//Services.main.InitializeLevel();
+		Services.main.InitializeLevel();
 		curSplineIndex = 0;
 		startIndex = 0;
+		timer = 0;
 		isComplete = false;
 	}
 
@@ -504,12 +506,16 @@ public class StellationController : MonoBehaviour {
 					
 					}else if (unlockMethod == UnlockType.time)
 					{
-						//Services.fx.readout.text = (time - timer).ToString("F2");
-						timer += Time.deltaTime;
+						Services.fx.readout.text = (time - timer).ToString("F2");
 
-						if (time - timer <= 0)
-						{
-							Reset();
+						if(startIndex > 0){
+							timer += Time.deltaTime;
+
+							if (time - timer <= 0)
+							{
+								ResetLevel();
+							}
+
 						}
 					
 					}else if (unlockMethod == UnlockType.laps){

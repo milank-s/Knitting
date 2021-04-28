@@ -1516,7 +1516,7 @@ public class MapEditor : MonoBehaviour
             case StellationController.UnlockType.time:
                 scoreSlider.value = controller.time;
                 scoreSlider.minValue = 0;
-                scoreSlider.maxValue = 600;
+                scoreSlider.maxValue = 60;
                 break;
         }
 
