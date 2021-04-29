@@ -68,7 +68,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	[HideInInspector]
 	public bool goingForward = true;
-
+	public bool facingForward;
 
 	public delegate void StateChange();
 	public StateChange OnStartFlying;
@@ -183,7 +183,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Awake(){
 		joystickLocked = true;
-
+		accuracy = 1;
 		pointDest = null;
 		traversedPoints = new List<Point> ();
 
@@ -375,16 +375,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		Point.hitColorLerp = connectTime;
 
-		if(progress > 2){
-			Debug.Log("progress exceeded");
-		}
-
 		if (buttonDown)
 		{
 			boostIndicator.enabled = true;
 			directionIndicator.enabled = true;
-			boostIndicator.transform.position =
-				transform.position + (Vector3) cursorDir2 * ((Vector3)transform.position - cursorPos).magnitude;
+			boostIndicator.transform.position = transform.position + (Vector3) cursorDir2 * ((Vector3)transform.position - cursorPos).magnitude;
 			boostIndicator.transform.up = cursorDir2;
 
 			if(charging && state != PlayerState.Switching){
@@ -402,11 +397,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		boostIndicator.transform.localScale = Vector3.Lerp(Vector3.one * 0.2f, Vector3.one , boostTimer);
-
-
-
 		buttonDownTimer -= Time.deltaTime;
-		
 
 		float speedCoefficient;
 		if(state == PlayerState.Switching || state == PlayerState.Animating){
@@ -451,13 +442,13 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (state == PlayerState.Traversing) {
 			if(curSpline != null){
-				transform.position = curSpline.GetPoint(progress);
 				SetCursorAlignment ();
+				transform.position = curSpline.GetPoint(progress);
 				if(OnTraversing != null){
 					OnTraversing.Invoke();
 				}
 			}
-
+			
 			PlayerMovement ();
 			CheckProgress ();
 
@@ -807,6 +798,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			curSpline.distortion = boostTimer;
 		}
 
+		progress = 0;
 		curPoint.PlayerOnPoint(cursorDir, flow);
 
 		l.positionCount = 2;
@@ -1556,11 +1548,12 @@ public class PlayerBehaviour: MonoBehaviour {
 							Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
 							adjustedAngle = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
 							adjustedAngle = (adjustedAngle + curAngle) / 2f;
+							facingForward = false;
 
 						} else if(canMoveForward && forward){
 
 							curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
-							
+							facingForward = true;
 							//code that cheats towards the end position of the point could still be useful
 							Vector3 next = p.Pos;
 							Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
@@ -1575,6 +1568,7 @@ public class PlayerBehaviour: MonoBehaviour {
 							actualAngle = curAngle;
 							maybeNextSpline = s;
 							maybeNextPoint = p;
+
 
 							if(forward){
 								maybeNextSpline.Selected = curPoint;
@@ -1592,7 +1586,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if ((actualAngle <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) && maybeNextSpline != null)
 			{
-
+				
 				splineDest = maybeNextSpline;
 				pointDest = maybeNextPoint;
 
@@ -1609,9 +1603,15 @@ public class PlayerBehaviour: MonoBehaviour {
 					splineDest.OnSplineEnter(curPoint, pointDest);
 				}
 
+				if(facingForward){
+					progress = 0;
+				}else{
+					progress = 1;
+				}
+				
+				accuracy = (90 - actualAngle) / 90;
+
 				curSpline = splineDest;
-
-
 				return true;
 			}
 
@@ -1911,7 +1911,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
 						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
 						Services.fx.EmitRadialBurst(10,boostTimer + 1, curPoint.transform);
-						Services.fx.EmitLinearBurst(5, boostTimer + 1, curPoint.transform, cursorDir);
+						Services.fx.EmitLinearBurst(5, boostTimer + 1, curPoint.transform, -cursorDir);
 					}
 
 					charging = false;

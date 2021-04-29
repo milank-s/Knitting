@@ -62,7 +62,8 @@ public class FXManager : MonoBehaviour
       //onenterpoint bakes sparks
 
       Services.PlayerBehaviour.OnStartFlying += flyingParticles.Play;
-      Services.PlayerBehaviour.OnStoppedFlying += BakeFlyingParticles;
+      Services.PlayerBehaviour.OnStartFlying += PlayFlyingTrail;
+      Services.PlayerBehaviour.OnStoppedFlying += BakeFlyingTrail;
       Services.PlayerBehaviour.OnStartTraversing += Services.PlayerBehaviour.sparks.Play;
       Services.PlayerBehaviour.OnStoppedTraversing += BakeTraversingParticles;
       
@@ -137,6 +138,13 @@ public class FXManager : MonoBehaviour
         BakeParticles(linearParticles, brakeParticleMesh);
     }
 
+    public void BakeFlyingTrail(){
+        BakeTrail(flyingTrail, flyingTrailMesh);
+    }
+
+    public void PlayFlyingTrail(){
+        flyingTrail.emitting = true;
+    }
 
   public void ShowNextPoint(Point p)
   {
@@ -182,6 +190,7 @@ public class FXManager : MonoBehaviour
           StopCoroutine(lineDirectionRoutine);
           lineDirectionRoutine = null;
       } 
+
       flyingParticleMesh.mesh = new Mesh();
       flyingParticleTrailMesh.mesh = new Mesh();
       flyingTrailMesh.mesh = new Mesh();

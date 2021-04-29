@@ -745,22 +745,18 @@ public class Spline : MonoBehaviour
 	
 		//amplitude = Mathf.Clamp01(Services.PlayerBehaviour.potentialSpeed/5f) + shake;
 		amplitude = 1 + shake;
-		distortion = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f), 0, 0.5f) * amplitude;
+		distortion = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f), 0, 0.25f) * amplitude;
 
 		if(!drawingIn){
 			if (isPlayerOn)
 			{
 				
 				v += (distortionVector * UnityEngine.Random.Range(- distortion, distortion) * invertedDistance) * amplitude;
-				
-				
 				NewFrequency(newFrequency * 10);
 				
 	//			v += distortionVector * (Mathf.Sin(Time.time * frequency + phase - segmentIndex) *
 	//				                         Mathf.Clamp01(_completion) * Mathf.Clamp01(distanceFromPlayer) *
 	//				                         Mathf.Clamp01(drawTimer /5f) * 0.025f);
-				
-
 			}
 			else
 			{

@@ -746,7 +746,6 @@ public class Point : MonoBehaviour
 
 	public void PlayerOnPoint(Vector3 direction, float force)
 	{
-		
 		timeOnPoint += Time.deltaTime;
 		//anchorPos = initPos + ((Vector3)Random.insideUnitCircle / 10f * Services.PlayerBehaviour.flow *  Mathf.Clamp01(timeOnPoint));
 		//velocity += (Vector3)Random.insideUnitCircle / Mathf.Pow(1 + timeOnPoint, 2);

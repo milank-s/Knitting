@@ -200,7 +200,7 @@ ParticleSystemRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_SortMode: 1
   m_MinParticleSize: 0
   m_MaxParticleSize: 1
@@ -5134,7 +5134,7 @@ GameObject:
   m_Component:
   - component: {fileID: 978176022}
   - component: {fileID: 978176024}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: ShortTrail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5462,7 +5462,7 @@ TrailRenderer:
   m_Time: 0
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.005
+    widthMultiplier: 0.01
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -5661,7 +5661,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1879415984}
   - component: {fileID: 1879415986}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10517,11 +10517,36 @@ MonoBehaviour:
   curPoint: {fileID: 0}
   pointDest: {fileID: 0}
   lastPoint: {fileID: 0}
-  speed: 2
-  acceleration: 0.075
+  speed: 0
+  acceleration: 10
+  accelerationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.0000009187497
+      value: 1.0023584
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.11454389
+    - serializedVersion: 3
+      time: 1
+      value: 0.002357483
+      inSlope: -2.964422
+      outSlope: -2.964422
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.043758232
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   decay: 1
+  maxSpeed: 10
   flyingSpeedDecay: 0.1
-  accuracyCoefficient: 3
+  accuracyCoefficient: 2
   flowAmount: 0.1
   stopTimer: 1
   cursorMoveSpeed: 1
@@ -10530,7 +10555,7 @@ MonoBehaviour:
   cursorDistance: 0.5
   cursorRotateSpeed: 3
   LineAngleDiff: 1
-  StopAngleDiff: 40
+  StopAngleDiff: 60
   flyingSpeed: 0
   goingForward: 1
   progress: 0
