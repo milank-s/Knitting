@@ -149,7 +149,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public TrailRenderer t;
 	public TrailRenderer flyingTrail;
 	public TrailRenderer shortTrail;
-	[SerializeField] ParticleSystem sparks;
+	public ParticleSystem sparks;
 	private LineRenderer l;
 	public SpriteRenderer cursorSprite;
 	public SpriteRenderer playerSprite;
@@ -1995,7 +1995,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 
 				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
-				
+
 				flyingTrail.Clear();
 
 				noRaycast = true;
@@ -2177,7 +2177,7 @@ public class PlayerBehaviour: MonoBehaviour {
 // (accuracy < 0 && flow > 0) || accuracy > 0 && flow <
 			if (state != PlayerState.Switching)
 			{
-				e.rateOverTimeMultiplier = Mathf.Pow(1-decelerationTimer, 0.5f) * 25 * potentialSpeed * Mathf.Pow(1-normalizedAccuracy, 2);
+				e.rateOverTimeMultiplier = (1-normalizedAccuracy) * 25 * potentialSpeed;
 			}
 
 		}

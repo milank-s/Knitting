@@ -743,8 +743,9 @@ public class Spline : MonoBehaviour
 		Vector3 direction = GetVelocityAtIndex(pointIndex, step).normalized;
 		Vector3 distortionVector = new Vector3(-direction.y, direction.x, direction.z);
 	
-		amplitude = Mathf.Clamp01(Services.PlayerBehaviour.potentialSpeed/5f)/2f + shake;
-		distortion = Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f)* amplitude;
+		//amplitude = Mathf.Clamp01(Services.PlayerBehaviour.potentialSpeed/5f) + shake;
+		amplitude = 1 + shake;
+		distortion = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f), 0, 0.5f) * amplitude;
 
 		if(!drawingIn){
 			if (isPlayerOn)

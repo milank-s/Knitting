@@ -4993,34 +4993,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 435210840}
   m_CullTransparentMesh: 0
---- !u!83 &435787072
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!1 &436008528
 GameObject:
   m_ObjectHideFlags: 0
@@ -5393,6 +5365,14 @@ PrefabInstance:
       propertyPath: readout
       value: 
       objectReference: {fileID: 1624988955}
+    - target: {fileID: 1168170317, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
+      propertyPath: linearParticles
+      value: 
+      objectReference: {fileID: 1111314489}
+    - target: {fileID: 1168170317, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
+      propertyPath: brakeParticles
+      value: 
+      objectReference: {fileID: 953587605}
     - target: {fileID: 1435655544, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
       propertyPath: mixer
       value: 
@@ -5599,6 +5579,16 @@ PrefabInstance:
       propertyPath: m_audioClip
       value: 
       objectReference: {fileID: 2018304597}
+    - target: {fileID: 6200053080636985340, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
+        type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6200053080636985342, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
+        type: 3}
+      propertyPath: m_Name
+      value: LinearFX
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2, type: 3}
 --- !u!1 &452987573
@@ -8515,34 +8505,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 651906541}
   m_CullTransparentMesh: 0
---- !u!83 &656062825
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!1 &665198862
 GameObject:
   m_ObjectHideFlags: 0
@@ -12742,6 +12704,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 951067280}
   m_CullTransparentMesh: 0
+--- !u!198 &953587605 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 120499424, guid: f3a07dc4c57b848e39919d6021024601,
+    type: 3}
+  m_PrefabInstance: {fileID: 4410495504712494526}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &954051295 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4875773623692930824, guid: f27d1e824492bef4ba8947cf644fa717,
@@ -14817,6 +14785,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1101739960}
   m_CullTransparentMesh: 0
+--- !u!198 &1111314489 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 6200053080636985340, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
+    type: 3}
+  m_PrefabInstance: {fileID: 452133012}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1118179769 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1118179769, guid: 42b2a3c0e06ea4515bfe5430e7de4aa2,
@@ -15236,34 +15210,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1149851837}
   m_CullTransparentMesh: 0
---- !u!83 &1154579701
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!96 &1157106030 stripped
 TrailRenderer:
   m_CorrespondingSourceObject: {fileID: 1157106030, guid: f3a07dc4c57b848e39919d6021024601,
@@ -16039,34 +15985,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1262135437}
   m_CullTransparentMesh: 0
---- !u!83 &1267825501
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!1 &1280809201
 GameObject:
   m_ObjectHideFlags: 0
@@ -16301,34 +16219,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1283279314}
   m_CullTransparentMesh: 0
---- !u!83 &1292202352
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!1 &1294801030
 GameObject:
   m_ObjectHideFlags: 0
@@ -25669,6 +25559,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 120499425, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
+      propertyPath: m_RenderMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1544326637, guid: f3a07dc4c57b848e39919d6021024601, type: 3}
       propertyPath: OutputAudioMixerGroup
       value: 

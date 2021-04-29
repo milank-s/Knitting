@@ -12,7 +12,7 @@ public class FXManager : MonoBehaviour
     public LineRenderer nextSpline;
     public SpriteRenderer nextSplineArrow;
     private Coroutine drawDir;
-    public ParticleSystem popParticles, flyingParticles, speedParticles, trailParticles;
+    public ParticleSystem popParticles, flyingParticles, linearParticles, trailParticles, brakeParticles;
     public TrailRenderer playerTrail, flyingTrail;
     public MeshFilter flyingParticleMesh, flyingParticleTrailMesh, flyingTrailMesh, playerTrailMesh, brakeParticleMesh;
     public GameObject MeshPrefab;
@@ -63,7 +63,7 @@ public class FXManager : MonoBehaviour
 
       Services.PlayerBehaviour.OnStartFlying += flyingParticles.Play;
       Services.PlayerBehaviour.OnStoppedFlying += BakeFlyingParticles;
-      Services.PlayerBehaviour.OnStartTraversing += speedParticles.Play;
+      Services.PlayerBehaviour.OnStartTraversing += Services.PlayerBehaviour.sparks.Play;
       Services.PlayerBehaviour.OnStoppedTraversing += BakeTraversingParticles;
       
       
@@ -133,8 +133,10 @@ public class FXManager : MonoBehaviour
     }
 
     public void BakeTraversingParticles(){
-        BakeParticles(speedParticles, brakeParticleMesh);
+        BakeParticles(Services.PlayerBehaviour.sparks, brakeParticleMesh);
+        BakeParticles(linearParticles, brakeParticleMesh);
     }
+
 
   public void ShowNextPoint(Point p)
   {
@@ -186,7 +188,7 @@ public class FXManager : MonoBehaviour
       playerTrailMesh.mesh = new Mesh();
       brakeParticleMesh.mesh = new Mesh();
       flyingParticles.Clear();
-      speedParticles.Clear();
+      linearParticles.Clear();
       flyingTrail.emitting = false;
       flyingTrail.Clear();
       playerTrail.Clear();
@@ -348,11 +350,11 @@ public class FXManager : MonoBehaviour
 
   public void EmitLinearBurst(int i, float force, Transform t, Vector3 direction)
   {
-      ParticleSystem.MainModule m = speedParticles.main;
+      ParticleSystem.MainModule m = linearParticles.main;
       m.startSpeedMultiplier = force + 1;
-      speedParticles.transform.position = t.position;
-      speedParticles.transform.up = direction;
-      speedParticles.Emit(i);
+      linearParticles.transform.position = t.position;
+      linearParticles.transform.up = direction;
+      linearParticles.Emit(i);
   }
 
   public IEnumerator DrawGraffiti()
