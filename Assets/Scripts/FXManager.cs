@@ -55,6 +55,17 @@ public class FXManager : MonoBehaviour
       flyingTrailMesh.mesh = new Mesh();
       playerTrailMesh.mesh = new Mesh();
       brakeParticleMesh.mesh = new Mesh();
+
+      //onstartflying plays flying particles
+      //onstopflying bakes flying particles
+      //onstarttraversing playes sparks
+      //onenterpoint bakes sparks
+
+      Services.PlayerBehaviour.OnStartFlying += flyingParticles.Play;
+      Services.PlayerBehaviour.OnStoppedFlying += BakeFlyingParticles;
+      Services.PlayerBehaviour.OnStartTraversing += speedParticles.Play;
+      Services.PlayerBehaviour.OnStoppedTraversing += BakeTraversingParticles;
+      
       
   }
 
@@ -117,6 +128,14 @@ public class FXManager : MonoBehaviour
       lineDirectionRoutine = null;
   }
 
+    public void BakeFlyingParticles(){
+        BakeParticles(flyingParticles, flyingParticleMesh);
+    }
+
+    public void BakeTraversingParticles(){
+        BakeParticles(speedParticles, brakeParticleMesh);
+    }
+
   public void ShowNextPoint(Point p)
   {
       nextPointSprite.transform.position = p.Pos;
@@ -172,6 +191,7 @@ public class FXManager : MonoBehaviour
       flyingTrail.Clear();
       playerTrail.Clear();
       readout.text = "";
+      
       for (int i = spawnedSprites.Count - 1; i >= 0; i--)
       {
           Destroy(spawnedSprites[i]);

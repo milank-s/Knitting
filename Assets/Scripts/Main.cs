@@ -147,6 +147,7 @@
 			OnReset.Invoke();
 		}
 		
+		
 		SceneController.instance.Reset();
 		
 		editor.DeselectPoints();

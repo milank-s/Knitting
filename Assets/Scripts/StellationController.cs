@@ -26,7 +26,9 @@ public class StellationController : MonoBehaviour {
 	public List<Spline> _splinesToUnlock;
 	
 	public StellationController unlock;
-    public bool lockX, lockY, lockZ;
+    public bool lockX= true;
+	public bool lockY=true;
+	public bool lockZ=true;
 
 	int lapCount;
 	public int rootKey;
@@ -491,61 +493,61 @@ public class StellationController : MonoBehaviour {
 
 	public void Step()
 	{
-			if (isOn)
+		if (isOn)
+		{
+			foreach (Point p in _points)
 			{
-				foreach (Point p in _points)
+				p.Step();
+			}
+			
+			//Services.main.fx.readout.transform.position = Services.main.Player.transform.position;
+
+			if (!won)
+			{	
+				if (unlockMethod == UnlockType.speed)
 				{
-					p.Step();
-				}
+					Services.fx.readout.text = Services.PlayerBehaviour.potentialSpeed.ToString("F1") + "/" + speed.ToString("F0");
 				
-				//Services.main.fx.readout.transform.position = Services.main.Player.transform.position;
-
-				if (!won)
-				{	
-					if (unlockMethod == UnlockType.speed)
-					{
-						Services.fx.readout.text = Services.PlayerBehaviour.potentialSpeed.ToString("F1") + "/" + speed.ToString("F0");
+				}else if (unlockMethod == UnlockType.time)
+				{
 					
-					}else if (unlockMethod == UnlockType.time)
-					{
-						
 
-						if(startIndex > 0){
-							timer += Time.deltaTime;
-							Services.fx.readout.text = Mathf.Clamp((time - timer), 0, 1000).ToString("F2");
+					if(startIndex > 0){
+						timer += Time.deltaTime;
+						Services.fx.readout.text = Mathf.Clamp((time - timer), 0, 1000).ToString("F2");
 
-							if (time - timer <= 0)
-							{
-								//ResetLevel();
-								Services.fx.readout.text = "";
-							}
-
+						if (time - timer <= 0)
+						{
+							//ResetLevel();
+							Services.fx.readout.text = "";
 						}
-					
-					}else if (unlockMethod == UnlockType.laps){
-					
-						if(laps > 1){
-							Services.fx.readout.text = lapCount.ToString("F0") + "/" + laps.ToString("F0");
-						}
+
 					}
-
-				}
 				
-			
-				if(titleTextMesh != null){
-					titleTextMesh.color = Color.Lerp(titleTextMesh.color, new Color (1, 1, 1, 1), Time.deltaTime);
+				}else if (unlockMethod == UnlockType.laps){
+				
+					if(laps > 1){
+						Services.fx.readout.text = lapCount.ToString("F0") + "/" + laps.ToString("F0");
+					}
 				}
-				fade = Mathf.Clamp(fade + Time.deltaTime/20, 0, 0.1f);
-			} else {
-				if(titleTextMesh != null){
-					titleTextMesh.color = Color.Lerp(titleTextMesh.color, new Color (1, 1, 1, 0), Time.deltaTime);
-				}
-				fade = Mathf.Clamp01(fade - Time.deltaTime/10);
+
 			}
 			
-			if(image != null && isComplete){
-				image.color = new Color (1, 1, 1, fade);
+		
+			if(titleTextMesh != null){
+				titleTextMesh.color = Color.Lerp(titleTextMesh.color, new Color (1, 1, 1, 1), Time.deltaTime);
 			}
+			fade = Mathf.Clamp(fade + Time.deltaTime/20, 0, 0.1f);
+		} else {
+			if(titleTextMesh != null){
+				titleTextMesh.color = Color.Lerp(titleTextMesh.color, new Color (1, 1, 1, 0), Time.deltaTime);
+			}
+			fade = Mathf.Clamp01(fade - Time.deltaTime/10);
+		}
+		
+		if(image != null && isComplete){
+			image.color = new Color (1, 1, 1, fade);
+		}
 
 	}
 
@@ -572,9 +574,7 @@ public class StellationController : MonoBehaviour {
 			return isComplete;
 
 		}
-
 		return true;
-
 	}
 
 	public void Unlock()
@@ -598,70 +598,69 @@ public class StellationController : MonoBehaviour {
 
 	void GetBounds(){
 
-		lowerLeft = new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
-			upperRight = new Vector3(-Mathf.Infinity, -Mathf.Infinity, -Mathf.Infinity);
+	lowerLeft = new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
+		upperRight = new Vector3(-Mathf.Infinity, -Mathf.Infinity, -Mathf.Infinity);
 
-			foreach (Point p in _points)
+		foreach (Point p in _points)
+		{
+			if (p.Pos.x > upperRight.x)
 			{
-				if (p.Pos.x > upperRight.x)
-				{
-					upperRight.x = p.Pos.x;
-				}
-
-				if (p.Pos.x < lowerLeft.x)
-				{
-					lowerLeft.x = p.Pos.x;
-				}
-
-				if (p.Pos.y > upperRight.y)
-				{
-					upperRight.y = p.Pos.y;
-				}
-
-				if (p.Pos.y < lowerLeft.y)
-				{
-					lowerLeft.y = p.Pos.y;
-				}
-
-				if (p.Pos.z > upperRight.z)
-				{
-					upperRight.z = p.Pos.z;
-				}
-
-				if (p.Pos.z < lowerLeft.z)
-				{
-					lowerLeft.z = p.Pos.z;
-				}
+				upperRight.x = p.Pos.x;
 			}
 
+			if (p.Pos.x < lowerLeft.x)
+			{
+				lowerLeft.x = p.Pos.x;
+			}
+
+			if (p.Pos.y > upperRight.y)
+			{
+				upperRight.y = p.Pos.y;
+			}
+
+			if (p.Pos.y < lowerLeft.y)
+			{
+				lowerLeft.y = p.Pos.y;
+			}
+
+			if (p.Pos.z > upperRight.z)
+			{
+				upperRight.z = p.Pos.z;
+			}
+
+			if (p.Pos.z < lowerLeft.z)
+			{
+				lowerLeft.z = p.Pos.z;
+			}
+		}
 	}
 	public void SetCameraInfo()
 	{
+
+		center = Vector3.Lerp(lowerLeft, upperRight, 0.5f);
+
+		float height = Mathf.Abs(upperRight.y - lowerLeft.y);
+		float fov = CameraDolly.FOVForHeightAndDistance(height, -CameraFollow.instance.offset.z) + 10f;
+	
+		//CameraFollow.instance.desiredFOV = fov;
+		//CameraFollow.instance.cam.fieldOfView = fov;
+		CameraFollow.instance.lockX = lockX;
+		CameraFollow.instance.lockY = lockY;
+		CameraFollow.instance.lockZ = lockZ;
+
+		Vector3 targetPos = Services.Player.transform.position;
+		targetPos.z += CameraFollow.instance.offset.z;
+
+
+		if(setCameraPos){
+			CameraFollow.instance.WarpToPosition(cameraPos);
+		}else{
+			CameraFollow.instance.WarpToPosition(targetPos);
+		}
+
 		
-			center = Vector3.Lerp(lowerLeft, upperRight, 0.5f);
-
-			float height = Mathf.Abs(upperRight.y - lowerLeft.y);
-			float fov = CameraDolly.FOVForHeightAndDistance(height, -CameraFollow.instance.offset.z) + 10f;
-		
-			//CameraFollow.instance.desiredFOV = fov;
-			//CameraFollow.instance.cam.fieldOfView = fov;
-			CameraFollow.instance.lockX = lockX;
-			CameraFollow.instance.lockY = lockY;
-			CameraFollow.instance.lockZ = lockZ;
-
-			Vector3 targetPos = Services.Player.transform.position;
-			targetPos.z += CameraFollow.instance.offset.z;
-
-
-			if(setCameraPos){
-				CameraFollow.instance.WarpToPosition(cameraPos);
-			}else{
-				CameraFollow.instance.WarpToPosition(targetPos);
-			}
-
-			
-		
-			//I think we need to set far clipping plane and fog here
+	
+		//I think we need to set far clipping plane and fog here
 
 	}
 	

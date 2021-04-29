@@ -1945,7 +1945,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			case PlayerState.Traversing:
 
-				sparks.Play();
 
 				/*
 				GranularSynth.moving.TurnOn();*/
@@ -1996,10 +1995,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 
 				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
-
-
-				sparks.Pause();
-				Services.fx.flyingParticles.Play();
+				
 				flyingTrail.Clear();
 
 				noRaycast = true;
@@ -2032,7 +2028,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				//stop players from popping off the line as soon as they enter a point
 
-				sparks.Pause();
+				
 
 				decelerationTimer = 0;
 

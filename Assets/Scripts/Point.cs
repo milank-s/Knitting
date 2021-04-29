@@ -485,12 +485,12 @@ public class Point : MonoBehaviour
 		timesHit++;
 		OnPointEnter();
 		
-		if (controller.CheckSpeed())
-		{
+		// if (controller.CheckSpeed())
+		// {
 			if(textMesh != null){
 				textMesh.GetComponent<FadeTextOnPoint>().alpha = 1;
 			}
-		}
+		// }
 
 //		stiffness = Mathf.Clamp(stiffness -100, 100, 10000);
 //		damping = Mathf.Clamp(damping - 100, 100, 10000);
@@ -505,9 +505,10 @@ public class Point : MonoBehaviour
 			}
 			
 			if(pointType != PointTypes.start || (pointType != PointTypes.start && controller.startIndex != 0)){
-			controller.NextWord();
+				controller.NextWord();
 			}
 			
+			controller.TryToUnlock();
 
 			switch (pointType)
 			{
@@ -536,8 +537,6 @@ public class Point : MonoBehaviour
 					break;
 				
 				case PointTypes.end:
-				
-					controller.TryToUnlock();
 
 					if (controller.isComplete)
 					{
