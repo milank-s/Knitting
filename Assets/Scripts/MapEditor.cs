@@ -1150,8 +1150,8 @@ public class MapEditor : MonoBehaviour
         
         level["splineCount"].AsInt = controller._splines.Count;
         level["unlockType"].AsInt = (int) controller.unlockMethod;
-        level["speed"].AsInt = controller.speed; 
-        level["time"].AsInt = controller.time;
+        level["speed"].AsFloat = controller.speed; 
+        level["time"].AsFloat = controller.time;
         level["laps"].AsInt = controller.laps;
         level["startSpeed"].AsFloat = controller.startSpeed;
         level["text"] = controller.text;
@@ -1483,12 +1483,12 @@ public class MapEditor : MonoBehaviour
                 break;
             
             case StellationController.UnlockType.speed:
-                controller.speed = (int)i;
+                controller.speed = i;
                 break;
             
             case StellationController.UnlockType.time:
 
-                controller.time = (int)i;
+                controller.time = i;
                 break;
         }
     }
@@ -1503,6 +1503,7 @@ public class MapEditor : MonoBehaviour
             
                 scoreSlider.value = controller.laps;
                 scoreSlider.minValue = 0;
+                scoreSlider.wholeNumbers = true;
                 scoreSlider.maxValue = 10;
                 break;
             
@@ -1510,13 +1511,15 @@ public class MapEditor : MonoBehaviour
                 
                 scoreSlider.value = controller.speed;
                 scoreSlider.minValue = 0;
+                scoreSlider.wholeNumbers = false;
                 scoreSlider.maxValue = 10;
                 break;
             
             case StellationController.UnlockType.time:
                 scoreSlider.value = controller.time;
                 scoreSlider.minValue = 0;
-                scoreSlider.maxValue = 60;
+                scoreSlider.wholeNumbers = false;
+                scoreSlider.maxValue = 10;
                 break;
         }
 

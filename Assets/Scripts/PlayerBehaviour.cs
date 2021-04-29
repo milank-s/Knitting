@@ -1548,19 +1548,17 @@ public class PlayerBehaviour: MonoBehaviour {
 							Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
 							adjustedAngle = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
 							adjustedAngle = (adjustedAngle + curAngle) / 2f;
-							facingForward = false;
-
+							
 						} else if(canMoveForward && forward){
 
 							curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
-							facingForward = true;
+							
 							//code that cheats towards the end position of the point could still be useful
 							Vector3 next = p.Pos;
 							Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
 							float angleToPoint = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
 							adjustedAngle = (angleToPoint + curAngle) / 2f;
 						}
-					
 						
 						if (adjustedAngle < minAngle) {
 							
@@ -1569,10 +1567,11 @@ public class PlayerBehaviour: MonoBehaviour {
 							maybeNextSpline = s;
 							maybeNextPoint = p;
 
-
 							if(forward){
+								facingForward = true;
 								maybeNextSpline.Selected = curPoint;
 							}else{
+								facingForward = false;
 								maybeNextSpline.Selected = maybeNextPoint;
 							}
 						}
@@ -1608,7 +1607,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				}else{
 					progress = 1;
 				}
-				
+
 				accuracy = (90 - actualAngle) / 90;
 
 				curSpline = splineDest;
