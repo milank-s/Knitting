@@ -1473,21 +1473,23 @@ public class MapEditor : MonoBehaviour
     public void ChangeScore(Single i)
     {
         
-        scoreText.text = scoreSlider.value.ToString("F0");
-
+        
         switch (controller.unlockMethod)
         {
             case StellationController.UnlockType.laps:
                 controller.laps = (int)i;
+                scoreText.text = scoreSlider.value.ToString("F0");
                 
                 break;
             
             case StellationController.UnlockType.speed:
                 controller.speed = i;
+                scoreText.text = scoreSlider.value.ToString("F1");
+
                 break;
             
             case StellationController.UnlockType.time:
-
+                scoreText.text = scoreSlider.value.ToString("F1");
                 controller.time = i;
                 break;
         }
