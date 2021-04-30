@@ -75,7 +75,11 @@ public class StellationController : MonoBehaviour {
 	private int wordIndex;
 	private float fade;
 	public bool hasUnlock;
-	
+	float count = 0;
+    float average = 60;
+    [SerializeField] SpriteRenderer spriteRenderer;
+    Vector3 lastPos;
+    public float speedAverage;
 	public string GetWord (){
 		if(words != null){
 			string toReturn = "";
@@ -498,12 +502,22 @@ public class StellationController : MonoBehaviour {
 			{	
 				if (unlockMethod == UnlockType.speed)
 				{
-					Services.fx.readout.text = ((Services.PlayerBehaviour.actualSpeed - startSpeed)/(speed - startSpeed) * 100).ToString("F0") + "%";
+					count++;
+					float playerSpeed = Services.PlayerBehaviour.actualSpeed;
+
+					if(count < average){
+						speedAverage += playerSpeed;
+					}else{
+						speedAverage = speedAverage + (playerSpeed-speedAverage)/(average+1);
+						if(count == average){
+							speedAverage /= count;
+						}
+					}
+					Services.fx.readout.text = ((speedAverage - startSpeed)/(speed - startSpeed) * 100).ToString("F0") + "%";
 				
 				}else if (unlockMethod == UnlockType.time)
 				{
 					
-
 					if(startIndex > 0){
 						timer += Time.deltaTime;
 						Services.fx.readout.text = Mathf.Clamp((time - timer), 0, 1000).ToString("F2");
@@ -560,7 +574,7 @@ public class StellationController : MonoBehaviour {
 				isComplete = CheckSpeed();
 				break;
 			case UnlockType.time:
-				if(startIndex % _startPoints.Count == 0 && (Services.PlayerBehaviour.curPoint.pointType == PointTypes.start || Services.PlayerBehaviour.curPoint.pointType == PointTypes.end)){
+				if(startIndex > 0 && startIndex % _startPoints.Count == 0 && (Services.PlayerBehaviour.curPoint.pointType == PointTypes.start || Services.PlayerBehaviour.curPoint.pointType == PointTypes.end)){
 					isComplete = time - timer > 0;
 				}
 				break;
