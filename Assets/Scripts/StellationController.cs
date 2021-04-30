@@ -498,7 +498,7 @@ public class StellationController : MonoBehaviour {
 			{	
 				if (unlockMethod == UnlockType.speed)
 				{
-					Services.fx.readout.text = Services.PlayerBehaviour.potentialSpeed.ToString("F1") + "/" + speed.ToString("F0");
+					Services.fx.readout.text = (Services.PlayerBehaviour.potentialSpeed/speed * 100).ToString("F0") + "%";
 				
 				}else if (unlockMethod == UnlockType.time)
 				{
@@ -658,7 +658,7 @@ public class StellationController : MonoBehaviour {
 	
 	public bool CheckSpeed()
 	{
-		if (Services.PlayerBehaviour.flow >= speed)
+		if (Services.PlayerBehaviour.potentialSpeed >= speed)
 		{
 			return true;
 		}
