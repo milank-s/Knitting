@@ -143,6 +143,8 @@
 	
 	public void ResetLevel()
 	{	
+		if(state != GameState.playing || MapEditor.editing) return;
+
 		if(OnReset != null){
 			OnReset.Invoke();
 		}
@@ -155,7 +157,12 @@
 		if(StellationManager.instance != null){
 			//reset scene
 		}else{
-			LoadFile(0);
+			//this doesnt work for the editor
+			if(SceneController.instance.curSetIndex != -1){
+				LoadFile(0);
+			}else{
+				ToggleEditMode();
+			}
 		}	
 
 		//maybe I just use loadfile
