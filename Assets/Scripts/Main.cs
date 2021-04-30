@@ -146,17 +146,14 @@
 		if(OnReset != null){
 			OnReset.Invoke();
 		}
-		// 	//player resets
-		// 	//fx resets
-		// 	//stellation resets
-		// 	//audio resets
-		// 	//crawler resets;
+
+		GlitchEffect.Fizzle(0.2f);
 
 		//this is currently game breaking?
 		//I would prefer not to do this.... but the OnLoadLevel func is worth calling	
 		// InitializeLevel();
 		
-		InitializeLevel();	
+		//InitializeLevel();	
 	}
 
 	public void FullReset(){
@@ -186,6 +183,7 @@
 	{
 		Time.timeScale = 0;
 
+		
 		GlitchEffect.Fizzle(0.25f);
 		yield return new WaitForSecondsRealtime(0.25f);
 		/*if (delay > 0)
@@ -555,28 +553,14 @@
 	}
 		public void InitializeLevel()
 	{
-		//lets try getting rid of this redundant shit
-		
-//		if (Point.Points.Count > 0)
-//		{
-//			for (int i = Point.Points.Count - 1; i >= 0; i--)
-//			{
-//				if (Point.Points[i] == null)
-//				{
-//					Point.Points.RemoveAt(i);
-//				}
-//				else
-//				{
-//					Point.Points[i].Clear();
-//				}
-//			}
-//		}
-//EnterPlayMode();
+
 		//the stellation initializes its points on start...
 		//we may be forgiven for only initializing splines?
 		if (Spline.Splines.Count > 0){
 			for (int i = Spline.Splines.Count - 1; i >= 0; i--)
 			{
+				Debug.Log("reinitializing splines");
+
 				if (Spline.Splines[i] == null)
 				{
 					Spline.Splines.RemoveAt(i);
@@ -588,17 +572,14 @@
 			}
 		}
 
-		
 		Services.main.text.text = " ";
 		Services.main.levelText.text = " ";
 
 		activeStellation.Initialize();
 		activeStellation.Setup();
 		activeStellation.Draw();
-
-		if(OnLoadLevel != null){
-			OnLoadLevel(activeStellation);
-		}
+		
+		
 		
 //		foreach (StellationController c in SceneController.instance.activeScenes)
 //		{
@@ -624,6 +605,7 @@
 			Services.StartPoint = Point.Points[0];
 		}
 
+		
 		if (!MapEditor.editing)
 		{
 			playerInput.SwitchCurrentActionMap("Player");
@@ -631,7 +613,14 @@
 			Services.PlayerBehaviour.Initialize();
 		}
 		
+		
+		OnReset.Invoke();
+		
 		EnterPlayMode();
+
+		if(OnLoadLevel != null){
+			OnLoadLevel(activeStellation);
+		}
 	}
 
 	public void EnterPlayMode()

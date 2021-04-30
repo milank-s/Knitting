@@ -67,8 +67,6 @@ public class FXManager : MonoBehaviour
       Services.PlayerBehaviour.OnStartTraversing += Services.PlayerBehaviour.sparks.Play;
       Services.PlayerBehaviour.OnStoppedTraversing += BakeTraversingParticles;
       Services.main.OnReset += Reset;
-      
-      
   }
 
   public void ShowUnfinished()

@@ -409,16 +409,11 @@ public class StellationController : MonoBehaviour {
 		{
 			s.SwitchState(Spline.SplineState.locked);
 		}
-		
 	
 		SetCameraInfo();
-	
 
-		
 		Services.main.text.text = text;
 		Services.main.levelText.text = title;
-
-
 	}
 
 	public bool CheckCompleteness()
