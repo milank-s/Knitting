@@ -362,7 +362,7 @@ public class StellationController : MonoBehaviour {
 }
 
 	public void LeftStartPoint(){
-		if(startIndex%_startPoints.Count == 0){
+		if(startIndex%_startPoints.Count == 0 && !isComplete){
 			//start the timer bro;
 			timer = 0;
 			Services.main.levelText.text = "";
@@ -498,7 +498,7 @@ public class StellationController : MonoBehaviour {
 			{	
 				if (unlockMethod == UnlockType.speed)
 				{
-					Services.fx.readout.text = (Services.PlayerBehaviour.potentialSpeed/speed * 100).ToString("F0") + "%";
+					Services.fx.readout.text = ((Services.PlayerBehaviour.actualSpeed - startSpeed)/(speed - startSpeed) * 100).ToString("F0") + "%";
 				
 				}else if (unlockMethod == UnlockType.time)
 				{
@@ -560,7 +560,9 @@ public class StellationController : MonoBehaviour {
 				isComplete = CheckSpeed();
 				break;
 			case UnlockType.time:
-				isComplete = time - timer > 0;
+				if(startIndex % _startPoints.Count == 0 && (Services.PlayerBehaviour.curPoint.pointType == PointTypes.start || Services.PlayerBehaviour.curPoint.pointType == PointTypes.end)){
+					isComplete = time - timer > 0;
+				}
 				break;
 			}
 			return isComplete;
@@ -658,7 +660,7 @@ public class StellationController : MonoBehaviour {
 	
 	public bool CheckSpeed()
 	{
-		if (Services.PlayerBehaviour.potentialSpeed >= speed)
+		if (Services.PlayerBehaviour.actualSpeed >= speed)
 		{
 			return true;
 		}

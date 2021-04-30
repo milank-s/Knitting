@@ -93,7 +93,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float normalizedAccuracy => (1 + accuracy)/2f;
 	public float potentialSpeed => flow + speed + boost;
 	public float easedAccuracy => Mathf.Pow(normalizedAccuracy, accuracyCoefficient);
-	float accuracyAdjustedSpeed
+	public float actualSpeed
 	{
 		get
 		{
@@ -102,7 +102,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			//lets just stop using the deceleration timer
 			//adjustedAccuracy = (adjustedAccuracy * (1-decelerationTimer));
 			
-			if(flow < curSpline.speed && !curSpline.bidirectional){
+			if(curSpline != null && flow < curSpline.speed && !curSpline.bidirectional){
 				flow = curSpline.speed;
 			}
 
@@ -1259,7 +1259,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (!joystickLocked)
 		{
-			curSpeed = accuracyAdjustedSpeed;
+			curSpeed = actualSpeed;
 			float finalSpeed = (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
 			progress += goingForward ? finalSpeed : -finalSpeed;
 
