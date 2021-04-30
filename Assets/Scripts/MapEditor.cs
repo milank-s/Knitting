@@ -1262,7 +1262,7 @@ public class MapEditor : MonoBehaviour
 
         if (!Input.GetKey(KeyCode.LeftShift))
         {
-            Services.main.Reset();
+            Services.main.FullReset();
         }
 
         Load(fileName);

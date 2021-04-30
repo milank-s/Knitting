@@ -141,21 +141,35 @@
 		Application.Quit();
 	}
 	
-	public void Reset()
+	public void ResetLevel()
 	{	
 		if(OnReset != null){
 			OnReset.Invoke();
 		}
+		// 	//player resets
+		// 	//fx resets
+		// 	//stellation resets
+		// 	//audio resets
+		// 	//crawler resets;
+
+		//this is currently game breaking?
+		//I would prefer not to do this.... but the OnLoadLevel func is worth calling	
+		// InitializeLevel();
 		
+		InitializeLevel();	
+	}
+
+	public void FullReset(){
+		if(OnReset != null){
+			OnReset.Invoke();
+		}
 		
-		SceneController.instance.Reset();
+		SceneController.instance.Unload();
 		
 		editor.DeselectPoints();
 		editor.DeselectSpline();
 		Point.Points.Clear();
 		Spline.Splines.Clear();
-		Services.PlayerBehaviour.Reset();
-		Services.fx.Reset();
 	}
 	
 	public void ReloadScene()
@@ -249,7 +263,7 @@
 		curLevel = "";
 		
 		Pause(false);
-		Reset();
+		FullReset();
 		
 		OpenMenu();
 		
@@ -276,7 +290,7 @@
 		}
 		else
 		{
-			Reset();
+			FullReset();
 			//OpenMenu();
 		}
 
@@ -539,8 +553,7 @@
 		
 		Services.PlayerBehaviour.ResetFX();
 	}
-	
-	public void InitializeLevel()
+		public void InitializeLevel()
 	{
 		//lets try getting rid of this redundant shit
 		
@@ -611,8 +624,6 @@
 			Services.StartPoint = Point.Points[0];
 		}
 
-		Services.main.fx.Reset();
-
 		if (!MapEditor.editing)
 		{
 			playerInput.SwitchCurrentActionMap("Player");
@@ -649,7 +660,10 @@
 			
 			if (enter)
 			{
+				
+				//should I use full reset here
 				OnReset.Invoke();
+
 				if (state == GameState.menu)
 				{
 					CloseMenu();
@@ -673,7 +687,7 @@
 				else
 				{
 					string levelName = editor.controller.name;
-					Reset();
+					FullReset();
 					activeStellation = editor.Load(levelName);
 					
 				}

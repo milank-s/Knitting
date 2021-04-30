@@ -66,7 +66,7 @@ public class SceneController : MonoBehaviour
         }
     }
 
-    public void Reset()
+    public void Unload()
     {
         foreach (StellationController s in Services.main.stellationParent.GetComponentsInChildren<StellationController>())
         {
@@ -157,7 +157,7 @@ public class SceneController : MonoBehaviour
         {
       
         curLevel = 0;
-        Services.main.Reset();
+        Services.main.FullReset();
         Services.main.CloseMenu();
 
 
@@ -173,7 +173,7 @@ public class SceneController : MonoBehaviour
         {
       
             curLevel = 0;
-            Services.main.Reset();
+            Services.main.FullReset();
             Services.main.CloseMenu();
 
             //its a scene 

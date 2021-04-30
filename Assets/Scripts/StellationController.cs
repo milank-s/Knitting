@@ -386,10 +386,15 @@ public class StellationController : MonoBehaviour {
 	}
 	public void Setup()
 	{	
+		curSplineIndex = 0;
+		startIndex = 0;
+		timer = 0;
+		lapCount = 0;
+		isComplete = false;
+		won = false;
+
 		rootKey = UnityEngine.Random.Range(48, 61);
 		isOn = true;
-		isComplete = false;
-		curSplineIndex = 0;
 		Services.main.activeStellation = this;
 
 		CameraFollow.instance.fixedCamera = fixedCam;
@@ -451,16 +456,7 @@ public class StellationController : MonoBehaviour {
 	}
 
 	//call this for flying off and resetting, player right clicking, and time running out
-	public void ResetLevel()
-	{
-		Services.main.InitializeLevel();
-		curSplineIndex = 0;
-		startIndex = 0;
-		timer = 0;
-		lapCount = 0;
-		isComplete = false;
-		won = false;
-	}
+
 
 	public Point GetStartPoint(){
 		return _startPoints[startIndex % _startPoints.Count];

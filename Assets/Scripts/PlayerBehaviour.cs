@@ -198,6 +198,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		int i = 0;
 		lastPoint = null;
 
+		Services.main.OnReset += Reset;
+
 	}
 
 	public void ResetPlayerToStartPoint()
@@ -213,12 +215,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			speed = Services.main.activeStellation.startSpeed;
 			flyingSpeed = 0;
 		}
-
 	}
 	public void Initialize()
 	{
-		PointManager.ResetPoints ();
-		Reset();
+		//Reset();
+
+		//PointManager.ResetPoints ();
 		cursorDistance = minCursorDistance;
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
@@ -227,7 +229,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		flow = 0;
 		speed = Services.main.activeStellation.startSpeed;
 		
-		ResetFX();
 
 //		Material newMat;
 //		newMat = Services.Prefabs.lines[3];
@@ -259,20 +260,19 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Reset()
 	{
+		
 		if (Services.main.hasGamepad)
 		{
 			Services.main.gamepad.ResetHaptics();
 		}
 
-		
 		cursorDir = Vector3.zero;
 		cursorDir2 = Vector3.zero;
 
 		cursorSprite.enabled = true;
 		progress = 0;
-		Services.main.OnReset.Invoke();
-		state = PlayerState.Switching;
 
+		state = PlayerState.Switching;
 
 		freeCursor = false;
 		curSpline = null;
@@ -281,12 +281,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		boost = 0;
 		flow = 0;
 
-
 		pointDest = null;
 		lastPoint = null;
 
 		ResetFX();
-
 	}
 
 	public void ResetFX()
