@@ -34,6 +34,7 @@ public class StellationController : MonoBehaviour {
 	public int rootKey;
 	public int laps = 1;
 	public float speed = 1;
+	public float acceleration = 1;
 	public int startIndex;
 	public float time = 1;
 	public float startSpeed = 1;

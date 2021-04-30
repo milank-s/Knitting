@@ -100,8 +100,10 @@ public class MapEditor : MonoBehaviour
     public ReadSliderValue tensionSliderVal;
     public Text startSpeed;
     public Text splineSpeedReadout;
+    public Text accelerationReadout;
     public Slider splineSpeedVal;
     public Slider speedSlider;
+    public Slider accelerationSlider;
     public Text fov;
     public Slider fovSlider;
     public Toggle useCamPos;
@@ -266,6 +268,12 @@ public class MapEditor : MonoBehaviour
     {
         controller.startSpeed = s;
         startSpeed.text = s.ToString("F1");
+    }
+
+    public void ChangeAcceleration(System.Single s)
+    {
+        controller.acceleration = s;
+        accelerationReadout.text = s.ToString("F1");
     }
 
     public void ChangeSplineSpeed(System.Single s)

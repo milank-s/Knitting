@@ -228,6 +228,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		curPoint.OnPlayerEnterPoint();
 		flow = 0;
 		speed = Services.main.activeStellation.startSpeed;
+		acceleration = Services.main.activeStellation.acceleration;
 		
 
 //		Material newMat;

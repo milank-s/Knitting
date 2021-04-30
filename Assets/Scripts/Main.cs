@@ -569,7 +569,6 @@
 		if (Spline.Splines.Count > 0){
 			for (int i = Spline.Splines.Count - 1; i >= 0; i--)
 			{
-				Debug.Log("reinitializing splines");
 
 				if (Spline.Splines[i] == null)
 				{
