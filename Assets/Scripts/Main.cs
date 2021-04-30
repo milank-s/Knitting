@@ -151,9 +151,14 @@
 
 		//this is currently game breaking?
 		//I would prefer not to do this.... but the OnLoadLevel func is worth calling	
-		// InitializeLevel();
 		
-		//InitializeLevel();	
+		if(StellationManager.instance != null){
+			//reset scene
+		}else{
+			LoadFile(0);
+		}	
+
+		//maybe I just use loadfile
 	}
 
 	public void FullReset(){
@@ -183,7 +188,6 @@
 	{
 		Time.timeScale = 0;
 
-		
 		GlitchEffect.Fizzle(0.25f);
 		yield return new WaitForSecondsRealtime(0.25f);
 		/*if (delay > 0)
@@ -209,7 +213,6 @@
 		}
 
 		Time.timeScale = 1;
-		
 
 		InitializeLevel();
 		
@@ -615,7 +618,7 @@
 		
 		
 		OnReset.Invoke();
-		
+
 		EnterPlayMode();
 
 		if(OnLoadLevel != null){
