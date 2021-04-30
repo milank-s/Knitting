@@ -586,6 +586,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			{
 				if (buttonUp && curPoint.pointType == PointTypes.connect)
 				{
+					curPoint.SetPointType(PointTypes.normal);
 					CreatePoint();
 					canTraverse = true;
 

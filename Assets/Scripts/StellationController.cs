@@ -76,7 +76,7 @@ public class StellationController : MonoBehaviour {
 	private float fade;
 	public bool hasUnlock;
 	float count = 0;
-    float average = 60;
+    float average = 30;
     [SerializeField] SpriteRenderer spriteRenderer;
     Vector3 lastPos;
     public float speedAverage;
@@ -177,7 +177,7 @@ public class StellationController : MonoBehaviour {
 	{
 		if (isComplete)
 		{
-			EnableStellation(false);
+			//EnableStellation(false);
 		}
 	}
 	//this method fucking sucks
@@ -520,12 +520,12 @@ public class StellationController : MonoBehaviour {
 					
 					if(startIndex > 0){
 						timer += Time.deltaTime;
-						Services.fx.readout.text = Mathf.Clamp((time - timer), 0, 1000).ToString("F2");
+						Services.fx.readout.text = Mathf.Clamp((time - timer), 0, 1000).ToString("F1");
 
 						if (time - timer <= 0)
 						{
 							//ResetLevel();
-							Services.fx.readout.text = "";
+							Services.fx.readout.text = "-.--";
 						}
 
 					}
@@ -674,7 +674,7 @@ public class StellationController : MonoBehaviour {
 	
 	public bool CheckSpeed()
 	{
-		if (Services.PlayerBehaviour.actualSpeed >= speed)
+		if (speedAverage >= speed)
 		{
 			return true;
 		}
