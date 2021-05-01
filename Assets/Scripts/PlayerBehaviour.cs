@@ -1253,7 +1253,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			flow = curSpline.speed;
 		}
 
-		float speedGain = (easedAccuracy - 0.75f);
+		float speedGain = (easedAccuracy - 0.8f);
 		
 		//flow += curSpline.speed * Time.deltaTime;
 		flow += speedGain * accelerationCurve.Evaluate(flow/maxSpeed) * acceleration * Time.deltaTime;
@@ -1667,9 +1667,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		// if(context.control.name == "stick"){
 		// 		inputVector = Quaternion.Euler(0,0,90) * inputVector;
 		// }
-	
+
 //		Vector3 lastCursorDir = cursorDir;
-		if (context.control.name == "stick" || context.control.name == "Left Stick") {
+		if (context.control.name == "stick" || context.control.name == "leftStick") {
 
 			//inputVector = new Vector3(Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
 			
@@ -1694,7 +1694,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			//TODO
 //			clamp this shit
 
-			if (Services.main.hasGamepad)
+			if (context.control.name == "stick" || context.control.name == "Left Stick")
 			{
 				cursorPos += (Vector3)inputVector * cursorMoveSpeed * Time.deltaTime;
 			}
@@ -1716,7 +1716,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 		else
 		{
-			cursorPos = transform.position + (Vector3)cursorDir2 / (Services.mainCam.fieldOfView * 0.1f);
+			//cursorPos = transform.position + (Vector3)cursorDir2 / (Services.mainCam.fieldOfView * 0.1f);
 
 			Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
 			screenPos += new Vector3(cursorDir.x / Services.mainCam.aspect, cursorDir.y, 0)/cursorDistance;
