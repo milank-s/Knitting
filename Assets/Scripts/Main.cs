@@ -479,9 +479,13 @@
 		
 		if(Input.GetKeyDown(KeyCode.Space))
 		{
-			if (!MapEditor.typing)
-			{
-				ToggleEditMode();
+			if(state == GameState.playing){
+				if (!MapEditor.typing)
+				{
+					ToggleEditMode();
+				}
+			}else{
+				SceneController.instance.LoadScene();
 			}
 		}
 
