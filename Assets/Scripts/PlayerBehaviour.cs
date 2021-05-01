@@ -1672,7 +1672,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (context.control.name == "stick" || context.control.name == "leftStick") {
 
 			//inputVector = new Vector3(Input.GetAxis ("Joy X"), Input.GetAxis ("Joy Y"), 0);
-			
+			if(inputVector.magnitude == 0) return;
 			cursorDir2 = inputVector;
  
 		}else {
