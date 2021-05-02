@@ -631,6 +631,13 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 
+		if (timeOnPoint == 0 && curPoint.pointType != PointTypes.ghost)
+		{
+			//lets do this regardless but check against accuracy and the current spline
+			
+			curPoint.velocity += (Vector3)cursorDir * (1-easedAccuracy) * potentialSpeed;
+		}
+
 		if (canTraverse)
 		{
 			// pointInfo.GetComponent<Text>().text = "";
@@ -770,11 +777,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void StayOnPoint(){
 
-		if (timeOnPoint == 0 && curPoint.pointType != PointTypes.ghost)
-		{
-			curPoint.velocity += (Vector3)cursorDir * Mathf.Abs(flow);
-		}
-
+		
 		decelerationTimer = Mathf.Lerp(decelerationTimer, 0, Time.deltaTime * 2);
 		timeOnPoint += Time.deltaTime;
 
@@ -1253,10 +1256,10 @@ public class PlayerBehaviour: MonoBehaviour {
 			flow = curSpline.speed;
 		}
 
-		float speedGain = (easedAccuracy - 0.8f);
+		float speedGain = (easedAccuracy - 0.75f) * 4f;
 		
 		//flow += curSpline.speed * Time.deltaTime;
-		flow += speedGain * accelerationCurve.Evaluate(flow/maxSpeed) * acceleration * Time.deltaTime;
+		flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed) ;
 		flow = Mathf.Clamp(flow, 0, maxSpeed);
 
 		if (!joystickLocked)
@@ -1267,8 +1270,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			curSpline.completion += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
 		}
-
-
 		//set player position to a point along the curve
 
 		if (curPoint == curSpline.Selected) {
@@ -1583,6 +1584,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			//this is causing bugs
 
 // && (Input.GetButtonDown("Button1")
+			
+			accuracy = (90 - actualAngle) / 90;
 
 			if ((actualAngle <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) && maybeNextSpline != null)
 			{
@@ -1608,8 +1611,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				}else{
 					progress = 1;
 				}
-
-				accuracy = (90 - actualAngle) / 90;
 
 				curSpline = splineDest;
 				return true;
