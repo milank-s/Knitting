@@ -70,7 +70,7 @@ public class StellationController : MonoBehaviour {
 	public bool lockSplines;
 	public bool isComplete;
 
-	bool won = false;
+	public bool won = false;
 	private string[] words;
 	private int wordIndex;
 	private float fade;
@@ -132,6 +132,9 @@ public class StellationController : MonoBehaviour {
 	
 	public void Won()
 	{
+		
+		won = true;
+		
 		//We are in a scene that supports multiple controllers
 		if (StellationManager.instance != null)
 		{
@@ -150,9 +153,6 @@ public class StellationController : MonoBehaviour {
 		{
 			activateOnCompletion[i].DoBehaviour();
 		}
-
-
-		won = true;
 		
 			//show some type of image
 			//lock instantly
@@ -491,15 +491,17 @@ public class StellationController : MonoBehaviour {
 	{
 		if (isOn)
 		{
-			foreach (Point p in _points)
-			{
-				p.Step();
-			}
-			
+		
 			//Services.main.fx.readout.transform.position = Services.main.Player.transform.position;
 
 			if (!won)
 			{	
+				foreach (Point p in _points)
+			{
+				p.Step();
+			}
+			
+
 				if (unlockMethod == UnlockType.speed)
 				{
 					count++;

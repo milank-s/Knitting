@@ -2114,8 +2114,9 @@ public class PlayerBehaviour: MonoBehaviour {
 //				traversedPoints.Add(curPoint);
 				}
 
-
-				PlayerOnPoint();
+				if(!curPoint.controller.won){
+					PlayerOnPoint();
+				}
 
 				break;
 

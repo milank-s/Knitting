@@ -263,6 +263,9 @@
 
 	public void QuitLevel(bool goNext = false)
 	{
+		
+		state = GameState.menu;
+		
 		if (SceneController.instance.curSetIndex > -1 && SceneController.instance.curLevelSet.isScene)
 		{
 			SceneManager.UnloadSceneAsync(curLevel);
@@ -493,7 +496,7 @@
 			if (!MapEditor.editing)
 			{
 
-				if (Services.PlayerBehaviour.curPoint != null)
+				if (Services.PlayerBehaviour.curPoint != null && !activeStellation.won)
 				{
 					Services.PlayerBehaviour.Step();
 					CameraFollow.instance.FollowPlayer();

@@ -29,7 +29,7 @@ public class FXManager : MonoBehaviour
   private List<Animator> fxInstances = new List<Animator>();
 
   List<VectorLine> linesDrawn;
-  Coroutine lineDirectionRoutine;
+  List<Coroutine> lineDirectionRoutine;
   Coroutine showPointsRoutine;
   Coroutine graffitiRoutine;
  
@@ -50,6 +50,8 @@ public class FXManager : MonoBehaviour
       line.smoothWidth = true;
       line.smoothColor = true;
 
+      linesDrawn = new List<VectorLine>();
+      lineDirectionRoutine = new List<Coroutine>();
       flyingParticleMesh.mesh = new Mesh();
       flyingParticleTrailMesh.mesh = new Mesh();
       flyingTrailMesh.mesh = new Mesh();
@@ -76,15 +78,20 @@ public class FXManager : MonoBehaviour
 
   public void ShowSplineDirection(Spline s)
   {
-     lineDirectionRoutine = StartCoroutine(DrawSplineDirection(s));
+     lineDirectionRoutine.Add(StartCoroutine(DrawSplineDirection(s)));
    
   }
      IEnumerator DrawSplineDirection(Spline s)
     {
+        yield return null;
+
+        if(lineDirectionRoutine.Count == 0)yield break;
+        
         Vector3 offset = s.GetVelocity(0.1f);
         offset = new Vector3(-offset.y, offset.x, 0) / 10f;
         
         VectorLine newLine;
+        Coroutine thisRoutine = lineDirectionRoutine[lineDirectionRoutine.Count-1];
 
         newLine = new VectorLine (name, new List<Vector3> (), 2, LineType.Continuous, Vectrosity.Joins.Weld);
         newLine.color = new Color(1,1,1,1);
@@ -111,7 +118,6 @@ public class FXManager : MonoBehaviour
           yield return new WaitForSeconds(0.02f);
       }
       
-      
       nextSplineArrow.enabled = true;
       nextSplineArrow.transform.position = endpoint + offset;
       nextSplineArrow.transform.up = endDir;
@@ -125,10 +131,9 @@ public class FXManager : MonoBehaviour
       }
       nextSplineArrow.enabled = false;
       
+      lineDirectionRoutine.Remove(thisRoutine);
       linesDrawn.Remove(newLine);
       VectorLine.Destroy(ref newLine);
-
-      lineDirectionRoutine = null;
   }
 
     public void BakeFlyingParticles(){
@@ -188,9 +193,12 @@ public class FXManager : MonoBehaviour
           showPointsRoutine = null;
       }
 
-      if(lineDirectionRoutine != null){
-          StopCoroutine(lineDirectionRoutine);
-          lineDirectionRoutine = null;
+      if(lineDirectionRoutine.Count > 0){
+          for(int i = lineDirectionRoutine.Count -1; i >= 0; i--){
+          StopCoroutine(lineDirectionRoutine[i]);
+        }
+        
+          lineDirectionRoutine.Clear();
       } 
 
       for(int i = linesDrawn.Count -1; i >= 0; i--){

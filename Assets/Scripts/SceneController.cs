@@ -236,6 +236,7 @@ public class SceneController : MonoBehaviour
         else
         {
                 //reopen menu, empty scene;
+                
            Services.main.QuitLevel(true);
             
         }
