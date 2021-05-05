@@ -396,7 +396,7 @@
 
 		Services.Player.SetActive(false);
 		
-		menu.SetActive(true);
+		menu.SetActive(true);	
 		SceneController.instance.SelectLevelSet();
 
 		state = GameState.menu;
@@ -476,7 +476,7 @@
 //		}
 		
 		
-		if(Input.GetKeyDown(KeyCode.Space))
+		if(Input.GetKeyDown(KeyCode.Space) && SceneController.instance.curSetIndex == -1)
 		{
 			if(state == GameState.playing){
 				if (!MapEditor.typing)
