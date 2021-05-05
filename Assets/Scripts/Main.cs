@@ -416,7 +416,6 @@
 		Cursor.visible = true;
 		
 		EventSystem.current.SetSelectedGameObject(SceneController.instance.levelButton.gameObject);
-		
 	}
 
 	public void CloseMenu()

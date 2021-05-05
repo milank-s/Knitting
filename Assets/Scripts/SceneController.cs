@@ -56,7 +56,7 @@ public class SceneController : MonoBehaviour
                 else if (input.x < 0 && Mathf.Approximately(input.y, 0))
                 {
 
-                    SelectNextLevel(true);
+                    SelectNextLevel(false);
                 }
             }
             else

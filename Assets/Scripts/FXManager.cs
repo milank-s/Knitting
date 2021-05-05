@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class FXManager : MonoBehaviour
 {
     public enum FXType{fizzle, burst, rotate, pulse, cross, glitch}
-
     public SpriteRenderer nextPointSprite;
     public LineRenderer nextSpline;
     public SpriteRenderer nextSplineArrow;
@@ -29,6 +28,7 @@ public class FXManager : MonoBehaviour
  
   private List<Animator> fxInstances = new List<Animator>();
 
+  List<VectorLine> linesDrawn;
   Coroutine lineDirectionRoutine;
   Coroutine showPointsRoutine;
   Coroutine graffitiRoutine;
@@ -85,12 +85,14 @@ public class FXManager : MonoBehaviour
         offset = new Vector3(-offset.y, offset.x, 0) / 10f;
         
         VectorLine newLine;
-        
+
         newLine = new VectorLine (name, new List<Vector3> (), 2, LineType.Continuous, Vectrosity.Joins.Weld);
         newLine.color = new Color(1,1,1,1);
         newLine.smoothWidth = true;
         newLine.smoothColor = true;
       
+        linesDrawn.Add(newLine);
+
         Material newMat = Services.Prefabs.lines[0];
         Texture tex = newMat.mainTexture;
         float length = newMat.mainTextureScale.x;
@@ -123,6 +125,7 @@ public class FXManager : MonoBehaviour
       }
       nextSplineArrow.enabled = false;
       
+      linesDrawn.Remove(newLine);
       VectorLine.Destroy(ref newLine);
 
       lineDirectionRoutine = null;
@@ -189,6 +192,13 @@ public class FXManager : MonoBehaviour
           StopCoroutine(lineDirectionRoutine);
           lineDirectionRoutine = null;
       } 
+
+      for(int i = linesDrawn.Count -1; i >= 0; i--){
+          VectorLine v = linesDrawn[i];
+          VectorLine.Destroy(ref v);
+      }
+
+      linesDrawn.Clear();
 
       flyingParticleMesh.mesh = new Mesh();
       flyingParticleTrailMesh.mesh = new Mesh();
