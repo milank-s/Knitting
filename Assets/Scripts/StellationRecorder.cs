@@ -20,6 +20,8 @@ public class StellationRecorder : MonoBehaviour
     public void GenerateStellation(){
         //use cursortrail
 
+        Point.Points.Clear();
+        Spline.Splines.Clear();
         StellationController curStellation = Services.main.activeStellation;
         
         int children = curStellation.transform.childCount;
@@ -41,19 +43,26 @@ public class StellationRecorder : MonoBehaviour
         Point curPoint = SplineUtil.CreatePoint(positions[0]);
         curPoint.transform.parent = pointParent;
         curPoint.SetPointType(PointTypes.start);
+        curStellation.start = curPoint;
         Spline curSpline = null;
         Point lastPoint;
         Vector3 lastDir = positions[0] - positions[1];
         Vector3 curTangent;
-
+        int splineCount = 0;
         for(int i = 1; i < positions.Length; i++){
             Vector3 dir = positions[i] - positions[i-1];
             if(Vector3.Angle(lastDir, dir) > angleDiffThreshold){
                 lastDir = dir;
                 lastPoint = curPoint;
                 curPoint = SplineUtil.CreatePoint(positions[i]);
-                curSpline = SplineUtil.ConnectPoints(curSpline, curPoint, lastPoint).s;
+                Spline newSpline = SplineUtil.ConnectPoints(curSpline, lastPoint, curPoint).s;
+                if(newSpline != curSpline){
+                    newSpline.order = splineCount;
+                    newSpline.gameObject.name = splineCount.ToString();
+                    splineCount ++;
+                }
 
+                curSpline = newSpline;
                 curSpline.transform.parent = curStellation.transform;
                 curPoint.transform.parent = pointParent;
             }

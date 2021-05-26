@@ -358,7 +358,7 @@ public class StellationController : MonoBehaviour {
 	{
 		curSplineIndex = 0;
 		isComplete = false;
-
+		
 		GetComponents();
 
 		//why is this here
