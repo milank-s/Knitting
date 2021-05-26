@@ -265,7 +265,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		cursorDir = Vector3.zero;
 		cursorDir2 = Vector3.zero;
-
+		cursorPos = transform.position;
 		cursorSprite.enabled = true;
 		progress = 0;
 
@@ -291,6 +291,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		shortTrail.Clear();
 		flyingTrail.emitting = false;
 		t.emitting = true;
+		Services.fx.cursorTrail.Clear();
 	}
 
 	public IEnumerator RetraceTrail()

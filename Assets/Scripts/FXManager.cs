@@ -8,6 +8,8 @@ public class FXManager : MonoBehaviour
 {
     public enum FXType{fizzle, burst, rotate, pulse, cross, glitch}
     public SpriteRenderer nextPointSprite;
+
+    public TrailRenderer cursorTrail;
     public LineRenderer nextSpline;
     public SpriteRenderer nextSplineArrow;
     private Coroutine drawDir;
@@ -78,7 +80,9 @@ public class FXManager : MonoBehaviour
 
   public void ShowSplineDirection(Spline s)
   {
-     lineDirectionRoutine.Add(StartCoroutine(DrawSplineDirection(s)));
+
+      //this is bugging out if you reset on the same spline, and it doesnt work in reverse yet
+     //lineDirectionRoutine.Add(StartCoroutine(DrawSplineDirection(s)));
    
   }
      IEnumerator DrawSplineDirection(Spline s)
@@ -183,6 +187,9 @@ public class FXManager : MonoBehaviour
   }
   public void Reset()
   {
+
+      cursorTrail.Clear();
+
       if(graffitiRoutine != null){
           StopCoroutine(graffitiRoutine);
           graffitiRoutine = null;
