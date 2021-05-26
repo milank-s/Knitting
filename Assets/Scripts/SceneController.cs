@@ -65,21 +65,6 @@ public class SceneController : MonoBehaviour
             }
         }
     }
-
-    public void Unload()
-    {
-        foreach (StellationController s in Services.main.stellationParent.GetComponentsInChildren<StellationController>())
-        {
-            Destroy(s.gameObject);
-            
-        }
-        Services.main.editor.controller = null;
-        Services.main.pointParent = null;
-        Services.main.splineParent = null;
-        
-        instance.activeScenes.Clear();
-        instance.curLevel = 0;   
-    }
     
     public void OpenEditor()
     {

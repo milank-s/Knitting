@@ -173,7 +173,18 @@
 			OnReset.Invoke();
 		}
 		
-		SceneController.instance.Unload();
+		 foreach (StellationController s in stellationParent.GetComponentsInChildren<StellationController>())
+        {
+            Destroy(s.gameObject);
+            
+        }
+		
+        Services.main.editor.controller = null;
+        Services.main.pointParent = null;
+        Services.main.splineParent = null;
+        
+        SceneController.instance.activeScenes.Clear();
+        SceneController.instance.curLevel = 0;   
 		
 		editor.DeselectPoints();
 		editor.DeselectSpline();
