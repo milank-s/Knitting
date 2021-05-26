@@ -159,7 +159,7 @@
 		}else{
 			//this doesnt work for the editor
 			if(SceneController.instance.curSetIndex != -1){
-				LoadFile(0);
+				LoadFile();
 			}else{
 				ToggleEditMode();
 			}

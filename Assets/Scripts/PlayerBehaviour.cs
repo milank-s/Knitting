@@ -2129,7 +2129,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				cursorSprite.enabled = false;
 				state = PlayerState.Animating;
 
-				ResetPlayerToStartPoint();
 //				if (state == PlayerState.Flying)
 //				{
 //					if (!hasFlown)

@@ -29,7 +29,7 @@ public class StellationManager : MonoBehaviour
 			{
 				controllers[i].unlock = controllers[i + 1];
 			}
-			
+
 			controllers[i].Initialize();
 			controllers[i].EnableStellation(false);
 		}
@@ -65,7 +65,9 @@ public class StellationManager : MonoBehaviour
 			
 			else
 			{
-				SceneController.instance.LoadNextStellation();
+				//lets plug in the stellationRecorder here
+				GetComponent<StellationRecorder>().GenerateStellation();
+				//SceneController.instance.LoadNextStellation();
 			}
 			//we good
 		}

@@ -41,6 +41,7 @@ public class StellationRecorder : MonoBehaviour
         //put point on start points;
         Point curPoint = SplineUtil.CreatePoint(positions[0]);
         curPoint.transform.parent = pointParent;
+        curPoint.SetPointType(PointTypes.start);
         Spline curSpline = null;
         Point lastPoint;
         Vector3 lastDir = positions[0] - positions[1];
@@ -58,6 +59,9 @@ public class StellationRecorder : MonoBehaviour
                 curPoint.transform.parent = pointParent;
             }
         }
+
+        curStellation.Initialize();
+        //now we're ready for the normal level start logic
     }
 
     void Update()
