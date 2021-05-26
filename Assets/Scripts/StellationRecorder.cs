@@ -28,15 +28,14 @@ public class StellationRecorder : MonoBehaviour
                 Destroy(curStellation.transform.GetChild(i).gameObject);
             }
         }
-        
-        //we need to reset a bunch of other bollocks. I guess you can call the Reset delegate
-        Services.main.OnReset.Invoke();
-
-        Transform pointParent = new GameObject().transform;
-        pointParent.parent = curStellation.transform;
 
         Vector3[] positions = new Vector3[Services.fx.cursorTrail.numPositions];
         Services.fx.cursorTrail.GetPositions(positions);
+        
+        //we need to reset a bunch of other bollocks. I guess you can call the Reset delegate
+
+        Transform pointParent = new GameObject().transform;
+        pointParent.parent = curStellation.transform;
 
         //put point on start points;
         Point curPoint = SplineUtil.CreatePoint(positions[0]);
@@ -60,7 +59,7 @@ public class StellationRecorder : MonoBehaviour
             }
         }
 
-        curStellation.Initialize();
+        Services.main.InitializeLevel();
         //now we're ready for the normal level start logic
     }
 

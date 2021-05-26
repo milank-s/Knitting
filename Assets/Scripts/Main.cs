@@ -176,7 +176,6 @@
 		 foreach (StellationController s in stellationParent.GetComponentsInChildren<StellationController>())
         {
             Destroy(s.gameObject);
-            
         }
 		
         Services.main.editor.controller = null;
