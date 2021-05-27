@@ -1955,14 +1955,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				/*
 				GranularSynth.moving.TurnOn();*/
 
-				if (curPoint.pointType != PointTypes.ghost)
-				{
-				
-
-					if(OnStartTraversing != null){
-						OnStartTraversing.Invoke();
-					}
-				}
+			
 
 				curSpline.CalculateDistance ();
 
@@ -1994,6 +1987,15 @@ public class PlayerBehaviour: MonoBehaviour {
 					Services.fx.flyingParticles.Play();
 				}
 
+				if (curPoint.pointType != PointTypes.ghost)
+				{
+				
+
+					if(OnStartTraversing != null){
+						OnStartTraversing.Invoke();
+					}
+				}
+				
 				break;
 
 			case PlayerState.Flying:

@@ -8,13 +8,13 @@ public class StellationRecorder : MonoBehaviour
     //list of splines in stellation
     //hooks for on point enter etc
     VectorLine line;
-    public float minAngleDiff = 10f;
+    public float minAngleDiff = 30f;
     public float maxAngleDiff = 90;
     public float minDistance = 0.1f;
-    public float maxDistance = 0.2f;
+    public float maxDistance = 0.66f;
 
     public List<Vector3> positions;
-    public int steps = 50;
+    public int steps = 5;
     public float stepSize => 1/(float) steps;
 
     float lastProgress = 0;
@@ -22,7 +22,6 @@ public class StellationRecorder : MonoBehaviour
 
     void Start()
     {
-        
         line = new VectorLine (name, new List<Vector3> (0), 2, LineType.Continuous, Vectrosity.Joins.Weld);
         line.color = new Color(1,1,1,0.25f);
         line.smoothWidth = true;
@@ -30,12 +29,17 @@ public class StellationRecorder : MonoBehaviour
 
         positions = new List<Vector3>();
         Services.PlayerBehaviour.OnStartTraversing += StartRecording;
+        Services.PlayerBehaviour.OnStoppedTraversing += EnterPoint;
         Services.PlayerBehaviour.OnTraversing += RecordLine;
     }
 
     public void StartRecording(){
         lastProgress = Services.PlayerBehaviour.progress;
         line.Draw3DAuto();
+    }
+
+    public void EnterPoint(){
+        positions.Add(Services.PlayerBehaviour.cursorPos);
     }
     public void RecordLine(){
         //we can plug this into a Vectrosity thing now, dont need to use a trailrenderer
