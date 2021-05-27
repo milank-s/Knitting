@@ -51,12 +51,15 @@ public class StellationRecorder : MonoBehaviour
         int splineCount = 0;
         for(int i = 1; i < positions.Length; i++){
             Vector3 dir = positions[i] - positions[i-1];
+
             if(Vector3.Angle(lastDir, dir) > angleDiffThreshold){
                 lastDir = dir;
                 lastPoint = curPoint;
                 curPoint = SplineUtil.CreatePoint(positions[i]);
+                curPoint.pointType = PointTypes.ghost;
                 Spline newSpline = SplineUtil.ConnectPoints(curSpline, lastPoint, curPoint).s;
-                if(newSpline != curSpline){
+
+                if(newSpline != curSpline || curSpline == null){
                     newSpline.order = splineCount;
                     newSpline.gameObject.name = splineCount.ToString();
                     splineCount ++;
@@ -67,6 +70,8 @@ public class StellationRecorder : MonoBehaviour
                 curPoint.transform.parent = pointParent;
             }
         }
+
+        curPoint.pointType = PointTypes.end;
 
         Services.main.InitializeLevel();
         //now we're ready for the normal level start logic

@@ -231,6 +231,7 @@ public class StellationController : MonoBehaviour {
 		_splines.Clear();
 		_splinesToUnlock.Clear();
 		_startPoints.Clear();
+
 		//stupid code for old maps that didnt have scoreCount idk. 
 		if (unlockMethod == UnlockType.laps && laps == 0)
 		{
@@ -259,8 +260,9 @@ public class StellationController : MonoBehaviour {
 
 		if (_points.Count == 0) return;
 		
-	
-		_startPoints.Sort((p1,p2)=>TryComparePoints(p1, p2));
+		if(_startPoints.Count > 0){
+			_startPoints.Sort((p1,p2)=>TryComparePoints(p1, p2));
+		}
 			
 
 		if (start == null)
@@ -279,11 +281,6 @@ public class StellationController : MonoBehaviour {
 		GetBounds();
 		
 		_pointshit = new List<Point>();
-		
-		if (_points.Count == 0)
-		{
-			return;
-		}
 		
 		if(unlock){
 			hasUnlock = true;
@@ -371,7 +368,10 @@ public class StellationController : MonoBehaviour {
 			timer = 0;
 			Services.main.levelText.text = "";
 			Services.main.text.text = "";
+			
+			Services.PlayerBehaviour.LeftStartPoint();
 		}
+
 		startIndex ++;
 	}
 	public void Draw(){
