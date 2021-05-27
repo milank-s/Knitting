@@ -8,15 +8,35 @@ public class StellationRecorder : MonoBehaviour
     //list of splines in stellation
     //hooks for on point enter etc
     
-    public float angleDiffThreshold = 10f;
+    public float minAngleDiff = 10f;
+    public float minDistance = 0.05f;
+
+    public List<Vector3> positions;
+    public int steps = 50;
+    public float stepSize => 1/(float) steps;
+
+    float lastProgress = 0;
     //dictionary for point pairs to make doubling impossible
-    
 
     void Start()
     {
-        
+        positions = new List<Vector3>();
+        Services.PlayerBehaviour.OnStartTraversing += StartRecording;
+        Services.PlayerBehaviour.OnTraversing += RecordLine;
     }
 
+    public void StartRecording(){
+        lastProgress = Services.PlayerBehaviour.progress;
+    }
+    public void RecordLine(){
+        //we can plug this into a Vectrosity thing now, dont need to use a trailrenderer
+
+        float progress = Services.PlayerBehaviour.progress;
+        if(Mathf.Abs(progress - lastProgress) > stepSize){
+            positions.Add(Services.PlayerBehaviour.cursorPos);
+            lastProgress = progress;
+        }
+    }
     public void GenerateStellation(){
         //use cursortrail
 
@@ -31,8 +51,8 @@ public class StellationRecorder : MonoBehaviour
             }
         }
 
-        Vector3[] positions = new Vector3[Services.fx.cursorTrail.numPositions];
-        Services.fx.cursorTrail.GetPositions(positions);
+        //Vector3[] positions = new Vector3[Services.fx.cursorTrail.numPositions];
+       // Services.fx.cursorTrail.GetPositions(positions);
         
         //we need to reset a bunch of other bollocks. I guess you can call the Reset delegate
 
@@ -45,14 +65,14 @@ public class StellationRecorder : MonoBehaviour
         curPoint.SetPointType(PointTypes.start);
         curStellation.start = curPoint;
         Spline curSpline = null;
-        Point lastPoint;
+        Point lastPoint= curPoint;
         Vector3 lastDir = positions[0] - positions[1];
         Vector3 curTangent;
         int splineCount = 0;
-        for(int i = 1; i < positions.Length; i++){
-            Vector3 dir = positions[i] - positions[i-1];
+        for(int i = 1; i < positions.Count; i++){
+            Vector3 dir = positions[i] - lastPoint.Pos;
 
-            if(Vector3.Angle(lastDir, dir) > angleDiffThreshold){
+            if(Vector3.Angle(lastDir, dir) > minAngleDiff && dir.magnitude > minDistance){
                 lastDir = dir;
                 lastPoint = curPoint;
                 curPoint = SplineUtil.CreatePoint(positions[i]);
@@ -74,11 +94,8 @@ public class StellationRecorder : MonoBehaviour
         curPoint.pointType = PointTypes.end;
 
         Services.main.InitializeLevel();
-        //now we're ready for the normal level start logic
-    }
 
-    void Update()
-    {
-        
+        positions.Clear();
+        //now we're ready for the normal level start logic
     }
 }

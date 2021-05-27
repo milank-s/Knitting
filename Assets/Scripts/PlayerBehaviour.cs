@@ -199,7 +199,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	public void LeftStartPoint(){
-		Services.fx.cursorTrail.emitting = true;
+		Services.fx.cursorTrail.Clear();
 	}
 
 	public void ResetPlayerToStartPoint()
@@ -296,7 +296,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		flyingTrail.emitting = false;
 		t.emitting = true;
 		Services.fx.cursorTrail.Clear();
-		Services.fx.cursorTrail.emitting = false;
 	}
 
 	public IEnumerator RetraceTrail()
@@ -1958,8 +1957,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if (curPoint.pointType != PointTypes.ghost)
 				{
-					
-					Services.fx.cursorTrail.emitting = true;
+				
 
 					if(OnStartTraversing != null){
 						OnStartTraversing.Invoke();
@@ -2037,8 +2035,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			case PlayerState.Switching:
 
 				//stop players from popping off the line as soon as they enter a point
-
-				Services.fx.cursorTrail.emitting = false;
 
 				decelerationTimer = 0;
 
