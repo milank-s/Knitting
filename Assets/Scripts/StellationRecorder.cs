@@ -10,8 +10,8 @@ public class StellationRecorder : MonoBehaviour
     VectorLine line;
     public float minAngleDiff = 10f;
     public float maxAngleDiff = 90;
-    public float minDistance = 0.025f;
-    public float maxDistance = 0.1f;
+    public float minDistance = 0.1f;
+    public float maxDistance = 0.2f;
 
     public List<Vector3> positions;
     public int steps = 50;
@@ -82,9 +82,11 @@ public class StellationRecorder : MonoBehaviour
         Vector3 curTangent;
         int splineCount = 0;
         for(int i = 1; i < positions.Count; i++){
-            Vector3 dir = positions[i] - lastPoint.Pos;
+            Vector3 dir = positions[i] - curPoint.Pos;
             float angle = Vector3.Angle(lastDir, dir);
+
             if((angle > minAngleDiff && angle < maxAngleDiff && dir.magnitude > minDistance) || dir.magnitude > maxDistance){
+
                 lastDir = dir;
                 lastPoint = curPoint;
                 curPoint = SplineUtil.CreatePoint(positions[i]);
