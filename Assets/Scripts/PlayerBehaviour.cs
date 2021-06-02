@@ -1183,17 +1183,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 	}
 
-	GameObject CreateJoint(Rigidbody r){
-		Transform newJoint = Instantiate (Services.Prefabs.joint, curPoint.transform.position, Quaternion.identity).transform;
-		newJoint.GetComponent<SpringJoint> ().connectedBody = r;
-		newJoint.name = newPointList.Count.ToString();
-		newPointList.Add(newJoint);
-		if (newPointList.Count % 3 == 0) {
-			newJoint.GetComponentInChildren<SpriteRenderer> ().enabled = true;
-		}
-		return newJoint.gameObject;
-	}
-
 	void PlayerMovement(){
 //		adding this value to flow
 //		MAKE FLOW NON REVERSIBLE. ADJUST LINE ACCURACY WITH FLOW TO MAKE PLAYER NOT STOP AT INTERSECTIONS
