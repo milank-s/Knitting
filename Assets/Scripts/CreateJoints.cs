@@ -5,9 +5,13 @@ using UnityEngine;
 public class CreateJoints : MonoBehaviour
 {
     // Start is called before the first frame update
-    void Start()
-    {
-        Setup();
+  
+    bool instantiated;
+    void Update(){
+        if(!instantiated){
+            Setup();
+            instantiated = true;
+        }
     }
 
     void Setup(){
@@ -18,7 +22,7 @@ public class CreateJoints : MonoBehaviour
         for(int i = 0; i < points.Length; i++){
             
             foreach(Point p in points[i]._neighbours){
-                if(!usedPoints.Contains(points[i])){
+                if(!usedPoints.Contains(p)){
                     SplineUtil.CreateJoint(points[i], p);
                 }  
             }

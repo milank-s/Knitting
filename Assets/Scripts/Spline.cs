@@ -155,7 +155,7 @@ public class Spline : MonoBehaviour
 		draw = false;
 		isPlayerOn = false;
 		reactToPlayer = false;
-		line.StopDrawing3DAuto();
+		//line.StopDrawing3DAuto();
 		drawTimer = 0;
 		
 		

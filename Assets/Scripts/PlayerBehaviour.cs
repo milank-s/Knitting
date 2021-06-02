@@ -489,7 +489,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				//should always be drawn
 				if(!s.locked)
 				{
-					s.DrawSpline( s.SplinePoints.IndexOf(curPoint));
+					//s.DrawSpline( s.SplinePoints.IndexOf(curPoint));
 				}
 			}
 
@@ -497,7 +497,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				foreach(Spline s in pointDest._connectedSplines){
 					if(!s.locked && s!=curSpline)
 					{
-						s.DrawSpline(s.SplinePoints.IndexOf(pointDest));
+						//s.DrawSpline(s.SplinePoints.IndexOf(pointDest));
 					}
 				}
 			}
@@ -641,6 +641,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			//lets do this regardless but check against accuracy and the current spline
 			
 			curPoint.velocity += (Vector3)cursorDir * (1-easedAccuracy) * potentialSpeed;
+			curPoint.GetComponent<Rigidbody>().velocity += (Vector3)cursorDir * (1-easedAccuracy) * potentialSpeed;
 		}
 
 		if (canTraverse)
@@ -2054,7 +2055,6 @@ public class PlayerBehaviour: MonoBehaviour {
 					foreach (Spline s in curPoint._connectedSplines)
 					{
 						s.reactToPlayer = false;
-						s.line.StopDrawing3DAuto();
 					}
 
 					lastPoint = curPoint;
@@ -2062,7 +2062,6 @@ public class PlayerBehaviour: MonoBehaviour {
 					foreach (Spline s in pointDest._connectedSplines)
 					{
 						s.reactToPlayer = true;
-						s.line.Draw3DAuto();
 					}
 				}
 

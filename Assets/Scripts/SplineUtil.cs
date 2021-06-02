@@ -124,8 +124,9 @@ public class SplineUtil : MonoBehaviour {
 
 	public static void CreateJoint(Point p1, Point p2){
 		SpringJoint s = p1.gameObject.AddComponent<SpringJoint>();
-		s.connectedBody = p2.GetComponent<Rigidbody>();
-		
+		s.spring = 10;
+		Debug.Log(s);
+		s.connectedBody = p2.gameObject.GetComponent<Rigidbody>();
 	}
 
 
