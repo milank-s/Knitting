@@ -1587,6 +1587,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				pointDest = maybeNextPoint;
 
 				splineDest.CalculateDistance();
+
 				if(curSpline != null){
 
 					if (curSpline != splineDest)
@@ -1945,12 +1946,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				/*
 				GranularSynth.moving.TurnOn();*/
 
-			
-
-				//curSpline.CalculateDistance ();
-
+				//calculate distance here still?
 				
-				Debug.Log("spline segment distance = " + curSpline.segmentDistance);
 				VectorLine v = velocityLine2;
 				velocityLine2 = velocityLine;
 				velocityLine = v;
