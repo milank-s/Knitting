@@ -532,19 +532,11 @@ public class PlayerBehaviour: MonoBehaviour {
 			else
 			{
 
-				bool newPointSelected = false;
-				if (prevPointDest != null)
-				{
-					if (prevPointDest != pointDest)
-					{
-						newPointSelected = true;
-						Services.fx.ShowSplineDirection(curSpline);
-					}
-				}
-				else
-				{
-					newPointSelected = true;
-					Services.fx.ShowSplineDirection(curSpline);
+				bool newPointSelected = prevPointDest == null || prevPointDest != pointDest;
+
+				if (newPointSelected){
+					Debug.Log("looking from " + curPoint.name + " - " + pointDest.name);
+					//Services.fx.ShowSplineDirection(curSpline);
 				}
 
 				if( pointDest.pointType != PointTypes.ghost)
@@ -1447,6 +1439,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void SetPlayerAtStart(Spline s, Point p2){
 		int indexdiff = s.SplinePoints.IndexOf (p2) - s.SplinePoints.IndexOf (curPoint);
 
+
 		if (indexdiff == -1 || indexdiff > 1) {
 			s.Selected = p2;
 			goingForward = false;
@@ -1467,6 +1460,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			goingForward = true;
 			s.Selected = curPoint;
 		}
+
+		
+		Debug.Log("going from " + curPoint.name + " - " + pointDest.name + " on " + curSpline.name);
 	}
 
 	public void SetPlayerAtEnd(Spline s, Point p2){
@@ -1529,6 +1525,10 @@ public class PlayerBehaviour: MonoBehaviour {
 						bool loopingBackwards = looping && movingBackwards;
 						bool loopingForwards = looping && !movingBackwards;
 
+						if((!loopingBackwards && indexDifference > 1) || (!loopingForwards && indexDifference < -1)){
+							//you are both on the same spline but you are not in sequence. illegal
+							continue;
+						}
 						bool forward = loopingForwards || indexDifference == 1 || indexDifference > -1;
 						bool backwards = loopingBackwards || movingBackwards;
 						bool isGhostPoint = curPoint.pointType == PointTypes.ghost;
@@ -2028,7 +2028,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Switching:
 
-				Debug.Log("Reached " + pointDest.name + " from " + curPoint.name);
 				//stop players from popping off the line as soon as they enter a point
 
 				decelerationTimer = 0;

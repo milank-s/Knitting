@@ -1421,6 +1421,7 @@ public class MapEditor : MonoBehaviour
                         newSpline.SplinePoints.Add(newPoints[index]);
                     }
                 }
+                newSpline.name = newSpline.SplinePoints[0].name + " - " + newSpline.SplinePoints[numPoints-1].name;
             }
 
             int splineType = json["spline" + i]["type"];
@@ -1432,7 +1433,6 @@ public class MapEditor : MonoBehaviour
             newSpline.order =  json["spline" + i]["order"];
             newSpline.bidirectional = json["spline" + i]["bidirectional"];
             newSpline.speed = json["spline" + i]["speed"];
-            newSpline.gameObject.name = newSpline.order.ToString();
         }
 
         //I no longer want to clean house
