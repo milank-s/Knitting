@@ -535,7 +535,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				bool newPointSelected = prevPointDest == null || prevPointDest != pointDest;
 
 				if (newPointSelected){
-					Debug.Log("looking from " + curPoint.name + " - " + pointDest.name);
 					//Services.fx.ShowSplineDirection(curSpline);
 				}
 
@@ -1460,9 +1459,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			goingForward = true;
 			s.Selected = curPoint;
 		}
-
-		
-		Debug.Log("going from " + curPoint.name + " - " + pointDest.name + " on " + curSpline.name);
 	}
 
 	public void SetPlayerAtEnd(Spline s, Point p2){

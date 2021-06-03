@@ -758,7 +758,7 @@ public class Spline : MonoBehaviour
 	//				                         Mathf.Clamp01(_completion) * Mathf.Clamp01(distanceFromPlayer) *
 	//				                         Mathf.Clamp01(drawTimer /5f) * 0.025f);
 			}
-			else
+			else if(reactToPlayer)
 			{
 				v += (distortionVector * UnityEngine.Random.Range(-distortion, distortion) * Mathf.Clamp01(-indexDiff + 1)) * amplitude;
 			}
