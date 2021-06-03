@@ -1512,7 +1512,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						//make sure that you're not making an illegal move
 						bool looping = false;
 
-						if((p == s.StartPoint && curPoint == s.EndPoint) || (p == s.EndPoint && curPoint == s.StartPoint)){
+						if(s.closed && s.SplinePoints.Count > 2 && (p == s.StartPoint && curPoint == s.EndPoint) || (p == s.EndPoint && curPoint == s.StartPoint)){
 							looping = true;
 						}
 
@@ -1525,6 +1525,7 @@ public class PlayerBehaviour: MonoBehaviour {
 							//you are both on the same spline but you are not in sequence. illegal
 							continue;
 						}
+						
 						bool forward = loopingForwards || indexDifference == 1 || indexDifference > -1;
 						bool backwards = loopingBackwards || movingBackwards;
 						bool isGhostPoint = curPoint.pointType == PointTypes.ghost;
@@ -1585,6 +1586,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				splineDest = maybeNextSpline;
 				pointDest = maybeNextPoint;
 
+				splineDest.CalculateDistance();
 				if(curSpline != null){
 
 					if (curSpline != splineDest)
@@ -1945,8 +1947,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			
 
-				curSpline.CalculateDistance ();
+				//curSpline.CalculateDistance ();
 
+				
+				Debug.Log("spline segment distance = " + curSpline.segmentDistance);
 				VectorLine v = velocityLine2;
 				velocityLine2 = velocityLine;
 				velocityLine = v;

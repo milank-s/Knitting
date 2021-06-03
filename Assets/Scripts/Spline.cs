@@ -233,7 +233,7 @@ public class Spline : MonoBehaviour
 			}
 		}
 
-		CalculateDistance ();
+		//CalculateDistance ();
 
 		isPlayerOn = true;
 
