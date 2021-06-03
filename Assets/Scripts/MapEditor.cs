@@ -1380,6 +1380,7 @@ public class MapEditor : MonoBehaviour
             newPoint.SetPointType((PointTypes)t);
             
             newPoint.transform.parent = pointParent.transform;
+            newPoint.gameObject.name = i.ToString();
             newPoints.Add(newPoint);
         }
 

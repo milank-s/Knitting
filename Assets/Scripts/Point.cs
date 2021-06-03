@@ -244,7 +244,7 @@ public class Point : MonoBehaviour
 	public void Initialize()
 	{
 		state = PointState.off;
-		gameObject.name = text;
+		// gameObject.name = text;
 		initPos = transform.position;
 		anchorPos = initPos;
 		initContinuity = continuity;

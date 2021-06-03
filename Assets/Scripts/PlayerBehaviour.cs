@@ -474,7 +474,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			transform.position = curPoint.Pos;
 			gravity = 0;
 			PlayerOnPoint();
-
 		}
 
 		if (state != PlayerState.Animating && state != PlayerState.Flying && curPoint.HasSplines () && curSpline != null) {
@@ -1451,8 +1450,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (indexdiff == -1 || indexdiff > 1) {
 			s.Selected = p2;
 			goingForward = false;
-			
 			progress = 1 - Mathf.Epsilon;
+
 		} else {
 			// if (timeOnPoint == 0)
 			// {
@@ -1460,9 +1459,11 @@ public class PlayerBehaviour: MonoBehaviour {
 			// }
 			// else
 			// {
-				progress = 0 + Mathf.Epsilon;
+				// progress = 0 + Mathf.Epsilon;
 			// }
 
+			
+			progress = 0 + Mathf.Epsilon;
 			goingForward = true;
 			s.Selected = curPoint;
 		}
@@ -1528,7 +1529,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						bool loopingBackwards = looping && movingBackwards;
 						bool loopingForwards = looping && !movingBackwards;
 
-						bool forward = loopingForwards || indexDifference == 1;
+						bool forward = loopingForwards || indexDifference == 1 || indexDifference > -1;
 						bool backwards = loopingBackwards || movingBackwards;
 						bool isGhostPoint = curPoint.pointType == PointTypes.ghost;
 						
@@ -1553,8 +1554,8 @@ public class PlayerBehaviour: MonoBehaviour {
 							//code that cheats towards the end position of the point could still be useful
 							Vector3 next = p.Pos;
 							Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
-							float angleToPoint = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
-							adjustedAngle = (angleToPoint + curAngle) / 2f;
+							adjustedAngle = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
+							adjustedAngle = (adjustedAngle + curAngle) / 2f;
 						}
 						
 						if (adjustedAngle < minAngle) {
@@ -1600,6 +1601,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				{
 					splineDest.OnSplineEnter(curPoint, pointDest);
 				}
+				
+				curSpline = splineDest;
 
 				if(facingForward){
 					progress = 0;
@@ -1607,7 +1610,6 @@ public class PlayerBehaviour: MonoBehaviour {
 					progress = 1;
 				}
 
-				curSpline = splineDest;
 				return true;
 			}
 
@@ -2026,6 +2028,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Switching:
 
+				Debug.Log("Reached " + pointDest.name + " from " + curPoint.name);
 				//stop players from popping off the line as soon as they enter a point
 
 				decelerationTimer = 0;
