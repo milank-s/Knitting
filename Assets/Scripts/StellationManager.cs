@@ -3,12 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using AudioHelm;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class StellationManager : MonoBehaviour
 {
 
 	public static StellationManager instance;
 	[SerializeField] public List<StellationController> controllers;
+
+	[Space(15)]
+	public UnityEvent OnCompleteLap;
+	public UnityEvent OnCompleteStellation;
+	public UnityEvent OnLeaveStart;
+	public UnityEvent OnNextStart;
+
+	[HideInInspector]
 	public int index;
 
 	public string fileName = "Line1";
@@ -17,8 +26,32 @@ public class StellationManager : MonoBehaviour
 	{
 		instance = this;
 	}
+
+	void CompleteLap(){
+		if(OnCompleteLap != null){
+			OnCompleteLap.Invoke();
+		}
+	}
+
+	void ResetToStart(){
+		if(OnNextStart != null){
+			OnNextStart.Invoke();
+		}
+	}
+
+	void LeaveStart(){
+		if(OnLeaveStart != null){
+			OnLeaveStart.Invoke();
+		}
+	}
+
 	public void Start()
 	{
+		controllers[0].OnCompleteLap += CompleteLap;
+		controllers[0].OnCompleteStellation += CompleteStellation;
+		controllers[0].OnLeaveStart += LeaveStart;
+		controllers[0].OnNextStart += ResetToStart;
+
 		if (controllers.Count < 1)
 		{
 			controllers = GetComponentsInChildren<StellationController>().ToList();
@@ -52,6 +85,10 @@ public class StellationManager : MonoBehaviour
 	
 	public void CompleteStellation()
 	{
+
+		if(OnCompleteStellation != null){
+			OnCompleteStellation.Invoke();
+		}
 
 		if (Services.main.activeStellation.isComplete)
 		{

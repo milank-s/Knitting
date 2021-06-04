@@ -9,8 +9,13 @@ public class StellationController : MonoBehaviour {
 	public enum UnlockType{laps, speed, time}
 	public enum UnlockMechanism{unlockSpline, turnOnSpline, unlockPoints, switchPointTypes}
 	
+	public delegate void StellationEvent();
+	public StellationEvent OnCompleteLap;
+	public StellationEvent OnCompleteStellation;
+	public StellationEvent OnLeaveStart;
+	public StellationEvent OnNextStart;
+
 	public List<UnlockMechanism> unlockActions = new List<UnlockMechanism>() {UnlockMechanism.unlockSpline};
-	
 	List<ActivatedBehaviour>  activateOnCompletion = new List<ActivatedBehaviour>();
 	
 	public UnlockType unlockMethod = UnlockType.laps;
@@ -140,7 +145,9 @@ public class StellationController : MonoBehaviour {
 		{
 			//enable next controller. I dont think I'm using this anymore
 			
-			StellationManager.instance.CompleteStellation();
+			if(OnCompleteStellation != null){
+				OnCompleteStellation.Invoke();
+			}
 			
 		}
 		else
@@ -370,8 +377,11 @@ public class StellationController : MonoBehaviour {
 			Services.main.text.text = "";
 			
 			Services.PlayerBehaviour.LeftStartPoint();
-		}
 
+			if(OnLeaveStart != null){
+				OnLeaveStart.Invoke();
+			}
+		}		
 		startIndex ++;
 	}
 	public void Draw(){
@@ -425,6 +435,7 @@ public class StellationController : MonoBehaviour {
 	{
 
 		int minLaps = 1000;
+
 		bool isDone = true;
 
 		if (curSplineIndex < (_splines.Count - _splinesToUnlock.Count) - 1)
@@ -444,12 +455,19 @@ public class StellationController : MonoBehaviour {
 			{
 
 				minLaps = p.timesHit;
-				lapCount = minLaps;
 			}
 		}
 		
+		if(minLaps > lapCount){
+			if(OnCompleteLap != null){
+				OnCompleteLap.Invoke();
+			}
+		}
+
+		lapCount = minLaps;
+
 		if(laps > 1){
-			Services.fx.readout.text = lapCount.ToString("F0") + "/" + laps.ToString("F0");
+			//Services.fx.readout.text = lapCount.ToString("F0") + "/" + laps.ToString("F0");
 		}
 
 		return lapCount >= laps;
@@ -459,6 +477,9 @@ public class StellationController : MonoBehaviour {
 
 
 	public Point GetStartPoint(){
+		if(OnNextStart != null){
+			OnNextStart.Invoke();
+		}
 		return _startPoints[startIndex % _startPoints.Count];
 	}
 	public void UnlockSpline(Spline spline)
