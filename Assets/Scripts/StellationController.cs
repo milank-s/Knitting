@@ -556,7 +556,7 @@ public class StellationController : MonoBehaviour {
 				}else if (unlockMethod == UnlockType.laps){
 				
 					if(laps > 1){
-						Services.fx.readout.text = lapCount.ToString("F0") + "/" + laps.ToString("F0");
+						//Services.fx.readout.text = lapCount.ToString("F0") + "/" + laps.ToString("F0");
 					}
 				}
 
