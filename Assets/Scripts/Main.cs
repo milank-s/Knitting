@@ -352,19 +352,14 @@
 
 	void Start()
 	{
-		
-		GameSettings.i.InitializeSettings();
-		
-		state = GameState.menu;
-		MapEditor.editing = true;
-		ToggleEditMode();
-		
 
+		GameSettings.i.InitializeSettings();
+	
 		if (SceneManager.sceneCount > 1)
 		{
 			for (int i = 0; i < SceneManager.sceneCount; i++)
 			{
-				if (SceneManager.GetSceneAt(i).name != "Menu" && SceneManager.GetSceneAt(i).name != "Main")
+				if (SceneManager.GetSceneAt(i).name != "Main")
 				{
 					curLevel = SceneManager.GetSceneAt(i).name;
 				}
@@ -373,7 +368,16 @@
 
 		Cursor.lockState = CursorLockMode.None;
 		
-		OpenMenu();
+		state = GameState.menu;
+		MapEditor.editing = true;
+		ToggleEditMode();
+
+		if(curLevel == ""){
+			OpenMenu();
+		}else{
+
+			CloseMenu();
+		}
 
 		Time.timeScale = 1;
 	}

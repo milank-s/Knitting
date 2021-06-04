@@ -67,8 +67,8 @@ public class StellationManager : MonoBehaviour
 			else
 			{
 				//lets plug in the stellationRecorder here
-				GetComponent<StellationRecorder>().GenerateStellation();
-				//SceneController.instance.LoadNextStellation();
+				//GetComponent<StellationRecorder>().GenerateStellation();
+				SceneController.instance.LoadNextStellation();
 			}
 			//we good
 		}
