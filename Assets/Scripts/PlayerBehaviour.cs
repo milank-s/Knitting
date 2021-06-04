@@ -1530,8 +1530,10 @@ public class PlayerBehaviour: MonoBehaviour {
 						bool backwards = loopingBackwards || movingBackwards;
 						bool isGhostPoint = curPoint.pointType == PointTypes.ghost;
 						
-						bool canMoveBackward = !isGhostPoint || (!goingForward && isGhostPoint);
-						bool canMoveForward = !isGhostPoint || (isGhostPoint && goingForward);
+						//need to check that we're not actually at the start of a new spline thats just facing the other direction
+
+						bool canMoveBackward = (!goingForward && isGhostPoint) || !isGhostPoint || s.SplinePoints.IndexOf (curPoint) == s.SplinePoints.Count -1;
+						bool canMoveForward = (isGhostPoint && goingForward) || !isGhostPoint || s.SplinePoints.IndexOf (curPoint) == 0;
 						// indexDifference > 1 means we looped backwards
 						// indexDifference == -1 means we went backward one point
 
@@ -1947,7 +1949,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				GranularSynth.moving.TurnOn();*/
 
 				//calculate distance here still?
-				
+
 				VectorLine v = velocityLine2;
 				velocityLine2 = velocityLine;
 				velocityLine = v;
