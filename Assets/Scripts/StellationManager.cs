@@ -11,6 +11,7 @@ public class StellationManager : MonoBehaviour
 	[SerializeField] public List<StellationController> controllers;
 	public int index;
 
+	public string fileName = "Line1";
 
 	public void Awake()
 	{
