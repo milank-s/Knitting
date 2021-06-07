@@ -60,9 +60,12 @@ public class Spline : MonoBehaviour
 	}
 	private float accuracyCoefficient;
 	
-	[HideInInspector]
-	public float maxSpeed, boost, speed;
 	
+	public float speed;
+	
+	[HideInInspector]
+	public float maxSpeed, boost; 
+
 	public static Spline Select;
 	[Space(15)]
 	
