@@ -818,8 +818,6 @@ public class MapEditor : MonoBehaviour
 
                 RaycastFromCursor();
 
-
-                
                 UseTool();
 
                 
@@ -913,9 +911,9 @@ public class MapEditor : MonoBehaviour
         if (pointSelected)
         {
 
-            activePoint.bias = biasSliderVal.val;
-            activePoint.tension = tensionSliderVal.val;
-            activePoint.continuity = continuitySliderVal.val;
+            // activePoint.bias = biasSliderVal.val;
+            // activePoint.tension = tensionSliderVal.val;
+            // activePoint.continuity = continuitySliderVal.val;
             
             marqueeTip.SetActive(false);
             deselectTip.SetActive(true);
@@ -2206,13 +2204,29 @@ void DragCamera()
         pointSelectedTip.SetActive(pointSelected);
     }
     
+    public void SetTensionWithSlider(){
+        foreach(Point p in selectedPoints){
+            p.tension = tensionSliderVal.val;
+        }
+    }
+
+    public void SetBiasWithSlider(){
+        foreach(Point p in selectedPoints){
+            p.bias = biasSliderVal.val;
+        }
+    }
+
+    public void SetContinuityWithSlider(){
+        foreach(Point p in selectedPoints){
+            p.continuity = continuitySliderVal.val;
+        }
+    }
+
     public void SetTension(float t)
     {
-        // activePoint.tension = t;
+        activePoint.tension = t;
         tensionSliderVal.ChangeValue(t);
-        foreach(Point p in selectedPoints){
-            p.tension = t;
-        }
+
     }
     
     
@@ -2220,10 +2234,13 @@ void DragCamera()
     {
         activePoint.bias = t;
         biasSliderVal.ChangeValue(t);
+    }
 
-        foreach(Point p in selectedPoints){
-            p.bias = t;
-        }
+    
+    public void SetContinuity(float t)
+    {
+        activePoint.continuity = t;
+        continuitySliderVal.ChangeValue(t);
     }
 
     public void SetStellationText(String s){

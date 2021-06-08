@@ -58,7 +58,7 @@ public class ReadSliderValue : MonoBehaviour
         }
     }
 
-    public void ChangeValue(Single s)
+        public void ChangeValue(Single s)
     {
         input.SetTextWithoutNotify(s.ToString());
         slider.SetValueWithoutNotify(s);
