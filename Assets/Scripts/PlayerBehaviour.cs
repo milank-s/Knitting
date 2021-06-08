@@ -1537,7 +1537,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						// indexDifference > 1 means we looped backwards
 						// indexDifference == -1 means we went backward one point
 
-					
+			
 						if (canMoveBackward && backwards && s.bidirectional) {
 							
 							curAngle = s.CompareAngleAtPoint (cursorDir, p, true);	
