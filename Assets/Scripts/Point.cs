@@ -530,7 +530,7 @@ public class Point : MonoBehaviour
 					if (StellationManager.instance != null &&
 					    Services.main.activeStellation != controller)
 					{
-						StellationManager.instance.EnterStellation(controller);
+						//StellationManager.instance.EnterStellation(controller);
 					}
 					
 					
@@ -542,12 +542,9 @@ public class Point : MonoBehaviour
 					{
 						controller.Won();
 						
-						// Services.fx.SpawnSprite(0, transform);
-						//Services.Sounds.PlayPointAttack(0.5f);
 						Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed + 10, transform);
 						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
 						
-						//Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
 						controller.isOn = false;
 
 					}
@@ -557,8 +554,7 @@ public class Point : MonoBehaviour
 						if(_neighbours.Count < 2){
 							Services.main.WarpPlayerToNewPoint(controller.GetStartPoint());
 						}
-						//Services.PlayerBehaviour.SwitchState(PlayerState.Flying);
-						//Services.main.WarpPlayerToNewPoint(Services.StartPoint);
+
 						//Services.fx.ShowUnfinished();
 					}
 					

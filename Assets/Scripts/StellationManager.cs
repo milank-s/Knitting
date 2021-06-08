@@ -66,30 +66,29 @@ public class StellationManager : MonoBehaviour
 		
 		Services.main.activeStellation = controllers[0];	
 		Services.main.activeStellation.EnableStellation(true);
-		SetActiveStellation(controllers[0], true);
+		SetupActiveStellation(controllers[0], true);
 		
 		Services.main.InitializeLevel();
 		
 	}
 
-	public void SetActiveStellation(StellationController c, bool active)
+	public void SetupActiveStellation(StellationController c, bool active)
 	{
 		c.isOn = active;
 
 		if(active){
-			c.Setup();
-			c.start.OnPlayerEnterPoint();
 			c.OnCompleteLap += CompleteLap;
 			c.OnCompleteStellation += CompleteStellation;
 			c.OnLeaveStart += LeaveStart;
 			c.OnNextStart += ResetToStart;
+
+			c.Setup();
 		}else{
 			c.OnCompleteLap -= CompleteLap;
 			c.OnCompleteStellation -= CompleteStellation;
 			c.OnLeaveStart -= LeaveStart;
 			c.OnNextStart -= ResetToStart;
 		}
-		
 	}
 	
 	public void CompleteStellation()
@@ -101,13 +100,20 @@ public class StellationManager : MonoBehaviour
 
 		if (Services.main.activeStellation.isComplete)
 		{
-			
 			if (Services.main.activeStellation.hasUnlock)
 			{
-				Services.mainCam.fieldOfView = 80;
-				CameraFollow.instance.desiredFOV = 80;
-				CameraFollow.instance.fixedCamera = false;
-				Services.main.activeStellation.unlock.EnableStellation(true);
+			
+				Services.main.activeStellation.EnableStellation(false);	
+				Services.main.activeStellation.unlock.EnableStellation(true);	
+				SetupActiveStellation(Services.main.activeStellation, false);
+				SetupActiveStellation(Services.main.activeStellation.unlock, true);
+				Services.main.WarpPlayerToNewPoint(Services.main.activeStellation.start);
+
+				//this only applies if we're flying
+
+				// Services.mainCam.fieldOfView = 80;
+				// CameraFollow.instance.desiredFOV = 80;
+				// CameraFollow.instance.fixedCamera = false;
 			}
 			
 			else
