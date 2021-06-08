@@ -631,7 +631,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			//lets do this regardless but check against accuracy and the current spline
 			
 			curPoint.velocity += (Vector3)cursorDir * (1-easedAccuracy) * potentialSpeed;
-			curPoint.GetComponent<Rigidbody>().velocity += (Vector3)cursorDir * (1-easedAccuracy) * potentialSpeed;
+			//curPoint.GetComponent<Rigidbody>().velocity += (Vector3)cursorDir * (1-easedAccuracy) * potentialSpeed;
 		}
 
 		if (canTraverse)

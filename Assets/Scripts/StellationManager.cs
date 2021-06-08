@@ -47,10 +47,6 @@ public class StellationManager : MonoBehaviour
 
 	public void Start()
 	{
-		controllers[0].OnCompleteLap += CompleteLap;
-		controllers[0].OnCompleteStellation += CompleteStellation;
-		controllers[0].OnLeaveStart += LeaveStart;
-		controllers[0].OnNextStart += ResetToStart;
 
 		if (controllers.Count < 1)
 		{
@@ -67,20 +63,33 @@ public class StellationManager : MonoBehaviour
 			controllers[i].Initialize();
 			controllers[i].EnableStellation(false);
 		}
-	
 		
 		Services.main.activeStellation = controllers[0];	
 		Services.main.activeStellation.EnableStellation(true);
+		SetActiveStellation(controllers[0], true);
 		
 		Services.main.InitializeLevel();
 		
 	}
 
-	public void EnterStellation(StellationController c)
+	public void SetActiveStellation(StellationController c, bool active)
 	{
-		c.isOn = true;
-		c.Setup();
-		c.start.OnPlayerEnterPoint();
+		c.isOn = active;
+
+		if(active){
+			c.Setup();
+			c.start.OnPlayerEnterPoint();
+			c.OnCompleteLap += CompleteLap;
+			c.OnCompleteStellation += CompleteStellation;
+			c.OnLeaveStart += LeaveStart;
+			c.OnNextStart += ResetToStart;
+		}else{
+			c.OnCompleteLap -= CompleteLap;
+			c.OnCompleteStellation -= CompleteStellation;
+			c.OnLeaveStart -= LeaveStart;
+			c.OnNextStart -= ResetToStart;
+		}
+		
 	}
 	
 	public void CompleteStellation()

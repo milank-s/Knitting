@@ -568,23 +568,26 @@
 		float flow = Services.PlayerBehaviour.flow;
 		
 		Services.PlayerBehaviour.curPoint.OnPointExit();
+
 		if (Services.PlayerBehaviour.curSpline != null)
 		{
 			Services.PlayerBehaviour.curSpline.OnSplineExit();
 		}
 
-		Services.PlayerBehaviour.curPoint = p;
+		
+		//this seems incredibly illegal
+		Services.PlayerBehaviour.pointDest = p;
 		Services.PlayerBehaviour.transform.position = p.Pos;
-		Services.PlayerBehaviour.curPoint.OnPlayerEnterPoint();
+		//Services.PlayerBehaviour.curPoint.OnPlayerEnterPoint();
 		
 		Services.PlayerBehaviour.flow = flow;
 		Services.PlayerBehaviour.curSpeed = curSpeed;
 		
 		Services.PlayerBehaviour.ResetFX();
+		Services.PlayerBehaviour.SwitchState(PlayerState.Switching);
 	}
-		public void InitializeLevel()
-	{
 
+	public void InitializeLevel(){
 		//the stellation initializes its points on start...
 		//we may be forgiven for only initializing splines?
 		if (Spline.Splines.Count > 0){

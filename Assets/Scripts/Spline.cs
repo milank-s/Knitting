@@ -583,8 +583,11 @@ public class Spline : MonoBehaviour
 		if (isPlayerOn || reactToPlayer)
 		{
 			drawIndex = GetPlayerLineSegment(pointIndex);
+			// Debug.Log("player is on");
 		}
 		
+		
+
 		if (!bidirectional)
 		{
 			line.textureOffset -= Time.deltaTime * speed * 5f;
@@ -763,6 +766,7 @@ public class Spline : MonoBehaviour
 			}
 			else if(reactToPlayer)
 			{
+				//I'm not even sure what this is doing
 				v += (distortionVector * UnityEngine.Random.Range(-distortion, distortion) * Mathf.Clamp01(-indexDiff + 1)) * amplitude;
 			}
 
