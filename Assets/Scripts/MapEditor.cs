@@ -885,6 +885,10 @@ public class MapEditor : MonoBehaviour
      {
          activePoint.SetPointType(t);
          
+         foreach(Point p in selectedPoints){
+             p.SetPointType(t);
+         }
+         
          //play effects
          SynthController.instance.keys.NoteOn((int)t * 4 + 60, 0.5f, 0.1f);
          Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, activePoint.transform);
@@ -2204,8 +2208,11 @@ void DragCamera()
     
     public void SetTension(float t)
     {
-        activePoint.tension = t;
+        // activePoint.tension = t;
         tensionSliderVal.ChangeValue(t);
+        foreach(Point p in selectedPoints){
+            p.tension = t;
+        }
     }
     
     
@@ -2213,6 +2220,10 @@ void DragCamera()
     {
         activePoint.bias = t;
         biasSliderVal.ChangeValue(t);
+
+        foreach(Point p in selectedPoints){
+            p.bias = t;
+        }
     }
 
     public void SetStellationText(String s){
