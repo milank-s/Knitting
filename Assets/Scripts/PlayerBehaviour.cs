@@ -473,6 +473,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			transform.position = curPoint.Pos;
 			gravity = 0;
+			//this could be fucking with
 			PlayerOnPoint();
 		}
 
@@ -1454,7 +1455,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				// progress = 0 + Mathf.Epsilon;
 			// }
 
-			
 			progress = 0 + Mathf.Epsilon;
 			goingForward = true;
 			s.Selected = curPoint;
@@ -1516,27 +1516,30 @@ public class PlayerBehaviour: MonoBehaviour {
 							looping = true;
 						}
 
-						bool movingBackwards = indexDifference == -1 || indexDifference > 1; 
-
-						bool loopingBackwards = looping && movingBackwards;
-						bool loopingForwards = looping && !movingBackwards;
+						bool backwards = indexDifference == -1 || indexDifference > 1; 
+						bool forward = indexDifference == 1 || indexDifference < -1;
+						bool loopingBackwards = looping && backwards;
+						bool loopingForwards = looping && forward;
 
 						if((!loopingBackwards && indexDifference > 1) || (!loopingForwards && indexDifference < -1)){
 							//you are both on the same spline but you are not in sequence. illegal
 							continue;
 						}
 						
-						bool forward = loopingForwards || indexDifference == 1 || indexDifference > -1;
-						bool backwards = loopingBackwards || movingBackwards;
+						// bool forward = loopingForwards || !movingBackwards;
+						// bool backwards = loopingBackwards || movingBackwards;
 						bool isGhostPoint = curPoint.pointType == PointTypes.ghost;
 						
 						//need to check that we're not actually at the start of a new spline thats just facing the other direction
 
-						bool canMoveBackward = (!goingForward && isGhostPoint) || !isGhostPoint || s.SplinePoints.IndexOf (curPoint) == s.SplinePoints.Count -1;
-						bool canMoveForward = (isGhostPoint && goingForward) || !isGhostPoint || s.SplinePoints.IndexOf (curPoint) == 0;
+						bool intersection = s != curSpline;
+
+						bool canMoveBackward = (!goingForward && isGhostPoint) || !isGhostPoint || intersection; // || s.SplinePoints.IndexOf (curPoint) == s.SplinePoints.Count -1;
+						bool canMoveForward = (isGhostPoint && goingForward) || !isGhostPoint || intersection; // | s.SplinePoints.IndexOf (curPoint) == 0;
+						
+						
 						// indexDifference > 1 means we looped backwards
 						// indexDifference == -1 means we went backward one point
-
 			
 						if (canMoveBackward && backwards && s.bidirectional) {
 							
@@ -2181,7 +2184,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (curSpline != null)
 		{
-//			if(flow > 0.25f){
+//			if(flow > 0.2	5f){
 //				velocityLine.color = Color.Lerp(velocityLine.color, new Color(1,1,1,0.1f), Time.deltaTime);
 //				velocityLine2.color = Color.Lerp(velocityLine2.color, new Color(1,1,1,0.1f), Time.deltaTime);
 //				// DrawVelocity();
