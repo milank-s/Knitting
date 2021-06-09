@@ -763,16 +763,17 @@ public class Spline : MonoBehaviour
 			if (isPlayerOn)
 			{
 				//UnityEngine.Random.Range(- distortion, distortion)
-				v += distortionVector * distortion * magnitude * Mathf.Clamp01(invertedDistance) + distortionVector * distortion * shake;
+				v += distortionVector * distortion * magnitude * Mathf.Clamp01(invertedDistance);
 
 			}
 			else if(reactToPlayer)
 			{
 				//I'm not even sure what this is doing
-				v += distortionVector * distortion * Mathf.Clamp01(-indexDiff + 10);
+				v += distortionVector * distortion * magnitude * Mathf.Clamp01(-indexDiff + 10);
 			}
-
 		}
+
+		v += distortionVector * distortion * shake;
 
 
 		//get value for sine wave effect
