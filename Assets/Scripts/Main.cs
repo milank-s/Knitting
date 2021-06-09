@@ -370,29 +370,33 @@
 		state = GameState.menu;
 		MapEditor.editing = true;
 		ToggleEditMode();
-		if(openFileOnStart){	
-			//close any open scene and open up the editor
-			
-		}else{
-
+		
 			//get any open scene in order to play it
-			if (SceneManager.sceneCount > 1)
+		if (SceneManager.sceneCount > 1)
+		{
+			for (int i = 0; i < SceneManager.sceneCount; i++)
 			{
-				for (int i = 0; i < SceneManager.sceneCount; i++)
+				if (SceneManager.GetSceneAt(i).name != "Main")
 				{
-					if (SceneManager.GetSceneAt(i).name != "Main")
-					{
-						curLevel = SceneManager.GetSceneAt(i).name;
-					}
+					curLevel = SceneManager.GetSceneAt(i).name;
 				}
 			}
 		}
-
-		if(curLevel == ""){
-			OpenMenu();
+		
+		if(!openFileOnStart){
+			if(curLevel == ""){
+				OpenMenu();
+			}else{
+				SceneController.instance.curSetIndex = -1;
+				CloseMenu();
+			}
 		}else{
-			SceneController.instance.curSetIndex = -1;
-			CloseMenu();
+			if(SceneManager.sceneCount > 1){
+				SceneManager.UnloadSceneAsync(curLevel);
+				curLevel = "";
+			}
+
+			OpenMenu();
 		}
 
 		Time.timeScale = 1;
@@ -400,8 +404,9 @@
 		if(openFileOnStart){
 			SceneController.instance.OpenEditor();
 			editor.LoadInEditor(loadFileName);
+			openFileOnStart = false;
+			
 		}
-
 	}
 
 	public void TryChangeSetting(InputAction.CallbackContext context)
@@ -509,6 +514,7 @@
 	
 	void Update()
 	{
+
 		CameraFollow.instance.uiCam.fieldOfView = CameraFollow.instance.cam.fieldOfView;
 	
 //		if (Input.GetKeyDown (KeyCode.R)) {
@@ -581,6 +587,7 @@
 				}
 			}
 		}
+
 	}
 
 	//this is fucking terrible

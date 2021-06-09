@@ -20,6 +20,7 @@ public class StellationEditor : Editor
 		{
 			
 			Undo.RecordObject(controller, "reloaded");
+			
 			Services.main.OpenEditorFileOnLoad(controller.name);
 			
 			EditorUtility.SetDirty(controller);
@@ -35,8 +36,11 @@ public class StellationEditor : Editor
 			
 			Undo.RecordObject(controller, "reloaded");
 			controller.ReloadFromEditor();
+			StellationManager m = controller.GetComponentInParent<StellationManager>();
+
 
 			EditorUtility.SetDirty(controller);
+			EditorUtility.SetDirty(m);
 		}
 		
 	}
