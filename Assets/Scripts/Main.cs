@@ -32,7 +32,7 @@
 	public Transform pointParent;
 	public Transform splineParent;
 	public Transform stellationParent;
-	private string curLevel;
+	public string curLevel;
 	public MapEditor editor;
 	public GameObject editorUI;
 	public Camera mainCam;
@@ -375,7 +375,7 @@
 		if(curLevel == ""){
 			OpenMenu();
 		}else{
-
+			SceneController.instance.curSetIndex = -1;
 			CloseMenu();
 		}
 
@@ -408,6 +408,7 @@
 	{	
 		if (SceneController.instance.curSetIndex < 0)
 		{
+			
 			SceneController.instance.curSetIndex = 0;
 		}
 

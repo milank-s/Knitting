@@ -189,12 +189,15 @@ public class SceneController : MonoBehaviour
 
         curLevel++;
         
-        if (curSetIndex == -1)
+        if (curSetIndex == -1 && Services.main.curLevel == "")
         {
+            //we're in the editor, dont do anything
             return;
         }
         
-        if(curLevel < curLevelSet.levels.Count){    
+        //stopgap stuff for when I want to test the level without going through the menu;
+
+        if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
             
             //MapEditor.Load(levels[curLevel]);
             
