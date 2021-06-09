@@ -605,17 +605,20 @@
 			Services.PlayerBehaviour.curSpline.OnSplineExit();
 		}
 
-		
 		//this seems incredibly illegal
-		Services.PlayerBehaviour.pointDest = p;
+		Services.PlayerBehaviour.curPoint = p;
 		Services.PlayerBehaviour.transform.position = p.Pos;
-		//Services.PlayerBehaviour.curPoint.OnPlayerEnterPoint();
+		
+		Services.PlayerBehaviour.curSpline = null;
+		Services.PlayerBehaviour.curPoint.OnPlayerEnterPoint();
 		
 		Services.PlayerBehaviour.flow = flow;
 		Services.PlayerBehaviour.curSpeed = curSpeed;
 		
 		Services.PlayerBehaviour.ResetFX();
-		Services.PlayerBehaviour.SwitchState(PlayerState.Switching);
+
+		//they are already switching in the cases when this is called
+		// Services.PlayerBehaviour.SwitchState(PlayerState.Switching);
 	}
 
 	public void InitializeLevel(){

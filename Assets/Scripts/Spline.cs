@@ -191,7 +191,7 @@ public class Spline : MonoBehaviour
 	{
 		if (!line.isAutoDrawing)
 		{
-			line.Draw3DAuto();
+			//line.Draw3DAuto();
 		}
 
 		if (!drawnIn)
@@ -579,7 +579,7 @@ public class Spline : MonoBehaviour
 		// {
 		// 	drawIndex += 1;
 		// }
-		
+	
 		if (isPlayerOn || reactToPlayer)
 		{
 			drawIndex = GetPlayerLineSegment(pointIndex);
@@ -741,7 +741,7 @@ public class Spline : MonoBehaviour
 		//closeness to the player. 0 = one curve away
 		invertedDistance = 1f - Mathf.Clamp01(Mathf.Abs(distanceFromPlayer));
 
-		float newFrequency = Mathf.Abs(Services.PlayerBehaviour.curSpeed);
+		float newFrequency = 1 + Mathf.Abs(Services.PlayerBehaviour.curSpeed);
 
 		//use accuracy to show static
 		float amplitude;
@@ -750,24 +750,30 @@ public class Spline : MonoBehaviour
 		Vector3 distortionVector = new Vector3(-direction.y, direction.x, direction.z);
 	
 		//amplitude = Mathf.Clamp01(Services.PlayerBehaviour.potentialSpeed/5f) + shake;
-		amplitude = 1 + shake;
-		distortion = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f), 0, 0.25f) * amplitude;
+		//Mathf.Sin(Time.time * frequency + phase - segmentIndex)
+		
+		//NewFrequency(newFrequency);		
+
+		amplitude = 0.25f;
+		float scrollSpeed = -1f;
+		phase = 1f;
+		distortion = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f) + shake, 0, 0.5f) * amplitude;
+		float noise = Mathf.PerlinNoise(Time.time * scrollSpeed + (float)segmentIndex * phase, Time.time * scrollSpeed + (float)segmentIndex * phase);
+		noise = noise * 2f - 1f;
+		distortion = noise * distortion;
 
 		if(!drawingIn){
 			if (isPlayerOn)
 			{
+				//UnityEngine.Random.Range(- distortion, distortion)
 				
-				v += (distortionVector * UnityEngine.Random.Range(- distortion, distortion) * invertedDistance) * amplitude;
-				NewFrequency(newFrequency * 10);
-				
-	//			v += distortionVector * (Mathf.Sin(Time.time * frequency + phase - segmentIndex) *
-	//				                         Mathf.Clamp01(_completion) * Mathf.Clamp01(distanceFromPlayer) *
-	//				                         Mathf.Clamp01(drawTimer /5f) * 0.025f);
+				v += distortionVector * distortion * Mathf.Clamp01(invertedDistance + shake);
+
 			}
 			else if(reactToPlayer)
 			{
 				//I'm not even sure what this is doing
-				v += (distortionVector * UnityEngine.Random.Range(-distortion, distortion) * Mathf.Clamp01(-indexDiff + 1)) * amplitude;
+				v += distortionVector * distortion * Mathf.Clamp01(-indexDiff + 10);
 			}
 
 		}

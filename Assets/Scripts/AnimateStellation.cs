@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AnimateSpline : MonoBehaviour {
+public class AnimateStellation : MonoBehaviour {
+
+
+	[SerializeField] StellationController controller;
+
 
 	public float offset;
 	public float speed = 1;
@@ -25,17 +29,9 @@ public class AnimateSpline : MonoBehaviour {
 	public float contraction;
 	public float rotation;
 
-
-	Spline _spline;
-
-	void Start () {
-		_spline = GetComponent<Spline>();
-	}
-
-	// Update is called once per frame
 	void Update () {
 		int i = 0;
-		foreach(Point p in _spline.SplinePoints){
+		foreach(Point p in controller._points){
 			float time = (speed * Time.time + (i * offset))  % 1;
 			p.tension = tensionVal.Evaluate(time) * tMultiplier;
 			p.bias = biasVal.Evaluate(time) * bMultiplier;
