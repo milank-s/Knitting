@@ -16,12 +16,27 @@ public class StellationEditor : Editor
 		
 		DrawDefaultInspector();
 
-		if (GUILayout.Button("ReloadFromFile"))
+		if (GUILayout.Button("Open in Editor"))
+		{
+			
+			Undo.RecordObject(controller, "reloaded");
+			Services.main.OpenEditorFileOnLoad(controller.name);
+			
+			EditorUtility.SetDirty(controller);
+			EditorUtility.SetDirty(Services.main);
+
+			EditorApplication.ExecuteMenuItem("Edit/Play");
+			
+			
+		}
+
+		if (GUILayout.Button("Reload From File"))
 		{
 			
 			Undo.RecordObject(controller, "reloaded");
 			controller.ReloadFromEditor();
-			
+
+			EditorUtility.SetDirty(controller);
 		}
 		
 	}

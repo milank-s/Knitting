@@ -69,6 +69,7 @@
 	public SplineAction OnSplineExit;
 
 
+	public bool openFileOnStart = false;
 	private bool pressedPause;
 	
 	[SerializeField]
@@ -101,6 +102,10 @@
 		}
 	}
 
+	public void OpenEditorFileOnLoad(string l){
+		loadFileName = l;
+		openFileOnStart = true;
+	}
 	public void PauseGame()
 	{
 		if(state == GameState.playing)
@@ -276,10 +281,15 @@
 		
 		state = GameState.menu;
 		
-		if (SceneController.instance.curSetIndex > -1 && SceneController.instance.curLevelSet.isScene)
-		{
+		//more general method of unloading scenes
+		if(SceneManager.sceneCount > 1){
 			SceneManager.UnloadSceneAsync(curLevel);
 		}
+
+		// if (SceneController.instance.curSetIndex > -1 && SceneController.instance.curLevelSet.isScene)
+		// {
+		// 	SceneManager.UnloadSceneAsync(curLevel);
+		// }
 
 		curLevel = "";
 		
@@ -352,25 +362,31 @@
 
 	void Start()
 	{
-
+		
 		GameSettings.i.InitializeSettings();
-	
-		if (SceneManager.sceneCount > 1)
-		{
-			for (int i = 0; i < SceneManager.sceneCount; i++)
-			{
-				if (SceneManager.GetSceneAt(i).name != "Main")
-				{
-					curLevel = SceneManager.GetSceneAt(i).name;
-				}
-			}
-		}
 
 		Cursor.lockState = CursorLockMode.None;
 		
 		state = GameState.menu;
 		MapEditor.editing = true;
 		ToggleEditMode();
+		if(openFileOnStart){	
+			//close any open scene and open up the editor
+			
+		}else{
+
+			//get any open scene in order to play it
+			if (SceneManager.sceneCount > 1)
+			{
+				for (int i = 0; i < SceneManager.sceneCount; i++)
+				{
+					if (SceneManager.GetSceneAt(i).name != "Main")
+					{
+						curLevel = SceneManager.GetSceneAt(i).name;
+					}
+				}
+			}
+		}
 
 		if(curLevel == ""){
 			OpenMenu();
@@ -380,6 +396,12 @@
 		}
 
 		Time.timeScale = 1;
+
+		if(openFileOnStart){
+			SceneController.instance.OpenEditor();
+			editor.LoadInEditor(loadFileName);
+		}
+
 	}
 
 	public void TryChangeSetting(InputAction.CallbackContext context)
