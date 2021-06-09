@@ -361,7 +361,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Lets get into it
+  m_text: enough
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -430,10 +430,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 534869751}
-    characterCount: 16
+    characterCount: 6
     spriteCount: 0
-    spaceCount: 3
-    wordCount: 4
+    spaceCount: 0
+    wordCount: 1
     linkCount: 0
     lineCount: 1
     pageCount: 1
@@ -540,7 +540,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sentences:
-  - Lets get into it
+  - enough
 --- !u!1 &605024280
 GameObject:
   m_ObjectHideFlags: 0
@@ -1542,7 +1542,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 0}
-  distortion: 0.5
+  distortion: 0.025
+  amplitude: 1
+  frequency: 0.8843
+  scrollSpeed: 103
 --- !u!1 &1428820714
 GameObject:
   m_ObjectHideFlags: 0
@@ -2191,11 +2194,11 @@ MonoBehaviour:
   lockZ: 1
   rootKey: 0
   laps: 10
-  speed: 1
-  acceleration: 0
+  speed: 10
+  acceleration: 1
   startIndex: 0
   time: 1
-  startSpeed: 1
+  startSpeed: 5
   curSplineIndex: 0
   start: {fileID: 0}
   center: {x: 0, y: 0, z: 0}

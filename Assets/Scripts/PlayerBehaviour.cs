@@ -92,7 +92,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public float normalizedAccuracy => (1 + accuracy)/2f;
 	public float potentialSpeed => flow + speed + boost;
-	public float easedAccuracy => Mathf.Pow(normalizedAccuracy, accuracyCoefficient);
+	public float easedAccuracy => Mathf.Pow(Mathf.Clamp01(accuracy), accuracyCoefficient);
 	public float actualSpeed
 	{
 		get
@@ -1241,7 +1241,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			flow = curSpline.speed;
 		}
 
-		float speedGain = (easedAccuracy - 0.75f) * 4f;
+		float speedGain = (easedAccuracy - 0.5f) * 4f;
 		
 		//flow += curSpline.speed * Time.deltaTime;
 		flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed) ;

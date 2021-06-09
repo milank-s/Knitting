@@ -34,6 +34,9 @@ public class Spline : MonoBehaviour
 
 	[HideInInspector] 
 	public static float shake;
+	public static float amplitude = 0.25f;
+	public static float noiseSpeed = 25;
+	public static float frequency = 0.025f;
 	public float distortion;
 	public static System.Collections.Generic.List<Spline> Splines = new System.Collections.Generic.List<Spline> ();
 	public static float drawSpeed = 500f;
@@ -134,7 +137,6 @@ public class Spline : MonoBehaviour
 	private float drawCooldown = 1f;
 	private float drawTimer = 0;
 	private float pitch;
-	private float frequency;
 	private float phase;
 	private float volume;
 
@@ -742,9 +744,6 @@ public class Spline : MonoBehaviour
 		invertedDistance = 1f - Mathf.Clamp01(Mathf.Abs(distanceFromPlayer));
 
 		float newFrequency = 1 + Mathf.Abs(Services.PlayerBehaviour.curSpeed);
-
-		//use accuracy to show static
-		float amplitude;
 		
 		Vector3 direction = GetVelocityAtIndex(pointIndex, step).normalized;
 		Vector3 distortionVector = new Vector3(-direction.y, direction.x, direction.z);
@@ -754,20 +753,17 @@ public class Spline : MonoBehaviour
 		
 		//NewFrequency(newFrequency);		
 
-		amplitude = 0.25f;
-		float scrollSpeed = -1f;
-		phase = 1f;
-		distortion = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f) + shake, 0, 0.5f) * amplitude;
-		float noise = Mathf.PerlinNoise(Time.time * scrollSpeed + (float)segmentIndex * phase, Time.time * scrollSpeed + (float)segmentIndex * phase);
-		noise = noise * 2f - 1f;
-		distortion = noise * distortion;
+		//(-Time.time * noiseSpeed) + (
+
+		float magnitude = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f) - shake, 0, 0.5f) * amplitude;
+		
+		distortion = (Mathf.PerlinNoise((-Time.time * noiseSpeed) + (segmentIndex * frequency), 2f) * 2f - 1f);
 
 		if(!drawingIn){
 			if (isPlayerOn)
 			{
 				//UnityEngine.Random.Range(- distortion, distortion)
-				
-				v += distortionVector * distortion * Mathf.Clamp01(invertedDistance + shake);
+				v += distortionVector * distortion * magnitude * Mathf.Clamp01(invertedDistance) + distortionVector * distortion * shake;
 
 			}
 			else if(reactToPlayer)
