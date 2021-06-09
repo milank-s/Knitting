@@ -401,12 +401,6 @@
 
 		Time.timeScale = 1;
 
-		if(openFileOnStart){
-			SceneController.instance.OpenEditor();
-			editor.LoadInEditor(loadFileName);
-			openFileOnStart = false;
-			
-		}
 	}
 
 	public void TryChangeSetting(InputAction.CallbackContext context)
@@ -438,7 +432,7 @@
 			
 			SceneController.instance.curSetIndex = 0;
 		}
-
+		
 		Services.Player.SetActive(false);
 		
 		menu.SetActive(true);	
@@ -466,7 +460,7 @@
 	public void CloseMenu()
 	{
 		menu.SetActive(false);
-			
+		
 		if (curLevel != "Editor") 
 		{
 			Cursor.visible = false;
@@ -514,6 +508,13 @@
 	
 	void Update()
 	{
+
+		if(openFileOnStart){
+			SceneController.instance.OpenEditor();
+			editor.LoadInEditor(loadFileName);
+			openFileOnStart = false;
+			menu.SetActive(false);
+		}
 
 		CameraFollow.instance.uiCam.fieldOfView = CameraFollow.instance.cam.fieldOfView;
 	

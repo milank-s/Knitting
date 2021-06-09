@@ -38,7 +38,6 @@ public class StellationEditor : Editor
 			controller.ReloadFromEditor();
 			StellationManager m = controller.GetComponentInParent<StellationManager>();
 
-
 			EditorUtility.SetDirty(controller);
 			EditorUtility.SetDirty(m);
 		}
