@@ -43,7 +43,7 @@ public class StellationController : MonoBehaviour {
 	public int startIndex;
 	public float time = 1;
 	public float startSpeed = 1;
-	
+	public float maxSpeed = 3;
 	private float timer;
 	public int curSplineIndex;
 
@@ -578,6 +578,10 @@ public class StellationController : MonoBehaviour {
 			image.color = new Color (1, 1, 1, fade);
 		}
 
+
+		if(won){
+			Services.fx.readout.text = "";
+		}
 	}
 
 	public void NextWord(){

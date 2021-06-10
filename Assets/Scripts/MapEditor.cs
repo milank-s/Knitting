@@ -101,6 +101,7 @@ public class MapEditor : MonoBehaviour
     public Text startSpeed;
     public Text splineSpeedReadout;
     public Text accelerationReadout;
+    public Text maxSpeedReadout;
     public Slider splineSpeedVal;
     public Slider speedSlider;
     public Slider accelerationSlider;
@@ -275,6 +276,13 @@ public class MapEditor : MonoBehaviour
         controller.acceleration = s;
         accelerationReadout.text = s.ToString("F1");
     }
+
+    public void ChangeMaxSpeed(System.Single s)
+    {
+        controller.maxSpeed = s;
+        maxSpeedReadout.text = s.ToString("F1");
+    }
+
 
     public void ChangeSplineSpeed(System.Single s)
     {

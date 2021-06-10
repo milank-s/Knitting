@@ -229,6 +229,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		flow = 0;
 		speed = Services.main.activeStellation.startSpeed;
 		acceleration = Services.main.activeStellation.acceleration;
+		maxSpeed = Services.main.activeStellation.maxSpeed;
 		
 
 //		Material newMat;
@@ -442,7 +443,18 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (state == PlayerState.Traversing) {
 			if(curSpline != null){
-				SetCursorAlignment ();
+				accuracy = GetAccuracy(progress);
+				float maxAcc = -100;
+				for(int i = 0; i < 5; i++){
+					float sign = goingForward ? 1 : -1;
+					float curAcc = GetAccuracy(progress + (float)i * sign * 0.02f);
+					if(curAcc > maxAcc){
+						maxAcc = curAcc;
+					}
+				}
+
+				accuracy = maxAcc;
+
 				transform.position = curSpline.GetPoint(progress);
 				if(OnTraversing != null){
 					OnTraversing.Invoke();
@@ -656,9 +668,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 	}
 
-	public void SetCursorAlignment(){
+	public float GetAccuracy(float prog){
 		
-		Vector3 splineDir = curSpline.GetDirection (progress);
+		Vector3 splineDir = curSpline.GetDirection (prog);
 		if(!goingForward){splineDir = -splineDir;}
 		Debug.DrawLine(transform.position, transform.position + splineDir, Color.red);
 		//might be best to remove the z
@@ -676,7 +688,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		float alignment = Vector2.Angle (cursorDir, screenSpaceDirection);
 
-		accuracy = (90 - alignment) / 90;
+		return (90 - alignment) / 90;
 		//StopAngleDiff = Mathf.Lerp (20, 50, Mathf.Abs(flow));
 	}
 
@@ -1242,7 +1254,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			flow = curSpline.speed;
 		}
 
-		float speedGain = (easedAccuracy - 0.5f) * 4f;
+		float speedGain = (easedAccuracy - 0.66f) * 3f;
+		Debug.Log("flow = " + flow);
 		
 		//flow += curSpline.speed * Time.deltaTime;
 		flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed) ;
