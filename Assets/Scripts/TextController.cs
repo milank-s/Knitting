@@ -7,12 +7,12 @@ public class TextController : MonoBehaviour
    
    public string[] sentences;
     TextMeshPro text;
+    
 
     int sentenceIndex = 0;
 
     void Start(){
         text = GetComponent<TextMeshPro>();
-        text.text = sentences[0];
     }
 
     public void Disable(){
@@ -20,8 +20,8 @@ public class TextController : MonoBehaviour
     }
 
     public void NextSentence(){
-        sentenceIndex ++;
         text.text = sentences[sentenceIndex % sentences.Length];
+        sentenceIndex ++;
     }
    
    public void RepeatSentence(){
