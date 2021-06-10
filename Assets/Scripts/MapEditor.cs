@@ -105,6 +105,7 @@ public class MapEditor : MonoBehaviour
     public Slider splineSpeedVal;
     public Slider speedSlider;
     public Slider accelerationSlider;
+    public Slider maxSpeedSlider;
     public Text fov;
     public Slider fovSlider;
     public Toggle useCamPos;
@@ -362,6 +363,7 @@ public class MapEditor : MonoBehaviour
         fixedCamera.isOn = controller.fixedCam;
         speedSlider.value = controller.startSpeed;
         accelerationSlider.value = controller.acceleration;
+        maxSpeedSlider.value = controller.maxSpeed;
         useCamPos.isOn = controller.setCameraPos;
         splineLockToggle.isOn = controller.lockSplines;
         lockXToggle.isOn = controller.lockX;
@@ -1171,6 +1173,7 @@ public class MapEditor : MonoBehaviour
         level["unlockType"].AsInt = (int) controller.unlockMethod;
         level["speed"].AsFloat = controller.speed; 
         level["acceleration"].AsFloat = controller.acceleration; 
+        level["maxSpeed"].AsFloat = controller.maxSpeed; 
         level["time"].AsFloat = controller.time;
         level["laps"].AsInt = controller.laps;
         level["startSpeed"].AsFloat = controller.startSpeed;
@@ -1461,6 +1464,10 @@ public class MapEditor : MonoBehaviour
         c.name = parent.name;
         c.speed = json["speed"];
         c.acceleration = json["acceleration"];
+        c.maxSpeed = json["maxSpeed"];
+        if(c.maxSpeed == 0){
+            c.maxSpeed = 3;
+        }
         c.laps = json["laps"];
         c.text = json["text"];
         c.time = json["time"];
