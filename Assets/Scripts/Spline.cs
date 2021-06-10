@@ -96,6 +96,7 @@ public class Spline : MonoBehaviour
 	[HideInInspector]
 	public Vector2 linearDirection;
 
+	Vector3 prevPos;
 	private bool reversed;
 	private float colorDecay;
 	private float distanceFromPlayer;
@@ -516,12 +517,14 @@ public class Spline : MonoBehaviour
 		float lerp = 0;
 		int totalLineSegments = curveFidelity * (SplinePoints.Count - (closed ? 0 : 1));
 		int curDrawIndex = 0;
-		
 		//never exiting while loop
 
 		while (curDrawIndex < totalLineSegments)
 		{
 			
+			
+			prevPos = SplinePoints[0].Pos;
+
 			float curStep = 0;
 			int curPoint = 0;
 			for (int i = 0; i < SplinePoints.Count - (closed ? 0 : 1); i++)
@@ -589,7 +592,9 @@ public class Spline : MonoBehaviour
 		}
 		
 		
-
+		
+		prevPos = SplinePoints[0].Pos;
+		
 		if (!bidirectional)
 		{
 			line.textureOffset -= Time.deltaTime * speed * 5f;
@@ -709,7 +714,7 @@ public class Spline : MonoBehaviour
 	void DrawLine(int pointIndex, int segmentIndex, float step)
 	{
 		Vector3 v = GetPointAtIndex(pointIndex, step);
-
+		
 		//Add movement Effects of player is on the spline
 
 		int indexDiff;
@@ -757,7 +762,8 @@ public class Spline : MonoBehaviour
 
 		float magnitude = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f) - shake, 0, 0.5f) * amplitude;
 		
-		distortion = (Mathf.PerlinNoise((-Time.time * noiseSpeed) + (segmentIndex * frequency), 2f) * 2f - 1f);
+		float d = (prevPos - v).magnitude;
+		distortion = (Mathf.PerlinNoise((-Time.time * noiseSpeed) + (d * frequency), 2f) * 2f - 1f);
 
 		if(!drawingIn){
 			if (isPlayerOn)
@@ -847,6 +853,8 @@ public class Spline : MonoBehaviour
 					line.SetColor(c, segmentIndex);
 				}
 			}
+
+			prevPos = v;
 //		}
 
 

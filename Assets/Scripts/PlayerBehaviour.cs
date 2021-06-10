@@ -1255,7 +1255,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		float speedGain = (easedAccuracy - 0.66f) * 3f;
-		Debug.Log("flow = " + flow);
 		
 		//flow += curSpline.speed * Time.deltaTime;
 		flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed) ;
