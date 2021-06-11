@@ -165,7 +165,8 @@ public class SceneController : MonoBehaviour
             if (curLevelSet.isScene)
             {
                 Services.main.LoadScene();
-                curLevel++;
+                //what why
+                //curLevel++;
             }
             else
             {
