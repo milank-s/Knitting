@@ -18,4 +18,8 @@ public class StellationProperties : MonoBehaviour
        Spline.frequency = frequency;
        Spline.noiseSpeed = scrollSpeed;
    }
+
+   public void SetDistortion(float f){
+       distortion = f;
+   }
 }

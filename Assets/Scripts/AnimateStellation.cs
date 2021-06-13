@@ -36,6 +36,7 @@ public class AnimateStellation : MonoBehaviour {
 			p.tension = tensionVal.Evaluate(time) * tMultiplier;
 			p.bias = biasVal.Evaluate(time) * bMultiplier;
 			p.continuity = continuityVal.Evaluate(time) * cMultiplier;
+			
 			if (offsetPerPoint)
 			{
 				if ((transform.position - new Vector3(p.anchorPos.x, p.anchorPos.y, transform.position.z))

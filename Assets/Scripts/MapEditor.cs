@@ -1464,10 +1464,12 @@ public class MapEditor : MonoBehaviour
         c.name = parent.name;
         c.speed = json["speed"];
         c.acceleration = json["acceleration"];
+        
         c.maxSpeed = json["maxSpeed"];
         if(c.maxSpeed == 0){
-            c.maxSpeed = 3;
+            c.maxSpeed = 3f;
         }
+
         c.laps = json["laps"];
         c.text = json["text"];
         c.time = json["time"];

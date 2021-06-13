@@ -1013,6 +1013,26 @@ public class PlayerBehaviour: MonoBehaviour {
 		state = PlayerState.Switching;
 	}
 
+	bool CanFlyToPoint(Point p){
+
+		if(p != curPoint && p.pointType != PointTypes.ghost && p.state != Point.PointState.locked){
+
+			//check that its not at the end of a bidirectional spline
+
+			if(p._connectedSplines.Count > 0){
+				foreach(Spline s in p._connectedSplines){
+					if(!s.bidirectional && p == s.EndPoint){
+						return false;
+					}
+				}
+			}
+
+			return true;
+		}
+
+		return false;
+	
+	}
 	void FreeMovement()
 	{
 		Point raycastPoint = SplineUtil.RaycastFromCamera(cursorPos, 5f);
@@ -1022,8 +1042,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			pointDest = null;
 		}
 
-		if (raycastPoint != null && raycastPoint != curPoint && raycastPoint.pointType != PointTypes.ghost && raycastPoint.state != Point.PointState.locked)
-		{
+		if (raycastPoint != null && CanFlyToPoint(raycastPoint))	{
 			noRaycast = false;
 			//& !raycastPoint.used
 			pointDest = raycastPoint;

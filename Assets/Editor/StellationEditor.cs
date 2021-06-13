@@ -35,8 +35,8 @@ public class StellationEditor : Editor
 		{
 			
 			Undo.RecordObject(controller, "reloaded");
-			controller.ReloadFromEditor();
 			StellationManager m = controller.GetComponentInParent<StellationManager>();
+			controller.ReloadFromEditor();
 
 			EditorUtility.SetDirty(controller);
 			EditorUtility.SetDirty(m);
