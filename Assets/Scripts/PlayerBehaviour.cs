@@ -596,7 +596,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				{
 					curPoint.SetPointType(PointTypes.normal);
 					CreatePoint();
-					canTraverse = true;
+
+					//no need to do this now, it will happen via the CanLeavePoint func next frame
+					//canTraverse = true;
 
 				}
 				else if (curPoint.pointType == PointTypes.connect)
@@ -734,18 +736,18 @@ public class PlayerBehaviour: MonoBehaviour {
 		//Could restrict points to never try and add their immediate neighbours?
 		l.positionCount = 0;
 
-		pointDest.tension = 1;
+		// pointDest.tension = 1;
 		
-		bool isEntering = false;
 
 		if (curSpline != null && curSpline != spp.s) {
-			isEntering = true;
 			curSpline.OnSplineExit ();
 		}
 
 
 		curSpline = spp.s;
-		pointDest = spp.p;
+		//why should you set pointdest here if you're already using it above as the target point?
+		// pointDest = spp.p;
+
 		connectTime = 1;
 	}
 
