@@ -41,6 +41,7 @@ public class MapEditor : MonoBehaviour
         }
     }
 
+    PointTypes curPointType = PointTypes.normal;
 
     public Tool _curTool
     {
@@ -948,31 +949,37 @@ public class MapEditor : MonoBehaviour
             yPos.text = "y  " + activePoint.Pos.y.ToString("F2");
             zPos.text = "z  " + activePoint.Pos.z.ToString("F2");
 
+
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
 
                  SetPointType(PointTypes.normal);
+                 curPointType = PointTypes.normal;
 
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
 
                  SetPointType(PointTypes.stop);
+                 curPointType = PointTypes.stop;
 
             }
             else if (Input.GetKeyDown(KeyCode.Alpha3))
             {
                  SetPointType(PointTypes.connect);
+                 curPointType = PointTypes.connect;
 
             }
             else if (Input.GetKeyDown(KeyCode.Alpha4))
             {
                  SetPointType(PointTypes.fly);
+                 curPointType = PointTypes.fly;
             }
 
             else if (Input.GetKeyDown(KeyCode.Alpha6))
             {
                  SetPointType(PointTypes.start);
+
             }else if (Input.GetKeyDown(KeyCode.Alpha7))
             {
                  SetPointType(PointTypes.end);
@@ -980,6 +987,7 @@ public class MapEditor : MonoBehaviour
             }else if (Input.GetKeyDown(KeyCode.Alpha5))
             {
                  SetPointType(PointTypes.ghost);
+                 curPointType = PointTypes.ghost;
             }
               else if (Input.GetKeyDown(KeyCode.Alpha8))
             {
@@ -2003,6 +2011,8 @@ void DragCamera()
                         if (selectedPoints.Count > 0)
                         {
                             newPoint = SplineUtil.CreatePoint(worldPos);
+                            newPoint.SetPointType(curPointType);
+
                             if (Input.GetKey(KeyCode.LeftShift))
                             {
                                 newPoint.tension = 1;
@@ -2037,6 +2047,7 @@ void DragCamera()
                         {
                             pointCreated = true;
                             newPoint = SplineUtil.CreatePoint(worldPos);
+                            newPoint.SetPointType(curPointType);
                             newPoint.transform.parent = pointsParent;
                             AddSelectedPoint(newPoint);
                         }

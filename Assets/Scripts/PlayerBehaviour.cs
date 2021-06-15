@@ -592,9 +592,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if (CanCreatePoint())
 			{
-				if (buttonUp && curPoint.pointType == PointTypes.connect)
+				
+				if (buttonUp && CanConnectFromPoint(curPoint))
 				{
-					curPoint.SetPointType(PointTypes.normal);
+					
 					CreatePoint();
 
 					//no need to do this now, it will happen via the CanLeavePoint func next frame
@@ -670,6 +671,19 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 	}
 
+	public bool CanConnectFromPoint(Point p){
+		
+		if(p.pointType == PointTypes.connect){
+			p.SetPointType(PointTypes.normal);
+			return true;
+		}else{
+			if(p.NeighbourCount() == 0 && p.pointType != PointTypes.reset && p.pointType != PointTypes.fly && p.pointType != PointTypes.ghost){
+				return true;
+			}
+		}
+
+		return false;
+	}
 	public float GetAccuracy(float prog){
 		
 		Vector3 splineDir = curSpline.GetDirection (prog);
