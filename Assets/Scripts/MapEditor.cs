@@ -1193,9 +1193,9 @@ public class MapEditor : MonoBehaviour
         cameraData["fov"].AsInt = c.desiredFOV;
         level["camera"] = cameraData;
 
-        for (int j = 0; j < instance.c._splines.Count; j++)
+        for (int j = 0; j < c._splines.Count; j++)
         {
-            Spline s = instance.c._splines[j];
+            Spline s = c._splines[j];
             
             JSONObject splineData = new JSONObject();
             //record if its closed

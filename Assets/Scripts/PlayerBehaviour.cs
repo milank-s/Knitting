@@ -741,8 +741,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (curSpline != null && curSpline != spp.s) {
 			curSpline.OnSplineExit ();
+			Services.main.activeStellation.AddSpline(spp.s);
 		}
-
 
 		curSpline = spp.s;
 		//why should you set pointdest here if you're already using it above as the target point?

@@ -46,6 +46,11 @@ public class StellationManager : MonoBehaviour
 		}
 	}
 
+	void Update(){
+		if(Input.GetKeyDown(KeyCode.S)){
+			OnUnload();
+		}
+	}
 	public void Start()
 	{
 		
@@ -96,21 +101,24 @@ public class StellationManager : MonoBehaviour
 		Services.main.InitializeLevel();
 		
 	}
-	
-	public void LoadStellationFromFile(){
-		//the original stellations should only be loaded the first time the player starts the level
-		//after that load a diff one
-		
-	}
 
 	public void SaveActiveStellation(StellationController c){
 			//right now the way the save function uses the point parent and active stellation might cause problems
 			MapEditor.instance.Save(c);
 	}
 	
-	public void ResetActiveStellation(){
-		PlayerPrefs.DeleteKey(Services.main.activeStellation.name);
+	public void ResetProgress(){
+		
+		for(int i = controllers.Count -1; i >= 0; i--)
+		{
+			PlayerPrefs.DeleteKey(controllers[i].name);
+		}
+	}
 
+	public void OnUnload(){
+		foreach(StellationController c in controllers){
+			MapEditor.instance.Save(c);
+		}
 	}
 
 	public void SetupActiveStellation(StellationController c, bool active)

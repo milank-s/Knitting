@@ -249,19 +249,7 @@ public class StellationController : MonoBehaviour {
 
 	
 			//expensive but easy
-			if (!_points.Contains(p))
-			{
-				p.hasController = true;
-				p.controller = this;
-				_points.Add(p);
-				p.SR.color = Color.white * 0.2f;
-				p.Initialize();
-			}
-
-				if (p.pointType == PointTypes.start)
-			{
-				_startPoints.Add(p);
-			}
+			AddPoint(p);
 
 		}
 
@@ -350,6 +338,27 @@ public class StellationController : MonoBehaviour {
 		}
 	}
 
+	public void AddSpline(Spline s){
+		if(!_splines.Contains(s)){
+			_splines.Add(s);
+			s.controller = this;
+		}
+	}
+
+	public void AddPoint(Point p){
+		if (!_points.Contains(p))
+			{
+				p.hasController = true;
+				p.controller = this;
+				_points.Add(p);
+				p.SR.color = Color.white * 0.2f;
+				p.Initialize();
+			}
+
+		if (p.pointType == PointTypes.start){
+			_startPoints.Add(p);
+		}
+	}
 	
 	public int TryComparePoints(Point p1, Point p2){
 		if(p1._connectedSplines.Count > 0 && p2._connectedSplines.Count > 0){

@@ -15,6 +15,11 @@ public class SceneManager : Editor
 
         StellationManager script = (StellationManager)target;
 
+        if(GUILayout.Button("Reset"))
+        {
+            script.ResetProgress();
+        }
+
         if(GUILayout.Button("Load"))
         {
             Undo.RecordObject(script, "savedFile");
