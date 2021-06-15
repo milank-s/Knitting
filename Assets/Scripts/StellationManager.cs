@@ -20,6 +20,7 @@ public class StellationManager : MonoBehaviour
 	[HideInInspector]
 	public int index;
 
+	string[] stellations;
 	public string fileName = "Line1";
 
 	public void Awake()
@@ -47,12 +48,35 @@ public class StellationManager : MonoBehaviour
 
 	public void Start()
 	{
-
+		
+		
 		if (controllers.Count < 1)
 		{
 			controllers = GetComponentsInChildren<StellationController>().ToList();
 		}
+
+		//first loop. save the file names and whether or not they have been played
+		//delete all the stellations and reload their stellations from the appropriate file
 		
+		for(int i = controllers.Count -1; i >= 0; i--)
+		{
+			if(PlayerPrefs.HasKey(controllers[i].name)){
+				
+				Destroy(controllers[i].gameObject);
+				StellationController c = MapEditor.instance.Load(controllers[i].name + "Played");
+				c.transform.parent = transform;
+				controllers[i] = c;
+				
+				//player has played the level, load from the buffer file
+			}else{
+				PlayerPrefs.SetInt(controllers[i].name, 1);
+				//player hasn't played the level yet. Load from OG and set to 1.
+
+			}
+		}
+
+		//second loop, load the stellations and set up any necessary unlocks
+
 		for(int i = controllers.Count -1; i >= 0; i--)
 		{
 			if (i < controllers.Count - 1) 
@@ -70,6 +94,20 @@ public class StellationManager : MonoBehaviour
 		
 		Services.main.InitializeLevel();
 		
+	}
+	
+	public void LoadStellationFromFile(){
+		//the original stellations should only be loaded the first time the player starts the level
+		//after that load a diff one
+		
+	}
+
+	public void SaveActiveStellation(){
+
+	}
+	
+	public void ResetActiveStellation(){
+		//
 	}
 
 	public void SetupActiveStellation(StellationController c, bool active)
