@@ -26,7 +26,7 @@ public class SplineTurtleCreator : Editor {
 			if(GUILayout.Button("Save"))
 			{
 
-				myScript.editor.Save();
+				myScript.editor.Save(myScript.editor.controller);
 				
 				//MapEditor.Save();
 //				foreach(Transform t in myScript.parent.transform){

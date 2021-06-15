@@ -816,7 +816,7 @@ public class MapEditor : MonoBehaviour
                     if (Input.GetKeyDown(KeyCode.S))
                     {
                         PlaySavedEffect();
-                        Save();
+                        Save(controller);
                     }
                     
                 }
@@ -1153,15 +1153,15 @@ public class MapEditor : MonoBehaviour
     }
 
 
-    public void Save()
+    public void Save(StellationController c)
     {
         instance = this;
         
         JSONObject level = new JSONObject();
 
-        Point[] points = pointsParent.GetComponentsInChildren<Point>();
+        Point[] points = c.GetComponentsInChildren<Point>();
         
-        level["name"] = controller.name;
+        level["name"] = c.name;
         level["pointCount"].AsInt = points.Length;
 
         for (int i = 0; i < points.Length; i++)
@@ -1169,33 +1169,33 @@ public class MapEditor : MonoBehaviour
             level["p" + i] = points[i].Save(i);
         }
         
-        level["splineCount"].AsInt = controller._splines.Count;
-        level["unlockType"].AsInt = (int) controller.unlockMethod;
-        level["speed"].AsFloat = controller.speed; 
-        level["acceleration"].AsFloat = controller.acceleration; 
-        level["maxSpeed"].AsFloat = controller.maxSpeed; 
-        level["time"].AsFloat = controller.time;
-        level["laps"].AsInt = controller.laps;
-        level["startSpeed"].AsFloat = controller.startSpeed;
-        level["text"] = controller.text;
-        level["title"] = controller.title;
+        level["splineCount"].AsInt = c._splines.Count;
+        level["unlockType"].AsInt = (int) c.unlockMethod;
+        level["speed"].AsFloat = c.speed; 
+        level["acceleration"].AsFloat = c.acceleration; 
+        level["maxSpeed"].AsFloat = c.maxSpeed; 
+        level["time"].AsFloat = c.time;
+        level["laps"].AsInt = c.laps;
+        level["startSpeed"].AsFloat = c.startSpeed;
+        level["text"] = c.text;
+        level["title"] = c.title;
         
-        level["forceOrder"] = controller.lockSplines;
+        level["forceOrder"] = c.lockSplines;
         JSONObject cameraData = new JSONObject();
-        cameraData["lockX"] = controller.lockX;
-        cameraData["lockY"] = controller.lockY;
-        cameraData["lockZ"] = controller.lockZ;
-        cameraData["x"].AsFloat = controller.cameraPos.x;
-        cameraData["y"].AsFloat =  controller.cameraPos.y;
-        cameraData["z"].AsFloat =  controller.cameraPos.z;
-        cameraData["setPos"].AsBool = controller.setCameraPos;
-        cameraData["fixCam"].AsBool = controller.fixedCam;
-        cameraData["fov"].AsInt = controller.desiredFOV;
+        cameraData["lockX"] = c.lockX;
+        cameraData["lockY"] = c.lockY;
+        cameraData["lockZ"] = c.lockZ;
+        cameraData["x"].AsFloat = c.cameraPos.x;
+        cameraData["y"].AsFloat =  c.cameraPos.y;
+        cameraData["z"].AsFloat =  c.cameraPos.z;
+        cameraData["setPos"].AsBool = c.setCameraPos;
+        cameraData["fixCam"].AsBool = c.fixedCam;
+        cameraData["fov"].AsInt = c.desiredFOV;
         level["camera"] = cameraData;
 
-        for (int j = 0; j < instance.controller._splines.Count; j++)
+        for (int j = 0; j < instance.c._splines.Count; j++)
         {
-            Spline s = instance.controller._splines[j];
+            Spline s = instance.c._splines[j];
             
             JSONObject splineData = new JSONObject();
             //record if its closed
@@ -1227,13 +1227,13 @@ public class MapEditor : MonoBehaviour
             level["spline" + j] = splineData;
         }
 
-        WriteJSONtoFile(Application.streamingAssetsPath + "/Levels", controller.name + ".json", level);
+        WriteJSONtoFile(Application.streamingAssetsPath + "/Levels", c.name + ".json", level);
 
         
         bool contains = false;
         foreach (Dropdown.OptionData d in levelList.options)
         {
-            if (d.text == controller.name)
+            if (d.text == c.name)
             {
                 contains = true;
             }
@@ -1241,7 +1241,7 @@ public class MapEditor : MonoBehaviour
 
         if (!contains)
         {
-            levelList.options.Add(new Dropdown.OptionData(controller.name));
+            levelList.options.Add(new Dropdown.OptionData(c.name));
         }
     }
 

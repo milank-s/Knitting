@@ -17,7 +17,7 @@ public class LevelEditorInspector : Editor
         if(GUILayout.Button("SAVE"))
         {
             Undo.RecordObject(mapEditor, "savedFile");
-            mapEditor.Save();
+            mapEditor.Save(mapEditor.controller);
         }
         
         if(GUILayout.Button("LOAD"))

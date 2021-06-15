@@ -70,7 +70,8 @@ public class StellationManager : MonoBehaviour
 				//player has played the level, load from the buffer file
 			}else{
 				PlayerPrefs.SetInt(controllers[i].name, 1);
-				//player hasn't played the level yet. Load from OG and set to 1.
+				controllers[i].name = controllers[i].name + "Played";
+				//player hasn't played the level yet. Set name so that it saves to new file
 
 			}
 		}
@@ -102,12 +103,14 @@ public class StellationManager : MonoBehaviour
 		
 	}
 
-	public void SaveActiveStellation(){
-
+	public void SaveActiveStellation(StellationController c){
+			//right now the way the save function uses the point parent and active stellation might cause problems
+			MapEditor.instance.Save(c);
 	}
 	
 	public void ResetActiveStellation(){
-		//
+		PlayerPrefs.DeleteKey(Services.main.activeStellation.name);
+
 	}
 
 	public void SetupActiveStellation(StellationController c, bool active)
