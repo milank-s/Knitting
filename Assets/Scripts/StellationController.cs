@@ -342,6 +342,7 @@ public class StellationController : MonoBehaviour {
 		if(!_splines.Contains(s)){
 			_splines.Add(s);
 			s.controller = this;
+			s.transform.parent = transform;
 		}
 	}
 

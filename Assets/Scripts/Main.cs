@@ -161,16 +161,12 @@
 		//I would prefer not to do this.... but the OnLoadLevel func is worth calling	
 		
 		
-		if(SceneManager.sceneCount > 0){
+		if(StellationManager.instance != null){
 			//reset scene
 			//just reload the scene I guess
-			Debug.Log("trying to reload unity scene");
 			LoadScene();
 			
 		}else{
-			
-			Debug.Log("trying to reload stellation file");
-
 			//this doesnt work for the editor
 			if(SceneController.instance.curSetIndex != -1){
 				LoadFile();
