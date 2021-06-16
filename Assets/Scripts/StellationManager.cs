@@ -23,7 +23,7 @@ public class StellationManager : MonoBehaviour
 	string[] stellations;
 	public string fileName = "Line1";
 
-	public void Awake()
+	void Awake()
 	{
 		instance = this;
 	}
@@ -53,8 +53,6 @@ public class StellationManager : MonoBehaviour
 	}
 	public void Start()
 	{
-		
-		
 		if (controllers.Count < 1)
 		{
 			controllers = GetComponentsInChildren<StellationController>().ToList();
@@ -77,7 +75,6 @@ public class StellationManager : MonoBehaviour
 				PlayerPrefs.SetInt(controllers[i].name, 1);
 				controllers[i].name = controllers[i].name + "Played";
 				//player hasn't played the level yet. Set name so that it saves to new file
-
 			}
 		}
 
@@ -99,10 +96,9 @@ public class StellationManager : MonoBehaviour
 		SetupActiveStellation(controllers[0], true);
 		
 		Services.main.InitializeLevel();
-		
 	}
 
-	public void SaveActiveStellation(StellationController c){
+	public void SaveStellation(StellationController c){
 			//right now the way the save function uses the point parent and active stellation might cause problems
 			MapEditor.instance.Save(c);
 	}
@@ -142,6 +138,8 @@ public class StellationManager : MonoBehaviour
 	
 	public void CompleteStellation()
 	{
+
+		SaveStellation(Services.main.activeStellation);
 
 		if(OnCompleteStellation != null){
 			OnCompleteStellation.Invoke();

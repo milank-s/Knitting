@@ -194,10 +194,10 @@ public class SceneController : MonoBehaviour
         {
             //we're in the editor, dont do anything
             return;
-        }
-        
-        //stopgap stuff for when I want to test the level without going through the menu;
 
+        }
+
+        //stopgap stuff for when I want to test the level without going through the menu;
         if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
             
             //MapEditor.Load(levels[curLevel]);
@@ -231,12 +231,11 @@ public class SceneController : MonoBehaviour
         }
     }
 
-    public void UnloadScene(StellationController s)
+    public void UnloadStellation(StellationController s)
     {
         activeScenes.Remove(s);
         Destroy(s.gameObject);
     }
-    
     
     //Function for transition between levels. With text and image???
     

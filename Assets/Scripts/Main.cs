@@ -154,14 +154,23 @@
 			OnReset.Invoke();
 		}
 
+	
 		GlitchEffect.Fizzle(0.2f);
 
 		//this is currently game breaking?
 		//I would prefer not to do this.... but the OnLoadLevel func is worth calling	
 		
-		if(StellationManager.instance != null){
+		
+		if(SceneManager.sceneCount > 0){
 			//reset scene
+			//just reload the scene I guess
+			Debug.Log("trying to reload unity scene");
+			LoadScene();
+			
 		}else{
+			
+			Debug.Log("trying to reload stellation file");
+
 			//this doesnt work for the editor
 			if(SceneController.instance.curSetIndex != -1){
 				LoadFile();
@@ -195,11 +204,6 @@
 		Point.Points.Clear();
 		Spline.Splines.Clear();
 	}
-	
-	public void ReloadScene()
-	{
-		LoadSceneDelayed(0);
-	}
 
 	public void LoadFile(float delay = 0)
 	{
@@ -223,7 +227,7 @@
 
 		if (SceneController.instance.activeScenes.Count > 0)
 		{
-			SceneController.instance.UnloadScene(SceneController.instance.activeScenes[0]);
+			SceneController.instance.UnloadStellation(SceneController.instance.activeScenes[0]);
 		}
 		
 		StellationController c = editor.Load(curLevel);
@@ -306,22 +310,27 @@
 	
 	public void LoadScene()
 	{
-		
-		if (curLevel != "")
-		{
-			SceneManager.UnloadSceneAsync(curLevel);
-		}
 
+			if(SceneManager.sceneCount > 1){
+			if (curLevel != "")
+			{
+				SceneManager.UnloadSceneAsync(curLevel);
+			}
+		}
+		
 		//this could be bugged
 		Services.PlayerBehaviour.Reset();
+		FullReset();
+		
 		curLevel = SceneController.instance.GetCurLevel();
+
 		if (curLevel != "")
 		{
 			SceneManager.LoadScene(curLevel, LoadSceneMode.Additive);
 		}
 		else
 		{
-			FullReset();
+			// FullReset();
 			//OpenMenu();
 		}
 
@@ -645,8 +654,6 @@
 		activeStellation.Initialize();
 		activeStellation.Setup();
 		activeStellation.Draw();
-		
-		
 		
 //		foreach (StellationController c in SceneController.instance.activeScenes)
 //		{

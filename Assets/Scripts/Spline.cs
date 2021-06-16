@@ -41,7 +41,8 @@ public class Spline : MonoBehaviour
 	public static System.Collections.Generic.List<Spline> Splines = new System.Collections.Generic.List<Spline> ();
 	public static float drawSpeed = 500f;
 	
-	
+	Coroutine drawRoutine;
+
 	[HideInInspector]
 	public System.Collections.Generic.List<Point> SplinePoints;
 
@@ -199,7 +200,7 @@ public class Spline : MonoBehaviour
 
 		if (!drawnIn)
 		{
-			StartCoroutine(DrawSplineIn());
+			StartDrawRoutine();
 		}
 		
 		draw = true;
@@ -465,7 +466,7 @@ public class Spline : MonoBehaviour
 
 		state = SplineState.on;
 
-		StartCoroutine(DrawSplineIn());
+		StartDrawRoutine();
 	}
 
 	void SetLinePoint(Vector3 v, int index){
@@ -506,6 +507,9 @@ public class Spline : MonoBehaviour
 		}
 	}
 
+	public void StartDrawRoutine(){
+		drawRoutine = StartCoroutine(DrawSplineIn());
+	}
 	
 	public IEnumerator DrawSplineIn()
 	{
@@ -573,6 +577,7 @@ public class Spline : MonoBehaviour
 
 		drawingIn = false;
 		drawnIn = true;
+		drawRoutine = null;
 	}
 
 	public void DrawSpline(int pointIndex = 0)
@@ -1017,6 +1022,10 @@ public class Spline : MonoBehaviour
 
 	void OnDestroy ()
 	{
+		if(drawRoutine != null){
+			StopCoroutine(drawRoutine);
+		}
+
 		Splines.Remove (this);
 		if (controller != null)
 		{
