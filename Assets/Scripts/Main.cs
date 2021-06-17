@@ -499,12 +499,13 @@
 		else
 		{
 
+
 			if (!MapEditor.editing)
 			{
 				Cursor.lockState = CursorLockMode.Locked;
+				Cursor.visible = false;
 			}
 
-			Cursor.visible = false;
 			state = GameState.playing;
 		}
 
@@ -588,7 +589,7 @@
 			}
 			else
 			{
-				if (state == GameState.menu)
+				if (state == GameState.menu || MapEditor.editing)
 				{
 					playerInput.SwitchCurrentActionMap("UI");
 				}

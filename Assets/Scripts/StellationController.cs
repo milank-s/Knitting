@@ -43,7 +43,7 @@ public class StellationController : MonoBehaviour {
 	public int startIndex;
 	public float time = 1;
 	public float startSpeed = 1;
-	public float maxSpeed = 3;
+	public float maxSpeed = 10;
 	private float timer;
 	public int curSplineIndex;
 
