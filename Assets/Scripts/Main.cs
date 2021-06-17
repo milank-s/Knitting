@@ -538,7 +538,10 @@
 					ToggleEditMode();
 				}
 			}else{
-				SceneController.instance.LoadScene();
+
+				// SceneController.instance.LoadLevelSet();
+
+				//WHY IS THIS HERE
 			}
 		}
 
@@ -900,7 +903,16 @@
 		yield return null;
 		
 		Word.gameObject.SetActive(true);
-		SceneController.instance.LoadStellation();
+		
+		 if (!SceneController.instance.curLevelSet.isScene)
+            {
+                LoadFile(0);
+            }
+            else
+            {
+                LoadScene();
+            }
+
 		
 		description.text = "";
 

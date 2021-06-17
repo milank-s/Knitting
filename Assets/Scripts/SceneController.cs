@@ -136,24 +136,6 @@ public class SceneController : MonoBehaviour
 
     public void LoadLevelSet()
     {
-        
-        
-        if (Services.main.state == Main.GameState.menu)
-        {
-      
-        curLevel = 0;
-        Services.main.FullReset();
-        Services.main.CloseMenu();
-
-
-        //play level intro. 
-        StartCoroutine(Services.main.LevelIntro(curLevelSet));
-        
-        }
-    }
-
-    public void LoadScene()
-    {
         if (Services.main.state == Main.GameState.menu)
         {
       
@@ -175,16 +157,6 @@ public class SceneController : MonoBehaviour
         }
     }
     
-    public void LoadStellation(float delay = 1){
-         if (!curLevelSet.isScene)
-            {
-                Services.main.LoadFile(delay);
-            }
-            else
-            {
-                Services.main.LoadScene();
-            }
-    }
     public void LoadNextStellation(float delay = 1)
     {
 

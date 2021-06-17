@@ -404,9 +404,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		if(state == PlayerState.Switching || state == PlayerState.Animating){
 			speedCoefficient = 0;
 		}else if (state == PlayerState.Flying){
-			speedCoefficient = curSpeed;
+			speedCoefficient = flyingSpeed + speed;
 		}else{
-			speedCoefficient = Mathf.Clamp01(Mathf.Pow(accuracy, 5) * flow + 0.25f);
+			speedCoefficient = Mathf.Clamp01(Mathf.Pow(accuracy, 5) * actualSpeed + 0.25f);
 		}
 
 		if (joystickLocked)
@@ -728,6 +728,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	bool CanCreatePoint(){
+
+		//spherecast around player???
+		
 
 			if (!joystickLocked) {
 
@@ -1073,6 +1076,13 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		Point raycastPoint = SplineUtil.RaycastFromCamera(cursorPos, 5f);
 
+		Vector3 viewportPoint = Services.mainCam.WorldToViewportPoint(transform.position);
+		if(viewportPoint.x < 0 || viewportPoint.x > 1 || viewportPoint.y > 1 || viewportPoint.y < 0){
+			Services.main.ResetLevel();
+		}
+		//RESET IF PLAYER IS OFF SCREEN
+
+
 		if (noRaycast)
 		{
 			pointDest = null;
@@ -1084,14 +1094,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			pointDest = raycastPoint;
 		}
 
-		flow = flyingSpeed;
-
 		if (pointDest != null)
 		{
 			pointDest.controller.AdjustCamera();
 
 			flyingSpeed += Time.deltaTime;
-			transform.position += (pointDest.transform.position - transform.position).normalized * Time.deltaTime * flyingSpeed;
+			transform.position += (pointDest.transform.position - transform.position).normalized * Time.deltaTime * (flyingSpeed + speed);
 
 			foreach (Spline p in pointDest._connectedSplines)
 			{
@@ -1108,19 +1116,20 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 		else
 		{
-			if (flyingSpeed > 0)
-			{
+			// if (flyingSpeed > 0)
+			// {
 				flyingSpeed -= Time.deltaTime * flyingSpeedDecay;
-				Vector3 inertia = cursorDir * flyingSpeed;
+				flyingSpeed = Mathf.Clamp(flyingSpeed, 0, 1000);
+				Vector3 inertia = cursorDir * (flyingSpeed + speed);
 				transform.position += inertia * Time.deltaTime;
-			}
-			else
-			{
-				//reset here
-				//play fizzle animation?
+			// }
+			// else
+			// {
+			// 	//reset here
+			// 	//play fizzle animation?
 
-				SwitchState(PlayerState.Animating);
-			}
+			// 	SwitchState(PlayerState.Animating);
+			// }
 		}
 
 	}
@@ -1650,7 +1659,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 // && (Input.GetButtonDown("Button1")
 			
-			accuracy = (90 - actualAngle) / 90;
+			if(actualAngle < 180){
+				accuracy = (90 - actualAngle) / 90;
+			}
 
 			if ((actualAngle <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) && maybeNextSpline != null)
 			{
@@ -1930,14 +1941,14 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if (flow > flyingSpeed)
 				{
-					flow = flyingSpeed;
+					//flow = flyingSpeed;
 
 				}
 
 
 				Services.fx.flyingParticles.Pause();
 
-				curSpeed = flyingSpeed;
+				//curSpeed = flyingSpeed;
 
 				boost = 0;
 				//Services.fx.BakeParticleTrail(Services.fx.flyingParticles, Services.fx.flyingParticleTrailMesh);
@@ -2076,7 +2087,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				pointDest = null;
 				l.positionCount = 0;
 
-				//flyingSpeed = curSpeed;
+				flyingSpeed = flow;
 
 				//THIS MAY NOT BE NECESSARY UNLESS WE CAN FLY OFF OF SPLINES, NOT JUST POINTS
 				//curPoint.OnPointExit();
@@ -2112,7 +2123,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				state = PlayerState.Switching;
 
 				timeOnPoint = 0;
-				flyingSpeed = curSpeed;
+				flyingSpeed = flow;
 				curSpeed = 0;
 
 				if (curPoint == null)
