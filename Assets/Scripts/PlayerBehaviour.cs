@@ -585,20 +585,31 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if(!canTraverse){
 
-			if (curPoint.pointType == PointTypes.connect)
+			// if (curPoint.pointType == PointTypes.connect)
+			// {
+			// 	freeCursor = true;
+			// }
+
+			if (CanConnectFromPoint(curPoint))
 			{
 				freeCursor = true;
-			}
-
-			if (CanCreatePoint())
-			{
 				
-				if (buttonUp && CanConnectFromPoint(curPoint))
-				{
+				if (CanCreatePoint())
+				{		
 					
-					canTraverse = true;
-					CreatePoint();
+					cursorSprite.sprite = canConnectSprite;
+					Services.fx.ShowNextPoint(pointDest);
 
+					if(buttonUp){
+						canTraverse = true;
+
+						if(curPoint.pointType == PointTypes.connect){
+							curPoint.SetPointType(PointTypes.normal);
+						}
+						
+						CreatePoint();
+						
+					}
 					//no need to do this now, it will happen via the CanLeavePoint func next frame
 					//canTraverse = true;
 
@@ -613,8 +624,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 //					cursorOnPoint.SetPosition(0, pointDest.Pos);
 //					cursorOnPoint.SetPosition(1, cursorPos);
-					cursorSprite.sprite = canConnectSprite;
-					Services.fx.ShowNextPoint(pointDest);
+					// cursorSprite.sprite = canConnectSprite;
+					// Services.fx.ShowNextPoint(pointDest);
 				}
 			}
 			else if (TryToFly())
@@ -675,7 +686,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	public bool CanConnectFromPoint(Point p){
 		
 		if(p.pointType == PointTypes.connect){
-			p.SetPointType(PointTypes.normal);
 			return true;
 		}else{
 			if(p.NeighbourCount() == 0 && p.pointType != PointTypes.reset && p.pointType != PointTypes.fly && p.pointType != PointTypes.ghost){
