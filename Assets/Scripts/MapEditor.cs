@@ -1319,7 +1319,20 @@ public class MapEditor : MonoBehaviour
         pointsParent.name = "points";
         pointsParent.parent = splinesParent;
     }
-    public StellationController Load(string fileName, bool recycle = true)
+
+    public StellationController LoadIntoStellation(StellationController c){
+
+        //destroy children
+
+        for(int i = 0; i < c.transform.childCount; i++){
+            DestroyImmediate(c.transform.GetChild(i).gameObject);
+        }
+
+        Load(c.name, c);
+
+        return c;
+    }
+    public StellationController Load(string fileName, StellationController stellationController = null)
     {
         
         List<Spline> splines = new List<Spline>();
@@ -1330,15 +1343,20 @@ public class MapEditor : MonoBehaviour
         
         JSONNode json = ReadJSONFromFile(Application.streamingAssetsPath + "/Levels", fileName + ".json");
    
+        if(stellationController == null){
             parent = new GameObject();
-            pointParent = new GameObject();
             parent.transform.parent = stellationsParent;
-            pointParent.transform.parent = parent.transform;
-            pointParent.name = "points";
-            parent.name = fileName;
+        }else{
+            parent = stellationController.gameObject;
+        }
 
-            pointsParent = pointParent.transform;
-            splinesParent = parent.transform;
+        pointParent = new GameObject();
+        pointParent.transform.parent = parent.transform;
+        pointParent.name = "points";
+        parent.name = fileName;
+
+        pointsParent = pointParent.transform;
+        splinesParent = parent.transform;
         
         List<Point> newPoints = new List<Point>();
         
@@ -1467,7 +1485,15 @@ public class MapEditor : MonoBehaviour
 //        {
 //            points[i].Destroy();
 //        }
-        StellationController c = parent.AddComponent<StellationController>();
+
+        StellationController c;
+
+        if(stellationController == null){
+            c = parent.AddComponent<StellationController>();
+        }else{
+            c = stellationController;
+        }
+        
 
         c.name = parent.name;
         c.speed = json["speed"];

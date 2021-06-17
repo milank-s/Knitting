@@ -507,15 +507,18 @@ public class StellationController : MonoBehaviour {
 	
 	public void ReloadFromEditor()
 	{
-		StellationController c = Services.main.editor.Load(gameObject.name);
+		Services.main.editor.LoadIntoStellation(this);
 		StellationManager manager = GetComponentInParent<StellationManager>();
-		if (manager.controllers.Contains(this))
-		{
-			manager.controllers[manager.controllers.IndexOf(this)] = c;
-		}
-		c.transform.parent = transform.parent;
-		c.transform.position = transform.position;
-		DestroyImmediate(gameObject);
+
+		//doing loading non destructively now
+		
+		// if (manager.controllers.Contains(this))
+		// {
+		// 	manager.controllers[manager.controllers.IndexOf(this)] = c;
+		// }
+		// c.transform.parent = transform.parent;
+		// c.transform.position = transform.position;
+		// DestroyImmediate(gameObject);
 	}
 
 	public void Step()

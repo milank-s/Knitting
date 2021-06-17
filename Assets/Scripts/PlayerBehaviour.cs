@@ -601,13 +601,21 @@ public class PlayerBehaviour: MonoBehaviour {
 					Services.fx.ShowNextPoint(pointDest);
 
 					if(buttonUp){
-						canTraverse = true;
+						//canTraverse = true;
 
 						if(curPoint.pointType == PointTypes.connect){
 							curPoint.SetPointType(PointTypes.normal);
 						}
 						
+						foundConnection = false;
 						CreatePoint();
+						
+						
+						canTraverse = true;
+						curSpline.OnSplineEnter(curPoint, pointDest);
+						curSpline.CalculateDistance();
+						//handle entering and distance calc
+						
 						
 					}
 					//no need to do this now, it will happen via the CanLeavePoint func next frame
