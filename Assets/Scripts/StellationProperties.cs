@@ -22,4 +22,8 @@ public class StellationProperties : MonoBehaviour
    public void SetDistortion(float f){
        distortion = f;
    }
+
+   public void AddDistortion(float f){
+       distortion += f;
+   }
 }

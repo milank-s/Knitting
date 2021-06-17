@@ -20,6 +20,7 @@ public class StellationManager : MonoBehaviour
 	[HideInInspector]
 	public int index;
 
+	public bool save;
 	string[] stellations;
 	public string fileName = "Line1";
 
@@ -60,7 +61,7 @@ public class StellationManager : MonoBehaviour
 
 		//first loop. save the file names and whether or not they have been played
 		//delete all the stellations and reload their stellations from the appropriate file
-		
+		if(save){
 		for(int i = controllers.Count -1; i >= 0; i--)
 		{
 			if(PlayerPrefs.HasKey(controllers[i].name)){
@@ -76,6 +77,7 @@ public class StellationManager : MonoBehaviour
 				controllers[i].name = controllers[i].name + "Played";
 				//player hasn't played the level yet. Set name so that it saves to new file
 			}
+		}
 		}
 
 		//second loop, load the stellations and set up any necessary unlocks
@@ -139,7 +141,9 @@ public class StellationManager : MonoBehaviour
 	public void CompleteStellation()
 	{
 
-		SaveStellation(Services.main.activeStellation);
+		if(save){
+			SaveStellation(Services.main.activeStellation);
+		}
 
 		if(OnCompleteStellation != null){
 			OnCompleteStellation.Invoke();

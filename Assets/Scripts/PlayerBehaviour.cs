@@ -596,6 +596,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				if (buttonUp && CanConnectFromPoint(curPoint))
 				{
 					
+					canTraverse = true;
 					CreatePoint();
 
 					//no need to do this now, it will happen via the CanLeavePoint func next frame
