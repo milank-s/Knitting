@@ -524,17 +524,18 @@ public class PlayerBehaviour: MonoBehaviour {
 		buttonUp = false;
 	}
 
-	void FindPointToConnect(){
+	bool FindPointToConnect(){
 		List<Point> points = Services.main.activeStellation._points;
 		float minAlignment = 1000;
 		Point candidate = null;
+		List<Point> candidates = new List<Point>();
 
 		 for(int i = 0; i < points.Count; i++){
 			Point p = points[i];
 
 			if(points[i].pointType == PointTypes.ghost || p.state == Point.PointState.locked || p == curPoint || curPoint._neighbours.Contains(p)) continue;
 
-			Vector3 viewportPos = Services.mainCam.WorldToViewportPoint(curPoint.Pos);
+			Vector3 viewportPos = Services.mainCam.WorldToViewportPoint(p.Pos);
 				
 			if(viewportPos.x > 1 || viewportPos.x < 0 || viewportPos.y > 1 || viewportPos.y < 0){
 				continue;
@@ -546,17 +547,31 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			float alignment = Vector2.Angle (cursorDir, screenSpaceDirection);
 
-			if(alignment < minAlignment){
+			if(alignment < 20){
+				candidates.Add(p);
 				candidate = p;
 				minAlignment = alignment;
 			}
 		 }
 
-		 if(minAlignment < 20 && candidate != null){
-			 foundConnection = true;
+		 if(candidates.Count > 0){
+			 float distance = 100000;
+			 foreach(Point p in candidates){
+
+				Vector3 screenPointAtStart = Services.mainCam.WorldToScreenPoint(curPoint.Pos);
+				Vector3 screenPointAtEnd = Services.mainCam.WorldToScreenPoint(p.Pos);
+				float d = (screenPointAtEnd - screenPointAtStart).magnitude;
+				if(d < distance){
+					distance = d;
+					candidate = p;
+				}
+			 }
+
 			 pointDest = candidate;
+
+			 return true;
 		 }else{
-			 foundConnection = false;
+			 return false;
 		 }
 	}
 
@@ -569,6 +584,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (!foundConnection && CanLeavePoint())
 		{
 			cursorSprite.sprite = traverseSprite;
+			// cursorSprite.transform.position = pointDest.Pos;
 
 			if (curPoint.pointType == PointTypes.ghost)
 			{
@@ -625,16 +641,20 @@ public class PlayerBehaviour: MonoBehaviour {
 			// {
 			// 	freeCursor = true;
 			// }
-			FindPointToConnect();
+			
+
+			
+			foundConnection = false;
 
 			if (CanConnectFromPoint(curPoint))
 			{
-				freeCursor = true;
+				//freeCursor = true;
 				
-				if (CanCreatePoint())
+				if (FindPointToConnect())
 				{		
 					
-					cursorSprite.sprite = canConnectSprite;
+			 		foundConnection = true;
+					cursorSprite.sprite = traverseSprite;
 					Services.fx.ShowNextPoint(pointDest);
 
 					if(buttonUp){
@@ -887,7 +907,13 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		l.positionCount = 2;
 		//l.SetPosition (0, Vector3.Lerp(transform.position, cursorPos, Easing.QuadEaseOut(boostTimer)));
-		l.SetPosition(0, cursorPos);
+
+		if(foundConnection){
+			l.SetPosition(0, pointDest.Pos);
+		}else{
+			l.SetPosition(0, cursorPos);
+		}
+
 		l.SetPosition (1, transform.position);
 
 		playerSprite.transform.localScale = Vector3.Lerp(playerSprite.transform.localScale, new Vector3(Mathf.Clamp(1 - (boostTimer), 0.1f, 0.25f), Mathf.Clamp(boostTimer, 0.25f, 0.75f), 0.25f), Time.deltaTime * 10);
