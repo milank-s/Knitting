@@ -19,23 +19,32 @@ public class Decoration : MonoBehaviour
 
     [SerializeField] public SpriteRenderer mesh;
     
-        public void Init(Spline s, float p, int i, float sp)
+    public void Init(Spline s, float p, int i, float sp)
     {
         curIndex = i;
         progress = p;
         spline = s;
         speed = sp;
-        running = true;
         mesh.enabled = true;
-        distance = s.GetDistance(i);
+
+        StartPosition();
+    }
+
+    void StartPosition(){
+        distance = spline.GetDistance(curIndex);
         curStep = curIndex * curveFidelity + (int)(Spline.curveFidelity * progress); 
+
+        transform.position = spline.line.points3[Mathf.Clamp(curStep, 0, spline.line.points3.Count-1)];
+
+        nextPos = transform.position;
+        lastPos = nextPos;
+        running = true;
     }
 
     public void Step()
     {
         if (running)
         {
-            
             progress += Time.deltaTime * speed / distance;    
 
             if (progress > 1)
@@ -44,20 +53,21 @@ public class Decoration : MonoBehaviour
                 GetNextPoint();
             }
             
-            
             SetPosition();
         }   
     }
 
     void SetPosition(){
     
-        int c = curIndex * (curveFidelity + 1) + (int)(Spline.curveFidelity * progress);
+        int c = curIndex * (curveFidelity) + (int)(Spline.curveFidelity * progress);
 
         if(curStep != c){
             curStep = c;
             lastPos = nextPos;
-            nextPos = spline.line.points3[Mathf.Clamp(c, 0, spline.line.points3.Count-1)];
         }
+        
+        lastPos = spline.line.points3[Mathf.Clamp(c-1, 0, spline.line.points3.Count-1)];
+        nextPos = spline.line.points3[Mathf.Clamp(c, 0, spline.line.points3.Count-1)];
 
         float p = Spline.curveFidelity * progress;
         float step = Mathf.Floor(p);
@@ -66,11 +76,10 @@ public class Decoration : MonoBehaviour
         transform.position = Vector3.Lerp(lastPos, nextPos, diff);
         transform.up = spline.GetVelocityAtIndex(curIndex, progress);
 
-        // transform.up = spline.line.points3[Mathf.Clamp(segmentIndex + 1, 0, spline.line.points3.Count -1)]- transform.position;
     }
 
     void GetNextPoint()
-    {
+    {   
         
         if(curIndex < spline.SplinePoints.Count - 1)
         {
@@ -79,16 +88,14 @@ public class Decoration : MonoBehaviour
         else
         {
             curIndex = 0;
+            transform.position = spline.SplinePoints[curIndex].Pos;
+            lastPos = transform.position;
+            nextPos = lastPos;
         }
-    
-            
-        transform.position = spline.SplinePoints[curIndex].Pos;
-        lastPos = transform.position;
-        distance = spline.GetDistance(curIndex);
         
+        distance = spline.GetDistance(curIndex);
     
         //spline.SplinePoints[curIndex].OnPointEnter();
-        
     }
 
     public void Stop()

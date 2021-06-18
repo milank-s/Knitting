@@ -40,14 +40,17 @@ public class Decorator : MonoBehaviour
    }
 
     void Update(){
-        if(!done){
-            done = true;
-            Setup();
-        }
+        
 
         if(!spline.drawingIn && Services.main.state != Main.GameState.paused){
-            foreach(Decoration d in decorations){
-                d.Step();
+
+            if(!done){
+                done = true;
+                Setup();
+            }else{
+                foreach(Decoration d in decorations){
+                    d.Step();
+                }
             }
         }
     }
