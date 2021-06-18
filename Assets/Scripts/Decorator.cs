@@ -11,29 +11,52 @@ public class Decorator : MonoBehaviour
     public int amount = 10;
    List<Decoration> decorations;
 
+    bool done;
+   public void Start(){
+       
+   }
    public void Setup(){
-
-       int numPerSegment = amount / spline.numPoints;
-       float step = 1f/(float)numPerSegment;
+    
+        decorations = new List<Decoration>();
+        float distance = spline.distance;
+        float step = distance/(float)amount;
         float progress = 0;
+        float f = 0;
+        Vector3 lastPoint = spline.GetPointAtIndex(0, 0);
+
+        InstantiateDecor(progress, 0);
+
        for(int i = 0; i < spline.numPoints; i++){
-           while(progress < 1){
-                int segmentIndex = i * curveFidelity + (int)(Spline.curveFidelity * progress);
-                InstantiateDecor(segmentIndex, progress, i);
-                progress += step;
+         for(int j = 0; j < spline.curveFidelity; j++){
+             float l = 1f/j;
+             f += Vector3.Distance(lastPoint, spline.GetPointAtIndex(i, l));
+
+             if(f > step){
+               progress = l;
+               f = 0;
+               InstantiateDecor(progress, i);
            }
+         }
+
+           
+           
        }
    }
 
     void Update(){
-        if(Services.main.state != Main.GameState.paused){
+        if(!done){
+            done = true;
+            Setup();
+        }
+
+        if(!spline.drawingIn && Services.main.state != Main.GameState.paused){
             foreach(Decoration d in decorations){
                 d.Step();
             }
         }
     }
 
-   public void InstantiateDecor(int segmentIndex, float progress, int pointIndex){
+   public void InstantiateDecor(float progress, int pointIndex){
 
         //use a segment distance taken from the vectrosity line
         //so that during distortion the decoration follow the line

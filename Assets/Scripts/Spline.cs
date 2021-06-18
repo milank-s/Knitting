@@ -105,7 +105,7 @@ public class Spline : MonoBehaviour
 	private float distanceFromPlayer;
 	private float invertedDistance;
 	private int drawIndex;
-	private bool drawingIn;
+	public bool drawingIn;
 	private bool drawnIn;
 	private int lowHitPoint = int.MaxValue;
 	private int highHitPoint = -int.MaxValue;
@@ -200,7 +200,6 @@ public class Spline : MonoBehaviour
 			//line.Draw3DAuto();
 		}
 
-		line.GetPoint(1);
 		if (!drawnIn)
 		{
 			StartDrawRoutine();
@@ -528,7 +527,6 @@ public class Spline : MonoBehaviour
 
 		while (curDrawIndex < totalLineSegments)
 		{
-			
 			
 			prevPos = SplinePoints[0].Pos;
 
@@ -1268,6 +1266,18 @@ public class Spline : MonoBehaviour
 		Destroy (this);
 	}
 
+	public float GetDistance(int i){
+		
+		float step = (1.0f / (float)curveFidelity);
+		float d = 0;
+
+		for (int k = 0; k < curveFidelity; k++) {
+
+			float t = (float)k / (float)(curveFidelity);
+			d += Vector3.Distance (GetPointAtIndex (i, t), GetPointAtIndex (i, t + step));
+		}
+		return d;
+	}
 	public void CalculateDistance ()
 	{
 		//IDK IF THIS WORKS FORWARD/BACKWARDS
