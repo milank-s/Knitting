@@ -10,7 +10,6 @@ public class Decorator : MonoBehaviour
     public float speed;
     public int amount = 10;
    List<Decoration> decorations;
-
     bool done;
    public void Start(){
        
@@ -18,28 +17,25 @@ public class Decorator : MonoBehaviour
    public void Setup(){
     
         decorations = new List<Decoration>();
-        float distance = spline.distance;
-        float step = distance/(float)amount;
-        float progress = 0;
+        float step = spline.distance/(float)amount;
         float f = 0;
-        Vector3 lastPoint = spline.GetPointAtIndex(0, 0);
+        Vector3 lastPoint = spline.SplinePoints[0].Pos;
 
-        InstantiateDecor(progress, 0);
+        InstantiateDecor(0, 0);
 
        for(int i = 0; i < spline.numPoints; i++){
-         for(int j = 0; j < spline.curveFidelity; j++){
-             float l = 1f/j;
-             f += Vector3.Distance(lastPoint, spline.GetPointAtIndex(i, l));
+         for(int j = 0; j < Spline.curveFidelity; j++){
+
+             float l = (float)j/Spline.curveFidelity;
+             Vector3 curPoint = spline.GetPointAtIndex(i, l);
+             f += Vector3.Distance(lastPoint, curPoint);
+             lastPoint = curPoint;
 
              if(f > step){
-               progress = l;
                f = 0;
-               InstantiateDecor(progress, i);
+               InstantiateDecor(l, i);
            }
          }
-
-           
-           
        }
    }
 
