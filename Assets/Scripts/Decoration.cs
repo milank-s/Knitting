@@ -1,19 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using static Spline;
 public class Decoration : MonoBehaviour
 {
     public float progress;
     private Spline spline;
     private int curIndex;
     public float speed;
-
     public bool running;
 
-    [SerializeField] private SpriteRenderer mesh;
+    [SerializeField] public SpriteRenderer mesh;
     
-    void Step()
+    public void Step()
     {
         if (running)
         {
@@ -30,12 +29,9 @@ public class Decoration : MonoBehaviour
     }
 
     void SetPosition(){
-        
         int segmentIndex = curIndex * curveFidelity + (int)(Spline.curveFidelity * progress);
         transform.position = spline.line.points3[segmentIndex];
         transform.forward = spline.line.points3[Mathf.Clamp(segmentIndex + 1, 0, spline.line.points3.Count -1)]- transform.position;
-        
-
     }
 
     void GetNextPoint()
@@ -62,13 +58,14 @@ public class Decoration : MonoBehaviour
         mesh.enabled = false;
     }
 
-    public void Init(Spline s, float p, int i, float s)
+    public void Init(Spline s, float p, int i, float sp)
     {
         curIndex = i;
         progress = p;
         spline = s;
-        speed = s;
+        speed = sp;
         running = true;
         mesh.enabled = true;
+        SetPosition();
     }
 }

@@ -19,12 +19,19 @@ public class Decorator : MonoBehaviour
        for(int i = 0; i < spline.numPoints; i++){
            while(progress < 1){
                 int segmentIndex = i * curveFidelity + (int)(Spline.curveFidelity * progress);
-                InstantiateDecor(segmentIndex);
+                InstantiateDecor(segmentIndex, progress, i);
                 progress += step;
            }
-       
        }
    }
+
+    void Update(){
+        if(Services.main.state != Main.GameState.paused){
+            foreach(Decoration d in decorations){
+                d.Step();
+            }
+        }
+    }
 
    public void InstantiateDecor(int segmentIndex, float progress, int pointIndex){
 
@@ -33,7 +40,8 @@ public class Decorator : MonoBehaviour
         
         Decoration newD = Instantiate(prefab);
         newD.transform.parent = transform;
-        newD.Init(progress, pointIndex, speed);
-        newD.mesh = sprite;
+        newD.Init(spline, progress, pointIndex, speed);
+        newD.mesh.sprite = sprite;
+        decorations.Add(newD);
    }
 }
