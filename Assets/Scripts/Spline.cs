@@ -55,6 +55,8 @@ public class Spline : MonoBehaviour
 	[HideInInspector]
 	public float completion;		
 
+	public int numPoints => SplinePoints.Count;
+
 	public bool bidirectional = true;
 
 	private float _completion
@@ -198,6 +200,7 @@ public class Spline : MonoBehaviour
 			//line.Draw3DAuto();
 		}
 
+		line.GetPoint(1);
 		if (!drawnIn)
 		{
 			StartDrawRoutine();

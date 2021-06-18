@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Crawler : MonoBehaviour
+public class Decoration : MonoBehaviour
 {
     public float progress;
     private Spline spline;
     private int curIndex;
     public float speed;
-    public Spline startSpline;
 
     public bool running;
 
@@ -20,14 +19,23 @@ public class Crawler : MonoBehaviour
         {
             if (progress < 1)
             {
-                progress += Time.deltaTime * speed; // spline.distance;
-                transform.position = spline.GetPointAtIndex(curIndex, progress);
+                progress += Time.deltaTime * speed / spline.segmentDistance;    
+                SetPosition();
             }
             else
             {
                 GetNextPoint();
             }
         }
+    }
+
+    void SetPosition(){
+        
+        int segmentIndex = curIndex * curveFidelity + (int)(Spline.curveFidelity * progress);
+        transform.position = spline.line.points3[segmentIndex];
+        transform.forward = spline.line.points3[Mathf.Clamp(segmentIndex + 1, 0, spline.line.points3.Count -1)]- transform.position;
+        
+
     }
 
     void GetNextPoint()
@@ -44,7 +52,7 @@ public class Crawler : MonoBehaviour
         }
         
         
-        spline.SplinePoints[curIndex].OnPointEnter();
+        //spline.SplinePoints[curIndex].OnPointEnter();
         
     }
 
@@ -54,12 +62,12 @@ public class Crawler : MonoBehaviour
         mesh.enabled = false;
     }
 
-    public void Init(Spline s)
+    public void Init(Spline s, float p, int i, float s)
     {
-        curIndex = 0;
-        progress = 0;
+        curIndex = i;
+        progress = p;
         spline = s;
-        speed = 2;
+        speed = s;
         running = true;
         mesh.enabled = true;
     }
