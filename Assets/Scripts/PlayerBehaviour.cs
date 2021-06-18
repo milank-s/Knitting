@@ -524,6 +524,42 @@ public class PlayerBehaviour: MonoBehaviour {
 		buttonUp = false;
 	}
 
+	void FindPointToConnect(){
+		List<Point> points = Services.main.activeStellation._points;
+		float minAlignment = 1000;
+		Point candidate = null;
+
+		 for(int i = 0; i < points.Count; i++){
+			Point p = points[i];
+
+			if(points[i].pointType == PointTypes.ghost || p.state == Point.PointState.locked || p == curPoint || curPoint._neighbours.Contains(p)) continue;
+
+			Vector3 viewportPos = Services.mainCam.WorldToViewportPoint(curPoint.Pos);
+				
+			if(viewportPos.x > 1 || viewportPos.x < 0 || viewportPos.y > 1 || viewportPos.y < 0){
+				continue;
+			}
+
+			Vector3 screenPointAtStart = Services.mainCam.WorldToScreenPoint(curPoint.Pos);
+			Vector3 screenPointAtEnd = Services.mainCam.WorldToScreenPoint(p.Pos);
+			Vector3 screenSpaceDirection = (screenPointAtEnd - screenPointAtStart).normalized;
+
+			float alignment = Vector2.Angle (cursorDir, screenSpaceDirection);
+
+			if(alignment < minAlignment){
+				candidate = p;
+				minAlignment = alignment;
+			}
+		 }
+
+		 if(minAlignment < 20 && candidate != null){
+			 foundConnection = true;
+			 pointDest = candidate;
+		 }else{
+			 foundConnection = false;
+		 }
+	}
+
 	public void PlayerOnPoint(){
 
 		bool canTraverse = false;
@@ -589,6 +625,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			// {
 			// 	freeCursor = true;
 			// }
+			FindPointToConnect();
 
 			if (CanConnectFromPoint(curPoint))
 			{
