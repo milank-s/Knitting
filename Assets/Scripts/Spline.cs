@@ -521,7 +521,7 @@ public class Spline : MonoBehaviour
 
 		float ease = 1;
 		float lerp = 0;
-		int totalLineSegments = curveFidelity * (SplinePoints.Count - (closed ? 0 : 1));
+		int totalLineSegments = curveFidelity * (SplinePoints.Count - (closed ? 0 : 1)) + (closed ? 0 : 1);
 		int curDrawIndex = 0;
 		//never exiting while loop
 
@@ -619,18 +619,23 @@ public class Spline : MonoBehaviour
 			startIndex = pointIndex;
 		}
 
-		for (int i = startIndex; i < SplinePoints.Count - (closed ? 0 : 1); i++)
+		int closedOffset = (closed ? 0 : 1);
+		for (int i = startIndex; i < SplinePoints.Count - closedOffset; i++)
 		{
 			for (int k = 0; k < curveFidelity; k++)
 			{
 
 				int index = (i * curveFidelity) + k;
-				float step = (float) k / (float) (curveFidelity);//-1);
+				float step = (float) k / (float) (curveFidelity);
 
 				Vector3 v = Vector3.zero;
 
 				DrawLine(i, index, step);
 			}
+		}
+		
+		if(closed){
+			DrawLine((SplinePoints.Count - 1), (SplinePoints.Count - 1) * Spline.curveFidelity + Spline.curveFidelity, 1);
 		}
 	}
 
