@@ -2144,7 +2144,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				flyingTrail.Clear();
 
 				noRaycast = true;
-
 				curPoint.TryLeaveStellation();
 				curPoint.usedToFly = true;
 				pointDest = null;
@@ -2161,6 +2160,12 @@ public class PlayerBehaviour: MonoBehaviour {
 				state = PlayerState.Flying;
 				flyingTrail.emitting = true;
 				curSpeed = 0;
+				
+				if(curSpline != null){
+					curSpline.OnSplineExit();
+					curSpline.reactToPlayer = false;
+				}
+				
 
 				if (StellationManager.instance != null)
 				{

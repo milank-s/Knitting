@@ -320,7 +320,7 @@ public class Point : MonoBehaviour
 
 			if (!isKinematic)
 			{
-				//Movement();
+				Movement();
 			}
 		}
 		else

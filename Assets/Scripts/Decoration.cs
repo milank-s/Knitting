@@ -16,6 +16,7 @@ public class Decoration : MonoBehaviour
     Vector3 lastPos;
 
     int curStep;
+    int lastStep;
 
     [SerializeField] public SpriteRenderer mesh;
     
@@ -33,6 +34,7 @@ public class Decoration : MonoBehaviour
     void StartPosition(){
         distance = spline.GetDistance(curIndex);
         curStep = curIndex * curveFidelity + (int)(Spline.curveFidelity * progress); 
+        lastStep = curStep;
 
         transform.position = spline.line.points3[Mathf.Clamp(curStep, 0, spline.line.points3.Count-1)];
 
@@ -62,35 +64,44 @@ public class Decoration : MonoBehaviour
         int c = curIndex * (curveFidelity) + (int)(Spline.curveFidelity * progress);
 
         if(curStep != c){
+            lastStep = curStep;
             curStep = c;
             lastPos = nextPos;
         }
         
-        lastPos = spline.line.points3[Mathf.Clamp(c-1, 0, spline.line.points3.Count-1)];
-        nextPos = spline.line.points3[Mathf.Clamp(c, 0, spline.line.points3.Count-1)];
+        int upperBound = spline.line.points3.Count-1;
+        lastPos = spline.line.points3[Mathf.Clamp(lastStep, 0, upperBound)];
+        nextPos = spline.line.points3[Mathf.Clamp(curStep, 0, upperBound)];
 
         float p = Spline.curveFidelity * progress;
         float step = Mathf.Floor(p);
         float diff = p - step;
 
         transform.position = Vector3.Lerp(lastPos, nextPos, diff);
-        transform.up = spline.GetVelocityAtIndex(curIndex, progress);
+        Vector3 up = spline.GetVelocityAtIndex(curIndex, progress);
+        up.z = 0;
+        transform.up = up;
 
     }
 
     void GetNextPoint()
     {   
         
-        if(curIndex < spline.SplinePoints.Count - 1)
+        int i = spline.closed ? 1 : 2;
+        if(curIndex < spline.SplinePoints.Count - i)
         {
             curIndex++;
         }
         else
         {
             curIndex = 0;
-            transform.position = spline.SplinePoints[curIndex].Pos;
-            lastPos = transform.position;
-            nextPos = lastPos;
+            if(!spline.closed){
+                curStep = 0;
+                lastStep = 0;
+            }
+            // transform.position = spline.SplinePoints[curIndex].Pos;
+            // lastPos = transform.position;
+            // nextPos = lastPos;
         }
         
         distance = spline.GetDistance(curIndex);
