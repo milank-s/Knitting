@@ -40,6 +40,7 @@ public class Spline : MonoBehaviour
 	public float distortion;
 
 	float rollingDistance;
+	float magnitude;
 	public static System.Collections.Generic.List<Spline> Splines = new System.Collections.Generic.List<Spline> ();
 	public static float drawSpeed = 500f;
 	
@@ -517,8 +518,6 @@ public class Spline : MonoBehaviour
 	
 	public IEnumerator DrawSplineIn()
 	{
-		
-		line.Draw3DAuto();
 		drawingIn = true;
 
 		float ease = 1;
@@ -529,7 +528,9 @@ public class Spline : MonoBehaviour
 
 		while (curDrawIndex < totalLineSegments)
 		{
-			
+			if(Services.main.state != Main.GameState.playing) yield return null;
+
+
 			prevPos = SplinePoints[0].Pos;
 
 			float curStep = 0;
@@ -589,11 +590,8 @@ public class Spline : MonoBehaviour
 		if (drawingIn || !drawnIn) return;
 
 		rollingDistance = 0;
-		//what the fuck does this even do
-		// if (line.GetSegmentNumber() != 0)
-		// {
-		// 	drawIndex += 1;
-		// }
+		magnitude = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f) - shake, 0, 0.5f) * amplitude;
+
 	
 		if (isPlayerOn || reactToPlayer)
 		{
@@ -644,6 +642,7 @@ public class Spline : MonoBehaviour
 
 	void DrawLine(int pointIndex, int segmentIndex, float step)
 	{
+		
 		Vector3 v = GetPointAtIndex(pointIndex, step);
 		
 		//Add movement Effects of player is on the spline
@@ -679,7 +678,7 @@ public class Spline : MonoBehaviour
 		//closeness to the player. 0 = one curve away
 		invertedDistance = 1f - Mathf.Clamp01(Mathf.Abs(distanceFromPlayer));
 
-		float newFrequency = 1 + Mathf.Abs(Services.PlayerBehaviour.curSpeed);
+		//float newFrequency = 1 + Mathf.Abs(Services.PlayerBehaviour.curSpeed);
 		
 		Vector3 direction = GetVelocityAtIndex(pointIndex, step).normalized;
 		Vector3 distortionVector = new Vector3(-direction.y, direction.x, direction.z);
@@ -689,11 +688,12 @@ public class Spline : MonoBehaviour
 		
 		//NewFrequency(newFrequency);		
 
-		//(-Time.time * noiseSpeed) + (
-
-		float magnitude = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f) - shake, 0, 0.5f) * amplitude;
+		//(-Time.time * noiseSpeed) + 
 		
 		rollingDistance += (prevPos - v).magnitude;
+		prevPos = v;
+
+
 		distortion = (Mathf.PerlinNoise((-Time.time * noiseSpeed) + (rollingDistance * frequency), 1.321738f) * 2f - 1f);
 
 		if(!drawingIn){
@@ -712,14 +712,6 @@ public class Spline : MonoBehaviour
 
 		v += distortionVector * distortion * shake;
 
-
-		//get value for sine wave effect
-		
-
-		//(direction * offset * Mathf.Clamp01(distanceFromPlayer))
-		
-
-
 		SetLinePoint(v, segmentIndex);
 
 		
@@ -728,13 +720,9 @@ public class Spline : MonoBehaviour
 			bool shouldDraw = true;
 			
 			int j = 0;
-			if (pointIndex + 1 > SplinePoints.Count - 1)
+			if (pointIndex + 1 > SplinePoints.Count - 1 && !closed)
 			{
-				if (closed)
-				{
-					j = 0;
-				}
-				else
+			
 				{
 					shouldDraw = false;
 					j = pointIndex;
@@ -785,166 +773,7 @@ public class Spline : MonoBehaviour
 				}
 			}
 
-			prevPos = v;
-//		}
-
-
-
-		
-
-		//because I was indexing out of vectrosity's line's points, just make sure its in there
-
-		//Set the color. There are weird problems with vectrosity going out of range with color values...
-
-		//ASFUALDFJKL:AEGJIOGWEJIOPGJIEOSIOJEVF
-//		WHAT THE FUCK IS GOING ON HERE
-//		if (segmentIndex < 1) {
-//				line.SetColor (Color.white, segmentIndex);
-//		}
-//
-// 			//CHECK ITS NOT THE LAST POINT
-// //		SplinePoints [i + 1].color = Color.Lerp (SplinePoints [i + 1].color, Color.white, Mathf.Pow (invertedDistance, 2));
-// //		line.SetWidth (Mathf.Lerp (1, 1, Mathf.Pow (invertedDistance, 10)), index);
-//
-// 			//if the player is on the leading edge of the line keep it black (you should be using low and hi here?)
-// 				if(index > activeIndex && isPlayerOn){
-//
-// 					// if ((reversed && Services.PlayerBehaviour.progress < playerProgress) || (!reversed && Services.PlayerBehaviour.progress > playerProgress)) {
-// 					if(index - activeIndex == 1){
-// 						float difference = 1 - ((t - Services.PlayerBehaviour.progress) * curveFidelity);
-// 						line.SetColor (Color.Lerp (Color.clear, Color.white, difference), index);
-// 					}else{
-// 						line.SetColor (Color.clear, index);s
-// 					}
-//
-// 				}else{
-// 					if(locked){
-// 						line.SetColor (Color.clear, index);
-// 					}else{
-// 					//why not use Tim's code for indexDiff
-// 						float lerpVal;
-// 						Color c;
-// 						if(i < SplinePoints.Count - 1){
-// 								c = Color.Lerp (SplinePoints [i].color, SplinePoints [i + 1].color, t);
-// 								lerpVal = (SplinePoints[i].proximity * curveFidelity) - (index/curveFidelity);
-// 						}else{
-// 							if(closed){
-// 								c = Color.Lerp (SplinePoints [i].color, StartPoint.color, t);
-// 								lerpVal = (SplinePoints[i].proximity * curveFidelity) - (index/curveFidelity);
-// 								// lerpVal = SplinePoints[i].proximity + t * (StartPoint.proximity - SplinePoints[i].proximity);
-// 							}else{
-// 								c = SplinePoints [i].color;
-// 								lerpVal = SplinePoints[i].proximity;
-// 							}
-// 						}
-//
-// 						float difference = (lerpVal);
-// 						line.SetColor (Color.Lerp (c, Color.white, difference), index);
-// 					}
-// 				}
-// 				/* I don't know what the fuck this is
-// 						do coloring a certain way
-// 				} else {
-// 					if (i < SplinePoints.Count - 1) {
-// 						//
-// 						line.SetColor (Color.Lerp(new Color(0.1f, 0.1f, 0.1f), Color.white, SplinePoints [i].proximity), index);
-// 									// line.SetWidth (Mathf.Lerp ((SplinePoints [i].NeighbourCount () - 1) + 1, (SplinePoints [i + 1].NeighbourCount () - 1) + 1, t), index);
-//
-// 					} else if (closed) {
-//
-// 					//IF IT IS THE LAST POINT, ONLY DRAW THE CONNECTION IF ITS A LOOP
-//
-// 						// line.SetColor (Color.Lerp (SplinePoints [i].color, SplinePoints [SplinePoints.Count - 1].color, t), index);
-// 						line.SetColor (Color.Lerp (new Color(0.1f, 0.1f, 0.1f), Color.white, SplinePoints [i-1].proximity), index);
-// 					//				line.SetWidth (Mathf.Lerp ((SplinePoints [i].NeighbourCount () - 1) + 1, (SplinePoints [SplinePoints.Count - 1].NeighbourCount () - 1) + 1, t), index);
-// 				}
-// 				//			line.SetWidth (1f, index);
-//
-// 			}
-// 			*/
-// 		}
 	}
-
-//	public void PlayAttack (Point point1, Point point2){
-//
-////		do some angle shit or normalize it??
-//		segmentDistance = Vector3.Distance (point1.Pos, point2.Pos);
-//		linearDirection = point2.Pos - point1.Pos;
-//		linearDirection = new Vector2(linearDirection.x, linearDirection.y).normalized;
-//		float dot = Vector2.Dot (linearDirection, Vector2.up);
-//
-//		int index = (int)(((dot/2f) + 0.5f) * (Services.Sounds.sustains.Count-1));
-//
-//		curSound = StartCoroutine (PlaySustain (index));
-//
-//	}
-
-//	public void ManageSound (bool fade, float lerpVal)
-//	{
-//
-//		if (fade) {
-//			sound.volume = Mathf.Lerp (Services.PlayerBehaviour.connectTime, 0, lerpVal);
-//		} else {
-//			sound.volume = Mathf.Lerp (0, Services.PlayerBehaviour.connectTime, lerpVal);
-//		}
-//		float dot = Vector2.Dot(Services.PlayerBehaviour.curSpline.GetDirection (Services.PlayerBehaviour.progress), linearDirection);
-//		float curFreqGain;
-//
-//		Services.Sounds.master.GetFloat ("CenterFreq", out curFreqGain);
-//		float lerpAmount = Services.PlayerBehaviour.goingForward ? Services.PlayerBehaviour.progress : 1 - Services.PlayerBehaviour.progress;
-//
-//
-//		Services.Sounds.master.SetFloat("CenterFreq", Mathf.Lerp(curFreqGain, ((dot/2f + 0.5f) + Mathf.Clamp01(1f/Mathf.Pow(segmentDistance, 5))) * (16000f / curFreqGain), lerpAmount));
-//
-//		//centering freq on note freq will just boost the fundamental. can shift this value to highlight diff harmonics
-//		//graph functions
-//		//normalize values before multiplying by freq
-//		//use note to freq script
-//
-////		pitch = dot product between the current tangent of the spline and the linear distance between points
-//		Services.Sounds.master.SetFloat("FreqGain", Mathf.Abs(Services.PlayerBehaviour.flow)/2 + 1f);
-//	}
-
-//	public IEnumerator PlaySustain (int index)
-//	{
-//
-////		AudioClip soundEffect = Services.Sounds.Loops [(int)((1 - Mathf.Clamp01 ((segmentDistance) / 10 * 2.5f)) * (Services.Sounds.Loops.Count - 1))];
-//		AudioClip soundEffect = Services.Sounds.sustains[index];
-//
-//		sound = Services.Prefabs.CreateSoundEffect (soundEffect, Selected.Pos);
-//		sound.clip = soundEffect;
-//		sound.Play ();
-//
-//		float t = 0;
-//
-//		while (t < 1) {
-//			ManageSound (false, t);
-//			t += Time.deltaTime;
-//			yield return null;
-//		}
-//
-//		while (true) {
-////			float progressToSin = Mathf.Sin (Services.PlayerBehaviour.progress * Mathf.PI);
-//			ManageSound (false, 1);
-//			yield return null;
-//		}
-//
-//	}
-
-//	public IEnumerator FadeNote(AudioSource s){
-//
-//		GameObject toDelete = s.gameObject;
-//		float t = 0;
-//
-//		while (t < 1) {
-//			s.volume = Mathf.Lerp (s.volume, 0, t);
-//			t += Time.deltaTime/1;
-//			yield return null;
-//		}
-//
-//		Destroy (toDelete);
-//	}
-
 
 	void OnDestroy ()
 	{

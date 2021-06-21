@@ -566,6 +566,7 @@
 						
 					// }
 					s.DrawSpline();
+					s.line.Draw3D();
 				}
 			}
 			else
