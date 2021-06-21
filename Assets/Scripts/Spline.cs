@@ -38,6 +38,8 @@ public class Spline : MonoBehaviour
 	public static float noiseSpeed = 25;
 	public static float frequency = 0.025f;
 	public float distortion;
+
+	float rollingDistance;
 	public static System.Collections.Generic.List<Spline> Splines = new System.Collections.Generic.List<Spline> ();
 	public static float drawSpeed = 500f;
 	
@@ -586,6 +588,7 @@ public class Spline : MonoBehaviour
 	{
 		if (drawingIn || !drawnIn) return;
 
+		rollingDistance = 0;
 		//what the fuck does this even do
 		// if (line.GetSegmentNumber() != 0)
 		// {
@@ -690,8 +693,8 @@ public class Spline : MonoBehaviour
 
 		float magnitude = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f) - shake, 0, 0.5f) * amplitude;
 		
-		float d = (prevPos - v).magnitude;
-		distortion = (Mathf.PerlinNoise((-Time.time * noiseSpeed) + (d * frequency), 2f) * 2f - 1f);
+		rollingDistance += (prevPos - v).magnitude;
+		distortion = (Mathf.PerlinNoise((-Time.time * noiseSpeed) + (rollingDistance * frequency), 1.321738f) * 2f - 1f);
 
 		if(!drawingIn){
 			if (isPlayerOn)
