@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class StellationProperties : MonoBehaviour
 {
-   [SerializeField] StellationController controller;
-
+    
     public float distortion = 0.1f;
     public float amplitude = 1;
     public float frequency = 1;
