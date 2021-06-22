@@ -1477,6 +1477,7 @@ public class MapEditor : MonoBehaviour
             newSpline.order =  json["spline" + i]["order"];
             newSpline.bidirectional = json["spline" + i]["bidirectional"];
             newSpline.speed = json["spline" + i]["speed"];
+            newSpline.ChangeMaterial(newSpline.lineMaterial);
         }
 
         //I no longer want to clean house
@@ -1535,7 +1536,7 @@ public class MapEditor : MonoBehaviour
 
         //c.Initialize();   
         
-        controller = c;
+        controller =  c;
         return c;
     }
 
