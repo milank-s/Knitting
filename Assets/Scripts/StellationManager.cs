@@ -7,7 +7,6 @@ using UnityEngine.Events;
 
 public class StellationManager : MonoBehaviour
 {
-
 	public static StellationManager instance;
 	[SerializeField] public List<StellationController> controllers;
 
@@ -93,7 +92,9 @@ public class StellationManager : MonoBehaviour
 			controllers[i].EnableStellation(false);
 		}
 		
-		Services.main.activeStellation = controllers[0];	
+		Services.main.activeStellation = controllers[0];
+			
+		//DRAWING IN IS ONLY WORKING WHEN CALLED FROM HERE
 		Services.main.activeStellation.EnableStellation(true);
 		SetupActiveStellation(controllers[0], true);
 		

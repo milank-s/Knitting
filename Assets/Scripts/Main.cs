@@ -654,9 +654,7 @@
 		Services.main.text.text = " ";
 		Services.main.levelText.text = " ";
 
-		activeStellation.Initialize();
-		activeStellation.Setup();
-		activeStellation.Draw();
+		
 		
 //		foreach (StellationController c in SceneController.instance.activeScenes)
 //		{
@@ -677,6 +675,12 @@
 			p.Initialize();
 		}*/ 
 
+		
+		OnReset.Invoke();
+
+		activeStellation.Initialize();
+		activeStellation.Setup();
+
 		if (Services.StartPoint == null && Point.Points.Count > 0)
 		{
 			Services.StartPoint = Point.Points[0];
@@ -690,10 +694,9 @@
 			Services.PlayerBehaviour.Initialize();
 		}
 		
-		
-		OnReset.Invoke();
-
 		EnterPlayMode();
+		
+		activeStellation.Draw();
 
 		if(OnLoadLevel != null){
 			OnLoadLevel(activeStellation);
