@@ -42,7 +42,7 @@ public class Spline : MonoBehaviour
 	float rollingDistance;
 	float magnitude;
 	public static System.Collections.Generic.List<Spline> Splines = new System.Collections.Generic.List<Spline> ();
-	public static float drawSpeed = 0.1f;
+	public static float drawSpeed = 1f;
 	
 	Coroutine drawRoutine;
 
@@ -553,7 +553,7 @@ public class Spline : MonoBehaviour
 						distanceTravelled += distanceDelta;
 						curDrawIndex ++;
 
-						if(distanceTravelled * Time.deltaTime > drawSpeed * Time.deltaTime){
+						if(distanceTravelled > drawSpeed * Time.deltaTime){
 							distanceTravelled = 0;
 							i = 1000;
 							k = 100;
