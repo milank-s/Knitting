@@ -453,6 +453,23 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 				}
 
+				//Code for placing player sprite on the line instead of the spline
+
+				//find out the real position on the cursplines line
+				// int curStep = curSpline.SplinePoints.IndexOf(curPoint) * (Spline.curveFidelity) + (int)(Spline.curveFidelity * progress);
+				// int lastStep = goingForward ? -1 : 1;
+				// lastStep = curStep + lastStep;
+				// int upperBound = curSpline.line.points3.Count-1;
+        		// Vector3 spriteDest1 = curSpline.line.points3[Mathf.Clamp(lastStep, 0, upperBound)];
+        		// Vector3 spriteDest2 = curSpline.line.points3[Mathf.Clamp(curStep, 0, upperBound)];
+
+       		 	// float p = Spline.curveFidelity * progress;
+        		// float step = Mathf.Floor(p);
+        		// float diff = p - step;
+
+        		// playerSprite.transform.position = Vector3.Lerp(spriteDest1, spriteDest2, diff);
+				// playerSprite.transform.up = (spriteDest2 - spriteDest1);
+
 				accuracy = maxAcc;
 
 				transform.position = curSpline.GetPoint(progress);
@@ -484,6 +501,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if(state == PlayerState.Switching)
 		{
 			transform.position = curPoint.Pos;
+			playerSprite.transform.position = Vector3.Lerp(playerSprite.transform.position, transform.position,Time.deltaTime * 10f);
 			gravity = 0;
 			//this could be fucking with
 			PlayerOnPoint();

@@ -526,13 +526,14 @@ public class Spline : MonoBehaviour
 		int totalLineSegments = curveFidelity * (SplinePoints.Count - (closed ? 0 : 1)); // + (closed ? 0 : 1);
 		int curDrawIndex = 0;
 		prevPos = SplinePoints[0].Pos;
-		rollingDistance = 0;	
 		
 		while (curDrawIndex < totalLineSegments)
 		{
 
 			if(Services.main.state != Main.GameState.playing) yield return null;
 			
+			
+			rollingDistance = 0;	
 			float distanceTravelled = 0;
 
 			for (int i = 0; i < SplinePoints.Count - (closed ? 0 : 1); i++)

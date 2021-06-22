@@ -8,6 +8,7 @@ public class StellationProperties : MonoBehaviour
     public float distortion = 0.1f;
     public float amplitude = 1;
     public float frequency = 1;
+    public float drawSpeed = 1;
 
     public float scrollSpeed = 10;
 
@@ -16,6 +17,7 @@ public class StellationProperties : MonoBehaviour
        Spline.amplitude = amplitude;
        Spline.frequency = frequency;
        Spline.noiseSpeed = scrollSpeed;
+       Spline.drawSpeed = drawSpeed;
    }
 
    public void SetDistortion(float f){
