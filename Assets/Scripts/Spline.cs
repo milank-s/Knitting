@@ -42,7 +42,7 @@ public class Spline : MonoBehaviour
 	float rollingDistance;
 	float magnitude;
 	public static System.Collections.Generic.List<Spline> Splines = new System.Collections.Generic.List<Spline> ();
-	public static float drawSpeed = 500f;
+	public static float drawSpeed = 0.1f;
 	
 	Coroutine drawRoutine;
 
@@ -108,7 +108,7 @@ public class Spline : MonoBehaviour
 	private float distanceFromPlayer;
 	private float invertedDistance;
 	private int drawIndex;
-	public bool drawingIn;
+	public bool drawingIn = false;
 	private bool drawnIn;
 	private int lowHitPoint = int.MaxValue;
 	private int highHitPoint = -int.MaxValue;
@@ -203,7 +203,7 @@ public class Spline : MonoBehaviour
 			//line.Draw3DAuto();
 		}
 
-		if (!drawnIn)
+		if (!drawnIn && !drawingIn)
 		{
 			StartDrawRoutine();
 		}
@@ -513,71 +513,72 @@ public class Spline : MonoBehaviour
 	}
 
 	public void StartDrawRoutine(){
-		drawRoutine = StartCoroutine(DrawSplineIn());
+		if(!drawingIn){
+			drawRoutine = StartCoroutine(DrawSplineIn());
+		}
 	}
 	
 	public IEnumerator DrawSplineIn()
 	{
 		drawingIn = true;
-
-		float ease = 1;
-		float lerp = 0;
-		int totalLineSegments = curveFidelity * (SplinePoints.Count - (closed ? 0 : 1)) + (closed ? 0 : 1);
+		
+		int totalLineSegments = curveFidelity * (SplinePoints.Count - (closed ? 0 : 1)); // + (closed ? 0 : 1);
 		int curDrawIndex = 0;
+		prevPos = SplinePoints[0].Pos;
+		rollingDistance = 0;
 		//never exiting while loop
 
 		while (curDrawIndex < totalLineSegments)
 		{
-			if(Services.main.state != Main.GameState.playing) yield return null;
-
-
-			prevPos = SplinePoints[0].Pos;
-
-			float curStep = 0;
-			int curPoint = 0;
+			if(Services.main.state == Main.GameState.paused) yield return null;
 			
+			float distanceTravelled = 0;
+
 			for (int i = 0; i < SplinePoints.Count - (closed ? 0 : 1); i++)
 			{
-
 				for (int k = 0; k < curveFidelity; k++)
 				{
-
 					int index = (i * curveFidelity) + k;
-					float step = (float) k / (float) (curveFidelity - 1);
+					float step = (float) k / (float) (curveFidelity);
+					// float step = (float) k / (float) (curveFidelity - 1);
+	
+					if(index >= curDrawIndex){
 
-					if(index == curDrawIndex)
-					{
-						step += stepSize * lerp;
-						curStep = step;
-						curPoint = i;
+						//Debug.Log("are we getting here");
+						float distanceDelta = rollingDistance;
+				
 						DrawLine(i, index, step);
-					}else if (index > curDrawIndex)
-					{
-						DrawLine(curPoint, curDrawIndex, curStep);
-					}
-					else
-					{
-						DrawLine(i, index, step);
+				
+						distanceDelta = rollingDistance - distanceDelta;
+						distanceTravelled += distanceDelta;
+						curDrawIndex ++;
+
+						if(distanceTravelled * Time.deltaTime > drawSpeed * Time.deltaTime){
+							distanceTravelled = 0;
+							// broken = true;
+							i = 1000;
+							k = 100;
+						}
 					}
 
 				}
 			}
 
-			lerp += (Time.deltaTime * drawSpeed) * (ease/2f);
+			// lerp += (Time.deltaTime * drawSpeed) * (ease/2f);
 
-			if (lerp >= 1)
-			{
-				lerp = 0;
-				curDrawIndex++;	
-				ease = 1-Easing.CircEaseIn(curDrawIndex / (float) totalLineSegments);
-			}
+			// if (lerp >= 1)
+			// {
+			// 	lerp = 0;
+				//curDrawIndex++;	
+				// ease = 1-Easing.CircEaseIn(curDrawIndex / (float) totalLineSegments);
+			// }
 			
 			yield return null;
 
 			if (!bidirectional)
-		{
-			line.textureOffset -= Time.deltaTime * speed * 5f;
-		}
+			{
+				line.textureOffset -= Time.deltaTime * speed * 5f;
+			}
 		}
 
 		drawingIn = false;
@@ -592,7 +593,6 @@ public class Spline : MonoBehaviour
 		rollingDistance = 0;
 		magnitude = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f) - shake, 0, 0.5f) * amplitude;
 
-	
 		if (isPlayerOn || reactToPlayer)
 		{
 			drawIndex = GetPlayerLineSegment(pointIndex);
@@ -701,7 +701,6 @@ public class Spline : MonoBehaviour
 			{
 				//UnityEngine.Random.Range(- distortion, distortion)
 				v += distortionVector * distortion * magnitude * Mathf.Clamp01(invertedDistance);
-
 			}
 			else if(reactToPlayer)
 			{
@@ -720,10 +719,10 @@ public class Spline : MonoBehaviour
 			bool shouldDraw = true;
 			
 			int j = 0;
-			if (pointIndex + 1 > SplinePoints.Count - 1 && !closed)
+			if (pointIndex + 1 > SplinePoints.Count - 1)
 			{
 			
-				{
+				if(!closed){
 					shouldDraw = false;
 					j = pointIndex;
 				}

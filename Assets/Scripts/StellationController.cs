@@ -398,11 +398,7 @@ public class StellationController : MonoBehaviour {
 		
 				// Services.main.crawlerManager.AddCrawler(s);
 
-		if(lockSplines){
-			if(_splines.Count > 0){
-				_splines[0].StartDrawRoutine();
-			}
-		}else{
+		if(!lockSplines){
 			foreach(Spline s in _splines){
 				Services.main.crawlerManager.AddCrawler(s);
 				s.StartDrawRoutine();
