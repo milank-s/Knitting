@@ -433,11 +433,16 @@ public class MapEditor : MonoBehaviour
         }
     }
 
+    public void SetLineWidth(){
+        
+        selectedSpline.SetLineWidth((int) lineWidthSlider.val);
+    }
+
     void EditSelectedSpline()
     {
         if (splineindex >= 0 && splineindex < controller._splines.Count)
         {
-            selectedSpline.SetLineWidth((int) lineWidthSlider.val);
+
             if (Input.GetKeyDown(KeyCode.Alpha9))
             {
                
@@ -1732,25 +1737,25 @@ void DragCamera()
             add = true;
         }
         
-            if (!add && selectedSpline != null)
-            {
-                RemoveSelectedSpline(selectedSpline);
-            }
+        if (!add && selectedSpline != null)
+        {
+            RemoveSelectedSpline(selectedSpline);
+        }
 
-            if (s == null) return;
+        if (s == null) return;
+        
+        if (!selectedSplines.Contains(s))
+        {
+            splineindex = controller._splines.IndexOf(s);
+            selectedSplines.Add(selectedSpline);
             
-            if (!selectedSplines.Contains(s))
-            {
-                splineindex = controller._splines.IndexOf(s);
-                selectedSplines.Add(selectedSpline);
-                
-                //draw locked stuff diff ? if(selectedSpline.)
-                selectedSpline.SwitchMaterial(3);
-                lineWidthSlider.ChangeValue(selectedSpline.lineWidth);
-                splineSpeedVal.SetValueWithoutNotify(selectedSpline.speed);
-                splineSpeedReadout.text = selectedSpline.speed.ToString("F1");
-                splineSelectedTip.SetActive(true);
-            }
+            //draw locked stuff diff ? if(selectedSpline.)
+            selectedSpline.SwitchMaterial(3);
+            lineWidthSlider.ChangeValue(selectedSpline.lineWidth);
+            splineSpeedVal.SetValueWithoutNotify(selectedSpline.speed);
+            splineSpeedReadout.text = selectedSpline.speed.ToString("F1");
+            splineSelectedTip.SetActive(true);
+        }
 
     }
 
