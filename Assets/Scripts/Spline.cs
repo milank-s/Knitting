@@ -515,8 +515,6 @@ public class Spline : MonoBehaviour
 
 	public void StartDrawRoutine(){
 		if(!drawingIn && !drawnIn){
-			
-			Debug.Log("called");
 			drawRoutine = StartCoroutine(DrawSplineIn());
 		}
 	}
@@ -546,7 +544,7 @@ public class Spline : MonoBehaviour
 					
 					// float step = (float) k / (float) (curveFidelity - 1);
 	
-					if(index == curDrawIndex){
+					if(index >= curDrawIndex){
 
 						//Debug.Log("are we getting here");
 						float distanceDelta = rollingDistance;

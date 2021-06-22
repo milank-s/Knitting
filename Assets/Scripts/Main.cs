@@ -676,10 +676,10 @@
 		}*/ 
 
 		
-		OnReset.Invoke();
 
 		activeStellation.Initialize();
 		activeStellation.Setup();
+		activeStellation.Draw();
 
 		if (Services.StartPoint == null && Point.Points.Count > 0)
 		{
@@ -694,10 +694,10 @@
 			Services.PlayerBehaviour.Initialize();
 		}
 		
+		OnReset.Invoke();
+
 		EnterPlayMode();
 		
-		activeStellation.Draw();
-
 		if(OnLoadLevel != null){
 			OnLoadLevel(activeStellation);
 		}
