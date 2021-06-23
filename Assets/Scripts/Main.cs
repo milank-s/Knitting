@@ -195,6 +195,11 @@
         SceneController.instance.activeScenes.Clear();
         SceneController.instance.curLevel = 0;   
 		
+		Spline.frequency = 5.324f;
+		Spline.shake = 0;
+		Spline.noiseSpeed = 5;
+		Spline.amplitude = 0.5f;
+
 		editor.DeselectPoints();
 		editor.DeselectSpline();
 		Point.Points.Clear();
