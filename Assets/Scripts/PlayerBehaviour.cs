@@ -2185,10 +2185,10 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 				
 
-				if (StellationManager.instance != null)
-				{
-					StellationManager.instance.CompleteStellation();
-				}
+				// if (StellationManager.instance != null)
+				// {
+				// 	StellationManager.instance.CompleteStellation();
+				// }
 
 				break;
 
@@ -2241,8 +2241,6 @@ public class PlayerBehaviour: MonoBehaviour {
 //					p.TurnOn();
 				}
 
-
-				curPoint.OnPlayerEnterPoint();
 				
 				if(curPoint.pointType != PointTypes.ghost){
 					
@@ -2257,11 +2255,18 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				}
 //TODO
+
+			
+
 				//SPLINE IS NULL WHEN YOU ARE FLYING, THIS SUCKS
 				if (curSpline != null)
 				{
 					curSpline.CheckComplete();
 				}
+
+				
+				curPoint.OnPlayerEnterPoint();
+				
 
 				//can we check for completeness here please
 
@@ -2276,6 +2281,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //				traversedPoints.Clear();
 //				traversedPoints.Add(curPoint);
 				}
+				
 
 				if(!curPoint.controller.won){
 					PlayerOnPoint();

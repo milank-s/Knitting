@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using AudioHelm;
 using SimpleJSON;
-
+using UnityEngine.Events;
 
 //###################################################
 //###################################################
@@ -26,6 +26,9 @@ public class Point : MonoBehaviour
 {
 
 	#region
+
+	public UnityEvent OnEnter;
+	
 
 	public enum PointState{locked, off, on}
 	public PointState state = PointState.off;
@@ -471,6 +474,10 @@ public class Point : MonoBehaviour
 		if(pointType != PointTypes.ghost){
 			if(Services.main.OnPointEnter != null){
 				Services.main.OnPointEnter(this);
+			}
+
+			if(OnEnter != null){
+				OnEnter.Invoke();
 			}
 
 			GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);

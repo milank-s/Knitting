@@ -557,7 +557,7 @@
 			if (!MapEditor.editing)
 			{
 
-				if (Services.PlayerBehaviour.curPoint != null && !activeStellation.won)
+				if (Services.PlayerBehaviour.curPoint != null)// && !activeStellation.won)
 				{
 					Services.PlayerBehaviour.Step();
 					CameraFollow.instance.FollowPlayer();

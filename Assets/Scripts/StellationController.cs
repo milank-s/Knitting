@@ -542,7 +542,7 @@ public class StellationController : MonoBehaviour {
 							speedAverage /= count;
 						}
 					}
-					Services.fx.readout.text = (Mathf.Clamp(speedAverage - startSpeed, 0, 100)/(speed - startSpeed) * 100).ToString("F0") + "%";
+					//Services.fx.readout.text = (Mathf.Clamp(speedAverage - startSpeed, 0, 100)/(speed - startSpeed) * 100).ToString("F0") + "%";
 				
 				}else if (unlockMethod == UnlockType.time)
 				{

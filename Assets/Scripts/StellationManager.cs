@@ -139,6 +139,10 @@ public class StellationManager : MonoBehaviour
 		}
 	}
 	
+	public void FinishLevel(){
+		SceneController.instance.LoadNextStellation();
+	}
+	
 	public void CompleteStellation()
 	{
 
@@ -146,9 +150,6 @@ public class StellationManager : MonoBehaviour
 			SaveStellation(Services.main.activeStellation);
 		}
 
-		if(OnCompleteStellation != null){
-			OnCompleteStellation.Invoke();
-		}
 
 		if (Services.main.activeStellation.isComplete)
 		{
@@ -163,16 +164,17 @@ public class StellationManager : MonoBehaviour
 
 				//this only applies if we're flying
 
-				// Services.mainCam.fieldOfView = 80;
-				// CameraFollow.instance.desiredFOV = 80;
-				// CameraFollow.instance.fixedCamera = false;
 			}
 			
 			else
 			{
 				//lets plug in the stellationRecorder here
 				//GetComponent<StellationRecorder>().GenerateStellation();
-				SceneController.instance.LoadNextStellation();
+				if(OnCompleteStellation.GetPersistentEventCount() > 0){
+					OnCompleteStellation.Invoke();
+				}else{
+					SceneController.instance.LoadNextStellation();
+				}
 			}
 			//we good
 		}
