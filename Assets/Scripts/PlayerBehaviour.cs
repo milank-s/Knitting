@@ -109,7 +109,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(state == PlayerState.Flying){
 				return flyingSpeed;
 			}
-			
+
 			return (speed) * cursorDir.magnitude * easedAccuracy + flow + boost;
 		}
 	}
@@ -407,7 +407,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if(state == PlayerState.Switching || state == PlayerState.Animating){
 			speedCoefficient = 0;
 		}else if (state == PlayerState.Flying){
-			speedCoefficient = flyingSpeed + speed;
+			speedCoefficient = flyingSpeed;
 		}else{
 			speedCoefficient = Mathf.Clamp01(Mathf.Pow(accuracy, 5) * actualSpeed + 0.25f);
 		}
@@ -1183,7 +1183,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			pointDest.controller.AdjustCamera();
 
 			flyingSpeed += Time.deltaTime;
-			transform.position += (pointDest.transform.position - transform.position).normalized * Time.deltaTime * (flyingSpeed + speed);
+			transform.position += (pointDest.transform.position - transform.position).normalized * Time.deltaTime * (flyingSpeed);
 
 			foreach (Spline p in pointDest._connectedSplines)
 			{
@@ -1204,8 +1204,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			// {
 				flyingSpeed -= Time.deltaTime * flyingSpeedDecay;
 				flyingSpeed = Mathf.Clamp(flyingSpeed, 0, 1000);
-				Vector3 inertia = cursorDir * (flyingSpeed + speed);
+				Vector3 inertia = cursorDir * (flyingSpeed);
 				transform.position += inertia * Time.deltaTime;
+
+				if(flyingSpeed == 0){
+					Services.main.ResetLevel();
+				}
 			// }
 			// else
 			// {
@@ -2170,7 +2174,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				pointDest = null;
 				l.positionCount = 0;
 
-				flyingSpeed = flow;
+				flyingSpeed = flow + speed + boost;
 
 				//THIS MAY NOT BE NECESSARY UNLESS WE CAN FLY OFF OF SPLINES, NOT JUST POINTS
 				//curPoint.OnPointExit();
@@ -2212,7 +2216,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				state = PlayerState.Switching;
 
 				timeOnPoint = 0;
-				flyingSpeed = flow;
 				curSpeed = 0;
 
 				if (curPoint == null)
