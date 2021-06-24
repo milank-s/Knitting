@@ -453,7 +453,8 @@ public class Point : MonoBehaviour
 
 				if (prevState == PointState.locked)
 				{
-//						fdafadsf
+					
+						// you need to add some colour, they're just black
 				}
 
 				break;
@@ -672,6 +673,20 @@ public class Point : MonoBehaviour
 					return false;
 				}
 				break;
+
+			case PointTypes.fly:
+
+				if (buttonUp)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+				break;
+			
+
 			
 			default:
 				return true;

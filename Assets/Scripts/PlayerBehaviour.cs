@@ -106,7 +106,10 @@ public class PlayerBehaviour: MonoBehaviour {
 			{
 				//adjustedAccuracy = 1;
 			}
-
+			if(state == PlayerState.Flying){
+				return flyingSpeed;
+			}
+			
 			return (speed) * cursorDir.magnitude * easedAccuracy + flow + boost;
 		}
 	}
@@ -2258,7 +2261,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				
 				curPoint.OnPlayerEnterPoint();
-							
+
 
 				//SPLINE IS NULL WHEN YOU ARE FLYING, THIS SUCKS
 				if (curSpline != null)

@@ -588,7 +588,7 @@
 					CameraFollow.instance.FollowPlayer();
 				}
 					
-				if(Services.PlayerBehaviour.curSpline != null){
+				if(Services.PlayerBehaviour.curSpline != null && !Services.PlayerBehaviour.curSpline.drawingIn){
 					Services.PlayerBehaviour.curSpline.DrawSpline();
 					Services.PlayerBehaviour.curSpline.line.Draw3D();
 				}

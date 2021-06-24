@@ -578,7 +578,7 @@ public class Spline : MonoBehaviour
 
 				}
 			}
-			
+			line.Draw3D();
 			yield return null;
 
 			if (!bidirectional)
