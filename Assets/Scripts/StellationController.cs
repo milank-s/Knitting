@@ -443,10 +443,10 @@ public class StellationController : MonoBehaviour {
 
 		//this was to save time but now its causing problems
 
-		// if (curSplineIndex < (_splines.Count - _splinesToUnlock.Count) - 1)
-		// {
-		// 	return false;
-		// }
+		if (curSplineIndex < (_splines.Count - _splinesToUnlock.Count) - 1 && laps > 0)
+		{
+			return false;
+		}
 		
 		foreach (Point p in _points)
 		{
@@ -587,7 +587,7 @@ public class StellationController : MonoBehaviour {
 		}
 
 
-		if(won){
+		if(isComplete){
 			Services.fx.readout.text = "";
 		}
 	}

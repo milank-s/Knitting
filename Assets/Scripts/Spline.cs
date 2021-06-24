@@ -442,16 +442,28 @@ public class Spline : MonoBehaviour
 	
 	public void LockSpline()
 	{	
+		
+		state = SplineState.locked;
+
 		foreach (Point p in SplinePoints)
 		{
 
-			if (p != null && p._connectedSplines.Count <= 1)
+			if (p != null)
 			{
-				p.SwitchState(Point.PointState.locked);
+				if( p._connectedSplines.Count <= 1){
+					p.SwitchState(Point.PointState.locked);
+				}else{
+					foreach(Spline s in p._connectedSplines){
+						if(s.state != SplineState.locked){
+							continue;
+						}
+					}
+					
+					p.SwitchState(Point.PointState.locked);
+				}
 			}
 		}
 
-		state = SplineState.locked;
 	}
 
 	public void Unlock()
