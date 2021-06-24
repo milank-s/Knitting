@@ -201,7 +201,7 @@
 		Spline.shake = 0;
 		Spline.noiseSpeed = 5;
 		Spline.amplitude = 0.5f;
-		Spline.drawSpeed = 1;
+		Spline.drawSpeed = 0.25f;
 
 		editor.DeselectPoints();
 		editor.DeselectSpline();

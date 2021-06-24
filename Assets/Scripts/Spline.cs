@@ -470,18 +470,19 @@ public class Spline : MonoBehaviour
 	{
 		//fancy animation bullshit
 		
-		foreach (Point p in SplinePoints)
-		{
-			//why this condition ? p._connectedSplines.Count <= 1
-			if (p != null && p.state == Point.PointState.locked)
-			{
-				p.SwitchState(Point.PointState.off);
-			}
-		}
-
-		Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, SplinePoints[0].transform);
 		SplinePoints[0].SwitchState(Point.PointState.on);
 
+		// foreach (Point p in SplinePoints)
+		// {
+			
+		// 	if (p != null && p.state == Point.PointState.locked)
+		// 	{
+		// 		p.SwitchState(Point.PointState.off);
+		// 	}
+		// }
+
+		Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, SplinePoints[0].transform);
+		
 		state = SplineState.on;
 
 		StartDrawRoutine();
@@ -550,6 +551,10 @@ public class Spline : MonoBehaviour
 
 			for (int i = 0; i < SplinePoints.Count - (closed ? 0 : 1); i++)
 			{
+				if(SplinePoints[i].state == Point.PointState.locked){
+					SplinePoints[i].SwitchState(Point.PointState.off);
+				}
+				
 				for (int k = 0; k < curveFidelity; k++)
 				{
 					int index = (i * curveFidelity) + k;
@@ -580,6 +585,10 @@ public class Spline : MonoBehaviour
 			}
 			line.Draw3D();
 			yield return null;
+
+			if(EndPoint.state == Point.PointState.locked){
+				EndPoint.SwitchState(Point.PointState.off);
+			}
 
 			if (!bidirectional)
 			{

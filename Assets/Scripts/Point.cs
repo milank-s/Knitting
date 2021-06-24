@@ -756,7 +756,7 @@ public class Point : MonoBehaviour
 			
 		}else if (state == PointState.off)
 		{
-			SR.color = Color.Lerp(SR.color, _color, Time.deltaTime);
+			SR.color =  _color;
 		}
 
 //		SR.color += Color.white * Mathf.Sin(3 * (Time.time + timeOffset)) / 10;
