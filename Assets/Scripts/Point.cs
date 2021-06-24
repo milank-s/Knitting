@@ -147,7 +147,7 @@ public class Point : MonoBehaviour
 				return new Color(c,c,c, 1);
 			}
 			
-			return new Color(c, c, c, 1) + (Color.white * 0.25f);
+			return new Color(c, c, c, 1);
 		}
 	}
 	
@@ -740,7 +740,7 @@ public class Point : MonoBehaviour
 		// c = (Mathf.Sin (3 * (Time.time + timeOffset))/4 + 0.3f) + proximity;
 //		c = proximity + Mathf.Sin(Time.time + timeOffset)/10 + 0.11f;
 		// ACCRETION IS SHOWING POINTS THAT IT SHOULDNT?????
-		c = proximity + timesHit/3f;
+		c = proximity + timesHit/3f + (state == PointState.on ? 0.5f : 0.2f);
 		// accretion
 		c = Mathf.Pow (c, 1);
 		
@@ -756,7 +756,7 @@ public class Point : MonoBehaviour
 			
 		}else if (state == PointState.off)
 		{
-			SR.color =  _color;
+			SR.color =  _color; 	
 		}
 
 //		SR.color += Color.white * Mathf.Sin(3 * (Time.time + timeOffset)) / 10;
