@@ -150,7 +150,7 @@
 	{	
 		if(state != GameState.playing || MapEditor.editing) return;
 
-		state = GameState.playing;
+		state = GameState.paused;
 
 		if(OnReset != null){
 			OnReset.Invoke();
@@ -317,7 +317,7 @@
 		if(SceneManager.sceneCount > 1){
 			if (curLevel != "")
 			{
-				yield return SceneManager.UnloadSceneAsync(curLevel);
+				yield return SceneManager.UnloadScene(curLevel);
 			}
 		}
 		
@@ -336,25 +336,32 @@
 	}
 	public void LoadScene()
 	{
-		StartCoroutine(LoadSceneRoutine());
-
-		// int s = SceneController.instance.curLevel;
-		// //this could be bugged
-		// Services.PlayerBehaviour.Reset();
-		// FullReset();
+		//StartCoroutine(LoadSceneRoutine());
 		
-		// SceneController.instance.curLevel = s;
-		// curLevel = SceneController.instance.GetCurLevel();
+		if(SceneManager.sceneCount > 1){
+			if (curLevel != "")
+			{
+				SceneManager.UnloadScene(curLevel);
+			}
+		}
 
-		// if (curLevel != "")
-		// {
-		// 	SceneManager.LoadScene(curLevel, LoadSceneMode.Additive);
-		// }
-		// else
-		// {
-		// 	// FullReset();
-		// 	//OpenMenu();
-		// }
+		int s = SceneController.instance.curLevel;
+		//this could be bugged
+		Services.PlayerBehaviour.Reset();
+		FullReset();
+		
+		SceneController.instance.curLevel = s;
+		curLevel = SceneController.instance.GetCurLevel();
+
+		if (curLevel != "")
+		{
+			SceneManager.LoadScene(curLevel, LoadSceneMode.Additive);
+		}
+		else
+		{
+			// FullReset();
+			//OpenMenu();
+		}
 
 //		if (curLevel != "Editor")
 //		{
