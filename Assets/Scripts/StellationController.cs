@@ -441,10 +441,12 @@ public class StellationController : MonoBehaviour {
 
 		bool isDone = true;
 
-		if (curSplineIndex < (_splines.Count - _splinesToUnlock.Count) - 1)
-		{
-			return false;
-		}
+		//this was to save time but now its causing problems
+
+		// if (curSplineIndex < (_splines.Count - _splinesToUnlock.Count) - 1)
+		// {
+		// 	return false;
+		// }
 		
 		foreach (Point p in _points)
 		{
@@ -527,7 +529,6 @@ public class StellationController : MonoBehaviour {
 			{
 				p.Step();
 			}
-			
 
 				if (unlockMethod == UnlockType.speed)
 				{
@@ -542,7 +543,8 @@ public class StellationController : MonoBehaviour {
 							speedAverage /= count;
 						}
 					}
-					//Services.fx.readout.text = (Mathf.Clamp(speedAverage - startSpeed, 0, 100)/(speed - startSpeed) * 100).ToString("F0") + "%";
+
+					Services.fx.readout.text = (Mathf.Clamp(speedAverage - startSpeed, 0, 100)/(speed - startSpeed) * 100).ToString("F0") + "%";
 				
 				}else if (unlockMethod == UnlockType.time)
 				{

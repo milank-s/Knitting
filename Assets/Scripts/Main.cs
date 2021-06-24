@@ -150,6 +150,8 @@
 	{	
 		if(state != GameState.playing || MapEditor.editing) return;
 
+		state = GameState.playing;
+		
 		if(OnReset != null){
 			OnReset.Invoke();
 		}
@@ -696,7 +698,6 @@
 			Services.StartPoint = Point.Points[0];
 		}
 
-		
 		if (!MapEditor.editing)
 		{
 			playerInput.SwitchCurrentActionMap("Player");

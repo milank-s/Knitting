@@ -2256,7 +2256,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 //TODO
 
-			
+				
+				curPoint.OnPlayerEnterPoint();
+							
 
 				//SPLINE IS NULL WHEN YOU ARE FLYING, THIS SUCKS
 				if (curSpline != null)
@@ -2264,9 +2266,6 @@ public class PlayerBehaviour: MonoBehaviour {
 					curSpline.CheckComplete();
 				}
 
-				
-				curPoint.OnPlayerEnterPoint();
-				
 
 				//can we check for completeness here please
 
@@ -2274,6 +2273,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				{
 					curPoint.controller.Unlock();
 				}
+
+		
 
 				//checkpoint shit
 				if (curPoint.pointType == PointTypes.stop)
