@@ -151,7 +151,7 @@
 		if(state != GameState.playing || MapEditor.editing) return;
 
 		state = GameState.playing;
-		
+
 		if(OnReset != null){
 			OnReset.Invoke();
 		}
@@ -312,13 +312,12 @@
 		}
 	}
 	
-	public void LoadScene()
-	{
+	IEnumerator LoadSceneRoutine(){
 
 		if(SceneManager.sceneCount > 1){
 			if (curLevel != "")
 			{
-				SceneManager.UnloadSceneAsync(curLevel);
+				yield return SceneManager.UnloadSceneAsync(curLevel);
 			}
 		}
 		
@@ -334,11 +333,28 @@
 		{
 			SceneManager.LoadScene(curLevel, LoadSceneMode.Additive);
 		}
-		else
-		{
-			// FullReset();
-			//OpenMenu();
-		}
+	}
+	public void LoadScene()
+	{
+		StartCoroutine(LoadSceneRoutine());
+
+		// int s = SceneController.instance.curLevel;
+		// //this could be bugged
+		// Services.PlayerBehaviour.Reset();
+		// FullReset();
+		
+		// SceneController.instance.curLevel = s;
+		// curLevel = SceneController.instance.GetCurLevel();
+
+		// if (curLevel != "")
+		// {
+		// 	SceneManager.LoadScene(curLevel, LoadSceneMode.Additive);
+		// }
+		// else
+		// {
+		// 	// FullReset();
+		// 	//OpenMenu();
+		// }
 
 //		if (curLevel != "Editor")
 //		{
