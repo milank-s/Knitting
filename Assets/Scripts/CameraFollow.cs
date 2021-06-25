@@ -93,10 +93,12 @@ public class CameraFollow : MonoBehaviour {
 		float yPos;
 		float xPos;
 
-		Vector3 shake = Services.PlayerBehaviour.state == PlayerState.Traversing
-			? (Vector3) Random.insideUnitCircle.normalized * Mathf.Clamp(
-				  Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, Services.PlayerBehaviour.accuracyCoefficient) *
-				  Services.PlayerBehaviour.flow, 0, 0.5f)
+		Vector3 shake = Services.PlayerBehaviour.state == 
+		
+		PlayerState.Traversing ? 
+		
+		(Vector3) Random.insideUnitCircle.normalized * Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, Services.PlayerBehaviour.accuracyCoefficient) *
+				  (Services.PlayerBehaviour.actualSpeed + 0.5f), 0, 0.5f)
 			: Vector3.zero;
 
 		Vector3 finalPos = new Vector3(desiredPos.x, desiredPos.y, desiredPos.z);
