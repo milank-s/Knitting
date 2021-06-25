@@ -13,6 +13,7 @@ public class CameraFollow : MonoBehaviour {
 	public bool lockX, lockY, lockZ;
 	public float desiredFOV;
 	public static Vector3 targetPos;
+	Vector3 nudge = Vector3.zero;
 	
 	public static CameraFollow instance;
 	// Use this for initialization
@@ -44,12 +45,18 @@ public class CameraFollow : MonoBehaviour {
 		desiredPos.z = Services.Player.transform.position.z + offset.z;
 		
 
-		Vector3 nudge = Vector3.zero;
+		
 
 		if(Services.PlayerBehaviour.state != PlayerState.Flying){
 			
 			if(Services.PlayerBehaviour.state == PlayerState.Traversing){
+				//nudge wasn't working with backwards ughhhh
+				
 					nudge = Services.PlayerBehaviour.curSpline.GetVelocity(Services.PlayerBehaviour.progress);
+
+				if(!Services.PlayerBehaviour.goingForward){
+					nudge = -nudge;
+				}
 				
 			}else if(Services.PlayerBehaviour.state == PlayerState.Switching){
 				if(Services.PlayerBehaviour.pointDest != null){
@@ -63,24 +70,22 @@ public class CameraFollow : MonoBehaviour {
 			nudge = Services.PlayerBehaviour.playerSprite.transform.up;
 		}
 
-		nudge.z = 0;
-
-		nudge /= 4f;
-		desiredPos += nudge;
+		desiredPos += nudge/5f;
 
 		
-		if(!lockX){
-			targetPos.x = desiredPos.x;
+		if(lockX){
+			desiredPos.x = targetPos.x;
 		}
 
-		if(!lockY){
-			targetPos.y = desiredPos.y;
+		if(lockY){
+			desiredPos.y = targetPos.y;
 		}
 
-		if(!lockZ){
-			targetPos.z = desiredPos.z;
+		if(lockZ){
+			desiredPos.z = targetPos.z;
 		}
 		
+	
 		cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, desiredFOV, Time.deltaTime * 3);
 
 
@@ -94,7 +99,7 @@ public class CameraFollow : MonoBehaviour {
 				  Services.PlayerBehaviour.flow, 0, 0.5f)
 			: Vector3.zero;
 
-		Vector3 finalPos = new Vector3(targetPos.x, targetPos.y, targetPos.z);
+		Vector3 finalPos = new Vector3(desiredPos.x, desiredPos.y, desiredPos.z);
 		
 		transform.position = Vector3.SmoothDamp(transform.position, finalPos + shake,
 			ref velocity, 0.25f);
