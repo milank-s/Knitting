@@ -2190,6 +2190,8 @@ public class PlayerBehaviour: MonoBehaviour {
 					curSpline.OnSplineExit();
 					curSpline.reactToPlayer = false;
 				}
+
+				curSpline = null;
 				
 
 				// if (StellationManager.instance != null)

@@ -45,13 +45,25 @@ public class CameraFollow : MonoBehaviour {
 		
 
 		Vector3 nudge = Vector3.zero;
-		if(Services.PlayerBehaviour.curSpline != null){
+
+		if(Services.PlayerBehaviour.state != PlayerState.Flying){
+			
 			if(Services.PlayerBehaviour.state == PlayerState.Traversing){
-				nudge = Services.PlayerBehaviour.curSpline.GetVelocity(Services.PlayerBehaviour.progress);
+					nudge = Services.PlayerBehaviour.curSpline.GetVelocity(Services.PlayerBehaviour.progress);
+				
 			}else if(Services.PlayerBehaviour.state == PlayerState.Switching){
-				nudge = Services.PlayerBehaviour.curSpline.GetVelocity(0.1f);
+				if(Services.PlayerBehaviour.pointDest != null){
+					nudge = (Services.PlayerBehaviour.pointDest.Pos - Services.PlayerBehaviour.curPoint.Pos).normalized;
+				}
+				//we could do lots of diff position hinting here using the point dest if connecting or about to traverse
+				// nudge = Services.PlayerBehaviour.playerSprite.transform.up;
 			}
+			
+		}else{
+			nudge = Services.PlayerBehaviour.playerSprite.transform.up;
 		}
+
+		nudge.z = 0;
 
 		nudge /= 4f;
 		desiredPos += nudge;
