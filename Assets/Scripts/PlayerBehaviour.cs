@@ -2027,12 +2027,12 @@ public class PlayerBehaviour: MonoBehaviour {
 					OnStoppedFlying.Invoke();
 				}
 
-				if (flow > flyingSpeed)
-				{
-					//flow = flyingSpeed;
-
+				//I dont really want the player to gain speed by flying
+				
+				if(flow > flyingSpeed - speed){			
+					flow = Mathf.Clamp(flyingSpeed - speed, 0, 1000);
 				}
-
+		
 
 				Services.fx.flyingParticles.Pause();
 

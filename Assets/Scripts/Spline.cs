@@ -706,6 +706,21 @@ public class Spline : MonoBehaviour
 		rollingDistance += (prevPos - v).magnitude;
 		prevPos = v;
 
+		//I want to lerp to 0 at the 0 and 1 values of the spline if it is not closed
+
+		float distortionSmooth = 0;
+		float smooth = 1;
+
+		if(!closed){
+			
+			if(segmentIndex < curveFidelity || line.points3.Count - segmentIndex < curveFidelity){
+				smooth = step;
+				
+				smooth = Mathf.Sin(smooth * Mathf.PI);
+				smooth = Mathf.Pow(smooth, 2);
+			}
+		}
+
 
 		distortion = (Mathf.PerlinNoise((-Time.time * noiseSpeed) + (rollingDistance * frequency), 1.321738f) * 2f - 1f);
 
@@ -713,7 +728,7 @@ public class Spline : MonoBehaviour
 			if (isPlayerOn)
 			{
 				//UnityEngine.Random.Range(- distortion, distortion)
-				v += distortionVector * distortion * magnitude * Mathf.Clamp01(invertedDistance);
+				v += distortionVector * distortion * magnitude * Mathf.Clamp01(invertedDistance) * smooth;
 			}
 			else if(reactToPlayer)
 			{
@@ -722,7 +737,7 @@ public class Spline : MonoBehaviour
 			}
 		// }
 
-		v += distortionVector * distortion * shake;
+		v += distortionVector * distortion * shake * smooth;
 
 		SetLinePoint(v, segmentIndex);
 
