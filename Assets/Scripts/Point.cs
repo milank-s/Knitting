@@ -321,10 +321,10 @@ public class Point : MonoBehaviour
 		{
 			SetColor();
 
-			if (!isKinematic)
-			{
-				Movement();
-			}
+			// if (!isKinematic)
+			// {
+			// 	Movement();
+			// }
 		}
 		else
 		{
@@ -332,7 +332,7 @@ public class Point : MonoBehaviour
 		}
 	}
 
-	void Movement(){
+	public void Movement(){
 		
 		Vector3 stretch = transform.position - anchorPos;
 		Vector3 force = -stiffness * stretch - damping * _velocity;
@@ -549,11 +549,12 @@ public class Point : MonoBehaviour
 					if (controller.isComplete)
 					{
 						controller.Won();
-						
-						Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed + 10, transform);
-						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
-						
-						controller.isOn = false;
+						// controller.isOn = false;
+
+						return;
+
+						//Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed + 10, transform);
+						//Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
 
 					}
 					else

@@ -146,7 +146,7 @@ public class FXManager : MonoBehaviour
 
     public void BakeTraversingParticles(){
         BakeParticles(Services.PlayerBehaviour.sparks, brakeParticleMesh);
-        BakeParticles(popParticles, brakeParticleMesh);
+        //BakeParticles(popParticles, brakeParticleMesh);
     }
 
     public void BakeFlyingTrail(){

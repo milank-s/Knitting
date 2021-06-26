@@ -39,6 +39,7 @@ public class Spline : MonoBehaviour
 	public static float frequency = 0.025f;
 	public float distortion;
 
+	bool complete;
 	float rollingDistance;
 	float magnitude;
 	public static System.Collections.Generic.List<Spline> Splines = new System.Collections.Generic.List<Spline> ();
@@ -189,9 +190,11 @@ public class Spline : MonoBehaviour
 			}
 		}
 		
-		if (controller != null)
+		
+
+		if (!complete && controller != null)
 		{
-			
+			complete = true;
 			controller.UnlockSpline(this);
 		}
 	}
@@ -423,6 +426,7 @@ public class Spline : MonoBehaviour
 
 	public void Reset()
 	{
+		complete = false;
 		SplinePoints.Clear();
 		closed = false;
 		drawingIn= false;
@@ -532,6 +536,11 @@ public class Spline : MonoBehaviour
 		}
 	}
 	
+	public void UpdatePoints(){
+		foreach(Point p in SplinePoints){
+			p.Movement();
+		}
+	}
 	public IEnumerator DrawSplineIn()
 	{
 		drawingIn = true;

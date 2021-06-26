@@ -588,10 +588,16 @@
 					CameraFollow.instance.FollowPlayer();
 				}
 					
-				if(Services.PlayerBehaviour.curSpline != null && !Services.PlayerBehaviour.curSpline.drawingIn){
-					Services.PlayerBehaviour.curSpline.DrawSpline();
-					Services.PlayerBehaviour.curSpline.line.Draw3D();
+				if(Services.PlayerBehaviour.curSpline != null){
+
+					Services.PlayerBehaviour.curSpline.UpdatePoints();
+
+					if(!Services.PlayerBehaviour.curSpline.drawingIn){
+						Services.PlayerBehaviour.curSpline.DrawSpline();
+						Services.PlayerBehaviour.curSpline.line.Draw3D();
+					}
 				}
+				
 				foreach (Spline s in Spline.Splines)
 				{
 

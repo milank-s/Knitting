@@ -379,6 +379,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		Point.hitColorLerp = connectTime;
 
+
 		if (buttonDown)
 		{
 			boostIndicator.enabled = true;
@@ -2028,7 +2029,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 
 				//I dont really want the player to gain speed by flying
-				
+
 				if(flow > flyingSpeed - speed){			
 					flow = Mathf.Clamp(flyingSpeed - speed, 0, 1000);
 				}
