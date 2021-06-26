@@ -502,7 +502,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		}
 		//else if? should happen all on same frame?
-		if(state == PlayerState.Switching)
+		if(state == PlayerState.Switching && curPoint != null)
 		{
 			transform.position = curPoint.Pos;
 			playerSprite.transform.position = Vector3.Lerp(playerSprite.transform.position, transform.position,Time.deltaTime * 10f);

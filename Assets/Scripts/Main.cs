@@ -338,6 +338,8 @@
 	{
 		//StartCoroutine(LoadSceneRoutine());
 		
+		state = GameState.paused;
+
 		if(SceneManager.sceneCount > 1){
 			if (curLevel != "")
 			{
@@ -345,6 +347,7 @@
 			}
 		}
 
+		GlitchEffect.Fizzle(0.25f);
 		int s = SceneController.instance.curLevel;
 		//this could be bugged
 		Services.PlayerBehaviour.Reset();

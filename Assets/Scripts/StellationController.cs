@@ -445,7 +445,7 @@ public class StellationController : MonoBehaviour {
 
 		if (curSplineIndex < (_splines.Count - _splinesToUnlock.Count) - 1 && laps > 0)
 		{
-			Debug.Log("spline index failing");
+			
 			return false;
 		}
 		
@@ -493,6 +493,7 @@ public class StellationController : MonoBehaviour {
 		//why am I not simply incrementing here. don't understand
 		// curSplineIndex = spline.order + 1;
 		
+
 		curSplineIndex ++;
 
 		

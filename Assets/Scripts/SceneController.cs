@@ -143,17 +143,9 @@ public class SceneController : MonoBehaviour
             Services.main.FullReset();
             Services.main.CloseMenu();
 
-            //its a scene 
-            if (curLevelSet.isScene)
-            {
-                Services.main.LoadScene();
-                //what why
-                //curLevel++;
-            }
-            else
-            {
-                StartCoroutine(Services.main.LevelIntro(curLevelSet));
-            }
+            
+            StartCoroutine(Services.main.LevelIntro(curLevelSet));
+            
         }
     }
     
