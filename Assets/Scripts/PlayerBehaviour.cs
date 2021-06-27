@@ -73,6 +73,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	public delegate void StateChange();
 	public StateChange OnStartFlying;
 	public StateChange OnStartTraversing;
+	public StateChange OnLeaveAnyPoint;
+	public StateChange OnEnterAnyPoint;
+
 	public StateChange OnTraversing;
 	public StateChange OnFlying;
 	public StateChange OnStoppedFlying;
@@ -904,6 +907,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void StayOnPoint(){
 
+		curSpeed = 0;
 		
 		decelerationTimer = Mathf.Lerp(decelerationTimer, 0, Time.deltaTime * 2);
 		timeOnPoint += Time.deltaTime;
@@ -2150,12 +2154,15 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if (curPoint.pointType != PointTypes.ghost)
 				{
-				
-
 					if(OnStartTraversing != null){
 						OnStartTraversing.Invoke();
 					}
 				}
+				
+				if(OnLeaveAnyPoint != null){
+					OnLeaveAnyPoint.Invoke();
+				}
+				
 				
 				break;
 
@@ -2219,7 +2226,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				state = PlayerState.Switching;
 
 				timeOnPoint = 0;
-				curSpeed = 0;
+				
 
 				if (curPoint == null)
 				{
@@ -2263,6 +2270,11 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 				
 				}
+					
+					if(OnEnterAnyPoint != null){
+						OnEnterAnyPoint.Invoke();
+					}
+				
 //TODO
 
 				

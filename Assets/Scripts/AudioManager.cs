@@ -32,6 +32,7 @@ public class AudioManager : MonoBehaviour
         Services.main.OnLoadLevel += SoundSetup;
         Services.PlayerBehaviour.OnStartFlying += EnterFlying;
         Services.PlayerBehaviour.OnStartTraversing += EnterTraversing;
+        
         Services.PlayerBehaviour.OnStoppedFlying += ExitFlying;
         Services.PlayerBehaviour.OnTraversing += OnTraversing;
         Services.PlayerBehaviour.OnFlying += OnFlying;
