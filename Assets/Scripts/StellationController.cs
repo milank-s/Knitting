@@ -411,7 +411,7 @@ public class StellationController : MonoBehaviour {
 		isComplete = false;
 		won = false;
 
-		rootKey = UnityEngine.Random.Range(48, 61);
+		rootKey = UnityEngine.Random.Range(36, 49);
 		isOn = true;
 		Services.main.activeStellation = this;
 

@@ -237,6 +237,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		acceleration = Services.main.activeStellation.acceleration;
 		maxSpeed = Services.main.activeStellation.maxSpeed;
 		
+		ResetFX();
 
 //		Material newMat;
 //		newMat = Services.Prefabs.lines[3];
@@ -908,10 +909,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	void StayOnPoint(){
 
 		curSpeed = 0;
-		
+
 		decelerationTimer = Mathf.Lerp(decelerationTimer, 0, Time.deltaTime * 2);
 		timeOnPoint += Time.deltaTime;
-
 
 		if(buttonDown && !freeCursor && pointDest != null){
 			boostTimer += Time.deltaTime / stopTimer;
@@ -2369,7 +2369,7 @@ public class PlayerBehaviour: MonoBehaviour {
 // (accuracy < 0 && flow > 0) || accuracy > 0 && flow <
 			if (state != PlayerState.Switching)
 			{
-				e.rateOverTimeMultiplier = (1-normalizedAccuracy) * 25 * potentialSpeed;
+				e.rateOverTimeMultiplier = (1-easedAccuracy) * 25 * potentialSpeed;
 			}
 
 		}

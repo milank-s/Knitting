@@ -37,6 +37,8 @@ public class AudioManager : MonoBehaviour
         Services.PlayerBehaviour.OnTraversing += OnTraversing;
         Services.PlayerBehaviour.OnFlying += OnFlying;
         Services.PlayerBehaviour.OnStoppedTraversing += ExitTraversing;
+        Services.PlayerBehaviour.OnEnterAnyPoint += EnterAnyPoint;
+        Services.PlayerBehaviour.OnLeaveAnyPoint += LeaveAnyPoint;
         Services.main.OnReset += Reset;
     }
     
@@ -49,9 +51,7 @@ public class AudioManager : MonoBehaviour
     }
     public void SoundSetup(StellationController stellation){
 
-        foreach(Spline s in stellation._splines){
-            //
-        }
+      
         //iterate through splines
         //iterate through points
         //use bounds to determine pitch
@@ -82,9 +82,17 @@ public class AudioManager : MonoBehaviour
         clock.pause = true;
     }
 
+    public void EnterAnyPoint(){
+
+    }
+
+    public void LeaveAnyPoint(){
+        SynthController.instance.UpdateMovementSynth();
+    }
+
     public void OnTraversing(){
 
-        SynthController.instance.UpdateMovementSynth();
+        SynthController.instance.MovementSynth();
         //clock.bpm = Services.PlayerBehaviour.curSpeed * 30 + 50 * (1-Services.PlayerBehaviour.decelerationTimer);
     }
 

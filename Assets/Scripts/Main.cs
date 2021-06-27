@@ -730,14 +730,15 @@
 			Services.StartPoint = Point.Points[0];
 		}
 
+
+		OnReset.Invoke();
+
 		if (!MapEditor.editing)
 		{
 			playerInput.SwitchCurrentActionMap("Player");
 			Services.Player.SetActive(true);
 			Services.PlayerBehaviour.Initialize();
 		}
-		
-		OnReset.Invoke();
 
 		EnterPlayMode();
 		

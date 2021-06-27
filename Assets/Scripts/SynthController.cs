@@ -26,7 +26,11 @@ public class SynthController : MonoBehaviour
 	private int[][] triads;
     private int[] lowNotes = {30, 32, 36};
 
-    private int padNote = 42;
+    private int curNote = 42;
+	private int targetNote = 30;
+
+	Point currentActivePoint;
+	Point currentTargetPoint;
 
     private int[] keyNote;
 
@@ -74,7 +78,7 @@ public class SynthController : MonoBehaviour
 		flyingSynth.SetParameterPercent(Param.kVolume, Mathf.Clamp01(Services.PlayerBehaviour.flyingSpeed));
 	}
 	public void PlayFlyingSynth(){
-		flyingSynth.NoteOn(64);
+		flyingSynth.NoteOn(64, 0.2f);
 	}
 
 	public void StopFlying(){
@@ -82,8 +86,8 @@ public class SynthController : MonoBehaviour
 	}
 
 	public void PlayNoteOnPoint(Point p){
-		int note = GetNote(p);
-		keys.NoteOn(note, 0.1f, 0.1f);
+		// int note = GetNote(p);
+		// keys.NoteOn(note + 12, 1f, 1f);
 	}
 
 	int GetNote(Point p){
@@ -101,7 +105,7 @@ public class SynthController : MonoBehaviour
 		// normalizedY /= magnitude;
 		// normalizedY = Mathf.Clamp01(normalizedY);
 		
-		int note = p.controller.rootKey + major[(int)Mathf.Floor(height * 7f)] + octave;
+		int note = p.controller.rootKey + major[(int)Mathf.Floor(height * 7f)];// + octave;
 		
 		return note;
 	}
@@ -111,33 +115,53 @@ public class SynthController : MonoBehaviour
 
 		noisePad.NoteOn(60, 1);
 		noisePad.NoteOn(55, 1);
-		movementPad.NoteOn(GetNote(Services.PlayerBehaviour.curPoint));
+
+		curNote = GetNote(Services.PlayerBehaviour.curPoint); 
+		targetNote = GetNote(Services.PlayerBehaviour.pointDest)-12;
+
+		//movementKeys.NoteOn(curNote);
+		
+		int note = GetNote(Services.PlayerBehaviour.curPoint);
+		
+		keys.NoteOn(note + triads[0][Random.Range(0, triads[0].Length)], 1f, 1f);
+		
+		//keys.NoteOn(note + major[triads[0][Random.Range(0, triads[0].Length)]], 1f, 1f);
+		
+
 	}
 
 	public void UpdateMovementSynth(){
 		
-			float normalizedAccuracy = Services.PlayerBehaviour.normalizedAccuracy;
+		// movementPad.AllNotesOff();
+
+		//curNote = GetNote(Services.PlayerBehaviour.curPoint); 
+		//targetNote = GetNote(Services.PlayerBehaviour.pointDest);
+
+		//movementPad.NoteOn(curNote);
+	}
+	
+	
+	public void MovementSynth(){
+		
+			float accuracy = Services.PlayerBehaviour.easedAccuracy;
 
 			//old code for using arp on the synth instead of using a sequencer
 			//movementKeys.SetParameterPercent(Param.kArpFrequency, normalizedAccuracy);
 			
 			
 			//distortion isn't really working
-			float distortion = Mathf.Pow((1 - normalizedAccuracy), 2) + Spline.shake;
+			float distortion = Mathf.Pow((1 - Services.PlayerBehaviour.normalizedAccuracy), 2) + Spline.shake + 0.1f;
 			movementPad.SetParameterPercent(Param.kDistortionMix, distortion);
-			movementPad.SetParameterPercent(Param.kVolume, Mathf.Clamp(Services.PlayerBehaviour.curSpeed, 0, 0.5f));
+			movementPad.SetParameterPercent(Param.kVolume, Mathf.Clamp(accuracy, 0.1f, 0.75f));
 
 			//divide bounds into 12 pitches
 			//based on the note's assigned pitch, move the wheel a portion of that amount to the target pitch
 
 			//float playerY = Services.main.activeStellation.GetNormalizedHeight(Services.Player.transform.position);
 
-			Vector3 curPointPos = Services.PlayerBehaviour.curPoint.Pos;
-			Vector3 pointDestPos = Services.PlayerBehaviour.pointDest.Pos;
-			Vector3 diff = pointDestPos - curPointPos;
-
-			// int curNote = GetNote(Services.PlayerBehaviour.curPoint); 
-			// int targetNote = GetNote(Services.PlayerBehaviour.pointDest);
+			// Vector3 curPointPos = Services.PlayerBehaviour.curPoint.Pos;
+			// Vector3 pointDestPos = Services.PlayerBehaviour	.pointDest.Pos;
+			// Vector3 diff = pointDestPos - curPointPos;
 
 			// int noteDiff = targetNote - curNote;
 
@@ -146,11 +170,12 @@ public class SynthController : MonoBehaviour
 			// float floor = diff.y > 0? curPointPos.y : pointDestPos.y;
 			// float scaledPlayerY = (Services.Player.transform.position.y - floor) / diff.magnitude;
 			// scaledPlayerY = diff.y > 0 ? scaledPlayerY : scaledPlayerY -1;
+			// Debug.Log(scaledPlayerY);
 			// movementPad.SetParameterValue(Param.kPitchBendRange, Mathf.Abs(noteDiff));
 
-			//linear for now
+			// // linear for now
 			
-			//movementPad.SetPitchWheel(scaledPlayerY);
+			// movementPad.SetPitchWheel(scaledPlayerY);
 
 
 			//noise time
@@ -196,6 +221,7 @@ public class SynthController : MonoBehaviour
 	    movementKeys.AllNotesOff();
 	    movementPad.AllNotesOff();
 		noisePad.AllNotesOff();
+		keys.AllNotesOff();
     }
 
     void TestNotes()
