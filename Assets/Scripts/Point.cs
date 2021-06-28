@@ -200,7 +200,6 @@ public class Point : MonoBehaviour
 		}
 	}
 
-
 	void Awake()
 	{
 		initPos = transform.position;
@@ -237,7 +236,6 @@ public class Point : MonoBehaviour
 	{
 		StartCoroutine(LightUp());
 	}
-
 	
 	public void Clear()
 	{

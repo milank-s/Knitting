@@ -86,7 +86,9 @@ public class Decoration : MonoBehaviour
 
     void GetNextPoint()
     {   
-        
+
+       
+
         int i = spline.closed ? 1 : 2;
         if(curIndex < spline.SplinePoints.Count - i)
         {
@@ -104,6 +106,10 @@ public class Decoration : MonoBehaviour
             // nextPos = lastPos;
         }
         
+        if(spline.SplinePoints[curIndex].pointType != PointTypes.ghost){
+             Services.main.OnPointEnter.Invoke(spline.SplinePoints[curIndex]);
+        }
+
         distance = spline.GetDistance(curIndex);
     
         //spline.SplinePoints[curIndex].OnPointEnter();
