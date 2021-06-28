@@ -75,10 +75,10 @@ public class SynthController : MonoBehaviour
 		movementSequencer.length = triad.Length;
 	}
 	public void UpdateFlyingSynth(){
-		flyingSynth.SetParameterPercent(Param.kVolume, Mathf.Clamp01(Services.PlayerBehaviour.flyingSpeed));
+		flyingSynth.SetParameterPercent(Param.kVolume, 0.5f);
 	}
 	public void PlayFlyingSynth(){
-		flyingSynth.NoteOn(64, 0.1f);
+		flyingSynth.NoteOn(60, 0f);
 	}
 
 	public void StopFlying(){
@@ -90,6 +90,8 @@ public class SynthController : MonoBehaviour
 		// keys.NoteOn(note + 12, 1f, 1f);
 		
 		int note = GetNote(p);
+		
+		keys.SetParameterPercent(Param.kVolume, 0.25f);
 		keys.NoteOn(note + triads[0][Random.Range(0, triads[0].Length)], 0.05f, 0.1f);
 		
 	}
@@ -123,11 +125,11 @@ public class SynthController : MonoBehaviour
 		curNote = GetNote(Services.PlayerBehaviour.curPoint); 
 		targetNote = GetNote(Services.PlayerBehaviour.pointDest)-12;
 
-		//movementKeys.NoteOn(curNote);
+		movementKeys.NoteOn(curNote);
 		
 		int note = GetNote(Services.PlayerBehaviour.curPoint);
 		
-		keys.NoteOn(note + triads[0][Random.Range(0, triads[0].Length)], 0.75f, 1f);
+		//keys.NoteOn(note + triads[0][Random.Range(0, triads[0].Length)], 0.15f, 1f);
 		
 		//keys.NoteOn(note + major[triads[0][Random.Range(0, triads[0].Length)]], 1f, 1f);
 		

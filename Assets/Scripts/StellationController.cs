@@ -398,7 +398,9 @@ public class StellationController : MonoBehaviour {
 		
 		if(!lockSplines){
 			foreach(Spline s in _splines){
-				s.StartDrawRoutine();
+				if(!_splinesToUnlock.Contains(s)){
+					s.StartDrawRoutine();
+				}
 			}
 		}
 	}
