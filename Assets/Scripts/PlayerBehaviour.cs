@@ -113,7 +113,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				return flyingSpeed;
 			}
 
-			return (speed) * cursorDir.magnitude * easedAccuracy + flow + boost;
+			// return (speed) * cursorDir.magnitude * easedAccuracy + flow + boost;
+			return (speed + flow) * cursorDir.magnitude * easedAccuracy + boost;
 		}
 	}
 
@@ -451,11 +452,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (state == PlayerState.Traversing) {
 			if(curSpline != null){
-				accuracy = GetAccuracy(progress);
+				//accuracy = GetAccuracy(progress);
 				float maxAcc = -100;
 				for(int i = 0; i < 5; i++){
 					float sign = goingForward ? 1 : -1;
-					float curAcc = GetAccuracy(progress + (float)i * sign * 0.02f);
+					float curAcc = GetAccuracy(progress + (float)i * sign * 0.05f);
 					if(curAcc > maxAcc){
 						maxAcc = curAcc;
 					}
@@ -745,9 +746,10 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 
-		if (timeOnPoint == 0 && curPoint.pointType != PointTypes.ghost)
+		if (timeOnPoint == 0 && curPoint.pointType != PointTypes.ghost && (buttonDown || buttonUp))
 		{
-			//lets do this regardless but check against accuracy and the current spline
+			// this shouldnt happen if the player is never stopped on the point
+			//maybe move it under the else statement below
 			
 			curPoint.velocity += (Vector3)cursorDir * (1-easedAccuracy) * potentialSpeed;
 			//curPoint.GetComponent<Rigidbody>().velocity += (Vector3)cursorDir * (1-easedAccuracy) * potentialSpeed;
@@ -1407,14 +1409,17 @@ public class PlayerBehaviour: MonoBehaviour {
 		// (adjustedAccuracy + 0.1f)
 #endregion
 		
+		float splineSpeed = 0;
 		if(curSpline != null && flow < curSpline.speed && !curSpline.bidirectional){
-			flow = curSpline.speed;
+			splineSpeed = curSpline.speed;
 		}
 
+		//no losing speed
+		// float speedGain = Mathf.Clamp01(easedAccuracy - 0.66f) * 3f;
 		float speedGain = (easedAccuracy - 0.66f) * 3f;
-		
+		// speedGain = speedGain > 0 ? speedGain * acceleration : speedGain * decay;
 		//flow += curSpline.speed * Time.deltaTime;
-		flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed) ;
+		flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed) + splineSpeed * Time.deltaTime;
 		flow = Mathf.Clamp(flow, 0, maxSpeed);
 
 		if (!joystickLocked)

@@ -540,19 +540,23 @@ public class StellationController : MonoBehaviour {
 
 				if (unlockMethod == UnlockType.speed)
 				{
-					count++;
-					float playerSpeed = Services.PlayerBehaviour.actualSpeed;
-
-					if(count < average){
-						speedAverage += playerSpeed;
-					}else{
+					
+					float playerSpeed = Services.PlayerBehaviour.flow;
+					
+					
+					if(count > average){
 						speedAverage = speedAverage + (playerSpeed-speedAverage)/(average+1);
+					
+					}else{
+						count++;
+						speedAverage += playerSpeed;
+
 						if(count == average){
 							speedAverage /= count;
 						}
 					}
-
-					Services.fx.readout.text = (Mathf.Clamp(speedAverage - startSpeed, 0, 100)/(speed - startSpeed) * 100).ToString("F0") + "%";
+ 
+					Services.fx.readout.text = (Mathf.Clamp(speedAverage, 0, 100)/(speed) * 100).ToString("F0") + "%";
 				
 				}else if (unlockMethod == UnlockType.time)
 				{
