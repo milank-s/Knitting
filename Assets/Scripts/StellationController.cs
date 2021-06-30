@@ -83,7 +83,9 @@ public class StellationController : MonoBehaviour {
 	float count = 0;
     float average = 30;
     [SerializeField] SpriteRenderer spriteRenderer;
-    Vector3 lastPos;
+    Vector3 startPos;
+	[HideInInspector]
+	public Vector3 pos;
     public float speedAverage;
 	public string GetWord (){
 		if(words != null){
@@ -372,7 +374,7 @@ public class StellationController : MonoBehaviour {
 	{
 		curSplineIndex = 0;
 		isComplete = false;
-		
+		transform.position = startPos;
 		GetComponents();
 
 		//why is this here
@@ -436,19 +438,19 @@ public class StellationController : MonoBehaviour {
 		Services.main.levelText.text = title;
 	}
 
-	public bool CheckCompleteness()
+	public bool CheckLapCount(){
+		return lapCount >= laps;
+	}
+	public void UpdateLapCount()
 	{
 
 		int minLaps = 1000;
-
-		bool isDone = true;
 
 		//this was to save time but now its causing problems
 
 		if (curSplineIndex < (_splines.Count - _splinesToUnlock.Count) - 1 && laps > 0)
 		{
-			
-			return false;
+			return;
 		}
 		
 		foreach (Point p in _points)
@@ -470,6 +472,9 @@ public class StellationController : MonoBehaviour {
 			if(OnCompleteLap != null){
 				OnCompleteLap.Invoke();
 			}
+
+			pos -= Vector3.forward * 0.1f;
+			
 		}
 
 		lapCount = minLaps;
@@ -477,8 +482,6 @@ public class StellationController : MonoBehaviour {
 		if(laps > 1){
 			//Services.fx.readout.text = lapCount.ToString("F0") + "/" + laps.ToString("F0");
 		}
-
-		return lapCount >= laps;
 	}
 
 	//call this for flying off and resetting, player right clicking, and time running out
@@ -528,7 +531,8 @@ public class StellationController : MonoBehaviour {
 	{
 		if (isOn)
 		{
-		
+			transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime);
+
 			//Services.main.fx.readout.transform.position = Services.main.Player.transform.position;
 
 			if (!won)
@@ -609,12 +613,13 @@ public class StellationController : MonoBehaviour {
 	}
 	public bool TryToUnlock()
 	{
+		UpdateLapCount();
 		if (!isComplete)
 		{
 			switch (unlockMethod)
 			{
 			case UnlockType.laps:
-				isComplete = CheckCompleteness();
+				isComplete = CheckLapCount();
 				break;
 			
 			case UnlockType.speed:

@@ -332,7 +332,7 @@ public class Point : MonoBehaviour
 
 	public void Movement(){
 		
-		Vector3 stretch = transform.position - anchorPos;
+		Vector3 stretch = transform.position - (anchorPos + controller.pos);
 		Vector3 force = -stiffness * stretch - damping * _velocity;
 		Vector3 acceleration = force / mass;
 
