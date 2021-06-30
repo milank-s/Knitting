@@ -746,7 +746,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 
-		if (timeOnPoint == 0 && curPoint.pointType != PointTypes.ghost && (buttonDown || buttonUp))
+		if (timeOnPoint == 0 && curPoint.pointType != PointTypes.ghost && ((buttonDown || buttonUp) || !curPoint.CanLeave()))
 		{
 			// this shouldnt happen if the player is never stopped on the point
 			//maybe move it under the else statement below
