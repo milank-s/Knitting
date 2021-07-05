@@ -86,9 +86,6 @@ public class Decoration : MonoBehaviour
 
     void GetNextPoint()
     {   
-
-       
-
         int i = spline.closed ? 1 : 2;
         if(curIndex < spline.SplinePoints.Count - i)
         {

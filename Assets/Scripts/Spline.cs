@@ -619,7 +619,7 @@ public class Spline : MonoBehaviour
 
 		if (isPlayerOn || reactToPlayer)
 		{
-			drawIndex = GetPlayerLineSegment(pointIndex);
+			drawIndex = GetPlayerLineSegment();
 		}
 		
 		
@@ -844,7 +844,7 @@ public class Spline : MonoBehaviour
 		return (pointIndex * curveFidelity) + (int)((float)curveFidelity * (float)progress);
 	}
 
-	public int GetPlayerLineSegment ( int i)
+	public int GetPlayerLineSegment ()
 	{
 		
 		return (SplinePoints.IndexOf(Selected) * curveFidelity) + (int)Mathf.Floor((float)curveFidelity * (float)Services.PlayerBehaviour.progress);

@@ -789,7 +789,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		return false;
 	}
 	public float GetAccuracy(float prog){
-		
+		prog = Mathf.Clamp01(prog);
 		Vector3 splineDir = curSpline.GetDirection (prog);
 		if(!goingForward){splineDir = -splineDir;}
 		Debug.DrawLine(transform.position, transform.position + splineDir, Color.red);
@@ -1357,65 +1357,11 @@ public class PlayerBehaviour: MonoBehaviour {
 			Services.fx.flyingParticles.Pause();
 		}
 
-#region "shitty accuracy code"
-
-
-		// if (directionAdjustedAccuracy > 0.5f && !joystickLocked) {
-
-		// 	if(flow < 0){
-
-		// 		flow += decay *  directionAdjustedAccuracy * Time.deltaTime;
-
-		// 	}else{
-
-		// 		//	maxSpeed = curSpline.distance * 2;
-		// 		flow += Mathf.Pow(directionAdjustedAccuracy, 2) * acceleration * Time.deltaTime * cursorDir.magnitude;
-		// 		decelerationTimer = Mathf.Clamp01(decelerationTimer - Time.deltaTime * 2f);
-		// }
-		// }
-		// curSpeed =  speed * Mathf.Sign (accuracy) * accuracyCoefficient;
-		// if ((curSpeed > 0 && flow < 0) || (curSpeed < 0 && flow > 0)) {
-		// 	curSpeed = 0;
-		// }
-
-
-
-		// if ((directionAdjustedAccuracy < 0.5f) || joystickLocked) {
-
-
-		// 	if (flow > 0)
-		// 	{
-		// 		decelerationTimer = Mathf.Clamp01(decelerationTimer + Time.deltaTime * (2 - normalizedAccuracy));
-
-		// 		if (decelerationTimer >=1 || flow > curSpline.segmentDistance)
-		// 		{
-		// 			if (decelerationTimer >= 1)
-		// 			{
-
-		// 				flyingSpeed = flow + speed + boost;
-
-		// 				//IDK ABOUT THIS ONE CHIEF
-		// 				//SwitchState(PlayerState.Flying);
-		// 			}
-		// 			flow -= (0.5f - accuracy / 2f) * Time.deltaTime;
-		// 		}
-
-		// 		if (flow < 0)
-		// 			flow = 0;
-		// 	}
-
-		// }
-
-		// (adjustedAccuracy + 0.1f)
-#endregion
-		
 		float splineSpeed = 0;
 		if(curSpline != null && flow < curSpline.speed && !curSpline.bidirectional){
 			splineSpeed = curSpline.speed;
 		}
 
-		//no losing speed
-		// float speedGain = Mathf.Clamp01(easedAccuracy - 0.66f) * 3f;
 		float speedGain = (easedAccuracy - 0.66f) * 3f;
 		// speedGain = speedGain > 0 ? speedGain * acceleration : speedGain * decay;
 		//flow += curSpline.speed * Time.deltaTime;
@@ -1425,8 +1371,13 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (!joystickLocked)
 		{
 			curSpeed = actualSpeed;
-			float finalSpeed = (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
-			progress += goingForward ? finalSpeed : -finalSpeed;
+			//float finalSpeed = (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
+			float finalSpeed = curSpeed * Time.deltaTime;
+			//lets do some math
+			
+			CalculateMovementDistance(finalSpeed);
+			
+			//progress += goingForward ? finalSpeed : -finalSpeed;
 
 			curSpline.completion += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
 		}
@@ -1468,6 +1419,69 @@ public class PlayerBehaviour: MonoBehaviour {
 //		transform.Rotate (0, 0, flow*5);
 	}
 
+	void CalculateMovementDistance(float distanceToTravel){
+		
+		int curSegment = goingForward ? (int)Mathf.Ceil((float)Spline.curveFidelity * progress) : (int)Mathf.Floor((float)Spline.curveFidelity * progress);
+
+		Vector3 curPos = transform.position;
+		float rollingDistance = 0;
+		float prevStep = progress;
+
+		if(goingForward){
+			for (int k = curSegment; k <= Spline.curveFidelity; k++)
+			{
+				float step = (float)k/Spline.curveFidelity;
+
+				Vector3 pos = curSpline.GetPoint(step);
+				float diff = (pos - curPos).magnitude;
+				
+				rollingDistance += diff;
+				curPos = pos;
+				
+				float spillover = rollingDistance - distanceToTravel;
+
+				if(spillover > 0){
+					
+					//set progress to current position along the line, 
+					//minus the extra distance as a fraction of the distance travelled this iteration
+					//scaled to the difference of the positions
+					progress = step - (spillover/diff) * (step - prevStep);
+					return;
+				}else{
+					prevStep = step;
+				}
+			}
+
+			progress = 1.1f;
+			return;
+
+		}else{
+			for (int k = curSegment; k >= 0; k--)
+			{
+				float step = (float)k/Spline.curveFidelity;
+				Vector3 pos = curSpline.GetPoint(step);
+				float diff = (pos - curPos).magnitude;
+				rollingDistance += diff;
+				curPos = pos;
+
+				float spillover = rollingDistance - distanceToTravel;
+
+				if(spillover > 0){
+					
+					//set progress to current position along the line, 
+					//plus the extra distance as a fraction of the distance travelled this iteration
+					//scaled to the difference of the positions
+					progress = step + (spillover/diff) * (prevStep - step);
+					return;
+				}else{
+					prevStep = step;
+				}
+			}
+
+			progress = 0; 
+			return;
+		}
+	}
 	public IEnumerator Unwind()
 	{
 
@@ -1544,6 +1558,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				t = Mathf.Clamp(t, 0f, 9f);
 				flow = t;
 
+				
 				if (goingForward)
 				{
 					progress += Time.deltaTime * t / curSpline.segmentDistance;
@@ -1580,7 +1595,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		void CheckProgress(){
 
-		if (progress > 1 || progress < 0) {
+		if (progress >= 1 || progress <= 0) {
 
 // THIS IS KINDA SHITTY. DO IT BETTER
 			//accuracy = 1;
