@@ -472,8 +472,6 @@ public class StellationController : MonoBehaviour {
 			if(OnCompleteLap != null){
 				OnCompleteLap.Invoke();
 			}
-
-			pos -= Vector3.forward * 0.1f;
 			
 		}
 
@@ -537,6 +535,12 @@ public class StellationController : MonoBehaviour {
 
 			if (!won)
 			{	
+
+				if(Services.PlayerBehaviour.state == PlayerState.Traversing && !Services.PlayerBehaviour.joystickLocked){
+
+					pos -= Vector3.forward * Time.deltaTime / 60f;	
+				}
+
 				foreach (Point p in _points)
 			{
 				p.Step();

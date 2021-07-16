@@ -585,6 +585,10 @@
 			if (!MapEditor.editing)
 			{
 
+				if(activeStellation != null){
+					activeStellation.Step();
+				}
+				
 				if (Services.PlayerBehaviour.curPoint != null)// && !activeStellation.won)
 				{
 					Services.PlayerBehaviour.Step();

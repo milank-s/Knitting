@@ -73,6 +73,7 @@ public class CameraFollow : MonoBehaviour {
 		desiredPos += nudge/5f;
 
 		
+		
 		if(lockX){
 			desiredPos.x = targetPos.x;
 		}
@@ -82,7 +83,11 @@ public class CameraFollow : MonoBehaviour {
 		}
 
 		if(lockZ){
-			desiredPos.z = targetPos.z;
+			if(Services.main.activeStellation != null){
+				desiredPos.z = Services.main.activeStellation.pos.z + offset.z;
+			}else{
+				desiredPos.z = targetPos.z;
+			}
 		}
 		
 	
