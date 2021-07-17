@@ -588,7 +588,7 @@
 				if(activeStellation != null){
 					activeStellation.Step();
 				}
-				
+
 				if (Services.PlayerBehaviour.curPoint != null)// && !activeStellation.won)
 				{
 					Services.PlayerBehaviour.Step();
@@ -599,15 +599,17 @@
 
 					Services.PlayerBehaviour.curSpline.UpdatePoints();
 
-					if(!Services.PlayerBehaviour.curSpline.drawingIn){
-						Services.PlayerBehaviour.curSpline.DrawSpline();
-						Services.PlayerBehaviour.curSpline.line.Draw3D();
-					}
+					// if(!Services.PlayerBehaviour.curSpline.drawingIn){
+					// }
 				}
 				
 				foreach (Spline s in Spline.Splines)
 				{
-
+					if(!s.drawingIn){
+						
+						s.DrawSpline();
+						s.line.Draw3D();
+					}
 					// if (!s.locked && !s.reactToPlayer && !s.isPlayerOn)
 					// {
 					// 	s.DrawSpline();
