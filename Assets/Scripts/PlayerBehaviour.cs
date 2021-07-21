@@ -166,6 +166,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	public bool buttonUp;
 	public bool buttonDown;
 
+	bool stopFlying;
+
 	public bool buttonWasPressed => buttonDownTimer > 0;
 	private float buttonDownBuffer = 0.5f;
 	private float buttonDownTimer;
@@ -516,13 +518,14 @@ public class PlayerBehaviour: MonoBehaviour {
 			PlayerOnPoint();
 		}
 
+		//we arent even using this anymore
 		if (state != PlayerState.Animating && state != PlayerState.Flying && curPoint.HasSplines () && curSpline != null) {
 
 
 			//curSpline.UpdateSpline();
 //			ManageSound();
 
-			curPoint.controller.Step();
+			//curPoint.controller.Step();
 
 			foreach(Spline s in curPoint._connectedSplines){
 				//should always be drawn
@@ -725,8 +728,8 @@ public class PlayerBehaviour: MonoBehaviour {
 					cursorSprite.sprite = canFlySprite;
 					if (buttonWasPressed)
 					{
-						buttonDownTimer = 0;
-						boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
+						//buttonDownTimer = 0;
+						//boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
 						SwitchState(PlayerState.Flying);
 
 						return;
@@ -915,7 +918,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		decelerationTimer = Mathf.Lerp(decelerationTimer, 0, Time.deltaTime * 2);
 		timeOnPoint += Time.deltaTime;
 
-		if(buttonDown && !freeCursor && pointDest != null){
+		if(buttonDown && !freeCursor && (pointDest != null || curPoint.pointType == PointTypes.fly)){
 			boostTimer += Time.deltaTime / stopTimer;
 			boostIndicator.enabled = true;
 		}else{
@@ -1172,20 +1175,27 @@ public class PlayerBehaviour: MonoBehaviour {
 			Services.main.ResetLevel();
 		}
 		//RESET IF PLAYER IS OFF SCREEN
-
-
-		if (noRaycast)
+		if (!stopFlying)
 		{
 			pointDest = null;
 		}
 
 		if (raycastPoint != null && CanFlyToPoint(raycastPoint))	{
-			noRaycast = false;
+
 			//& !raycastPoint.used
-			pointDest = raycastPoint;
+			Services.fx.ShowNextPoint(raycastPoint);
+
+			if(buttonDown){
+				pointDest = raycastPoint;
+				stopFlying = true;
+			}
+		}
+		
+		if(pointDest == null && raycastPoint == null){	
+			Services.fx.nextPointSprite.enabled = false;
 		}
 
-		if (pointDest != null)
+		if (stopFlying && pointDest != null)
 		{
 			pointDest.controller.AdjustCamera();
 
@@ -2192,6 +2202,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					OnStartFlying.Invoke();
 				}
 
+				stopFlying = false;
 				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);
 
 				flyingTrail.Clear();
