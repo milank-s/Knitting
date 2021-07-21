@@ -893,21 +893,19 @@ public class PlayerBehaviour: MonoBehaviour {
 		sparks.Emit(5);
 	}
 
-	void Fly(){
-		pointDest = null;
-		l.positionCount = 0;
-		state = PlayerState.Flying;
-		curSpline.OnSplineExit ();
-		curPoint.OnPointExit ();
-		curPoint.proximity = 0;
-		drawnPoint = curPoint;
-		curPoint = SplineUtil.CreatePoint(transform.position);
-		curSpline = SplineUtil.CreateSpline(drawnPoint, curPoint);
-		curDrawDistance = 0;
-		curSpline.OnSplineEnter(drawnPoint, curPoint);
-		curPoint.GetComponent<Collider>().enabled = false;
+	public void Fly(){
+		//pointDest = null;
+		//l.positionCount = 0;
+		SwitchState(PlayerState.Flying);
+		//curPoint.proximity = 0;
+		//drawnPoint = curPoint;
+		//curPoint = SplineUtil.CreatePoint(transform.position);
+		//curSpline = SplineUtil.CreateSpline(drawnPoint, curPoint);
+		//curDrawDistance = 0;
+		 //curSpline.OnSplineEnter(drawnPoint, curPoint);
+		//curPoint.GetComponent<Collider>().enabled = false;
 
-		flow = Mathf.Abs(flow);
+		//flow = Mathf.Abs(flow);
 	}
 
 
@@ -1211,7 +1209,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			{
 				hasFlown = true;
 				Services.fx.BakeTrail(Services.fx.flyingTrail, Services.fx.flyingTrailMesh);
-
+				buttonDownTimer = 0;
 				SwitchState(PlayerState.Switching);
 			}
 		}
@@ -2110,7 +2108,6 @@ public class PlayerBehaviour: MonoBehaviour {
 					if (buttonWasPressed)
 					{
 						buttonDownTimer = 0;
-						flow += Services.PlayerBehaviour.flowAmount * (Services.PlayerBehaviour.boostTimer);
 						boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
 						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
 						Services.fx.EmitRadialBurst(10,boostTimer + 1, curPoint.transform);
