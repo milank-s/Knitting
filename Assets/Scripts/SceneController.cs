@@ -37,7 +37,7 @@ public class SceneController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Period))
         {
-            LoadNextStellation(1);
+            SkipStellation();
         }
         
     }
@@ -149,7 +149,32 @@ public class SceneController : MonoBehaviour
         }
     }
     
-    public void LoadNextStellation(float delay = 1)
+    public void SkipStellation(){
+
+         curLevel++;
+        
+        if (curSetIndex == -1 && Services.main.curLevel == "")
+        {
+            //we're in the editor, dont do anything
+            return;
+
+        }
+
+        //stopgap stuff for when I want to test the level without going through the menu;
+        if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
+            
+            Services.main.LoadNextLevel(curLevelSet.isScene, false);
+            
+        }
+        else
+        {
+                //reopen menu, empty scene;
+                
+           Services.main.QuitLevel();
+            
+        }
+    }
+    public void LoadNextStellation()
     {
 
         curLevel++;

@@ -209,8 +209,17 @@
 		Spline.Splines.Clear();
 	}
 
-	public void LoadNextLevel(bool isScene){
-		StartCoroutine(LoadLevelRoutine(isScene));
+	public void LoadNextLevel(bool isScene, bool delay = true){
+
+		if(delay){
+			StartCoroutine(LoadLevelRoutine(isScene));
+		}else{
+			if(isScene){
+				StartCoroutine(LoadSceneRoutine());
+			}else{
+				StartCoroutine(LoadFileRoutine());
+			}
+		}
 	}
 
 	public IEnumerator FinishLevel(){
@@ -292,7 +301,7 @@
 		if(state == GameState.menu) yield break;
 
 		SceneController.instance.SelectNextLevel(true);
-		
+
 		QuitLevel();
 
 	}
