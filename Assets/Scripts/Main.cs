@@ -166,12 +166,12 @@
 		if(StellationManager.instance != null){
 			//reset scene
 			//just reload the scene I guess
-			LoadScene();
+			StartCoroutine(LoadSceneRoutine());
 			
 		}else{
 			//this doesnt work for the editor
 			if(SceneController.instance.curSetIndex != -1){
-				LoadFile();
+				StartCoroutine(LoadFileRoutine());
 			}else{
 				ToggleEditMode();
 			}
@@ -209,12 +209,40 @@
 		Spline.Splines.Clear();
 	}
 
-	public void LoadFile(float delay = 0)
-	{
-		StartCoroutine(LoadFileTransition(delay));
+	public void LoadNextLevel(bool isScene){
+		StartCoroutine(LoadLevelRoutine(isScene));
 	}
 
-	public IEnumerator LoadFileTransition(float delay = 0)
+	public IEnumerator FinishLevel(){
+		float t = 0;
+
+		while(!Input.GetMouseButton(0)){
+
+			//do some cool parallax shit
+			//cut off sound, let reverb do the rest
+			//bake all particles
+			
+			if(state == GameState.menu) yield break;
+
+			t += Time.fixedUnscaledDeltaTime;
+			Time.timeScale = Mathf.Clamp01(1-t);
+
+			yield return null;
+		}
+	}
+	public IEnumerator LoadLevelRoutine(bool isScene){
+
+		yield return StartCoroutine(FinishLevel());
+
+		if(state == GameState.menu) yield break;
+
+		if(isScene){
+			StartCoroutine(LoadSceneRoutine());
+		}else{
+			StartCoroutine(LoadFileRoutine());
+		}
+	}
+	public IEnumerator LoadFileRoutine()
 	{
 
 		GlitchEffect.Fizzle(0.25f);
@@ -227,7 +255,6 @@
 		//ermmmmm, I guess I can assign it here?
 		
 		Time.timeScale = 0;
-		
 
 		curLevel = SceneController.instance.GetCurLevel();
 
@@ -251,42 +278,25 @@
 		//awkwardddddd
 		//start audio
 		AudioManager.instance.PlayLevelSounds();
-		/*if (delay > 0)
-		{
-			StartCoroutine(FadeIn());
-		}*/
-		
 		
 	}
-
-	public void LoadSceneDelayed(float f)
-	{
-		StartCoroutine(LoadSceneTransition(f));
-	}
-	
-	IEnumerator LoadSceneTransition(float delay = 0)
-	{
-		Time.timeScale = 0;
-
+	public void FinishLevelSet(){
 		
-		yield return new WaitForSecondsRealtime(0.5f);
-		
-		Time.timeScale = 1;
-		
-		if (delay > 0)
-		{
-			yield return StartCoroutine(FadeOut());
-		}
-
-		LoadScene();
-		
-		if (delay > 0)
-		{
-			StartCoroutine(FadeIn());
-		}
+		StartCoroutine(CompleteLevelSet());
 	}
 
-	public void QuitLevel(bool goNext = false)
+	public IEnumerator CompleteLevelSet(){
+		
+		yield return StartCoroutine(FinishLevel());
+		
+		if(state == GameState.menu) yield break;
+
+		SceneController.instance.SelectNextLevel(true);
+		
+		QuitLevel();
+
+	}
+	public void QuitLevel()
 	{
 		
 		state = GameState.menu;
@@ -307,14 +317,16 @@
 		FullReset();
 		
 		OpenMenu();
-		
-		if (goNext)
-		{
-			SceneController.instance.SelectNextLevel(true);
-		}
+
 	}
 	
 	IEnumerator LoadSceneRoutine(){
+		
+		state = GameState.paused;
+
+		
+		GlitchEffect.Fizzle(0.25f);
+		yield return new WaitForSecondsRealtime(0.25f);
 
 		if(SceneManager.sceneCount > 1){
 			if (curLevel != "")
@@ -963,11 +975,11 @@
 		
 		 if (!SceneController.instance.curLevelSet.isScene)
             {
-                LoadFile(0);
+                StartCoroutine(LoadFileRoutine());
             }
             else
             {
-                LoadScene();
+                StartCoroutine(LoadSceneRoutine());
             }
 
 		

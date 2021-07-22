@@ -164,33 +164,14 @@ public class SceneController : MonoBehaviour
         //stopgap stuff for when I want to test the level without going through the menu;
         if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
             
-            //MapEditor.Load(levels[curLevel]);
-            
-            if (!curLevelSet.isScene)
-            {
-               
-//                if (SceneController.instance.activeScenes.Count > 0)
-//                {
-//                    SceneController.instance.UnloadScene(SceneController.instance.activeScenes[0]);
-//                }
-                Services.main.LoadFile(delay);
-            }
-            else
-            {
-                Services.main.LoadScene();
-            }
-
-            
-            
-            //Services.main.InitializeLevel();            
-            //Services.PlayerBehaviour.Reset();
+            Services.main.LoadNextLevel(curLevelSet.isScene);
             
         }
         else
         {
                 //reopen menu, empty scene;
                 
-           Services.main.QuitLevel(true);
+           Services.main.FinishLevelSet();
             
         }
     }
