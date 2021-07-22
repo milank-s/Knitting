@@ -353,6 +353,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		//if button down, buttonDown = true;
 		//if button up, buttonDown = false
 
+		if(Services.main.state != Main.GameState.playing){return;}
+
 		if(context.performed){
 			buttonDown = true;
 		}
@@ -368,8 +370,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			buttonDownTimer = buttonDownBuffer;
 			directionIndicator.enabled = false;
 		}
-
-		if(Services.main.state != Main.GameState.playing){return;}
 
 	}
 
@@ -894,6 +894,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	public void Fly(){
+		
+		if(Services.main.state != Main.GameState.playing){return;}
+		
 		//pointDest = null;
 		//l.positionCount = 0;
 		SwitchState(PlayerState.Flying);

@@ -223,6 +223,9 @@
 	}
 
 	public IEnumerator FinishLevel(){
+
+		state = GameState.paused;
+		
 		float t = 0;
 
 		while(!Input.GetMouseButton(0)){
@@ -331,9 +334,6 @@
 	
 	IEnumerator LoadSceneRoutine(){
 		
-		state = GameState.paused;
-
-		
 		GlitchEffect.Fizzle(0.25f);
 		yield return new WaitForSecondsRealtime(0.25f);
 
@@ -357,6 +357,7 @@
 			SceneManager.LoadScene(curLevel, LoadSceneMode.Additive);
 		}
 	}
+
 	public void LoadScene()
 	{
 		//StartCoroutine(LoadSceneRoutine());
