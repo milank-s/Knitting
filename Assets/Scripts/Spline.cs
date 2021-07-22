@@ -538,7 +538,7 @@ public class Spline : MonoBehaviour
 	
 	public void UpdatePoints(){
 		foreach(Point p in SplinePoints){
-			p.Movement();
+			//p.Movement();
 		}
 	}
 	public IEnumerator DrawSplineIn()

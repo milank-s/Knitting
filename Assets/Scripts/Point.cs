@@ -318,7 +318,7 @@ public class Point : MonoBehaviour
 		if (!MapEditor.editing)
 		{
 			SetColor();
-
+			Movement();
 			// if (!isKinematic)
 			// {
 			// 	Movement();

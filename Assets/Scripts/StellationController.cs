@@ -531,6 +531,10 @@ public class StellationController : MonoBehaviour {
 		{
 			transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime);
 
+			foreach (Point p in _points)
+				{
+					p.Step();
+				}
 			//Services.main.fx.readout.transform.position = Services.main.Player.transform.position;
 
 			if (!won)
@@ -541,10 +545,6 @@ public class StellationController : MonoBehaviour {
 					pos -= Vector3.forward * Time.deltaTime / 60f;	
 				}
 
-				foreach (Point p in _points)
-			{
-				p.Step();
-			}
 
 				if (unlockMethod == UnlockType.speed)
 				{

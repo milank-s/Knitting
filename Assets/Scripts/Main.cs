@@ -216,7 +216,6 @@
 
 	public IEnumerator LoadFileTransition(float delay = 0)
 	{
-		Time.timeScale = 0;
 
 		GlitchEffect.Fizzle(0.25f);
 		yield return new WaitForSecondsRealtime(0.25f);
@@ -226,6 +225,9 @@
 		}*/
 
 		//ermmmmm, I guess I can assign it here?
+		
+		Time.timeScale = 0;
+		
 
 		curLevel = SceneController.instance.GetCurLevel();
 
@@ -597,7 +599,7 @@
 					
 				if(Services.PlayerBehaviour.curSpline != null){
 
-					Services.PlayerBehaviour.curSpline.UpdatePoints();
+					//Services.PlayerBehaviour.curSpline.UpdatePoints();
 
 					// if(!Services.PlayerBehaviour.curSpline.drawingIn){
 					// }
