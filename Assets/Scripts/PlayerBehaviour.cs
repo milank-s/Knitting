@@ -896,7 +896,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void Fly(){
 		
 		if(Services.main.state != Main.GameState.playing){return;}
-		
+
 		//pointDest = null;
 		//l.positionCount = 0;
 		SwitchState(PlayerState.Flying);
@@ -1866,6 +1866,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 	public void CursorInput (InputAction.CallbackContext context){
 
+		
+		if(Services.main.state != Main.GameState.playing){return;}
+		
 		Vector2 inputVector = context.ReadValue<Vector2>();
 
 		// if(context.control.name == "stick"){
