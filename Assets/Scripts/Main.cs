@@ -225,22 +225,24 @@
 	public IEnumerator FinishLevel(){
 
 		state = GameState.paused;
-		
+		yield return null;
 		float t = 0;
 
-		while(!Input.GetMouseButton(0)){
+			//fuck this
 
-			//do some cool parallax shit
-			//cut off sound, let reverb do the rest
-			//bake all particles
+		// while(!Input.GetMouseButton(0)){
+
+		// 	//do some cool parallax shit
+		// 	//cut off sound, let reverb do the rest
+		// 	//bake all particles
 			
-			if(state == GameState.menu) yield break;
+		// 	if(state == GameState.menu) yield break;
 
-			t += Time.fixedUnscaledDeltaTime;
-			Time.timeScale = Mathf.Clamp01(1-t);
+		// 	t += Time.fixedUnscaledDeltaTime;
+		// 	Time.timeScale = Mathf.Clamp01(1-t);
 
-			yield return null;
-		}
+		// 	yield return null;
+		// }
 	}
 	public IEnumerator LoadLevelRoutine(bool isScene){
 
