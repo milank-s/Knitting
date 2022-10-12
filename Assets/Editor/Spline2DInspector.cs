@@ -145,13 +145,13 @@ public class Spline2DInspector : Editor {
 			Handles.color = Color.cyan;
 		}
 
-		if (Handles.Button(point, Quaternion.identity, size * handleSize, size * pickSize, Handles.DotCap)) {
+		if (Handles.Button(point, Quaternion.identity, size * handleSize, size * pickSize, Handles.DotHandleCap)) {
 			selectedIndex = index;
 			Repaint();
 		}
 		if (selectedIndex == index) {
 			EditorGUI.BeginChangeCheck();
-			point = Handles.FreeMoveHandle(point, Quaternion.identity, size * 1.5f * handleSize, Vector3.zero, Handles.CircleCap);
+			point = Handles.FreeMoveHandle(point, Quaternion.identity, size * 1.5f * handleSize, Vector3.zero, Handles.RectangleHandleCap);
 			if (EditorGUI.EndChangeCheck()) {
 				Undo.RecordObject(spline, "Move Point");
 				EditorUtility.SetDirty(spline);

@@ -310,6 +310,7 @@
 		QuitLevel();
 
 	}
+	
 	public void QuitLevel()
 	{
 		
@@ -406,6 +407,7 @@
 	
 	public void Awake ()
 	{
+		
 		curLevel = "";
 		Point.Points = new List<Point>();
 		Spline.Splines = new List<Spline>();

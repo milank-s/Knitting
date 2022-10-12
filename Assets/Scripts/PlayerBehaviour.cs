@@ -1201,7 +1201,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			pointDest.controller.AdjustCamera();
 
 			flyingSpeed += Time.deltaTime;
-			transform.position += (pointDest.transform.position - transform.position).normalized * Time.deltaTime * (flyingSpeed);
+			Vector3 toPoint = pointDest.transform.position - transform.position;
+			Vector3 flyToPoint = toPoint.normalized * Time.deltaTime * (flyingSpeed);
+			transform.position += Vector3.ClampMagnitude(flyToPoint, toPoint.magnitude);
 
 			foreach (Spline p in pointDest._connectedSplines)
 			{
@@ -1866,7 +1868,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 	public void CursorInput (InputAction.CallbackContext context){
 
-		
 		if(Services.main.state != Main.GameState.playing){return;}
 		
 		Vector2 inputVector = context.ReadValue<Vector2>();

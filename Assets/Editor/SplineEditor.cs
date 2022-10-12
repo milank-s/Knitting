@@ -200,7 +200,7 @@ public class SplineEditor : Editor {
   			Vector3 point = spline.SplinePoints[index].Pos;
   			float size = HandleUtility.GetHandleSize(point);
 
-  			if (Handles.Button(point, handleRotation, size * handleSize, size * pickSize, Handles.DotCap)) {
+  			if (Handles.Button(point, handleRotation, size * handleSize, size * pickSize, Handles.DotHandleCap)) {
   				selectedIndex = index;
   				Repaint();
   			}
