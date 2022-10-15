@@ -874,15 +874,15 @@ public class MapEditor : MonoBehaviour
                 
                 if (Input.GetKeyDown(KeyCode.Delete))
                 {
-                    File.Delete (Application.streamingAssetsPath + "/Levels/"+ controller.name + ".json");
-                    #if UNITY_EDITOR
-                        AssetDatabase.Refresh();
-                    #endif
+                    // File.Delete (Application.streamingAssetsPath + "/Levels/"+ controller.name + ".json");
+                    // #if UNITY_EDITOR
+                    //     AssetDatabase.Refresh();
+                    // #endif
                     
-                    Reset();
-                    levelList.options.RemoveAll(d => d.text.Contains(controller.name));
-                    controller.name = "Untitled";
-                    sceneTitle.text = controller.name;
+                    // Reset();
+                    // levelList.options.RemoveAll(d => d.text.Contains(controller.name));
+                    // controller.name = "Untitled";
+                    // sceneTitle.text = controller.name;
                 }
                 
                 if (turtleUI.activeSelf)
