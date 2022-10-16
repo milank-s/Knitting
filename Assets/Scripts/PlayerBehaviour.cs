@@ -1177,10 +1177,10 @@ public class PlayerBehaviour: MonoBehaviour {
 			//& !raycastPoint.used
 			Services.fx.ShowNextPoint(raycastPoint);
 
-			if(buttonDown){
+			//if(buttonDown){
 				pointDest = raycastPoint;
 				stopFlying = true;
-			}
+			//}
 		}
 		
 		if(pointDest == null && raycastPoint == null){	
@@ -1809,8 +1809,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					progress = 1;
 				}
 
-				Debug.Log("can leave " + curPoint.name + " to " + pointDest.name + " on spline " + curSpline.name);
-
+				
 				return true;
 			}
 

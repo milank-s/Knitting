@@ -542,7 +542,7 @@ public class StellationController : MonoBehaviour {
 
 				if(Services.PlayerBehaviour.state == PlayerState.Traversing && !Services.PlayerBehaviour.joystickLocked){
 
-					pos -= Vector3.forward * Time.deltaTime / 60f;	
+					//pos -= Vector3.forward * Time.deltaTime / 60f;	
 				}
 
 

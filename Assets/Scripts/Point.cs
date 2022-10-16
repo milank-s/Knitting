@@ -460,7 +460,7 @@ public class Point : MonoBehaviour
 			case PointState.on:
 				if (prevState != PointState.on)
 				{
-					TurnOn();
+					//TurnOn();
 				}
 				//PointManager.AddPointHit(this);
 
@@ -739,9 +739,8 @@ public class Point : MonoBehaviour
 		// c = (Mathf.Sin (3 * (Time.time + timeOffset))/4 + 0.3f) + proximity;
 //		c = proximity + Mathf.Sin(Time.time + timeOffset)/10 + 0.11f;
 		// ACCRETION IS SHOWING POINTS THAT IT SHOULDNT?????
-		c = proximity + timesHit/3f + (state == PointState.on ? 0.75f : 0.45f);
+		c = proximity + timesHit/5f + (state == PointState.on ? 0.2f : 0.2f);
 		// accretion
-		c = Mathf.Pow (c, 1);
 		
 //		SR.color = Color.Lerp (color, new Color (1,1,1, c), Time.deltaTime * 5);
 
