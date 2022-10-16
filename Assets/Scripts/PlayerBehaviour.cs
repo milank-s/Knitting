@@ -13,11 +13,6 @@ public enum PlayerState{Traversing, Switching, Flying, Animating};
 //						TO DO
 
 
-//Sounds SOUNDS OUNDS OUNDSOUNDSOUNDSOUNDSUON
-//Flying no longer creates points, only attaches to other flying points
-//Tuning closer to dashing in hyper light. Usage of timed button presses on intersections
-
-
 //###################################################
 //###################################################
 
@@ -431,10 +426,6 @@ public class PlayerBehaviour: MonoBehaviour {
 //			PointManager.ResetPoints ();
 //			connectTime = 1;
 //		}
-
-	// if(state != PlayerState.Flying && state != PlayerState.Animating && Input.GetMouseButtonDown(1)){
-	// 	SwitchState(PlayerState.Flying);
-	// }
 
 		Effects ();
 
@@ -1714,7 +1705,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						//make sure that you're not making an illegal move
 						bool looping = false;
 
-						if(s.closed && s.SplinePoints.Count > 2 && (p == s.StartPoint && curPoint == s.EndPoint) || (p == s.EndPoint && curPoint == s.StartPoint)){
+						if(s.closed && s.SplinePoints.Count > 2 && ((p == s.StartPoint && curPoint == s.EndPoint) || (p == s.EndPoint && curPoint == s.StartPoint))){
 							looping = true;
 						}
 
@@ -1724,7 +1715,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						bool loopingForwards = looping && forward;
 
 						if((!loopingBackwards && indexDifference > 1) || (!loopingForwards && indexDifference < -1)){
-							//you are both on the same spline but you are not in sequence. illegal
+							//the delta in point index is greater than one but its not a loop. illegal
 							continue;
 						}
 						
@@ -1817,6 +1808,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				}else{
 					progress = 1;
 				}
+
+				Debug.Log("can leave " + curPoint.name + " to " + pointDest.name + " on spline " + curSpline.name);
 
 				return true;
 			}
@@ -1960,7 +1953,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if(buttonDown && state == PlayerState.Traversing)
 		{
-
+			//SwitchState(PlayerState.Flying);
 		}
 		else
 		{
@@ -2280,7 +2273,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 					foreach (Spline s in pointDest._connectedSplines)
 					{
-						s.reactToPlayer = true;
+						//s.reactToPlayer = true;
 					}
 				}
 
