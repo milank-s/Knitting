@@ -434,6 +434,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					OnFlying.Invoke();
 				}
 			FreeMovement ();
+			 cursorSprite.sprite = canFlySprite;
 			return;
 		}
 
@@ -483,18 +484,18 @@ public class PlayerBehaviour: MonoBehaviour {
 			PlayerMovement ();
 			CheckProgress ();
 
-			if(Mathf.Abs(flow) < 1){
+		if(Mathf.Abs(flow) < 1){
 
-				Services.fx.drawGraffiti = false;
-				cursorSprite.sprite = traverseSprite;
+			Services.fx.drawGraffiti = false;
+			cursorSprite.sprite = traverseSprite;
 
 		 }else if (Mathf.Abs(flow) < 2){
 
-				Services.fx.DrawLine();
-			 cursorSprite.sprite = canMoveSprite;
+			//Services.fx.DrawLine();
+			 //cursorSprite.sprite = canMoveSprite;
 		 }else
 			{
-			 cursorSprite.sprite = canFlySprite;
+			 //cursorSprite.sprite = canFlySprite;
 		 }
 
 
@@ -2244,7 +2245,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if (curSpline != null)
 				{
-//					curSpline.OnSplineExit();
+					curSpline.OnSplineExit();
 //					idk if this should happen
 				}
 

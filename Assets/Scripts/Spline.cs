@@ -615,7 +615,7 @@ public class Spline : MonoBehaviour
 		if (drawingIn || !drawnIn) return;
 
 		rollingDistance = 0;
-		magnitude = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f) - shake, 0, 0.5f) * amplitude;
+		magnitude = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f) - shake, 0, 1f) * amplitude * Mathf.Clamp01(segmentDistance);
 
 		if (isPlayerOn || reactToPlayer)
 		{
@@ -783,15 +783,15 @@ public class Spline : MonoBehaviour
 					Color c;
 					if (isPlayerOn)
 					{
-						 c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color,
-							Mathf.Pow(distanceFromPlayer / Mathf.Clamp(SplinePoints.Count - 1, 1, 3), 2));
+						 c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step);
+							//Mathf.Pow(distanceFromPlayer / Mathf.Clamp(SplinePoints.Count - 1, 1, 3), 2));
 					}
 					else
 					{
 						c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step);
 					}
 
-					c += (Color.white * Mathf.Clamp01(_completion - 1));
+					//c += (Color.white * Mathf.Clamp01(_completion - 1));
 					c.a = 1;
 					line.SetColor(c, segmentIndex);
 				}
@@ -802,7 +802,7 @@ public class Spline : MonoBehaviour
 				{
 					Color c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step);
 					//c = Color.Lerp(c, Color.white, invertedDistance);
-					c += (Color.white * Mathf.Clamp01(_completion - 1));
+					//c += (Color.white * Mathf.Clamp01(_completion - 1));
 					c.a = 1;
 					line.SetColor(c, segmentIndex);
 				}

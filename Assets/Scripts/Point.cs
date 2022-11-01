@@ -503,7 +503,6 @@ public class Point : MonoBehaviour
 		
 		SwitchState(PointState.on);
 
-
 		if(pointType != PointTypes.ghost)
 		{
 			if(Services.main.OnPlayerEnterPoint != null){
@@ -739,7 +738,7 @@ public class Point : MonoBehaviour
 		// c = (Mathf.Sin (3 * (Time.time + timeOffset))/4 + 0.3f) + proximity;
 //		c = proximity + Mathf.Sin(Time.time + timeOffset)/10 + 0.11f;
 		// ACCRETION IS SHOWING POINTS THAT IT SHOULDNT?????
-		c = proximity + timesHit/5f + (state == PointState.on ? 0.2f : 0.2f);
+		c = proximity + (state == PointState.on ? 0.1f : 0.1f); // + timesHit/5f;
 		// accretion
 		
 //		SR.color = Color.Lerp (color, new Color (1,1,1, c), Time.deltaTime * 5);
