@@ -201,7 +201,7 @@
 		Spline.shake = 0;
 		Spline.noiseSpeed = 5;
 		Spline.amplitude = 0.5f;
-		Spline.drawSpeed = 0.25f;
+		Spline.drawSpeed = 0.01f;
 
 		editor.DeselectPoints();
 		editor.DeselectSpline();
@@ -256,6 +256,7 @@
 			StartCoroutine(LoadFileRoutine());
 		}
 	}
+
 	public IEnumerator LoadFileRoutine()
 	{
 
@@ -494,6 +495,7 @@
 			}
 		}
 	}
+
 	public void OpenMenu()
 	{	
 		if (SceneController.instance.curSetIndex < 0)
@@ -653,7 +655,7 @@
 				
 				foreach (Spline s in Spline.Splines)
 				{
-					s.DrawSplineOverride();
+					s.UpdateSpline();
 					s.line.Draw3D();
 				}
 			}
