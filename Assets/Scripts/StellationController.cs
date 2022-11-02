@@ -399,11 +399,13 @@ public class StellationController : MonoBehaviour {
 	public void Draw(){
 		
 		if(!lockSplines){
-			foreach(Spline s in _splines){
-				if(!_splinesToUnlock.Contains(s)){
-					s.StartDrawRoutine();
-				}
-			}
+			// foreach(Spline s in _splines){
+			// 	if(!_splinesToUnlock.Contains(s)){
+			// 		s.StartDrawRoutine();
+			// 	}
+			// }
+
+			_splines[0].SwitchState(Spline.SplineState.on);
 		}
 	}
 	public void Setup()
@@ -491,11 +493,9 @@ public class StellationController : MonoBehaviour {
 		}
 		return _startPoints[startIndex % _startPoints.Count];
 	}
+
 	public void UnlockSpline(Spline spline)
 	{
-		//why am I not simply incrementing here. don't understand
-		// curSplineIndex = spline.order + 1;
-		
 
 		curSplineIndex ++;
 

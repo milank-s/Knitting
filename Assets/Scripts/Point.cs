@@ -199,7 +199,7 @@ public class Point : MonoBehaviour
 		initPos = transform.position;
 		state = PointState.off;
 		Pos = transform.position;
-		
+
 		if (MapEditor.editing)
 		{
 			SR.color = Color.white;
@@ -459,6 +459,9 @@ public class Point : MonoBehaviour
 				if (prevState != PointState.on)
 				{
 					//TurnOn();
+					foreach(Spline sp in _connectedSplines){
+						sp.StartDrawRoutine(this);
+					}
 				}
 				//PointManager.AddPointHit(this);
 

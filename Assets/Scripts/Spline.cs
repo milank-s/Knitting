@@ -112,7 +112,18 @@ public class Spline : MonoBehaviour
 	private float distanceFromPlayer;
 	private float invertedDistance;
 	private int playerIndex;
-	private int drawIndex;
+	private int upperDrawIndex;
+	private int lowerDrawIndex;
+	private int upperPointIndex;
+	private int lowerPointIndex;
+
+	bool populatedPointPositions;
+
+	private int totalLineSegments{
+		get{
+			return (SplinePoints.Count - (closed ? 0 : 1)) * curveFidelity;
+		}
+	}
 	float drawProgress;
 	public bool drawingIn = false;
 	private bool drawnIn;
@@ -194,8 +205,6 @@ public class Spline : MonoBehaviour
 				return;
 			}
 		}
-		
-		
 
 		if (!complete && controller != null)
 		{
@@ -212,7 +221,7 @@ public class Spline : MonoBehaviour
 		}
 
 	
-		StartDrawRoutine();
+		StartDrawRoutine(p1);
 	
 		
 		draw = true;
@@ -275,7 +284,6 @@ public class Spline : MonoBehaviour
 	{
 		
 		distance = 0;
-		drawIndex = 1;
 		drawProgress = 0;
 		
 		for(int i = 0; i < SplinePoints.Count; i++) {
@@ -362,6 +370,12 @@ public class Spline : MonoBehaviour
 		SetUpReferences();
 		ResetVectorLine();
 		completion = 0;
+		drawingIn = false;
+		upperDrawIndex = 0;
+		lowerDrawIndex = 0;
+		upperPointIndex = 0;
+		lowerPointIndex = 0;
+		populatedPointPositions = false;
 	}
 
 	public void SetSplineType(SplineType t)
@@ -482,7 +496,7 @@ public class Spline : MonoBehaviour
 	{
 		//fancy animation bullshit
 		
-		SplinePoints[0].SwitchState(Point.PointState.on);
+		StartPoint.SwitchState(Point.PointState.on);
 
 		// foreach (Point p in SplinePoints)
 		// {
@@ -496,8 +510,6 @@ public class Spline : MonoBehaviour
 		Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, SplinePoints[0].transform);
 		
 		state = SplineState.on;
-
-		StartDrawRoutine();
 	}
 
 	void SetLinePoint(Vector3 v, int index){
@@ -513,7 +525,7 @@ public class Spline : MonoBehaviour
 	{
 
 		UpdateDrawRange();
-
+		
 		float distanceDelta = 0;
 		
 		for (int i = 0; i < SplinePoints.Count - (closed ? 0 : 1); i++)
@@ -529,36 +541,78 @@ public class Spline : MonoBehaviour
 
 				distanceDelta = rollingDistance - distanceDelta;
 
-
-				if(MapEditor.editing){
-					
-					DrawLine(i, index, step);
-				
-				}else{
-					
-					if(index < drawIndex){
-						//we've covered this ground
-						DrawLine(i, index, step);
-
-					}else if(index == drawIndex){
-						
-						//todo, add lower and upper bound
-						
-						//get the distance to the next point on the line segment
-						float dist = Vector3.Distance(pointPositions[index-1], pointPositions[index]);
-						drawProgress += (drawSpeed/dist) * Time.deltaTime;
-
-						DrawLine(i, index, step + drawProgress/(float)curveFidelity, true);
-						
-						//go to the next segment
-						if(drawProgress > 1){
-							drawProgress = 0;
-							drawIndex++;
-						}
-					}
-
+				if(populatedPointPositions){
+					DrawSplineSegment(i, index, step);
 				}
 				
+			}
+		}
+
+		populatedPointPositions = true;
+	}
+
+	void DrawSplineSegment(int i, int index, float step){
+		if(MapEditor.editing){
+					
+			DrawLine(i, index, step);
+		
+		}else{
+			
+			//we're in range
+			if(index < upperDrawIndex && index > lowerDrawIndex){
+				
+				DrawLine(i, index, step);
+			}
+
+			//behaviour for drawing in the spline
+
+			if(index == upperDrawIndex && index < totalLineSegments){
+				
+				//todo, add lower and upper bound
+
+				//get the distance to the next point on the line segment
+				float dist = Vector3.Distance(pointPositions[index], pointPositions[index-1]);
+				
+				drawProgress += (drawSpeed/dist) * Time.deltaTime;
+
+				DrawLine(i, index, step + drawProgress/(float)curveFidelity, true);
+				
+				//go to the next segment
+				if(drawProgress > 1){
+					drawProgress = 0;
+					upperDrawIndex++;
+
+					if(upperDrawIndex > upperPointIndex * curveFidelity + curveFidelity){
+						upperPointIndex ++;
+						
+						if(upperPointIndex < SplinePoints.Count){
+							SplinePoints[upperPointIndex].SwitchState(Point.PointState.on);
+						}
+						
+					}
+				}
+			}
+
+			if(index == lowerDrawIndex && index > 0){
+				
+				float dist = Vector3.Distance(pointPositions[index], pointPositions[index - 1]);
+				drawProgress += (drawSpeed/dist) * Time.deltaTime;
+
+				DrawLine(i, index, step - drawProgress/(float)curveFidelity, true);
+				
+				//go to the next segment
+				if(drawProgress > 1){
+					drawProgress = 0;
+					lowerDrawIndex --;
+
+					if(lowerDrawIndex < lowerPointIndex * curveFidelity - curveFidelity){
+						lowerPointIndex --;
+
+						if(lowerPointIndex >= 0){
+							SplinePoints[lowerPointIndex].SwitchState(Point.PointState.on);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -573,105 +627,18 @@ public class Spline : MonoBehaviour
 		}
 	}
 
-	public void StartDrawRoutine(){
-		if(!drawingIn && !drawnIn){
-			drawRoutine = StartCoroutine(DrawSplineIn());
+	public void StartDrawRoutine(Point p){
+
+		if(state != SplineState.on) return;
+
+		if(!drawingIn){
+			upperPointIndex = SplinePoints.IndexOf(p);
+			lowerPointIndex = upperPointIndex;
+			upperDrawIndex = upperPointIndex * curveFidelity + 1;
+			lowerDrawIndex = upperDrawIndex - 2;
 		}
-	}
 
-
-	// public void UpdatePoints(){
-	// 	foreach(Point p in SplinePoints){
-	// 		//p.Movement();
-	// 	}
-	// }
-	public IEnumerator DrawSplineIn()
-	{
-		yield break;
-		
 		drawingIn = true;
-		
-		int totalLineSegments = curveFidelity * (SplinePoints.Count - (closed ? 0 : 1));
-		int curDrawIndex = 0;
-		int curPointIndex = 0;
-		prevPos = SplinePoints[0].Pos;
-		float lerp;
-
-		while (curDrawIndex < totalLineSegments -1)
-		{
-
-			Debug.Log("drawing segment " + curDrawIndex + "/" + totalLineSegments);
-
-			if(Services.main.state != Main.GameState.playing) yield return null;
-			
-			
-			prevPos = SplinePoints[0].Pos;
-			rollingDistance = 0;	
-			float distanceTravelled = 0;
-
-			for (int i = 0; i < SplinePoints.Count - (closed ? 0 : 1); i++)
-			{
-				if(SplinePoints[i].state == Point.PointState.locked){
-					SplinePoints[i].SwitchState(Point.PointState.off);
-				}
-				
-				for (int k = 0; k < curveFidelity; k++)
-				{
-					int index = (i * curveFidelity) + k;
-					float step = (float) k / (float) (curveFidelity);
-					
-					// float step = (float) k / (float) (curveFidelity - 1);
-	
-					if(index >= curDrawIndex){
-
-						//Debug.Log("are we getting here");
-						float distanceDelta = rollingDistance;
-
-						DrawLine(i, index, step);
-
-						distanceDelta = rollingDistance - distanceDelta;
-						distanceTravelled += distanceDelta;
-						curDrawIndex ++;
-
-						if(curDrawIndex > curPointIndex * curveFidelity + curveFidelity){
-
-							curPointIndex ++;
-							//check if we start drawing other lines from here
-							
-							if(curPointIndex < SplinePoints.Count){
-								foreach(Spline s in SplinePoints[curPointIndex]._connectedSplines){
-									if(s != this && s.state == SplineState.locked){
-										s.StartDrawRoutine();
-									}
-								}
-							}
-						}
-						
-						if(distanceTravelled > drawSpeed * Time.deltaTime){
-							distanceTravelled = 0;
-							i = 1000;
-							k = 100;
-						}
-					}else{
-						
-						DrawLine(i, index, step);
-					}
-
-				}
-			}
-
-			line.Draw3D();
-			yield return null;
-
-			if(EndPoint.state == Point.PointState.locked){
-				EndPoint.SwitchState(Point.PointState.off);
-			}
-
-		}
-
-		drawingIn = false;
-		drawnIn = true;
-		drawRoutine = null;
 	}
 
 	public void UpdateDrawRange(int pointIndex = 0)
