@@ -129,13 +129,7 @@ public class Point : MonoBehaviour
 		get { return _velocity; }
 	}
 
-	public Vector3 Pos
-	{
-		get
-		{
-			return transform.position;
-		}
-	}
+	public Vector3 Pos;
 
 	public Color _color
 	{
@@ -204,7 +198,8 @@ public class Point : MonoBehaviour
 	{
 		initPos = transform.position;
 		state = PointState.off;
-
+		Pos = transform.position;
+		
 		if (MapEditor.editing)
 		{
 			SR.color = Color.white;
@@ -315,6 +310,9 @@ public class Point : MonoBehaviour
 	}
 
 	public void Step(){
+
+		Pos = transform.position;
+
 		if (!MapEditor.editing)
 		{
 			SetColor();

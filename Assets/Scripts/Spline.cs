@@ -43,7 +43,7 @@ public class Spline : MonoBehaviour
 	float rollingDistance;
 	float magnitude;
 	public static System.Collections.Generic.List<Spline> Splines = new System.Collections.Generic.List<Spline> ();
-	public static float drawSpeed = 1f;
+	public static float drawSpeed = 2f;
 	
 	Coroutine drawRoutine;
 
@@ -51,6 +51,7 @@ public class Spline : MonoBehaviour
 	public System.Collections.Generic.List<Point> SplinePoints;
 
 	List<Vector3> pointPositions;
+	List<Vector3> pointVelocities;
 
 	[HideInInspector]
 	public Point Selected;
@@ -112,6 +113,7 @@ public class Spline : MonoBehaviour
 	private float invertedDistance;
 	private int playerIndex;
 	private int drawIndex;
+	float drawProgress;
 	public bool drawingIn = false;
 	private bool drawnIn;
 	private int lowHitPoint = int.MaxValue;
@@ -273,6 +275,8 @@ public class Spline : MonoBehaviour
 	{
 		
 		distance = 0;
+		drawIndex = 1;
+		drawProgress = 0;
 		
 		for(int i = 0; i < SplinePoints.Count; i++) {
 			
@@ -337,6 +341,7 @@ public class Spline : MonoBehaviour
 	{
 		line = new VectorLine (name, new System.Collections.Generic.List<Vector3>(), 1, LineType.Continuous, Vectrosity.Joins.Weld);
 		pointPositions = new List<Vector3>();
+		pointVelocities = new List<Vector3>();
 		stepSize = (1.0f / (float)curveFidelity);
 		Select = this;
 		Splines.Add (this);
@@ -409,7 +414,7 @@ public class Spline : MonoBehaviour
 		// 	pointCount -= curveFidelity;
 		// }
 
-		System.Collections.Generic.List<Vector3> linePoints =  new System.Collections.Generic.List<Vector3> (3);
+		System.Collections.Generic.List<Vector3> linePoints =  new System.Collections.Generic.List<Vector3> (2);
 		
 		line = new VectorLine (name, linePoints, lineWidth, LineType.Continuous);
 		if (MapEditor.editing)
@@ -506,21 +511,56 @@ public class Spline : MonoBehaviour
 
 	public void UpdateSpline()
 	{
-		List<Vector3> points = new List<Vector3>((SplinePoints.Count + (closed ? 1 : 0)) * curveFidelity);
 
+		UpdateDrawRange();
+
+		float distanceDelta = 0;
+		
 		for (int i = 0; i < SplinePoints.Count - (closed ? 0 : 1); i++)
 		{
 			for (int k = 0; k < curveFidelity; k++)
 			{
 				int index = (i * curveFidelity) + k;
 				float step = (float) k / (float) (curveFidelity-1);
+				
+				distanceDelta = rollingDistance;
 
-				Vector3 v = GetPointAtIndex(i, step);
-				points.Add(v);
+				UpdateSplineSegment(i, index, step);
+
+				distanceDelta = rollingDistance - distanceDelta;
+
+
+				if(MapEditor.editing){
+					
+					DrawLine(i, index, step);
+				
+				}else{
+					
+					if(index < drawIndex){
+						//we've covered this ground
+						DrawLine(i, index, step);
+
+					}else if(index == drawIndex){
+						
+						//todo, add lower and upper bound
+						
+						//get the distance to the next point on the line segment
+						float dist = Vector3.Distance(pointPositions[index-1], pointPositions[index]);
+						drawProgress += (drawSpeed/dist) * Time.deltaTime;
+
+						DrawLine(i, index, step + drawProgress/(float)curveFidelity, true);
+						
+						//go to the next segment
+						if(drawProgress > 1){
+							drawProgress = 0;
+							drawIndex++;
+						}
+					}
+
+				}
+				
 			}
 		}
-
-		pointPositions = points;
 	}
 
 	public void Spin(float speed)
@@ -547,19 +587,25 @@ public class Spline : MonoBehaviour
 	// }
 	public IEnumerator DrawSplineIn()
 	{
+		yield break;
+		
 		drawingIn = true;
 		
-		int totalLineSegments = curveFidelity * (SplinePoints.Count + (closed ? 1 : 0));
+		int totalLineSegments = curveFidelity * (SplinePoints.Count - (closed ? 0 : 1));
 		int curDrawIndex = 0;
 		int curPointIndex = 0;
 		prevPos = SplinePoints[0].Pos;
 		float lerp;
 
-		while (curDrawIndex < totalLineSegments)
+		while (curDrawIndex < totalLineSegments -1)
 		{
+
+			Debug.Log("drawing segment " + curDrawIndex + "/" + totalLineSegments);
 
 			if(Services.main.state != Main.GameState.playing) yield return null;
 			
+			
+			prevPos = SplinePoints[0].Pos;
 			rollingDistance = 0;	
 			float distanceTravelled = 0;
 
@@ -580,14 +626,18 @@ public class Spline : MonoBehaviour
 
 						//Debug.Log("are we getting here");
 						float distanceDelta = rollingDistance;
+
 						DrawLine(i, index, step);
+
 						distanceDelta = rollingDistance - distanceDelta;
 						distanceTravelled += distanceDelta;
 						curDrawIndex ++;
 
 						if(curDrawIndex > curPointIndex * curveFidelity + curveFidelity){
+
 							curPointIndex ++;
 							//check if we start drawing other lines from here
+							
 							if(curPointIndex < SplinePoints.Count){
 								foreach(Spline s in SplinePoints[curPointIndex]._connectedSplines){
 									if(s != this && s.state == SplineState.locked){
@@ -617,10 +667,6 @@ public class Spline : MonoBehaviour
 				EndPoint.SwitchState(Point.PointState.off);
 			}
 
-			if (!bidirectional)
-			{
-				line.textureOffset -= Time.deltaTime * speed * 5f;
-			}
 		}
 
 		drawingIn = false;
@@ -628,63 +674,35 @@ public class Spline : MonoBehaviour
 		drawRoutine = null;
 	}
 
-	public void DrawSpline(int pointIndex = 0)
+	public void UpdateDrawRange(int pointIndex = 0)
 	{
-		if (drawingIn || !drawnIn) return;
-
+		
 		rollingDistance = 0;
-		magnitude = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f) - shake, 0, 1f) * amplitude * Mathf.Clamp01(segmentDistance);
-
-		if (isPlayerOn || reactToPlayer)
-		{
-			playerIndex = GetPlayerLineSegment();
-		}
-		
-		
 		prevPos = SplinePoints[0].Pos;
 		
 		if (!bidirectional)
 		{
 			line.textureOffset -= Time.deltaTime * speed * 5f;
 		}
-
-		int startIndex;
-
-		if (isPlayerOn)
-		{
-			startIndex = 0;
-			drawTimer += Time.deltaTime;
-		}
-		else
-		{
-			startIndex = pointIndex;
-		}
-
-		int closedOffset = (closed ? 0 : -1);
 		
-		for (int i = startIndex; i < SplinePoints.Count + closedOffset; i++)
+		magnitude = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f) - shake, 0, 1f) * amplitude * Mathf.Clamp01(segmentDistance);
+
+		if (isPlayerOn || reactToPlayer)
 		{
-			for (int k = 0; k < curveFidelity; k++)
-			{
-				int index = (i * curveFidelity) + k;
-				float step = (float) k / (float) (curveFidelity);
-
-				Vector3 v = Vector3.zero;
-
-				DrawLine(i, index, step);
-			}
+			playerIndex = GetPlayerLineSegment();
 		}
-		
-		// if(closed){
-		// 	DrawLine((SplinePoints.Count - 1), (SplinePoints.Count) * Spline.curveFidelity, 1);
-		// }
 	}
 
-	void DrawLine(int pointIndex, int segmentIndex, float step)
+	void DrawLine(int pointIndex, int segmentIndex, float step, bool calculatePosition = false)
 	{
+		Vector3 v = Vector3.zero;
+		if(calculatePosition){
+			v = GetPointAtIndex(pointIndex, step);
+			
+		}else{
+			v = pointPositions[segmentIndex];
+		}
 		
-		Vector3 v = GetPointAtIndex(pointIndex, step);
-
 		//Add movement Effects of player is on the spline
 
 		int indexDiff;
@@ -720,7 +738,7 @@ public class Spline : MonoBehaviour
 
 		//float newFrequency = 1 + Mathf.Abs(Services.PlayerBehaviour.curSpeed);
 		
-		Vector3 direction = GetVelocityAtIndex(pointIndex, step).normalized;
+		Vector3 direction = pointVelocities[segmentIndex].normalized;
 		Vector3 distortionVector = new Vector3(-direction.y, direction.x, direction.z);
 	
 		//amplitude = Mathf.Clamp01(Services.PlayerBehaviour.potentialSpeed/5f) + shake;
@@ -729,9 +747,7 @@ public class Spline : MonoBehaviour
 		//NewFrequency(newFrequency);		
 
 		//(-Time.time * noiseSpeed) + 
-		
-		rollingDistance += (prevPos - v).magnitude;
-		prevPos = v;
+	
 
 		//I want to lerp to 0 at the 0 and 1 values of the spline if it is not closed
 
@@ -765,7 +781,6 @@ public class Spline : MonoBehaviour
 
 		v += distortionVector * distortion * shake * smooth;
 		SetLinePoint(v, segmentIndex);
-
 		
 //		if (segmentIndex < line.GetSegmentNumber())
 //		{
@@ -816,7 +831,7 @@ public class Spline : MonoBehaviour
 			}
 			else
 			{
-				if (shouldDraw)
+				if (!MapEditor.editing && shouldDraw)
 				{
 					Color c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step);
 					//c = Color.Lerp(c, Color.white, invertedDistance);
@@ -957,6 +972,24 @@ public class Spline : MonoBehaviour
 		return GetVelocityAtIndex (i, t);
 	}
 
+	public void UpdateSplineSegment(int i, int segmentIndex, float t){
+		
+
+		Vector3 velocity = GetVelocityAtIndex (i, t);
+		Vector3 pos = GetPointAtIndex (i, t);
+		
+		rollingDistance += (prevPos - pos).magnitude;
+		prevPos = pos;
+
+
+		if(segmentIndex >= pointPositions.Count){
+			pointPositions.Add(pos);
+			pointVelocities.Add(velocity);
+		}else{
+			pointPositions[segmentIndex] = pos;
+			pointVelocities[segmentIndex] = velocity;
+		}
+	}
 
 	public Vector3 GetVelocityAtIndex (int i, float t)
 	{
@@ -1010,6 +1043,7 @@ public class Spline : MonoBehaviour
 
 		Vector3 r2 = 0.5f * (1 - tension) * ((1 + bias) * (1 + continuity) * (Point2.Pos - SplinePoints [i].Pos) + (1 - bias) * (1 - continuity) * (Point3.Pos - Point2.Pos));
 
+		
 		Vector3 v = GetFirstDerivative (SplinePoints [i].Pos, Point2.Pos, r1, r2, t);
 
 		//this was..... probably a hangover from finding the point in worldspace. fug

@@ -1197,10 +1197,10 @@ public class PlayerBehaviour: MonoBehaviour {
 			Vector3 flyToPoint = toPoint.normalized * Time.deltaTime * (flyingSpeed);
 			transform.position += Vector3.ClampMagnitude(flyToPoint, toPoint.magnitude);
 
-			foreach (Spline p in pointDest._connectedSplines)
-			{
-				p.DrawSpline(p.SplinePoints.IndexOf(pointDest));
-			}
+			// foreach (Spline p in pointDest._connectedSplines)
+			// {
+			// 	p.DrawSpline(p.SplinePoints.IndexOf(pointDest));
+			// }
 
 			if (Vector3.Distance(transform.position, pointDest.Pos) < 0.025f)
 			{
@@ -1535,7 +1535,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				if (progress > 1 || progress < 0) {
 					moving = false;
 				}
-				curSpline.DrawSpline();
+				
 
 				yield return null;
 			}
@@ -1555,8 +1555,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			while (moving)
 			{
-				curSpline.DrawSpline();
-
+				
 				curSpline.completion = Mathf.Lerp(curSpline.completion, 0, t);
 				curSpline.distortion = Mathf.Sin(t * Mathf.PI);
 				t += Time.deltaTime;

@@ -201,7 +201,6 @@
 		Spline.shake = 0;
 		Spline.noiseSpeed = 5;
 		Spline.amplitude = 0.5f;
-		Spline.drawSpeed = 0.01f;
 
 		editor.DeselectPoints();
 		editor.DeselectSpline();
@@ -635,9 +634,9 @@
 				
 				foreach (Spline s in Spline.Splines)
 				{
-					if(!s.drawingIn){
+					if(true) { //!s.drawingIn){
 						
-						s.DrawSpline();
+						s.UpdateSpline();
 						s.line.Draw3D();
 					}
 					// if (!s.locked && !s.reactToPlayer && !s.isPlayerOn)
