@@ -582,7 +582,7 @@ public class Spline : MonoBehaviour
 					drawProgress = 0;
 					upperDrawIndex++;
 
-					if(upperDrawIndex > upperPointIndex * curveFidelity + curveFidelity){
+					if(upperDrawIndex == upperPointIndex * curveFidelity + curveFidelity){
 						upperPointIndex ++;
 						
 						if(upperPointIndex < SplinePoints.Count){
@@ -605,7 +605,7 @@ public class Spline : MonoBehaviour
 					drawProgress = 0;
 					lowerDrawIndex --;
 
-					if(lowerDrawIndex < lowerPointIndex * curveFidelity - curveFidelity){
+					if(lowerDrawIndex == lowerPointIndex * curveFidelity - curveFidelity){
 						lowerPointIndex --;
 
 						if(lowerPointIndex >= 0){
@@ -635,7 +635,7 @@ public class Spline : MonoBehaviour
 			upperPointIndex = SplinePoints.IndexOf(p);
 			lowerPointIndex = upperPointIndex;
 			upperDrawIndex = upperPointIndex * curveFidelity + 1;
-			lowerDrawIndex = upperDrawIndex - 2;
+			lowerDrawIndex = upperPointIndex * curveFidelity - 2;
 		}
 
 		drawingIn = true;
