@@ -371,11 +371,6 @@ public class Spline : MonoBehaviour
 		ResetVectorLine();
 		completion = 0;
 		drawingIn = false;
-		upperDrawIndex = 0;
-		lowerDrawIndex = 0;
-		upperPointIndex = 0;
-		lowerPointIndex = 0;
-		populatedPointPositions = false;
 	}
 
 	public void SetSplineType(SplineType t)
@@ -448,6 +443,7 @@ public class Spline : MonoBehaviour
 
 	public void Reset()
 	{
+
 		complete = false;
 		SplinePoints.Clear();
 		closed = false;
@@ -523,7 +519,6 @@ public class Spline : MonoBehaviour
 
 	public void UpdateSpline()
 	{
-
 		UpdateDrawRange();
 		
 		float distanceDelta = 0;
@@ -541,9 +536,9 @@ public class Spline : MonoBehaviour
 
 				distanceDelta = rollingDistance - distanceDelta;
 
-				if(populatedPointPositions){
-					DrawSplineSegment(i, index, step);
-				}
+				
+				DrawSplineSegment(i, index, step);
+				
 				
 			}
 		}
@@ -551,31 +546,36 @@ public class Spline : MonoBehaviour
 		populatedPointPositions = true;
 	}
 
-	void DrawSplineSegment(int i, int index, float step){
+	void DrawSplineSegment(int i, int segindex, float step){
+
+
 		if(MapEditor.editing){
 					
-			DrawLine(i, index, step);
+			DrawLine(i, segindex, step);
 		
 		}else{
 			
+			if(!populatedPointPositions || !drawingIn) return;
+
 			//we're in range
-			if(index < upperDrawIndex && index > lowerDrawIndex){
+			
+			if(segindex < upperDrawIndex && segindex > lowerDrawIndex){
 				
-				DrawLine(i, index, step);
+				DrawLine(i, segindex, step);
 			}
 
 			//behaviour for drawing in the spline
 
-			if(index == upperDrawIndex && index < totalLineSegments){
+			if(segindex == upperDrawIndex && segindex < totalLineSegments){
 				
 				//todo, add lower and upper bound
 
 				//get the distance to the next point on the line segment
-				float dist = Vector3.Distance(pointPositions[index], pointPositions[index-1]);
-				
+				float dist = Vector3.Distance(pointPositions[segindex], pointPositions[segindex-1]);
+
 				drawProgress += (drawSpeed/dist) * Time.deltaTime;
 
-				DrawLine(i, index, step + drawProgress/(float)curveFidelity, true);
+				DrawLine(i, segindex, step + drawProgress/(float)curveFidelity, true);
 				
 				//go to the next segment
 				if(drawProgress > 1){
@@ -593,12 +593,12 @@ public class Spline : MonoBehaviour
 				}
 			}
 
-			if(index == lowerDrawIndex && index > 0){
+			if(segindex == lowerDrawIndex){
 				
-				float dist = Vector3.Distance(pointPositions[index], pointPositions[index - 1]);
+				float dist = Vector3.Distance(pointPositions[segindex], pointPositions[segindex + 1]);
 				drawProgress += (drawSpeed/dist) * Time.deltaTime;
 
-				DrawLine(i, index, step - drawProgress/(float)curveFidelity, true);
+				DrawLine(i, segindex, step - drawProgress/(float)curveFidelity, true);
 				
 				//go to the next segment
 				if(drawProgress > 1){
@@ -941,13 +941,11 @@ public class Spline : MonoBehaviour
 
 	public void UpdateSplineSegment(int i, int segmentIndex, float t){
 		
-
 		Vector3 velocity = GetVelocityAtIndex (i, t);
 		Vector3 pos = GetPointAtIndex (i, t);
 		
 		rollingDistance += (prevPos - pos).magnitude;
 		prevPos = pos;
-
 
 		if(segmentIndex >= pointPositions.Count){
 			pointPositions.Add(pos);
