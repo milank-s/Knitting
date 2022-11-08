@@ -135,13 +135,8 @@ public class Point : MonoBehaviour
 	{
 		get
 		{
-			if (state == PointState.on)
-			{
-			//	return new Color(c, c, c, 1) + Color.white * (Mathf.Sin(3 * (Time.time + timeOffset)) / 10 + 0.2f);
-				return new Color(c,c,c, 1);
-			}
-			
-			return new Color(c, c, c, 1);
+
+			return new Color(c, c, c, 1) + color;
 		}
 	}
 	
@@ -377,16 +372,16 @@ public class Point : MonoBehaviour
 	{
 		float f = 0;
 		Color startColor = color;
-		
+		Color endColor = new Color(0.2f, 0.2f, 0.2f);
 		while (f < 1)
 		{
-			color = Color.Lerp(startColor, Color.white, f);
+			color = Color.Lerp(startColor, endColor, f);
 			f += Time.deltaTime * 5f;
 			SetColor();
 			yield return null;
 		}
 
-		color = Color.white;
+		color = endColor;
 		SetColor();
 	}
 	
@@ -462,6 +457,8 @@ public class Point : MonoBehaviour
 					foreach(Spline sp in _connectedSplines){
 						sp.StartDrawRoutine(this);
 					}
+					
+					StartCoroutine(LightUp());
 				}
 				//PointManager.AddPointHit(this);
 
@@ -739,20 +736,16 @@ public class Point : MonoBehaviour
 		// c = (Mathf.Sin (3 * (Time.time + timeOffset))/4 + 0.3f) + proximity;
 //		c = proximity + Mathf.Sin(Time.time + timeOffset)/10 + 0.11f;
 		// ACCRETION IS SHOWING POINTS THAT IT SHOULDNT?????
-		c = proximity + (state == PointState.on ? 0.1f : 0.1f); // + timesHit/5f;
+		c = proximity + (state == PointState.on ? Mathf.Sin(Time.time * 2 + timeOffset)/20 : 0.0f); // + timesHit/5f;
 		// accretion
 		
 //		SR.color = Color.Lerp (color, new Color (1,1,1, c), Time.deltaTime * 5);
 
-		if (state == PointState.on)
-		{
-			SR.color = _color + color;
-		}
-		else if (state == PointState.locked)
+		if (state == PointState.locked)
 		{
 			SR.color = Color.clear;
 			
-		}else if (state == PointState.off)
+		}else
 		{
 			SR.color =  _color; 	
 		}
