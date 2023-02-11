@@ -143,6 +143,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public Sprite canConnectSprite;
 	public Sprite brakeSprite;
 	public Sprite traverseSprite;
+	public SpriteRenderer glitchFX;
 	private PlayerSounds sounds;
 	public TrailRenderer t;
 	public TrailRenderer flyingTrail;
@@ -373,10 +374,19 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (joystickLocked)
 		{
 			cursorSprite.enabled = false;
+			playerSprite.enabled = false;
+			if(state != PlayerState.Switching){
+				glitchFX.enabled = true;
+			}
+			//show glitch effect if we're not on a point 
+
 		}
 		else
 		{
+			//hide glitch effect
 			cursorSprite.enabled = true;
+			playerSprite.enabled = true;
+				glitchFX.enabled = false;
 		}
 
 		Point.hitColorLerp = connectTime;
@@ -420,7 +430,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			speedCoefficient = 0;
 		}
 
-		playerSprite.transform.localScale = Vector3.Lerp(playerSprite.transform.localScale, new Vector3(Mathf.Clamp(1 - (speedCoefficient * 2), 0.1f, 0.25f), Mathf.Clamp(speedCoefficient, 0.25f, 0.75f), 0.25f), Time.deltaTime * 10);
+		playerSprite.transform.localScale = Vector3.Lerp(playerSprite.transform.localScale, new Vector3(Mathf.Clamp(1 - (speedCoefficient * 2), 0.15f, 0.25f), Mathf.Clamp(speedCoefficient, 0.25f, 0.5f), 0.25f), Time.deltaTime * 10);
 
 //		if (connectTime <= 0 && PointManager._pointsHit.Count > 0) {
 //			PointManager.ResetPoints ();
