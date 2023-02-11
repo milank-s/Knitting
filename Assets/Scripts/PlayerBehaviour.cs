@@ -505,7 +505,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			transform.position = curPoint.Pos;
 			playerSprite.transform.position = Vector3.Lerp(playerSprite.transform.position, transform.position,Time.deltaTime * 10f);
-			gravity = 0;
+			//gravity = 0;
 			//this could be fucking with
 			PlayerOnPoint();
 		}
@@ -1368,9 +1368,15 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		float speedGain = (easedAccuracy - 0.66f) * 3f;
+		Vector3 curSplineDir = curSpline.GetDirection(progress);
+		float gravityCoefficient = Mathf.Clamp01(-curSplineDir.y);
+		float gravityPull = -curSplineDir.y - curSplineDir.z;
+
 		// speedGain = speedGain > 0 ? speedGain * acceleration : speedGain * decay;
-		//flow += curSpline.speed * Time.deltaTime;
-		flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed) + splineSpeed * Time.deltaTime;
+		
+		flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed) * gravityCoefficient;
+		flow += splineSpeed * Time.deltaTime;
+		flow -= Mathf.Clamp01(-gravityPull) * Time.deltaTime;
 		flow = Mathf.Clamp(flow, 0, maxSpeed);
 
 		if (!joystickLocked)
