@@ -56,6 +56,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		get { return Mathf.Clamp01(curSpeed / 2); }
 	}
 	public float flyingSpeed;
+
+	public bool glitching;
+	bool canTraverse;
 	private bool hasFlown = false;
 	private bool foundConnection = false;
 	private bool freeCursor = false;
@@ -371,13 +374,21 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Step()
 	{
+		
+		if(state == PlayerState.Traversing){
+			glitching = accuracy < 0 || joystickLocked;
+		}else if(state == PlayerState.Switching){
+			glitching = !canTraverse;
+		}else{
+			glitching = false;
+		}
+
+		playerSprite.enabled = !glitching;
+		glitchFX.enabled = glitching;
+
 		if (joystickLocked)
 		{
 			cursorSprite.enabled = false;
-			playerSprite.enabled = false;
-			if(state != PlayerState.Switching){
-				glitchFX.enabled = true;
-			}
 			//show glitch effect if we're not on a point 
 
 		}
@@ -385,8 +396,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			//hide glitch effect
 			cursorSprite.enabled = true;
-			playerSprite.enabled = true;
-				glitchFX.enabled = false;
 		}
 
 		Point.hitColorLerp = connectTime;
@@ -489,6 +498,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				if(OnTraversing != null){
 					OnTraversing.Invoke();
 				}
+				
 			}
 			
 			PlayerMovement ();
@@ -609,7 +619,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void PlayerOnPoint(){
 
-		bool canTraverse = false;
+		canTraverse = false;
 
 		Point prevPointDest = pointDest;
 
@@ -1384,9 +1394,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		// speedGain = speedGain > 0 ? speedGain * acceleration : speedGain * decay;
 		
-		flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed) * gravityCoefficient;
+		flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);// * gravityCoefficient;
 		flow += splineSpeed * Time.deltaTime;
-		flow -= Mathf.Clamp01(-gravityPull) * Time.deltaTime;
+		//flow -= Mathf.Clamp01(-gravityPull) * Time.deltaTime;
 		flow = Mathf.Clamp(flow, 0, maxSpeed);
 
 		if (!joystickLocked)
