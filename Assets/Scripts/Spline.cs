@@ -20,8 +20,6 @@ using System.Collections.Generic;
 //###################################################
 //###################################################
 
-
-
 public class Spline : MonoBehaviour
 {
 	
@@ -36,8 +34,8 @@ public class Spline : MonoBehaviour
 	[HideInInspector] 
 	public static float shake;
 	public static float amplitude = 0.25f;
-	public static float noiseSpeed = 25;
-	public static float frequency = 0.025f;
+	public static float noiseSpeed = 500;
+	public static float frequency = 0.25f;
 	public float distortion;
 	bool complete;
 	float rollingDistance;
