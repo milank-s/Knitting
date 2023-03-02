@@ -13,11 +13,11 @@ public class StellationProperties : MonoBehaviour
     public float scrollSpeed = 10;
 
    public void Update(){
-    //    Spline.shake = distortion;
-    //    Spline.amplitude = amplitude;
-    //    Spline.frequency = frequency;
-    //    Spline.noiseSpeed = scrollSpeed;
-    //    Spline.drawSpeed = drawSpeed;
+       Spline.shake = distortion;
+       Spline.amplitude = amplitude;
+       Spline.frequency = frequency;
+       Spline.noiseSpeed = scrollSpeed;
+       Spline.drawSpeed = drawSpeed;
    }
 
    public void SetDistortion(float f){
