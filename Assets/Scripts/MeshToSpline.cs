@@ -10,33 +10,40 @@ public class MeshToSpline : MonoBehaviour {
 	Vector3[] vertices;
 	Color[] colors;
 
+	public MeshFilter meshTarget;
 	StellationController controller;
 	List<Spline> splines;
 
+	int count;
 	public void ConvertMesh(){
 		//whats the current stellation?
 		//how do we add existing spline to stellation?
 		//are we saving these to file or just to the scene?
 		
-		int i = 0;
+		GameObject g = new GameObject();
+		g.name = "Stellation" + count;
+
+		controller = g.AddComponent<StellationController>();
+		splines = new List<Spline>();
+
+		if(meshTarget != null){
+			
+			CreateSpline(meshTarget.sharedMesh);
+			return;
+		}
 
 		foreach(MeshFilter r in GetComponentsInChildren<MeshFilter>()){
-			GameObject g = new GameObject();
-			g.name = "Stellation" + i;
-
-			controller = g.AddComponent<StellationController>();
-			splines = new List<Spline>();
 			
 			CreateSpline(r.sharedMesh);
-			
-			StellationManager m = g.GetComponentInParent<StellationManager>();
+			count++;
+		}
 
-			if(m != null){
-				g.transform.parent = m.transform;
-				m.controllers.Add(controller);
-			}
+		controller._splines= splines;
+		StellationManager manager = GetComponentInParent<StellationManager>();
 
-			i++;
+		if(manager != null){
+			controller.transform.parent = manager.transform;
+			manager.controllers.Add(controller);
 		}
 	}
 

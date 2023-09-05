@@ -22,7 +22,7 @@ using System.Collections.Generic;
 
 public class Spline : MonoBehaviour
 {
-	
+	public bool closed = false;
 	public enum SplineType{normal, moving, locked}
 	public enum SplineState{locked, on, done}
 	public SplineState state;
@@ -78,10 +78,6 @@ public class Spline : MonoBehaviour
 	public float maxSpeed, boost; 
 
 	public static Spline Select;
-	[Space(15)]
-	
-	[HideInInspector]
-	public bool closed = false;
 	public int order;
 	private bool _locked;
 	

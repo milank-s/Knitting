@@ -31,9 +31,9 @@ public class StellationController : MonoBehaviour {
 	public List<Spline> _splinesToUnlock;
 	
 	public StellationController unlock;
-    public bool lockX= true;
-	public bool lockY=true;
-	public bool lockZ=true;
+    public bool lockX;
+	public bool lockY;
+	public bool lockZ;
 
 	int lapCount;
 	public int rootKey;
@@ -95,6 +95,24 @@ public class StellationController : MonoBehaviour {
 		}
 
 		return "";
+	}
+
+	void OnDrawGizmos(){
+
+		//foreach(StellationController c in controllers){
+			foreach(Spline s in _splines){
+
+				Gizmos.color = Color.white;
+				
+				for (int i = 0; i < s.SplinePoints.Count - (s.closed ? 0 : 1); i++){
+					if(i == s.SplinePoints.Count-1){
+						Gizmos.DrawLine(s.SplinePoints[i].transform.position, s.SplinePoints[0].transform.position);
+					}else{
+						Gizmos.DrawLine(s.SplinePoints[i].transform.position, s.SplinePoints[i+1].transform.position);
+					}
+				}
+			}
+		//}
 	}
 
 	public string GetNextWord (){
