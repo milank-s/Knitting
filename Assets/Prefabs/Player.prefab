@@ -5110,6 +5110,7 @@ Transform:
   - {fileID: 1611067790}
   - {fileID: 7727676846810103989}
   - {fileID: 2070151946}
+  - {fileID: 3415686983390431348}
   m_Father: {fileID: 4000010529109594}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5740,7 +5741,7 @@ GameObject:
   - component: {fileID: 1879415984}
   - component: {fileID: 1879415986}
   m_Layer: 9
-  m_Name: Trail
+  m_Name: LongTrail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5867,7 +5868,7 @@ TrailRenderer:
     generateLightingData: 0
   m_MinVertexDistance: 0.05
   m_Autodestruct: 0
-  m_Emitting: 0
+  m_Emitting: 1
 --- !u!1 &2070151945
 GameObject:
   m_ObjectHideFlags: 0
@@ -10555,7 +10556,6 @@ Transform:
   m_Children:
   - {fileID: 626871353}
   - {fileID: 597226891}
-  - {fileID: 3415686983390431348}
   m_Father: {fileID: 4000011164714548}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -11206,12 +11206,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3857060059797673554}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.25, y: 1.25, z: 1}
+  m_LocalScale: {x: 0.25, y: 0.25, z: 0.2}
   m_Children: []
-  m_Father: {fileID: 4000010529109594}
-  m_RootOrder: 2
+  m_Father: {fileID: 626871353}
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5899344833463273073
 SpriteRenderer:

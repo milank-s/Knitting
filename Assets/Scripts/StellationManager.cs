@@ -21,7 +21,7 @@ public class StellationManager : MonoBehaviour
 
 	public bool save;
 	string[] stellations;
-	public string fileName = "Line1";
+	public string fileName = "";
 
 	void Awake()
 	{

@@ -927,10 +927,6 @@ public class MapEditor : MonoBehaviour
         if (pointSelected)
         {
 
-            // activePoint.bias = biasSliderVal.val;
-            // activePoint.tension = tensionSliderVal.val;
-            // activePoint.continuity = continuitySliderVal.val;
-            
             marqueeTip.SetActive(false);
             deselectTip.SetActive(true);
             pointSelectedTip.SetActive(true);
@@ -948,7 +944,6 @@ public class MapEditor : MonoBehaviour
 
             tensionSliderVal.val = activePoint.tension;
 
-//                string input = Input.inputString;
             pointType.text = activePoint.pointType.ToString();
             xPos.text = "x  " + activePoint.Pos.x.ToString("F2");
             yPos.text = "y  " + activePoint.Pos.y.ToString("F2");
@@ -1372,7 +1367,6 @@ public class MapEditor : MonoBehaviour
             
             Point newPoint;
             
-            //I no longer want to recycle
             if (false && i < points.Count)
             {
                 newPoint = points[i];
@@ -1401,6 +1395,7 @@ public class MapEditor : MonoBehaviour
                 {
                     newText = newPoint.textMesh;
                 }
+
                 newPoint.textMesh = newText;
                 newText.transform.position = textPos;
                 prefabs.SetFont(newText, json["p" + i]["text"]["font"]);
@@ -1480,18 +1475,6 @@ public class MapEditor : MonoBehaviour
             newSpline.ChangeMaterial(newSpline.lineMaterial);
         }
 
-        //I no longer want to clean house
-        
-//        for (int i = splines.Count - 1; i >= json["splineCount"]; i--)
-//        {
-//            Destroy(splines[i]);
-//        }
-//
-//        for (int i = points.Count - 1; i >= json["pointCount"]; i--)
-//        {
-//            points[i].Destroy();
-//        }
-
         StellationController c;
 
         if(stellationController == null){
@@ -1502,6 +1485,9 @@ public class MapEditor : MonoBehaviour
         
 
         c.name = parent.name;
+
+        //tuning
+
         c.speed = json["speed"];
         c.acceleration = json["acceleration"];
         
@@ -1510,12 +1496,16 @@ public class MapEditor : MonoBehaviour
             c.maxSpeed = 3f;
         }
 
+        //win conditions
         c.laps = json["laps"];
         c.text = json["text"];
         c.time = json["time"];
+
         c.startSpeed = json["startSpeed"];
         int unlock = json["unlockType"];
         c.unlockMethod = (StellationController.UnlockType) unlock;
+
+        //camera settings
         c.setCameraPos = json["camera"]["setPos"];
         c.cameraPos.x = json["camera"]["x"];
         c.cameraPos.y = json["camera"]["y"];
@@ -1525,6 +1515,8 @@ public class MapEditor : MonoBehaviour
         c.lockZ = json["camera"]["lockZ"];
         c.fixedCam = json["camera"]["fixCam"];
         c.desiredFOV = json["camera"]["fov"];
+
+        //title
         c.title = json["title"];
         c.lockSplines = json["forceOrder"];
 
@@ -1533,7 +1525,7 @@ public class MapEditor : MonoBehaviour
             c.desiredFOV = 40;
         }
         
-
+        //no longer doing this here
         //c.Initialize();   
         
         controller =  c;
@@ -1543,7 +1535,6 @@ public class MapEditor : MonoBehaviour
 
     public void ChangeScore(Single i)
     {
-        
         
         switch (controller.unlockMethod)
         {
