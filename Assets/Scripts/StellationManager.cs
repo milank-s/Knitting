@@ -90,6 +90,7 @@ public class StellationManager : MonoBehaviour
 
 			controllers[i].Initialize();
 			controllers[i].EnableStellation(false);
+			// controllers[i].EnableStellation(true);
 		}
 		
 		Services.main.activeStellation = controllers[0];

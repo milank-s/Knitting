@@ -103,12 +103,13 @@ public class StellationController : MonoBehaviour {
 			foreach(Spline s in _splines){
 
 				Gizmos.color = Color.white;
-				
-				for (int i = 0; i < s.SplinePoints.Count - (s.closed ? 0 : 1); i++){
-					if(i == s.SplinePoints.Count-1){
-						Gizmos.DrawLine(s.SplinePoints[i].transform.position, s.SplinePoints[0].transform.position);
-					}else{
-						Gizmos.DrawLine(s.SplinePoints[i].transform.position, s.SplinePoints[i+1].transform.position);
+				if(s.gameObject.activeSelf){
+					for (int i = 0; i < s.SplinePoints.Count - (s.closed ? 0 : 1); i++){
+						if(i == s.SplinePoints.Count-1){
+							Gizmos.DrawLine(s.SplinePoints[i].transform.position, s.SplinePoints[0].transform.position);
+						}else{
+							Gizmos.DrawLine(s.SplinePoints[i].transform.position, s.SplinePoints[i+1].transform.position);
+						}
 					}
 				}
 			}
@@ -168,7 +169,6 @@ public class StellationController : MonoBehaviour {
 			if(OnCompleteStellation != null){
 				OnCompleteStellation.Invoke();
 			}
-			
 		}
 		else
 		{

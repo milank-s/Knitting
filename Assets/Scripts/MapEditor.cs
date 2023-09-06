@@ -1528,6 +1528,7 @@ public class MapEditor : MonoBehaviour
         //no longer doing this here
         //c.Initialize();   
         
+        c._splines = splines;
         controller =  c;
         return c;
     }

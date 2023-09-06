@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class MeshToSpline : MonoBehaviour {
 
@@ -10,6 +11,7 @@ public class MeshToSpline : MonoBehaviour {
 	Vector3[] vertices;
 	Color[] colors;
 
+	public bool connectAll = false;
 	public MeshFilter meshTarget;
 	StellationController controller;
 	List<Spline> splines;
@@ -29,13 +31,13 @@ public class MeshToSpline : MonoBehaviour {
 		if(meshTarget != null){
 			
 			CreateSpline(meshTarget.sharedMesh);
-			return;
-		}
+		}else{
 
-		foreach(MeshFilter r in GetComponentsInChildren<MeshFilter>()){
-			
-			CreateSpline(r.sharedMesh);
-			count++;
+			foreach(MeshFilter r in GetComponentsInChildren<MeshFilter>()){
+				
+				CreateSpline(r.sharedMesh);
+				count++;
+			}
 		}
 
 		controller._splines= splines;
@@ -69,6 +71,34 @@ public class MeshToSpline : MonoBehaviour {
 			Point newPoint = SplineUtil.CreatePoint (transform.TransformPoint (vertices [i]));
 			newPoint.transform.parent = curSpline.transform;
 			newPoint.name = i.ToString();
+
+			SplinePointPair spp = SplineUtil.ConnectPoints(curSpline, curPoint, newPoint);
+			
+			curSpline.transform.parent = controller.transform;
+
+			if(spp.s != curSpline) splines.Add(curSpline);
+			
+			curSpline = spp.s;
+			curPoint = spp.p;
+		}
+
+		List<Point> points = curSpline.SplinePoints;
+		List<Point> pointsOfPoints = curSpline.SplinePoints;
+		
+		if(connectAll){
+			for(int i = 0; i < points.Count; i++){
+				foreach(Point p in pointsOfPoints){
+					if(p != points[i] && !points[i]._neighbours.Contains(p)){
+						SplinePointPair spp = SplineUtil.ConnectPoints(null, points[i], p);
+						spp.s.transform.parent = controller.transform;
+						splines.Add(spp.s);
+					}
+				}
+
+				pointsOfPoints.Remove(points[i]);
+			}
+		}
+
 			//how are you encoding point type in the mesh data?
 
 			// Color c = colors[i];
@@ -99,15 +129,7 @@ public class MeshToSpline : MonoBehaviour {
 
 			// }
 
-			SplinePointPair spp = SplineUtil.ConnectPoints(curSpline, curPoint, newPoint);
-			
-			curSpline.transform.parent = controller.transform;
-
-			if(spp.s != curSpline) splines.Add(curSpline);
-			
-			curSpline = spp.s;
-			curPoint = spp.p;
-		}
+		
 		
 	}
 

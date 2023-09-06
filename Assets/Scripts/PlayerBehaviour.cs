@@ -487,14 +487,14 @@ public class PlayerBehaviour: MonoBehaviour {
 
        		 	float p = Spline.curveFidelity * progress;
         		float step = Mathf.Floor(p);
-        		float diff = p - step;
-
-        		playerSprite.transform.position = Vector3.Lerp(spriteDest1, spriteDest2, diff);
+        		float diff = goingForward ? p - step : step - p;
 				//playerSprite.transform.up = (spriteDest2 - spriteDest1);
 
 				accuracy = maxAcc;
 
 				transform.position = curSpline.GetPoint(progress);
+        		playerSprite.transform.position = Vector3.Lerp(spriteDest1, spriteDest2, diff);
+
 				if(OnTraversing != null){
 					OnTraversing.Invoke();
 				}
