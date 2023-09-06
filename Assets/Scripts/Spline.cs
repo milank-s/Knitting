@@ -654,6 +654,24 @@ public class Spline : MonoBehaviour
 		}
 	}
 
+	public void  DrawGizmos(){	
+		int numSegments = 4;
+
+		Vector3 lastPos = SplinePoints[0].transform.position;
+		for(int i = 0; i < SplinePoints.Count - (closed ? 0 : 1); i ++){
+			if(SplinePoints.Count == 2){
+				Gizmos.DrawLine(SplinePoints[0].Pos, SplinePoints[1].Pos);
+			}else{
+			for(int j = 0; j < numSegments; j++){
+				float lerp = (float)(j+1)/(numSegments);
+
+				Vector3 v = GetPointAtIndex(i, lerp);
+				Gizmos.DrawLine(lastPos, v);
+				lastPos = v;
+				}
+			}
+		}
+	}
 	void DrawLine(int pointIndex, int segmentIndex, float step, bool calculatePosition = false)
 	{
 		Vector3 v = Vector3.zero;

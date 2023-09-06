@@ -493,7 +493,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				accuracy = maxAcc;
 
 				transform.position = curSpline.GetPoint(progress);
-        		playerSprite.transform.position = Vector3.Lerp(spriteDest1, spriteDest2, diff);
+        		//playerSprite.transform.position = Vector3.Lerp(spriteDest1, spriteDest2, diff);
 
 				if(OnTraversing != null){
 					OnTraversing.Invoke();

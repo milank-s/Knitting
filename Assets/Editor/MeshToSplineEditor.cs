@@ -20,4 +20,31 @@ public class MeshToSplineEditor : Editor
             //add everthing the button would do.
         }
    }
+
+   public void OnSceneGUI(){
+        MeshToSpline t = (MeshToSpline) target;
+		Mesh m;
+        //foreach(MeshFilter f in t.GetComponentsInChildren<MeshFilter>()){
+            m = t.meshTarget.mesh;
+            if(m == null) return;
+            
+			int num = 0;
+            Vector3 lastPos = m.vertices[0] + t.transform.position;
+			foreach(Vector3 v in m.vertices){
+                Vector3 v2 = v + t.transform.position;
+				 Handles.Label(v2 + Vector3.up/10f,
+                 num.ToString());
+                 num++;
+                 Handles.DrawLine(lastPos, v2);
+                 lastPos = v2;
+			}
+
+			string tris = "";
+			foreach(int i in m.triangles){
+				tris += i;
+			}
+        
+		    // Debug.Log("tris = " + tris);
+		//}
+   }
 }

@@ -7,10 +7,10 @@ public class Rotate : MonoBehaviour
 {
 
     public Vector3 speed;
-    
+    public bool world = true;
     void Update()
     {
         Vector3 s = speed * Time.deltaTime;
-        transform.Rotate(s.x, s.y, s.z);
+        transform.Rotate(s.x, s.y, s.z, world ? Space.World : Space.Self);
     }
 }

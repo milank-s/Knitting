@@ -129,7 +129,7 @@ public class Point : MonoBehaviour
 		get { return _velocity; }
 	}
 
-	public Vector3 Pos;
+	public Vector3 Pos => transform.position;
 
 	public Color _color
 	{
@@ -193,7 +193,7 @@ public class Point : MonoBehaviour
 	{
 		initPos = transform.position;
 		state = PointState.off;
-		Pos = transform.position;
+		//Pos = transform.position;
 
 		if (MapEditor.editing)
 		{
@@ -306,16 +306,16 @@ public class Point : MonoBehaviour
 
 	public void Step(){
 
-		Pos = transform.position;
+		//Pos = transform.position;
 
 		if (!MapEditor.editing)
 		{
 			SetColor();
-			Movement();
-			// if (!isKinematic)
-			// {
-			// 	Movement();
-			// }
+			// Movement();
+			if (!isKinematic)
+			{
+				Movement();
+			}
 		}
 		else
 		{

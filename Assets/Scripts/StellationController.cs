@@ -102,19 +102,51 @@ public class StellationController : MonoBehaviour {
 		//foreach(StellationController c in controllers){
 			foreach(Spline s in _splines){
 
-				Gizmos.color = Color.white;
+
 				if(s.gameObject.activeSelf){
 					for (int i = 0; i < s.SplinePoints.Count - (s.closed ? 0 : 1); i++){
-						if(i == s.SplinePoints.Count-1){
-							Gizmos.DrawLine(s.SplinePoints[i].transform.position, s.SplinePoints[0].transform.position);
-						}else{
-							Gizmos.DrawLine(s.SplinePoints[i].transform.position, s.SplinePoints[i+1].transform.position);
+						switch(s.SplinePoints[i].pointType){
+							case PointTypes.normal:
+								Gizmos.color = Color.white;
+							break;
+
+							case PointTypes.start:
+								Gizmos.color = Color.green;
+							break;
+
+							case PointTypes.stop:
+								Gizmos.color = Color.yellow;
+							break;
+
+							case PointTypes.end:
+								Gizmos.color = Color.red;
+							break;
+
+							case PointTypes.fly:
+								Gizmos.color = Color.blue;
+							break;
+
 						}
+
+						if(s.SplinePoints[i].pointType != PointTypes.ghost){
+							Gizmos.DrawWireSphere(s.SplinePoints[i].transform.position, 0.1f);
+						}
+
+						Gizmos.color = Color.white;
+
+						s.DrawGizmos();
+						// if(i == s.SplinePoints.Count-1){
+						// 	Gizmos.DrawLine(s.SplinePoints[i].transform.position, s.SplinePoints[0].transform.position);
+						// }else{
+						// 	Gizmos.DrawLine(s.SplinePoints[i].transform.position, s.SplinePoints[i+1].transform.position);
+						// }
 					}
 				}
 			}
 		//}
 	}
+
+	
 
 	public string GetNextWord (){
 		if(words != null){

@@ -8,15 +8,14 @@ public class MeshToSpline : MonoBehaviour {
 	Mesh mesh;
 	Spline curSpline;
 	Point curPoint;
-	Vector3[] vertices;
-	Color[] colors;
-
 	public bool connectAll = false;
 	public MeshFilter meshTarget;
 	StellationController controller;
 	List<Spline> splines;
 
 	int count;
+
+	
 	public void ConvertMesh(){
 		//whats the current stellation?
 		//how do we add existing spline to stellation?
@@ -29,7 +28,6 @@ public class MeshToSpline : MonoBehaviour {
 		splines = new List<Spline>();
 
 		if(meshTarget != null){
-			
 			CreateSpline(meshTarget.sharedMesh);
 		}else{
 
@@ -51,8 +49,8 @@ public class MeshToSpline : MonoBehaviour {
 
 	void CreateSpline (Mesh m) {
 		mesh = m;
-		vertices = mesh.vertices;
-		colors = mesh.colors;
+		Vector3[] vertices = mesh.vertices;
+		Color[] colors = mesh.colors;
 
 		Point firstPoint = SplineUtil.CreatePoint (transform.TransformPoint(vertices [0]));
 		Point secondPoint = SplineUtil.CreatePoint (transform.TransformPoint(vertices [1]));
