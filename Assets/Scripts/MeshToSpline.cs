@@ -39,7 +39,7 @@ public class MeshToSpline : MonoBehaviour {
 			}
 		}
 
-		controller._splines= splines;
+		controller._splines = splines;
 		StellationManager manager = GetComponentInParent<StellationManager>();
 
 		if(manager != null){
@@ -85,17 +85,17 @@ public class MeshToSpline : MonoBehaviour {
 
 		for(int i = 0; i < points.Count-1; i++){
 
-				SplinePointPair spp = SplineUtil.ConnectPoints(curSpline, points[i], points[i+1]);
+			SplinePointPair spp = SplineUtil.ConnectPoints(curSpline, points[i], points[i+1]);
+			
+			if(spp.s != curSpline){
 				
-				if(spp.s != curSpline){
-					
-					curSpline = spp.s;
-					splines.Add(curSpline);
-				}
-
-				curSpline.transform.parent = controller.transform;
+				curSpline = spp.s;
+				splines.Add(curSpline);
 			}
+
+			curSpline.transform.parent = controller.transform;
 		}
+	}
 	
 
 	void ConnectAllPoints(){
@@ -121,21 +121,29 @@ public class MeshToSpline : MonoBehaviour {
 				//ok we can work with this
 				int[] indices = m.GetIndices(i);
 				int numIndices = indices.Length;
-				for(int index = 0; index < numIndices; i+=4){
+				for(int index = 0; index < numIndices; index+=4){
 					//connect em up fellas
+
 					for(int curIndex = 0; curIndex < 3; curIndex++){
-						Point curPoint = points[index + curIndex];
-						Point nextPoint =  points[index + curIndex+1];
+						Point curPoint = points[indices[index + curIndex]];
+						Point nextPoint =  points[indices[index + curIndex+1]];
 						if(!curPoint._neighbours.Contains(nextPoint)){
-							SplinePointPair spp = SplineUtil.ConnectPoints(null, , points[index + curIndex+1]);
+							SplinePointPair spp = SplineUtil.ConnectPoints(null, curPoint, nextPoint);
 							spp.s.transform.parent = controller.transform;
 							splines.Add(spp.s);
 						}
 					}
+
+					Point p1 = points[indices[index]];
+					Point p2 = points[indices[index + 3]];
+					if(!points[index]._neighbours.Contains(points[index + 3])){
+							SplinePointPair spp = SplineUtil.ConnectPoints(null, p1, p2);
+							spp.s.transform.parent = controller.transform;
+							splines.Add(spp.s);
+						}
 				}
 			}
 		}
-		
 	}
 
 		//how are you encoding point type in the mesh data?

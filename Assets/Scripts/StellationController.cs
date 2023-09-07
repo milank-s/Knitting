@@ -100,11 +100,16 @@ public class StellationController : MonoBehaviour {
 	void OnDrawGizmos(){
 
 		//foreach(StellationController c in controllers){
+			if(_splines.Count == 0) return;
+
 			foreach(Spline s in _splines){
 				
-
+				
 				if(s.gameObject.activeSelf){
-					for (int i = 0; i < s.SplinePoints.Count - (s.closed ? 0 : 1); i++){
+					
+					s.DrawGizmos();
+
+					for (int i = 0; i < s.SplinePoints.Count; i++){
 						switch(s.SplinePoints[i].pointType){
 							case PointTypes.normal:
 								Gizmos.color = Color.white;
@@ -134,7 +139,6 @@ public class StellationController : MonoBehaviour {
 
 						Gizmos.color = Color.white;
 
-						s.DrawGizmos();
 						// if(i == s.SplinePoints.Count-1){
 						// 	Gizmos.DrawLine(s.SplinePoints[i].transform.position, s.SplinePoints[0].transform.position);
 						// }else{

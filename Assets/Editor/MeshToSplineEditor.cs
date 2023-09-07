@@ -47,7 +47,7 @@ public class MeshToSplineEditor : Editor
 		Mesh m;
         if(t.meshTarget == null) return;
         //foreach(MeshFilter f in t.GetComponentsInChildren<MeshFilter>()){
-            m = t.meshTarget.mesh;
+            m = t.meshTarget.sharedMesh;
             
 			int num = 0;
             Vector3 lastPos = m.vertices[0] + t.transform.position;
