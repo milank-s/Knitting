@@ -101,7 +101,7 @@ public class StellationController : MonoBehaviour {
 
 		//foreach(StellationController c in controllers){
 			foreach(Spline s in _splines){
-
+				
 
 				if(s.gameObject.activeSelf){
 					for (int i = 0; i < s.SplinePoints.Count - (s.closed ? 0 : 1); i++){
