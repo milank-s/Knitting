@@ -51,9 +51,7 @@ public class Point : MonoBehaviour
 	public PointTypes pointType = PointTypes.normal;
 	[Space(10)]
 
-	[HideInInspector]
 	public List<Point> _neighbours;
-	[HideInInspector]
 	public List<Spline> _connectedSplines;
 
 	public static float hitColorLerp;

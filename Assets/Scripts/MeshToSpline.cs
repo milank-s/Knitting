@@ -12,6 +12,8 @@ public class MeshToSpline : MonoBehaviour {
 	List<Spline> splines;
 	List<Point> points;
 	ConvertMode mode;
+
+	Dictionary<int, Point> indicePointMap;
 	int count;
 
 	
@@ -20,6 +22,8 @@ public class MeshToSpline : MonoBehaviour {
 		//how do we add existing spline to stellation?
 		//are we saving these to file or just to the scene?
 		mode = c;
+		indicePointMap = new Dictionary<int, Point>();
+
 
 		GameObject g = new GameObject();
 		g.name = "Stellation" + count;
@@ -53,13 +57,38 @@ public class MeshToSpline : MonoBehaviour {
 		Vector3[] vertices = m.vertices;
 		Color[] colors = m.colors;
 
+		//vertices are multiplied per face
+		//do a positional check for dupes
+		
 		int pointCount = 0;
 		foreach(Vector3 v in vertices){
+
+			bool dupe = false;
+
+			foreach(Point p in points){
+
+				//need to make a new list of pointers for vertices
+				//because the indices are trying to index into dupes instead of the combined one
+
+				if(Vector3.SqrMagnitude(transform.TransformPoint(v) - p.Pos) <= Mathf.Epsilon){
+					dupe = true;
+					indicePointMap.Add(pointCount, p);
+					break;
+				}
+			}
+
+			if(dupe){
+				pointCount ++;
+				continue;
+			}
+
 			Point newPoint = SplineUtil.CreatePoint (transform.TransformPoint(v));
 			newPoint.transform.parent = controller.transform;
 			newPoint.name = pointCount.ToString();
-			pointCount ++;
+			indicePointMap.Add(pointCount, newPoint);
 			points.Add(newPoint);
+			
+			pointCount ++;
 		}
 
 		switch(mode){
@@ -121,12 +150,17 @@ public class MeshToSpline : MonoBehaviour {
 				//ok we can work with this
 				int[] indices = m.GetIndices(i);
 				int numIndices = indices.Length;
+				
 				for(int index = 0; index < numIndices; index+=4){
 					//connect em up fellas
 
 					for(int curIndex = 0; curIndex < 3; curIndex++){
-						Point curPoint = points[indices[index + curIndex]];
-						Point nextPoint =  points[indices[index + curIndex+1]];
+						
+						Point curPoint = null;
+						Point nextPoint = null;
+						indicePointMap.TryGetValue(indices[index + curIndex], out curPoint);
+						indicePointMap.TryGetValue(indices[index + curIndex + 1], out nextPoint);
+
 						if(!curPoint._neighbours.Contains(nextPoint)){
 							SplinePointPair spp = SplineUtil.ConnectPoints(null, curPoint, nextPoint);
 							spp.s.transform.parent = controller.transform;
@@ -134,13 +168,17 @@ public class MeshToSpline : MonoBehaviour {
 						}
 					}
 
-					Point p1 = points[indices[index]];
-					Point p2 = points[indices[index + 3]];
-					if(!points[index]._neighbours.Contains(points[index + 3])){
-							SplinePointPair spp = SplineUtil.ConnectPoints(null, p1, p2);
-							spp.s.transform.parent = controller.transform;
-							splines.Add(spp.s);
-						}
+					Point p1 = null;
+					Point p2 = null;
+					
+					indicePointMap.TryGetValue(indices[index], out p1);
+					indicePointMap.TryGetValue(indices[index + 3], out p2);
+
+					if(!p1._neighbours.Contains(p2)){
+						SplinePointPair spp = SplineUtil.ConnectPoints(null, p1, p2);
+						spp.s.transform.parent = controller.transform;
+						splines.Add(spp.s);
+					}
 				}
 			}
 		}
