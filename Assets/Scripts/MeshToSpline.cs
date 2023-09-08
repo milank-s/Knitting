@@ -13,6 +13,8 @@ public class MeshToSpline : MonoBehaviour {
 	List<Point> points;
 	ConvertMode mode;
 
+	StellationManager manager;
+
 	Dictionary<int, Point> indicePointMap;
 	int count;
 
@@ -23,19 +25,25 @@ public class MeshToSpline : MonoBehaviour {
 		//are we saving these to file or just to the scene?
 		mode = c;
 		indicePointMap = new Dictionary<int, Point>();
-
-
 		GameObject g = new GameObject();
-		g.name = "Stellation" + count;
 
 		controller = g.AddComponent<StellationController>();
 		splines = new List<Spline>();
 		points = new List<Point>();
 
-		if(meshTarget != null){
-			CreatePoints(meshTarget.sharedMesh);
-		}else{
+		manager = GetComponentInParent<StellationManager>();
 
+		if(manager != null){
+			controller.transform.parent = manager.transform;
+			manager.controllers.Add(controller);
+		}
+
+		if(meshTarget != null){
+			g.name = meshTarget.gameObject.name;
+			CreatePoints(meshTarget.sharedMesh);
+
+		}else{
+			g.name = gameObject.name;
 			foreach(MeshFilter r in GetComponentsInChildren<MeshFilter>()){
 				
 				CreatePoints(r.sharedMesh);
@@ -43,13 +51,6 @@ public class MeshToSpline : MonoBehaviour {
 			}
 		}
 
-		controller._splines = splines;
-		StellationManager manager = GetComponentInParent<StellationManager>();
-
-		if(manager != null){
-			controller.transform.parent = manager.transform;
-			manager.controllers.Add(controller);
-		}
 	}
 
 	void CreatePoints (Mesh m) {
@@ -107,6 +108,7 @@ public class MeshToSpline : MonoBehaviour {
 				ConnectQuads(m);
 			break;
 		}
+
 	}
 
 	void ConnectPoints(){
@@ -124,6 +126,9 @@ public class MeshToSpline : MonoBehaviour {
 
 			curSpline.transform.parent = controller.transform;
 		}
+
+		
+		controller._splines = splines;
 	}
 	
 
@@ -140,13 +145,18 @@ public class MeshToSpline : MonoBehaviour {
 			}
 			pointsOfPoints.Remove(points[i]);
 		}
+
+		
+		controller._splines = splines;
 	}
 
 	void ConnectQuads(Mesh m){
 		//reinterpret mesh as a series of lines, assuming its quads?
 		int submeshCount = m.subMeshCount;
+		bool hasFaces = false;
 		for(int i = 0; i < submeshCount; i++){
 			if(m.GetTopology(i) == MeshTopology.Quads){
+				hasFaces = true;
 				//ok we can work with this
 				int[] indices = m.GetIndices(i);
 				int numIndices = indices.Length;
@@ -181,6 +191,15 @@ public class MeshToSpline : MonoBehaviour {
 					}
 				}
 			}
+		}
+		
+		controller._splines = splines;
+
+		if(!hasFaces){
+			if(mana	er != null){
+				manager.controllers.Remove(controller);
+			}
+			DestroyImmediate(controller.gameObject);
 		}
 	}
 
