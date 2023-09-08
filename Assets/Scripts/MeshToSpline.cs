@@ -18,7 +18,11 @@ public class MeshToSpline : MonoBehaviour {
 	Dictionary<int, Point> indicePointMap;
 	int count;
 
-	
+	public void SubmeshReadout(){
+		if(meshTarget == null) return;
+
+		Debug.Log(meshTarget.sharedMesh.subMeshCount + " submeshes");
+	}
 	public void ConvertMesh(ConvertMode c){
 		//whats the current stellation?
 		//how do we add existing spline to stellation?
@@ -196,7 +200,7 @@ public class MeshToSpline : MonoBehaviour {
 		controller._splines = splines;
 
 		if(!hasFaces){
-			if(mana	er != null){
+			if(manager != null){
 				manager.controllers.Remove(controller);
 			}
 			DestroyImmediate(controller.gameObject);

@@ -12,6 +12,8 @@ public class MeshToSplineEditor : Editor
         MeshToSpline t = (MeshToSpline) target;
         DrawDefaultInspector();
 
+         EditorGUILayout.Space();
+
         
         //This draws the default screen.  You don't need this if you want
         //to start from scratch, but I use this when I'm just adding a button or
@@ -40,6 +42,14 @@ public class MeshToSplineEditor : Editor
             t.ConvertMesh(ConvertMode.Quads);
             //add everthing the button would do.
         }
+
+         EditorGUILayout.Space();
+
+        if(GUILayout.Button("Readout Submeshes")) {
+
+            t.SubmeshReadout();
+            //add everthing the button would do.
+        }
    }
 
    public void OnSceneGUI(){
@@ -49,21 +59,42 @@ public class MeshToSplineEditor : Editor
         //foreach(MeshFilter f in t.GetComponentsInChildren<MeshFilter>()){
             m = t.meshTarget.sharedMesh;
             
-			int num = 0;
-            Vector3 lastPos = m.vertices[0] + t.transform.position;
-			foreach(Vector3 v in m.vertices){
-                Vector3 v2 = v + t.transform.position;
-				 Handles.Label(v2 + Vector3.up/10f,
-                 num.ToString());
-                 num++;
-                 Handles.DrawLine(lastPos, v2);
-                 lastPos = v2;
-			}
+            int numSubmeshes = m.subMeshCount;
+            MeshTopology topo;
+           
+            for(int subMeshIndex = 0; subMeshIndex < numSubmeshes; subMeshIndex++){
+                UnityEngine.Rendering.SubMeshDescriptor sub = m.GetSubMesh(subMeshIndex);
 
-			string tris = "";
-			foreach(int i in m.triangles){
-				tris += i;
-			}
+                topo = sub.topology;
+                int start = sub.indexStart;
+                int amount = sub.indexCount;
+                int end = start + amount;
+                int label = 0;
+
+
+                //   Handles.Label(v2 + Vector3.up/10f, label.ToString());
+                //         label++;
+                int[] indices = m.GetIndices(subMeshIndex);
+
+                for(int i = 0; i < indices.Length; i+= amount){
+                    for(int j = 0; j < amount-1; j+= amount){
+                        Vector3 v1 = m.vertices[indices[i + j]];
+                        Vector3 v2 = m.vertices[indices[i + j + 1]];
+                        v1 = t.transform.TransformPoint(v1);
+                        v2 = t.transform.TransformPoint(v2);
+
+                        Handles.DrawLine(v1, v2);
+                        
+                    }
+
+                    if(amount > 1){
+                        Vector3 v1 = m.vertices[indices[i]];
+                        Vector3 v2 = m.vertices[indices[i + amount - 1]];
+                        v1 = t.transform.TransformPoint(v1);
+                        v2 = t.transform.TransformPoint(v2);
+                    }
+                }
+            }
         
 		    // Debug.Log("tris = " + tris);
 		//}
