@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public enum ConvertMode{None, Linear, Complete, Quads}
+public enum ConvertMode{None, Linear, Segmented, Complete}
 public class MeshToSpline : MonoBehaviour {
 
 	public MeshFilter meshTarget;
@@ -21,7 +21,9 @@ public class MeshToSpline : MonoBehaviour {
 	public void SubmeshReadout(){
 		if(meshTarget == null) return;
 
-		Debug.Log(meshTarget.sharedMesh.subMeshCount + " submeshes");
+		for(int i = 0; i < meshTarget.sharedMesh.subMeshCount; i++){
+			Debug.Log(meshTarget.sharedMesh.GetSubMesh(i).topology + " mesh");
+		}
 	}
 	public void ConvertMesh(ConvertMode c){
 		//whats the current stellation?
@@ -104,12 +106,12 @@ public class MeshToSpline : MonoBehaviour {
 				ConnectPoints();
 			break;
 
-			case ConvertMode.Complete:
-				ConnectAllPoints();
+			case ConvertMode.Segmented:
+				ConnectSegments(m);
 			break;
 
-			case ConvertMode.Quads:
-				ConnectQuads(m);
+			case ConvertMode.Complete:
+				ConnectAllPoints();
 			break;
 		}
 
@@ -154,34 +156,42 @@ public class MeshToSpline : MonoBehaviour {
 		controller._splines = splines;
 	}
 
-	void ConnectQuads(Mesh m){
+	void ConnectSegments(Mesh m){
 		//reinterpret mesh as a series of lines, assuming its quads?
 		int submeshCount = m.subMeshCount;
-		bool hasFaces = false;
 		for(int i = 0; i < submeshCount; i++){
-			if(m.GetTopology(i) == MeshTopology.Quads){
-				hasFaces = true;
-				//ok we can work with this
-				int[] indices = m.GetIndices(i);
-				int numIndices = indices.Length;
+
+			UnityEngine.Rendering.SubMeshDescriptor sub = m.GetSubMesh(i);
+			MeshTopology topo = sub.topology;			
+			//ok we can work with this
+			int[] indices = m.GetIndices(i);
+			int numIndices = indices.Length;
+			int stepSize = 3;
+			if(topo == MeshTopology.Points) return;
+			if(topo == MeshTopology.Lines) stepSize = 2;
+			if(topo == MeshTopology.Quads) stepSize = 4;
+			
+			for(int index = 0; index < numIndices; index+=stepSize){
 				
-				for(int index = 0; index < numIndices; index+=4){
-					//connect em up fellas
+				//connect em up fellas
 
-					for(int curIndex = 0; curIndex < 3; curIndex++){
-						
-						Point curPoint = null;
-						Point nextPoint = null;
-						indicePointMap.TryGetValue(indices[index + curIndex], out curPoint);
-						indicePointMap.TryGetValue(indices[index + curIndex + 1], out nextPoint);
+				for(int curIndex = 0; curIndex < stepSize-1; curIndex++){
+					
+					Point curPoint = null;
+					Point nextPoint = null;
+					indicePointMap.TryGetValue(indices[index + curIndex], out curPoint);
+					indicePointMap.TryGetValue(indices[index + curIndex + 1], out nextPoint);
 
-						if(!curPoint._neighbours.Contains(nextPoint)){
-							SplinePointPair spp = SplineUtil.ConnectPoints(null, curPoint, nextPoint);
-							spp.s.transform.parent = controller.transform;
-							splines.Add(spp.s);
-						}
+					if(!curPoint._neighbours.Contains(nextPoint)){
+						SplinePointPair spp = SplineUtil.ConnectPoints(null, curPoint, nextPoint);
+						spp.s.transform.parent = controller.transform;
+						splines.Add(spp.s);
 					}
+				}
 
+				//close faces 
+
+				if(stepSize > 2){
 					Point p1 = null;
 					Point p2 = null;
 					
@@ -195,16 +205,10 @@ public class MeshToSpline : MonoBehaviour {
 					}
 				}
 			}
+			
 		}
 		
 		controller._splines = splines;
-
-		if(!hasFaces){
-			if(manager != null){
-				manager.controllers.Remove(controller);
-			}
-			DestroyImmediate(controller.gameObject);
-		}
 	}
 
 		//how are you encoding point type in the mesh data?

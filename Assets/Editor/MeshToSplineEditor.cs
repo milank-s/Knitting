@@ -31,15 +31,15 @@ public class MeshToSplineEditor : Editor
             //add everthing the button would do.
         }
 
-        if(GUILayout.Button("Complete")) {
+        if(GUILayout.Button("Segments")) {
             
-            t.ConvertMesh(ConvertMode.Complete);
+            t.ConvertMesh(ConvertMode.Segmented);
             //add everthing the button would do.
         }
 
-        if(GUILayout.Button("Faces")) {
+        if(GUILayout.Button("Complete")) {
             
-            t.ConvertMesh(ConvertMode.Quads);
+            t.ConvertMesh(ConvertMode.Complete);
             //add everthing the button would do.
         }
 
@@ -67,7 +67,18 @@ public class MeshToSplineEditor : Editor
 
                 topo = sub.topology;
                 int start = sub.indexStart;
-                int amount = sub.indexCount;
+                int amount = 3;
+                if(topo == MeshTopology.Quads) amount = 4;
+                if(topo == MeshTopology.Lines) amount = 2;
+                
+                if(topo == MeshTopology.Points){
+                    foreach(Vector3 v in m.vertices){
+                        Handles.DrawWireDisc(t.transform.TransformPoint(v), Vector3.forward, 0.1f);
+                    }
+
+                    return;
+                }
+
                 int end = start + amount;
                 int label = 0;
 
@@ -76,8 +87,9 @@ public class MeshToSplineEditor : Editor
                 //         label++;
                 int[] indices = m.GetIndices(subMeshIndex);
 
+
                 for(int i = 0; i < indices.Length; i+= amount){
-                    for(int j = 0; j < amount-1; j+= amount){
+                    for(int j = 0; j < amount-1; j++){
                         Vector3 v1 = m.vertices[indices[i + j]];
                         Vector3 v2 = m.vertices[indices[i + j + 1]];
                         v1 = t.transform.TransformPoint(v1);
@@ -87,11 +99,13 @@ public class MeshToSplineEditor : Editor
                         
                     }
 
-                    if(amount > 1){
+                    if(amount > 2){
                         Vector3 v1 = m.vertices[indices[i]];
                         Vector3 v2 = m.vertices[indices[i + amount - 1]];
                         v1 = t.transform.TransformPoint(v1);
                         v2 = t.transform.TransformPoint(v2);
+                        
+                        Handles.DrawLine(v1, v2);
                     }
                 }
             }
