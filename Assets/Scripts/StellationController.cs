@@ -104,7 +104,6 @@ public class StellationController : MonoBehaviour {
 
 			foreach(Spline s in _splines){
 				
-				
 				if(s.gameObject.activeSelf){
 					
 					s.DrawGizmos();

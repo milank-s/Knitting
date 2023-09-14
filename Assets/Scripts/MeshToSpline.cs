@@ -32,8 +32,11 @@ public class MeshToSpline : MonoBehaviour {
 		mode = c;
 		indicePointMap = new Dictionary<int, Point>();
 		GameObject g = new GameObject();
+		g.transform.position = transform.position;
 
 		controller = g.AddComponent<StellationController>();
+		controller._splines = new List<Spline>();
+		
 		splines = new List<Spline>();
 		points = new List<Point>();
 
