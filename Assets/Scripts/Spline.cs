@@ -255,6 +255,7 @@ public class Spline : MonoBehaviour
 			}
 		}
 
+		
 		//CalculateDistance ();
 
 		isPlayerOn = true;
@@ -420,6 +421,8 @@ public class Spline : MonoBehaviour
 		System.Collections.Generic.List<Vector3> linePoints =  new System.Collections.Generic.List<Vector3> (2);
 		
 		line = new VectorLine (name, linePoints, lineWidth, LineType.Continuous);
+		line.layer = LayerMask.NameToLayer("Default");
+
 		if (MapEditor.editing)
 		{
 			line.color = Color.white;
