@@ -113,11 +113,11 @@ public class FXManager : MonoBehaviour
         newLine.textureScale = length;
         newLine.lineWidth = height * 2;
 
-        Vector3 endpoint = s.GetPoint(0.5f);
+        Vector3 endpoint = s.GetPointForPlayer(0.5f);
         Vector3 endDir = s.GetDirection(0.5f);
       for (int i = 0; i < Spline.curveFidelity; i++)
       {
-          newLine.points3.Add(s.GetPoint((0.5f * i)/Spline.curveFidelity) + offset);
+          newLine.points3.Add(s.GetPointForPlayer((0.5f * i)/Spline.curveFidelity) + offset);
           newLine.Draw3D();
           yield return new WaitForSeconds(0.02f);
       }

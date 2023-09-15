@@ -492,7 +492,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				accuracy = maxAcc;
 
-				transform.position = curSpline.GetPoint(progress);
+				transform.position = curSpline.GetPointForPlayer(progress);
         		//playerSprite.transform.position = Vector3.Lerp(spriteDest1, spriteDest2, diff);
 
 				if(OnTraversing != null){
@@ -1004,7 +1004,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					progress -= (Time.deltaTime * t  * flowMult) / curSpline.segmentDistance;
 				}
 
-				transform.position = curSpline.GetPoint (progress);
+				transform.position = curSpline.GetPointForPlayer (progress);
 
 				if (progress > 1 || progress < 0) {
 					moving = false;
@@ -1463,7 +1463,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			{
 				float step = (float)k/Spline.curveFidelity;
 
-				Vector3 pos = curSpline.GetPoint(step);
+				Vector3 pos = curSpline.GetPointForPlayer(step);
 				float diff = (pos - curPos).magnitude;
 				
 				rollingDistance += diff;
@@ -1490,7 +1490,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			for (int k = curSegment; k >= 0; k--)
 			{
 				float step = (float)k/Spline.curveFidelity;
-				Vector3 pos = curSpline.GetPoint(step);
+				Vector3 pos = curSpline.GetPointForPlayer(step);
 				float diff = (pos - curPos).magnitude;
 				rollingDistance += diff;
 				curPos = pos;
@@ -1556,7 +1556,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				curSpline.completion = Mathf.Lerp(curSpline.completion, 0, t);
 //				curSpline.distortion = Mathf.Lerp(curSpline.distortion, 1, progress);
 
-				transform.position = curSpline.GetPoint (progress);
+				transform.position = curSpline.GetPointForPlayer (progress);
 
 				if (progress > 1 || progress < 0) {
 					moving = false;
@@ -1598,11 +1598,11 @@ public class PlayerBehaviour: MonoBehaviour {
 					progress -= Time.deltaTime * t / curSpline.segmentDistance;
 				}
 
-				transform.position = curSpline.GetPoint(progress);
+				transform.position = curSpline.GetPointForPlayer(progress);
 
 				if (progress > 1 || progress < 0)
 				{
-					transform.position = curSpline.GetPoint(Mathf.Clamp01(progress));
+					transform.position = curSpline.GetPointForPlayer(Mathf.Clamp01(progress));
 					traversedPoints[i].Reset();
 					moving = false;
 				}
@@ -2030,7 +2030,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				velocityLine2.points3.Add(Vector3.zero);
 				velocityLine2.points3.Add(Vector3.zero);
 			}
-			Vector3 pos =  curSpline.GetPoint(step + Mathf.Epsilon);
+			Vector3 pos =  curSpline.GetPointForPlayer(step + Mathf.Epsilon);
 			velocityLine.points3[i] = pos;
 
 			float f = (step - progress);

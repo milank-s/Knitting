@@ -678,6 +678,7 @@ public class Spline : MonoBehaviour
 	void DrawLine(int pointIndex, int segmentIndex, float step, bool calculatePosition = false)
 	{
 		Vector3 v = Vector3.zero;
+
 		if(calculatePosition){
 			v = GetPointAtIndex(pointIndex, step);
 			
@@ -867,10 +868,11 @@ public class Spline : MonoBehaviour
 
 	public Vector3 GetPointAtIndex (int i, float t)
 	{
-		//MAKE THIS SHIT WORK WHEN THERE'S ONLY TWO POINTS
-		//Maybe you need to decrement the index by one to force it to be between both splines
-		//Obviously you need to set the progress correctly when you know you're facing backwards (start at 1)
 
+		if(SplinePoints.Count == 2){
+			return Vector3.Lerp(SplinePoints[0].Pos, SplinePoints[1].Pos, t);
+		}else{
+			
 		int Count = SplinePoints.Count;
 
 		int j = i - 1;
@@ -885,7 +887,6 @@ public class Spline : MonoBehaviour
 
 		Point Point0 = SplinePoints [j];
 
-		
 		j = i;
 		if (j > Count - 1) {
 			if (closed) {
@@ -924,22 +925,30 @@ public class Spline : MonoBehaviour
 		float continuity = Point1.continuity;
 		float bias = Point1.bias;
 
-		Vector3 r1 = 0.5f * (1 - tension) * ((1 + bias) * (1 - continuity) * (Point1.Pos - Point0.Pos) + (1 - bias) * (1 + continuity) * (Point2.Pos - Point1.Pos));
+		Vector3 p0, p1, p2, p3;
+		p0 = Point1.Pos;
+		p1 = Point1.Pos;
+		p2 = Point2.Pos;
+		p3 = Point3.Pos;
+
+		Vector3 r1 = 0.5f * (1 - tension) * ((1 + bias) * (1 - continuity) * (p1  - p0) + (1 - bias) * (1 + continuity) * (p2 - p1));
 
 		tension = Point2.tension;
 		continuity = Point2.continuity;
 		bias = Point2.bias;
 
-		Vector3 r2 = 0.5f * (1 - tension) * ((1 + bias) * (1 + continuity) * (Point2.Pos - Point1.Pos) + (1 - bias) * (1 - continuity) * (Point3.Pos - Point2.Pos));
-		Vector3 v = GetPoint (t, Point1.Pos, Point2.Pos, r1, r2);
+		Vector3 r2 = 0.5f * (1 - tension) * ((1 + bias) * (1 + continuity) * (p2 - p1) + (1 - bias) * (1 - continuity) * (p3 - p2));
+		Vector3 v = GetPoint (t, p1, p2, r1, r2);
 
 		return v;
+		}
 	}
 
-	public Vector3 GetPoint (float t)
+	//this could be the most expensive call in your project
+	public Vector3 GetPointForPlayer (float t)
 	{
-		int i = SplinePoints.IndexOf (Selected);
-		return GetPointAtIndex (i, t);
+		//yeah this will probably cause problems
+		return GetPointAtIndex (playerIndex, t);
 	}
 
 	Vector3 GetPoint (float t, Vector3 p1, Vector3 p2, Vector3 r1, Vector3 r2)
@@ -1096,7 +1105,7 @@ public class Spline : MonoBehaviour
 		for (int k = 0; k < curveFidelity; k++) {
 
 			float t = (float)k / (float)(curveFidelity);
-			segmentDistance += Vector3.Distance (GetPoint (t), GetPoint (t + step));
+			segmentDistance += Vector3.Distance (GetPointForPlayer (t), GetPointForPlayer (t + step));
 		}
 	}
 
