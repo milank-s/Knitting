@@ -59,7 +59,7 @@ public class SplineUtil : MonoBehaviour {
 						p2.AddPoint (p1);
 
 						if (s.GetPointIndex (p2) - s.GetPointIndex (p1) > 1) {
-							s.Selected = p2;
+							s.SetSelectedPoint(p2);
 						}
 
 					} else if (!s.SplinePoints.Contains (p2)) {
@@ -137,7 +137,7 @@ public class SplineUtil : MonoBehaviour {
 		Spline s = newSpline.GetComponent<Spline> ();
 
 		s.name = firstP.name + "—" + nextP.name;
-		s.Selected = firstP;
+		s.SetSelectedPoint(firstP);
 
 		//		if (lastPoint != curPoint) {
 		//			s.AddPoint (lastPoint);

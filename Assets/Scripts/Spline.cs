@@ -106,6 +106,7 @@ public class Spline : MonoBehaviour
 	private float distanceFromPlayer;
 	private float invertedDistance;
 	private int playerIndex;
+	private int selectedIndex;
 	private int upperDrawIndex;
 	private int lowerDrawIndex;
 	private int upperPointIndex;
@@ -219,11 +220,12 @@ public class Spline : MonoBehaviour
 	
 		
 		draw = true;
-		playerIndex = SplinePoints.IndexOf(p1) * curveFidelity;
+		selectedIndex = SplinePoints.IndexOf(p1);
+		playerIndex = selectedIndex * curveFidelity;
 		int i = SplinePoints.IndexOf (p1);
 		int j = SplinePoints.IndexOf (p2);
 
-		Selected = p1;
+		SetSelectedPoint(p1);
 		//find the range of indices the player has been on
 		//most likely super bugged right now
 
@@ -289,7 +291,7 @@ public class Spline : MonoBehaviour
 				SplinePoints[i-1].AddPoint(SplinePoints[i]);
 			}
 
-			Selected = SplinePoints[i];
+			SetSelectedPoint(SplinePoints[i]);
 			//CalculateDistance();
 			//distance += segmentDistance;
 		}
@@ -297,7 +299,7 @@ public class Spline : MonoBehaviour
 		if(closed){
 			StartPoint.AddPoint (EndPoint);
 			EndPoint.AddPoint(StartPoint);
-			Selected = EndPoint;
+			SetSelectedPoint(EndPoint);
 			//CalculateDistance();
 			//distance += segmentDistance;
 		}
@@ -368,6 +370,11 @@ public class Spline : MonoBehaviour
 		drawingIn = false;
 	}
 
+	public void SetSelectedPoint(Point p){
+		
+		Selected = p;
+		selectedIndex = SplinePoints.IndexOf(p);
+	}
 	public void SetSplineType(SplineType t)
 	{
 
@@ -870,6 +877,7 @@ public class Spline : MonoBehaviour
 	{
 
 		if(SplinePoints.Count == 2){
+			Debug.Log("cheating");
 			return Vector3.Lerp(SplinePoints[0].Pos, SplinePoints[1].Pos, t);
 		}else{
 			
@@ -926,7 +934,7 @@ public class Spline : MonoBehaviour
 		float bias = Point1.bias;
 
 		Vector3 p0, p1, p2, p3;
-		p0 = Point1.Pos;
+		p0 = Point0.Pos;
 		p1 = Point1.Pos;
 		p2 = Point2.Pos;
 		p3 = Point3.Pos;
@@ -948,7 +956,7 @@ public class Spline : MonoBehaviour
 	public Vector3 GetPointForPlayer (float t)
 	{
 		//yeah this will probably cause problems
-		return GetPointAtIndex (playerIndex, t);
+		return GetPointAtIndex (selectedIndex, t);
 	}
 
 	Vector3 GetPoint (float t, Vector3 p1, Vector3 p2, Vector3 r1, Vector3 r2)

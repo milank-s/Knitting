@@ -633,7 +633,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				canTraverse = true;
 				if (curSpline != null)
 				{
-					curSpline.Selected = curPoint;
+					curSpline.SetSelectedPoint(curPoint);
 				}
 			}
 			else
@@ -1113,7 +1113,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		lastPoint = p;
 		curPoint = p;
-		s.Selected = curP;
+		s.SetSelectedPoint(curP);
 		progress = 1;
 
 		Vector3 pos = transform.position;
@@ -1340,7 +1340,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					curSpline = spp.s;
 					drawnPoint = curPoint;
 					curPoint = newPoint;
-					curSpline.Selected = drawnPoint;
+					curSpline.SetSelectedPoint(drawnPoint);
 					traversedPoints.Add(drawnPoint);
 				  curSpline.OnSplineEnter (drawnPoint, curPoint);
 				// } else {
@@ -1660,7 +1660,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 		if (indexdiff == -1 || indexdiff > 1) {
-			s.Selected = p2;
+			s.SetSelectedPoint(p2);
 			goingForward = false;
 			progress = 1 - Mathf.Epsilon;
 
@@ -1676,7 +1676,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			progress = 0 + Mathf.Epsilon;
 			goingForward = true;
-			s.Selected = curPoint;
+			s.SetSelectedPoint(curPoint);
 		}
 	}
 
@@ -1684,14 +1684,14 @@ public class PlayerBehaviour: MonoBehaviour {
 		int indexdiff = s.SplinePoints.IndexOf (p2) - s.SplinePoints.IndexOf (curPoint);
 
 		if (indexdiff == -1 || indexdiff > 1) {
-			s.Selected = p2;
+			s.SetSelectedPoint(p2);
 			goingForward = true;
 			progress = 0;
 
 		} else {
 			progress = 1;
 			goingForward = false;
-			s.Selected = curPoint;
+			s.SetSelectedPoint(curPoint);
 		}
 
 	}
@@ -1718,8 +1718,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				if(s.locked){
 					continue;
 				}else{
-
-					s.Selected = curPoint;
+					
+					//uh this seems gross
+					s.SetSelectedPoint(curPoint);
 
 				foreach (Point p in curPoint.GetNeighbours()) {
 
@@ -1788,10 +1789,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 							if(forward){
 								facingForward = true;
-								maybeNextSpline.Selected = curPoint;
+								maybeNextSpline.SetSelectedPoint(curPoint);
 							}else{
 								facingForward = false;
-								maybeNextSpline.Selected = maybeNextPoint;
+								maybeNextSpline.SetSelectedPoint(maybeNextPoint);
 							}
 						}
 					}
