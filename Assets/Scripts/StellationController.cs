@@ -6,52 +6,77 @@ using UnityEngine;
 
 public class StellationController : MonoBehaviour {
 
-	public enum UnlockType{laps, speed, time}
-	public enum UnlockMechanism{unlockSpline, turnOnSpline, unlockPoints, switchPointTypes}
+	public enum UnlockType{none, laps, speed, time}
 	
 	public delegate void StellationEvent();
+
+	[Header("Progression")]
+	
+	public UnlockType unlockMethod = UnlockType.none;
+	public StellationController unlock;
+	public bool isOn;
+	public bool lockSplines;
+
+	[HideInInspector]
+	public bool isComplete;
+	[HideInInspector]
+	public bool won = false;
+
+	
+	[Header("Events")]
+
 	public StellationEvent OnCompleteLap;
 	public StellationEvent OnCompleteStellation;
 	public StellationEvent OnLeaveStart;
 	public StellationEvent OnNextStart;
 
-	public List<UnlockMechanism> unlockActions = new List<UnlockMechanism>() {UnlockMechanism.unlockSpline};
 	List<ActivatedBehaviour>  activateOnCompletion = new List<ActivatedBehaviour>();
-	
-	public UnlockType unlockMethod = UnlockType.laps;
+
+	[Header("Components")]
+	public Point start;
+	public List<Spline> _splines;
+
 	[HideInInspector]
 	public List<Point> _pointshit;
 
 	[HideInInspector]
 	public List<Point> _points;
 
+	[HideInInspector]
 	public Vector3 lowerLeft, upperRight;
+	
+	[HideInInspector]
 	public List<Point> _startPoints;
-	public List<Spline> _splines;
+
+	[HideInInspector]
 	public List<Spline> _splinesToUnlock;
 	
-	public StellationController unlock;
-    public bool lockX;
-	public bool lockY;
-	public bool lockZ;
-
-	int lapCount;
-	public int rootKey;
-	public int laps = 1;
-	public float speed = 1;
-	public float acceleration = 1;
+	[HideInInspector]
 	public int startIndex;
-	public float time = 1;
-	public float startSpeed = 1;
-	public float maxSpeed = 10;
-	private float timer;
+
+	[HideInInspector]
 	public int curSplineIndex;
 
-	public Point start;
-	public Vector3 center;
+	private float timer;
+	int lapCount;
 	
 	[Space(10)]
-	[Header("Point Physics")]
+	[Header("Win Variables")]
+	public int laps = 1;
+	public float time = 1;
+	public float speed = 1;
+
+	[Space(10)]
+	[Header("Tuning")]
+	public float startSpeed = 1;
+	public float acceleration = 1;
+	public float maxSpeed = 10;
+	//if a player loops through a stellation with multiple starts they will be placed on a new start each time
+
+	Vector3 center;
+	
+	[Space(10)]
+	[Header("Physics")]
 	public bool isKinematic;
 	public float damping = 600f;
 	public float stiffness = 100f;
@@ -59,34 +84,41 @@ public class StellationController : MonoBehaviour {
 
 	[Space(10)]
 
-	[Header("Visuals")]
-	public TextMesh titleTextMesh;
-	public SpriteRenderer image;
+	[Header("Camera")]
+	
+	public bool setCameraPos = false;
 	public bool fixedCam = false;
 	public int desiredFOV = 30;
-	public string text = "";
-	public string title = "";
+    public bool lockX = true;
+	public bool lockY = true;
+	public bool lockZ = false;
+	public Vector3 cameraPos = Vector3.zero;
 
 	[Space(10)]
 
-	public Vector3 cameraPos = Vector3.zero;
-	public bool setCameraPos = false;
-	public bool isOn;
-	public bool lockSplines;
-	public bool isComplete;
+	[Header("Visuals")]
+	public TextMesh titleTextMesh;
+	public SpriteRenderer image;
+	public string text = "";
+	public string title = "";
 
-	public bool won = false;
-	private string[] words;
-	private int wordIndex;
-	private float fade;
+	[HideInInspector]
 	public bool hasUnlock;
 	float count = 0;
     float average = 30;
-    [SerializeField] SpriteRenderer spriteRenderer;
-
+    
 	[HideInInspector]
 	public Vector3 pos;
-    public float speedAverage;
+    float speedAverage;
+	
+	private string[] words;
+	private int wordIndex;
+	private float fade;
+	
+	[HideInInspector]
+	public int rootKey;
+
+
 	public string GetWord (){
 		if(words != null){
 			string toReturn = "";
@@ -239,7 +271,7 @@ public class StellationController : MonoBehaviour {
 	{
 		if (isComplete)
 		{
-			//EnableStellation(false);
+			// EnableStellation(false);
 		}
 	}
 	//this method fucking sucks

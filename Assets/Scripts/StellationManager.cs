@@ -83,13 +83,15 @@ public class StellationManager : MonoBehaviour
 
 		for(int i = controllers.Count -1; i >= 0; i--)
 		{
-			if (i < controllers.Count - 1) 
-			{
-				controllers[i].unlock = controllers[i + 1];
-			}
+			// if (i < controllers.Count - 1) 
+			// {
+			// 	controllers[i].unlock = controllers[i + 1];
+			// }
 
 			controllers[i].Initialize();
-			controllers[i].EnableStellation(false);
+			if(controllers[i].hasUnlock){
+				controllers[i].unlock.EnableStellation(false);
+			}
 			// controllers[i].EnableStellation(true);
 		}
 		

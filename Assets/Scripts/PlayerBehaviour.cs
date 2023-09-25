@@ -909,9 +909,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		if(Services.main.state != Main.GameState.playing){return;}
 
+		//SwitchState(PlayerState.Flying);
+		
+
 		//pointDest = null;
 		//l.positionCount = 0;
-		SwitchState(PlayerState.Flying);
 		//curPoint.proximity = 0;
 		//drawnPoint = curPoint;
 		//curPoint = SplineUtil.CreatePoint(transform.position);
