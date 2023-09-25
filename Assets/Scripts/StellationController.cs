@@ -83,7 +83,7 @@ public class StellationController : MonoBehaviour {
 	float count = 0;
     float average = 30;
     [SerializeField] SpriteRenderer spriteRenderer;
-    Vector3 startPos;
+
 	[HideInInspector]
 	public Vector3 pos;
     public float speedAverage;
@@ -427,7 +427,6 @@ public class StellationController : MonoBehaviour {
 	{
 		curSplineIndex = 0;
 		isComplete = false;
-		transform.position = startPos;
 		GetComponents();
 
 		//why is this here
@@ -582,7 +581,8 @@ public class StellationController : MonoBehaviour {
 	{
 		if (isOn)
 		{
-			transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime);
+			//why the hell are you doing this
+			// transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime);
 
 			foreach (Point p in _points)
 				{
