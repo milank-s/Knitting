@@ -60,8 +60,15 @@ public class MeshToSpline : MonoBehaviour {
 			}
 		}
 
+		InterpretPointTypes();
+
 	}
 
+	void InterpretPointTypes(){
+		// foreach(Point p in controller._points){
+			
+		// }
+	}
 	void CreatePoints (Mesh m) {
 		
 		Vector3[] vertices = m.vertices;
@@ -136,7 +143,6 @@ public class MeshToSpline : MonoBehaviour {
 			curSpline.transform.parent = controller.transform;
 		}
 
-		
 		controller._splines = splines;
 	}
 	

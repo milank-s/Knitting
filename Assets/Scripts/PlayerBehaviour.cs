@@ -48,7 +48,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float maxCursorDistance = 2;
 	public float cursorDistance;
 	public float cursorRotateSpeed = 1;
-	public float LineAngleDiff = 30;
+	public float AutoLeaveDiff = 30;
 	public float StopAngleDiff = 60;
 
 	public float clampedSpeed

@@ -877,7 +877,6 @@ public class Spline : MonoBehaviour
 	{
 
 		if(SplinePoints.Count == 2){
-			Debug.Log("cheating");
 			return Vector3.Lerp(SplinePoints[0].Pos, SplinePoints[1].Pos, t);
 		}else{
 			

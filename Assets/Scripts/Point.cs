@@ -384,7 +384,7 @@ public class Point : MonoBehaviour
 	}
 	
 
-	public float NeighbourCount(){
+	public int NeighbourCount(){
 		return _connectedSplines.Count;
 	}
 

@@ -89,7 +89,7 @@ public class LineobjImporter : UnityEditor.AssetImporters.ScriptedImporter
         {
             string[] raw = v[i];
 
-            Debug.Log(raw[0].ToString());
+            // Debug.Log(raw[0].ToString());
             float x = float.Parse(raw[0]);
             float y = float.Parse(raw[1]);
             float z = float.Parse(raw[2]);
