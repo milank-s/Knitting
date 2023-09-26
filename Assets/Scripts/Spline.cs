@@ -215,9 +215,7 @@ public class Spline : MonoBehaviour
 			//line.Draw3DAuto();
 		}
 
-	
 		StartDrawRoutine(p1);
-	
 		
 		draw = true;
 		selectedIndex = SplinePoints.IndexOf(p1);
@@ -508,8 +506,11 @@ public class Spline : MonoBehaviour
 		// }
 
 		Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, SplinePoints[0].transform);
-		
+
 		state = SplineState.on;
+
+		DrawEntireSpline();
+		
 	}
 
 	void SetLinePoint(Vector3 v, int index){
@@ -629,6 +630,19 @@ public class Spline : MonoBehaviour
 			SplinePoints[i].isKinematic = true;
 			SplinePoints[i].transform.position -= GetInitVelocity(SplinePoints[i])* Time.deltaTime * speed;
 		}
+	}
+
+	public void DrawEntireSpline(){
+		if(state != SplineState.on) return;
+
+		if(!drawingIn){
+			upperPointIndex = 0;
+			lowerPointIndex = 0;
+			upperDrawIndex = upperPointIndex * curveFidelity + 1;
+			lowerDrawIndex = upperPointIndex * curveFidelity - 2;
+		}
+
+		drawingIn = true;
 	}
 
 	public void StartDrawRoutine(Point p){

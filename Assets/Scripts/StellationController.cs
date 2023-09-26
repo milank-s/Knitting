@@ -582,7 +582,6 @@ public class StellationController : MonoBehaviour {
 	{
 
 		curSplineIndex ++;
-
 		
 		foreach (Spline s in _splines)
 		{
