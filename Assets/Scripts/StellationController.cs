@@ -463,7 +463,7 @@ public class StellationController : MonoBehaviour {
 		ShowStellation(false);
 	}
 
-	void ShowStellation(bool b)
+	public void ShowStellation(bool b)
 	{
 		foreach (Point p in _points)
 		{
@@ -684,7 +684,7 @@ public class StellationController : MonoBehaviour {
 	public void TryToUnlock()
 	{
 		if(won) return;
-		
+
 		UpdateLapCount();
 		if (!isComplete)
 		{

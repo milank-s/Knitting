@@ -81,6 +81,8 @@ public class StellationManager : MonoBehaviour
 
 		//second loop, load the stellations and set up any necessary unlocks
 
+		List<StellationController> lockedStellations = new List<StellationController>();
+
 		for(int i = controllers.Count -1; i >= 0; i--)
 		{
 			// if (i < controllers.Count - 1) 
@@ -91,8 +93,15 @@ public class StellationManager : MonoBehaviour
 			controllers[i].Setup();
 			if(controllers[i].hasUnlock){
 				controllers[i].unlock.Disable();
+				lockedStellations.Add(controllers[i].unlock);
 			}
 			// controllers[i].EnableStellation(true);
+		}
+
+		for(int i = 0; i < controllers.Count; i++){
+			if(!lockedStellations.Contains(controllers[i])){
+				controllers[i].ShowStellation(true);
+			}
 		}
 		
 		Services.main.activeStellation = controllers[0];
@@ -134,9 +143,9 @@ public class StellationManager : MonoBehaviour
 	//to the start in case they die/fly off
 	public void SetStellation(StellationController c)
 	{
-		
+		//do we actually want to disable?
 		if(Services.main.activeStellation != null){
-			Services.main.activeStellation.Disable();
+			//Services.main.activeStellation.Disable();
 		}
 
 		c.Enable();
