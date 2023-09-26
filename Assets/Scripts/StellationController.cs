@@ -89,8 +89,8 @@ public class StellationController : MonoBehaviour {
 	public bool setCameraPos = false;
 	public bool fixedCam = false;
 	public int desiredFOV = 30;
-    public bool lockX = true;
-	public bool lockY = true;
+    public bool lockX = false;
+	public bool lockY = false;
 	public bool lockZ = false;
 	public Vector3 cameraPos = Vector3.zero;
 
@@ -232,6 +232,10 @@ public class StellationController : MonoBehaviour {
 			
 			if(OnCompleteStellation != null){
 				OnCompleteStellation.Invoke();
+			}
+
+			if(hasUnlock){
+				unlock.ShowStellation(true);
 			}
 		}
 		else
@@ -441,9 +445,6 @@ public class StellationController : MonoBehaviour {
 		isPlayerOn = true;
 		Services.main.activeStellation = this;
 
-		CameraFollow.instance.fixedCamera = fixedCam;
-		CameraFollow.instance.desiredFOV = desiredFOV;
-
 		// if (start != null)
 		// {
 		// 	CameraFollow.instance.WarpToPosition(start.transform.position);
@@ -462,7 +463,7 @@ public class StellationController : MonoBehaviour {
 		ShowStellation(false);
 	}
 
-	public void ShowStellation(bool b)
+	void ShowStellation(bool b)
 	{
 		foreach (Point p in _points)
 		{
@@ -498,6 +499,7 @@ public class StellationController : MonoBehaviour {
 			}
 			else
 			{
+				//what if start is null
 				Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, start.transform);
 				start.SwitchState(Point.PointState.on);
 			}
@@ -520,7 +522,7 @@ public class StellationController : MonoBehaviour {
 		}
 		
 		foreach (Point p in _points)
-		{
+		{	
 			//we arent checking against the points we need to unlock
 			if (p.state == Point.PointState.locked)
 			{
@@ -679,8 +681,10 @@ public class StellationController : MonoBehaviour {
 	public void NextWord(){
 		//Services.main.text.text += GetNextWord();
 	}
-	public bool TryToUnlock()
+	public void TryToUnlock()
 	{
+		if(won) return;
+		
 		UpdateLapCount();
 		if (!isComplete)
 		{
@@ -699,10 +703,12 @@ public class StellationController : MonoBehaviour {
 				}
 				break;
 			}
-			return isComplete;
-
+	
 		}
-		return true;
+
+		if(!won && isComplete){
+			Won();
+		}
 	}
 
 	public void Unlock()
@@ -762,8 +768,10 @@ public class StellationController : MonoBehaviour {
 			}
 		}
 	}
-	public void SetCameraInfo()
+	public void SetCameraInfo(bool teleport = false)
 	{
+
+		CameraFollow.instance.desiredFOV = desiredFOV;
 
 		center = Vector3.Lerp(lowerLeft, upperRight, 0.5f);
 
@@ -776,14 +784,23 @@ public class StellationController : MonoBehaviour {
 		CameraFollow.instance.lockY = lockY;
 		CameraFollow.instance.lockZ = lockZ;
 
-		Vector3 targetPos = Services.Player.transform.position;
+		Vector3 targetPos = center;
 		targetPos.z += CameraFollow.instance.offset.z;
 
 
+		
 		if(setCameraPos){
-			CameraFollow.instance.WarpToPosition(cameraPos);
+			if(teleport){
+				CameraFollow.instance.WarpToPosition(cameraPos);
+			}else{
+				CameraFollow.targetPos = cameraPos;
+			}
 		}else{
+			if(teleport){
 			CameraFollow.instance.WarpToPosition(targetPos);
+			}else{
+				CameraFollow.targetPos = targetPos;
+			}
 		}
 
 		

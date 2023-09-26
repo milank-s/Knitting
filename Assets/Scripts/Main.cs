@@ -166,7 +166,8 @@
 		if(StellationManager.instance != null){
 			//reset scene
 			//just reload the scene I guess
-			StartCoroutine(LoadSceneRoutine());
+			StellationManager.instance.ResetCheckpoint();
+			// StartCoroutine(LoadSceneRoutine());
 			
 		}else{
 			//this doesnt work for the editor
@@ -732,29 +733,6 @@
 
 		Services.main.text.text = " ";
 		Services.main.levelText.text = " ";
-
-		
-		
-//		foreach (StellationController c in SceneController.instance.activeScenes)
-//		{
-//			
-//			if (c == SceneController.instance.activeScenes[SceneController.instance.activeScenes.Count-1])
-//			{
-//				c.MoveUp(SceneController.instance.activeScenes.Count);
-//			}
-//			
-//			for (int i = c._points.Count - 1; i >= 0; i--)
-//			{
-//				c._points[i].Initialize();
-//			}
-//		}
-
-/*	foreach (Point p in Point.Points)
-		{
-			p.Initialize();
-		}*/ 
-
-		
 
 		activeStellation.Setup();
 		activeStellation.Enable();

@@ -44,7 +44,7 @@ public class MeshToSpline : MonoBehaviour {
 
 		if(manager != null){
 			controller.transform.parent = manager.transform;
-			manager.controllers.Add(controller);
+			//manager.controllers.Add(controller);
 		}
 
 		if(meshTarget != null){

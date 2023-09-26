@@ -294,10 +294,6 @@ public class MapEditor : MonoBehaviour
     public void SetStellationLock(bool b){
 		controller.lockSplines = b;
 	}
-    public void FixCamera(bool b)
-    {
-        controller.fixedCam = b;
-    }
 
     public void LockX(bool b){
         controller.lockX = b;
@@ -361,7 +357,6 @@ public class MapEditor : MonoBehaviour
     {
         fov.text = controller.desiredFOV.ToString("F0");
         fovSlider.value = controller.desiredFOV;
-        fixedCamera.isOn = controller.fixedCam;
         speedSlider.value = controller.startSpeed;
         accelerationSlider.value = controller.acceleration;
         maxSpeedSlider.value = controller.maxSpeed;
@@ -393,6 +388,7 @@ public class MapEditor : MonoBehaviour
         typing = false;
         controller.Initialize();
         controller.Enable();
+        controller.SetCameraInfo(true);
     }
 
     public void ToggleTurtleMode()
@@ -1197,7 +1193,6 @@ public class MapEditor : MonoBehaviour
         cameraData["y"].AsFloat =  c.cameraPos.y;
         cameraData["z"].AsFloat =  c.cameraPos.z;
         cameraData["setPos"].AsBool = c.setCameraPos;
-        cameraData["fixCam"].AsBool = c.fixedCam;
         cameraData["fov"].AsInt = c.desiredFOV;
         level["camera"] = cameraData;
 
@@ -1335,8 +1330,7 @@ public class MapEditor : MonoBehaviour
     public StellationController Load(string fileName, StellationController stellationController = null)
     {
         
-        List<Spline> splines = new List<Spline>();
-        List<Point> points = new List<Point>();
+        
 
         GameObject parent;
         GameObject pointParent;
@@ -1359,26 +1353,15 @@ public class MapEditor : MonoBehaviour
         splinesParent = parent.transform;
         
         List<Point> newPoints = new List<Point>();
+        List<Spline> newSplines = new List<Spline>();
         
         for (int i = 0; i < json["pointCount"]; i++)
         {
             
             Vector3 spawnPos = new Vector3(json["p" + i]["x"],json["p" + i]["y"],json["p" + i]["z"]);
             
-            Point newPoint;
+            Point newPoint = SplineUtil.CreatePoint(spawnPos);
             
-            if (false && i < points.Count)
-            {
-                newPoint = points[i];
-                newPoint.Reset();
-                newPoint.Clear();
-                newPoint.transform.position = spawnPos;
-            }    
-            else
-            {
-                //make new Point
-                newPoint = SplineUtil.CreatePoint(spawnPos);
-            }
             
             if (json["p" + i]["word"] != "")
             {
@@ -1431,21 +1414,9 @@ public class MapEditor : MonoBehaviour
 
             Spline newSpline;
                 
-            //I no longer want to recycle
-            if (false && i < splines.Count)
-            {
-                newSpline = splines[i];
-                newSpline.Reset();
-                newSpline.SplinePoints.Add(p1);
-                newSpline.SplinePoints.Add(p2);
-            }
-            else
-            {
-                newSpline = SplineUtil.CreateSpline(p1, p2);
-            }
-
-            
-            int numPoints = json["spline" + i]["numPoints"];
+           newSpline = SplineUtil.CreateSpline(p1, p2);
+        
+           int numPoints = json["spline" + i]["numPoints"];
            
             
             if (json["spline" + i]["numPoints"] > 2)
@@ -1473,6 +1444,7 @@ public class MapEditor : MonoBehaviour
             newSpline.bidirectional = json["spline" + i]["bidirectional"];
             newSpline.speed = json["spline" + i]["speed"];
             newSpline.ChangeMaterial(newSpline.lineMaterial);
+            newSplines.Add(newSpline);
         }
 
         StellationController c;
@@ -1513,7 +1485,6 @@ public class MapEditor : MonoBehaviour
         c.lockX = json["camera"]["lockX"];
         c.lockY = json["camera"]["lockY"];
         c.lockZ = json["camera"]["lockZ"];
-        c.fixedCam = json["camera"]["fixCam"];
         c.desiredFOV = json["camera"]["fov"];
 
         //title
@@ -1528,7 +1499,7 @@ public class MapEditor : MonoBehaviour
         //no longer doing this here
         //c.Initialize();   
         
-        c._splines = splines;
+        c._splines = newSplines;
         controller =  c;
         return c;
     }

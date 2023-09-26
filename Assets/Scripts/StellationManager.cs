@@ -8,7 +8,7 @@ using UnityEngine.Events;
 public class StellationManager : MonoBehaviour
 {
 	public static StellationManager instance;
-	[SerializeField] public List<StellationController> controllers;
+	[SerializeField] List<StellationController> controllers;
 
 	[Space(15)]
 	public UnityEvent OnCompleteLap;
@@ -109,6 +109,13 @@ public class StellationManager : MonoBehaviour
 			MapEditor.instance.Save(c);
 	}
 	
+	public void ReachCheckpoint(){
+
+	}
+
+	public void ResetCheckpoint(){
+
+	}
 	public void ResetProgress(){
 		
 		for(int i = controllers.Count -1; i >= 0; i--)

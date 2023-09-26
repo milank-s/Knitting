@@ -24,11 +24,11 @@ public class SceneManager : Editor
         {
             Undo.RecordObject(script, "savedFile");
             StellationController c = Services.main.editor.Load(script.fileName);
-            if(script.controllers == null){
-                script.controllers = new List<StellationController>();
-            }
+            // if(script.controllers == null){
+            //     script.controllers = new List<StellationController>();
+            // }
 
-            script.controllers.Add(c);
+            // script.controllers.Add(c);
             c.transform.parent = script.transform;
             //put it in the right transform and asign it to my list of stellations
         }
