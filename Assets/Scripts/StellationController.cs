@@ -14,7 +14,7 @@ public class StellationController : MonoBehaviour {
 	
 	public UnlockType unlockMethod = UnlockType.none;
 	public StellationController unlock;
-	public bool isOn;
+	public bool isPlayerOn;
 	public bool lockSplines;
 
 	[HideInInspector]
@@ -181,8 +181,6 @@ public class StellationController : MonoBehaviour {
 		//}
 	}
 
-	
-
 	public string GetNextWord (){
 		if(words != null){
 
@@ -217,10 +215,9 @@ public class StellationController : MonoBehaviour {
 
 	public void Awake()
 	{
-		_points = new List<Point>();
-		_splines = new List<Spline>();
-		_splinesToUnlock = new List<Spline>();
-		_startPoints = new List<Point>();
+
+		
+		Initialize();
 	}
 	
 	public void Won()
@@ -254,77 +251,16 @@ public class StellationController : MonoBehaviour {
 		
 	}
 
-	public void SetActive(bool b)
-	{
-		if (b)
-		{
-			start.SwitchState(Point.PointState.on);
-		}
-		else
-		{
-			
-			start.SwitchState(Point.PointState.locked);
-		}
-	}
 
-	public void LeaveStellation()
+	public void Initialize()
 	{
-		if (isComplete)
-		{
-			// EnableStellation(false);
-		}
-	}
-	//this method fucking sucks
-	public void EnableStellation(bool b)
-	{
-		foreach (Point p in _points)
-		{
-			if (b)
-			{
-				//only unlock points which wont be unlocked via splines
-				if (p._connectedSplines.Count == 0)
-				{
-					p.SwitchState(Point.PointState.off);
-				}
-			}
-			else
-			{
-				p.SwitchState(Point.PointState.locked);
-			}
-		}
-
-		if (b)
-		{
-			
-			if (_splines.Count > 0)
-			{
-				_splines[0].SwitchState(Spline.SplineState.on);
-//				foreach (Point p in _splines[0].SplinePoints)
-//				{
-//					p.SwitchState(Point.PointState.off);
-//				}
-			}
-			else
-			{
-				Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, start.transform);
-				start.SwitchState(Point.PointState.on);
-			}
-			
-			
-			//particle effect?
-
-			
-		}
-	}
-
-	public void GetComponents()
-	{
-		curSplineIndex = 0;
 		
-		_points.Clear();
-		_splines.Clear();
-		_splinesToUnlock.Clear();
-		_startPoints.Clear();
+		rootKey = UnityEngine.Random.Range(36, 49);
+
+		_points = new List<Point>();
+		_splines = new List<Spline>();
+		_splinesToUnlock = new List<Spline>();
+		_startPoints = new List<Point>();
 
 		//stupid code for old maps that didnt have scoreCount idk. 
 		if (unlockMethod == UnlockType.laps && laps == 0)
@@ -457,11 +393,16 @@ public class StellationController : MonoBehaviour {
 
 		return 0;
 	}
-	public void Initialize()
+
+	//when resetting this will need to be called?
+	public void Setup()
 	{
 		curSplineIndex = 0;
+		startIndex = 0;
+		timer = 0;
+		lapCount = 0;
 		isComplete = false;
-		GetComponents();
+		won = false;
 
 		//why is this here
 //		Services.main.state = Main.GameState.playing;
@@ -482,48 +423,85 @@ public class StellationController : MonoBehaviour {
 		}		
 		startIndex ++;
 	}
-	public void Draw(){
+	// public void Draw(){
 		
-		if(!lockSplines){
-			// foreach(Spline s in _splines){
-			// 	if(!_splinesToUnlock.Contains(s)){
-			// 		s.StartDrawRoutine();
-			// 	}
-			// }
+	// 	if(!lockSplines){
+	// 		// foreach(Spline s in _splines){
+	// 		// 	if(!_splinesToUnlock.Contains(s)){
+	// 		// 		s.StartDrawRoutine();
+	// 		// 	}
+	// 		// }
 
-			_splines[0].SwitchState(Spline.SplineState.on);
-		}
-	}
-	public void Setup()
+	// 		_splines[0].SwitchState(Spline.SplineState.on);
+	// 	}
+	// }
+	
+	public void Enable()
 	{	
-		curSplineIndex = 0;
-		startIndex = 0;
-		timer = 0;
-		lapCount = 0;
-		isComplete = false;
-		won = false;
-
-		rootKey = UnityEngine.Random.Range(36, 49);
-		isOn = true;
+		isPlayerOn = true;
 		Services.main.activeStellation = this;
 
 		CameraFollow.instance.fixedCamera = fixedCam;
 		CameraFollow.instance.desiredFOV = desiredFOV;
 
-		if (start != null)
-		{
-			CameraFollow.instance.WarpToPosition(start.transform.position);
-		}
-
-		foreach (Spline s in _splinesToUnlock)
-		{
-			s.SwitchState(Spline.SplineState.locked);
-		}
+		// if (start != null)
+		// {
+		// 	CameraFollow.instance.WarpToPosition(start.transform.position);
+		// }
 	
 		SetCameraInfo();
 
 		Services.main.text.text = text;
 		Services.main.levelText.text = title;
+
+		ShowStellation(true);
+	}
+
+	public void Disable(){
+		isPlayerOn = false;
+		ShowStellation(false);
+	}
+
+	public void ShowStellation(bool b)
+	{
+		foreach (Point p in _points)
+		{
+			if (b)
+			{
+				foreach (Spline s in _splinesToUnlock)
+				{
+					s.SwitchState(Spline.SplineState.locked);
+				}
+				
+				//only unlock points which wont be unlocked via splines
+				if (p._connectedSplines.Count == 0)
+				{
+					p.SwitchState(Point.PointState.off);
+				}
+			}
+			else
+			{
+				p.SwitchState(Point.PointState.locked);
+			}
+		}
+
+		if (b)
+		{
+			
+			if (_splines.Count > 0)
+			{
+				_splines[0].SwitchState(Spline.SplineState.on);
+//				foreach (Point p in _splines[0].SplinePoints)
+//				{
+//					p.SwitchState(Point.PointState.off);
+//				}
+			}
+			else
+			{
+				Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, start.transform);
+				start.SwitchState(Point.PointState.on);
+			}
+		}
 	}
 
 	public bool CheckLapCount(){
@@ -612,7 +590,7 @@ public class StellationController : MonoBehaviour {
 
 	public void Step()
 	{
-		if (isOn)
+		if (isPlayerOn)
 		{
 			//why the hell are you doing this
 			// transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime);

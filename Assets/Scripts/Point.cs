@@ -416,11 +416,6 @@ public class Point : MonoBehaviour
 		}
 	}
 
-	public void TryLeaveStellation()
-	{
-		controller.LeaveStellation();
-	}
-
 	public void SwitchState(PointState s)
 	{
 
@@ -466,6 +461,11 @@ public class Point : MonoBehaviour
 	}
 
 	public void OnPointEnter(){
+		if(Services.main.activeStellation != controller){
+			StellationManager.instance.SetStellation(controller);
+			//entered new stellation
+		}
+
 		if(pointType != PointTypes.ghost){
 			if(Services.main.OnPointEnter != null){
 				Services.main.OnPointEnter(this);

@@ -2233,7 +2233,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				flyingTrail.Clear();
 
 				noRaycast = true;
-				curPoint.TryLeaveStellation();
 				curPoint.usedToFly = true;
 				pointDest = null;
 				l.positionCount = 0;

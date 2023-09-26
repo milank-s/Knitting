@@ -88,9 +88,9 @@ public class StellationManager : MonoBehaviour
 			// 	controllers[i].unlock = controllers[i + 1];
 			// }
 
-			controllers[i].Initialize();
+			controllers[i].Setup();
 			if(controllers[i].hasUnlock){
-				controllers[i].unlock.EnableStellation(false);
+				controllers[i].unlock.Disable();
 			}
 			// controllers[i].EnableStellation(true);
 		}
@@ -98,8 +98,8 @@ public class StellationManager : MonoBehaviour
 		Services.main.activeStellation = controllers[0];
 			
 		//DRAWING IN IS ONLY WORKING WHEN CALLED FROM HERE
-		Services.main.activeStellation.EnableStellation(true);
-		SetupActiveStellation(controllers[0], true);
+		//Services.main.activeStellation.EnableStellation(true);
+		SetStellation(controllers[0]);
 		
 		Services.main.InitializeLevel();
 	}
@@ -123,29 +123,25 @@ public class StellationManager : MonoBehaviour
 		}
 	}
 
-	public void SetupActiveStellation(StellationController c, bool active)
+	//this method will be important for checkpointing the player
+	//to the start in case they die/fly off
+	public void SetStellation(StellationController c)
 	{
-		c.isOn = active;
-
-		if(active){
-			c.OnCompleteLap += CompleteLap;
-			c.OnCompleteStellation += CompleteStellation;
-			c.OnLeaveStart += LeaveStart;
-			c.OnNextStart += ResetToStart;
-
-			c.Setup();
-		}else{
-			c.OnCompleteLap -= CompleteLap;
-			c.OnCompleteStellation -= CompleteStellation;
-			c.OnLeaveStart -= LeaveStart;
-			c.OnNextStart -= ResetToStart;
+		
+		if(Services.main.activeStellation != null){
+			Services.main.activeStellation.Disable();
 		}
+
+		c.Enable();
 	}
 	
+	//old old old
 	public void FinishLevel(){
 		SceneController.instance.LoadNextStellation();
 	}
-	
+
+
+	//old method for sequential levels and unlockable unicursal stellations
 	public void CompleteStellation()
 	{
 
@@ -153,20 +149,15 @@ public class StellationManager : MonoBehaviour
 			SaveStellation(Services.main.activeStellation);
 		}
 
-
 		if (Services.main.activeStellation.isComplete)
 		{
 			if (Services.main.activeStellation.hasUnlock)
 			{
-			
-				Services.main.activeStellation.EnableStellation(false);	
-				Services.main.activeStellation.unlock.EnableStellation(true);	
-				SetupActiveStellation(Services.main.activeStellation, false);
-				SetupActiveStellation(Services.main.activeStellation.unlock, true);
+				Services.main.activeStellation.Disable();
+				Services.main.activeStellation.unlock.Enable();		
 				Services.main.WarpPlayerToNewPoint(Services.main.activeStellation.start);
 
 				//this only applies if we're flying
-
 			}
 			
 			else
@@ -182,18 +173,5 @@ public class StellationManager : MonoBehaviour
 			//we good
 		}
 	}
-	
-	IEnumerator ShowStartPoints(bool on)
-	{
-		foreach (StellationController s in controllers)
-		{
-			if (s != Services.main.activeStellation)
-			{
-				s.SetActive(on);
-			}
 
-			yield return new WaitForSeconds(0.25f);
-		}		
-	}
-	
 }

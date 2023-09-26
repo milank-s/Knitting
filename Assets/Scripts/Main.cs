@@ -756,9 +756,8 @@
 
 		
 
-		activeStellation.Initialize();
 		activeStellation.Setup();
-		activeStellation.Draw();
+		activeStellation.Enable();
 
 		if (Services.StartPoint == null && Point.Points.Count > 0)
 		{

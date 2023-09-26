@@ -392,7 +392,7 @@ public class MapEditor : MonoBehaviour
 
         typing = false;
         controller.Initialize();
-        controller.Setup();
+        controller.Enable();
     }
 
     public void ToggleTurtleMode()
@@ -406,7 +406,7 @@ public class MapEditor : MonoBehaviour
     {
         Services.main.OnReset.Invoke();
         Services.main.activeStellation = controller;
-        controller.isOn = true;
+        controller.isPlayerOn = true;
         
         if (pointSelected)
         {
