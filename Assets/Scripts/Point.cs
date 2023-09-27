@@ -460,7 +460,7 @@ public class Point : MonoBehaviour
 		if(Services.main.activeStellation != controller){
 			Services.main.activeStellation.OnPlayerExit();
 			controller.OnPlayerEnter();
-			//entered new stellation
+			//entered new stellation	
 		}
 
 		if(pointType != PointTypes.ghost){

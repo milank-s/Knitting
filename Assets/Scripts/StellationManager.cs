@@ -107,7 +107,7 @@ public class StellationManager : MonoBehaviour
 		
 			controllers[i].Setup();
 
-			//disable stellations which locked and make sure they're not enabled after
+			//lock stellations and make sure they're not enabled after
 			if(i >= checkpoint && controllers[i].hasUnlock){
 				controllers[i].unlock.Show(false);
 				lockedStellations.Add(controllers[i].unlock);
@@ -138,24 +138,49 @@ public class StellationManager : MonoBehaviour
 	}
 
 	public void SaveStellation(StellationController c){
-			//right now the way the save function uses the point parent and active stellation might cause problems
-			MapEditor.instance.Save(c);
+		//right now the way the save function uses the point parent and active stellation might cause problems
+		MapEditor.instance.Save(c);
 	}
 	
-	public void ReachCheckpoint(){
+	public void EnterStellation(StellationController c){
+
+		int index = controllers.IndexOf(c);
+		if(index > checkpoint){
+			checkpoint = index;
+		}
+	}
+
+	void EnterStellationGroup(StellationGroup g){
+
+		//gotta save this to player prefs pls
+
+		checkpoint = 0;
+		level = stellationSets.IndexOf(g);
+		PlayerPrefs.SetInt("level", level);
+		PlayerPrefs.SetInt("checkpoint", checkpoint);
+	}
+
+	void ExitStellationGroup(){
+
+		DisableStellationGroup();
+	}
+
+	void EnableStellationGroup(){
+		
+		
 
 	}
 
-	public void ResetCheckpoint(){
+	void DisableStellationGroup(){
 
-		//if resetting player
+	}
 
-			//call my initialize function
-			
-			//warp player and camera to start point?
-			//point color player is on is not being reset?
+	public void ResetToCheckpoint(){
 
-			Setup();
+		Setup();
+		//warp player and camera to start point?
+		//point color player is on is not being reset?
+
 	}
 
 	public void ResetSaves(){
@@ -173,43 +198,43 @@ public class StellationManager : MonoBehaviour
 	}
 
 	
-	//old old old
-	public void FinishLevel(){
-		SceneController.instance.LoadNextStellation();
-	}
+	// //old old old
+	// public void FinishLevel(){
+	// 	SceneController.instance.LoadNextStellation();
+	// }
 
 
-	//old method for sequential levels and unlockable unicursal stellations
-	public void CompleteStellation()
-	{
+	// //old method for sequential levels and unlockable unicursal stellations
+	// public void CompleteStellation()
+	// {
 
-		if(save){
-			SaveStellation(Services.main.activeStellation);
-		}
+	// 	if(save){
+	// 		SaveStellation(Services.main.activeStellation);
+	// 	}
 
-		if (Services.main.activeStellation.isComplete)
-		{
-			if (Services.main.activeStellation.hasUnlock)
-			{
-				// Services.main.activeStellation.Disable();
-				// Services.main.activeStellation.unlock.Enable();		
-				//Services.main.WarpPlayerToNewPoint(Services.main.activeStellation.start);
+	// 	if (Services.main.activeStellation.isComplete)
+	// 	{
+	// 		if (Services.main.activeStellation.hasUnlock)
+	// 		{
+	// 			// Services.main.activeStellation.Disable();
+	// 			// Services.main.activeStellation.unlock.Enable();		
+	// 			//Services.main.WarpPlayerToNewPoint(Services.main.activeStellation.start);
 
-				//this only applies if we're flying
-			}
+	// 			//this only applies if we're flying
+	// 		}
 			
-			else
-			{
-				//lets plug in the stellationRecorder here
-				//GetComponent<StellationRecorder>().GenerateStellation();
-				if(OnCompleteStellation.GetPersistentEventCount() > 0){
-					OnCompleteStellation.Invoke();
-				}else{
-					SceneController.instance.LoadNextStellation();
-				}
-			}
-			//we good
-		}
-	}
+	// 		else
+	// 		{
+	// 			//lets plug in the stellationRecorder here
+	// 			//GetComponent<StellationRecorder>().GenerateStellation();
+	// 			if(OnCompleteStellation.GetPersistentEventCount() > 0){
+	// 				OnCompleteStellation.Invoke();
+	// 			}else{
+	// 				SceneController.instance.LoadNextStellation();
+	// 			}
+	// 		}
+	// 		//we good
+	// 	}
+	// }
 
 }

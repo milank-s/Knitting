@@ -456,11 +456,6 @@ public class StellationController : MonoBehaviour {
 	{	
 		isPlayerOn = true;
 		Services.main.activeStellation = this;
-
-		// if (start != null)
-		// {
-		// 	CameraFollow.instance.WarpToPosition(start.transform.position);
-		// }
 	
 		SetCameraInfo();
 
@@ -468,6 +463,10 @@ public class StellationController : MonoBehaviour {
 		Services.main.levelText.text = title;
 
 		Show(true);
+
+		if(StellationManager.instance != null){
+			StellationManager.instance.EnterStellation(this);
+		}
 	}
 
 	public void DrawStellation(){

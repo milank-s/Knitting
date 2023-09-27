@@ -29,6 +29,13 @@ public class SceneController : MonoBehaviour
         activeScenes = new List<StellationController>();
         instance = this;
         curLevel = 0;
+
+        if(PlayerPrefs.HasKey("level")){
+            curLevel = PlayerPrefs.GetInt("level");
+        }else{
+            PlayerPrefs.SetInt("level", 0);
+        }
+        
         SelectLevelSet();
     }
 

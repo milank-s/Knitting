@@ -166,7 +166,7 @@
 		if(StellationManager.instance != null){
 			//reset scene
 			//just reload the scene I guess
-			StellationManager.instance.ResetCheckpoint();
+			StellationManager.instance.ResetToCheckpoint();
 			// StartCoroutine(LoadSceneRoutine());
 			
 		}else{

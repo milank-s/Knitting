@@ -487,8 +487,6 @@ public class Spline : MonoBehaviour
 				distanceDelta = rollingDistance - distanceDelta;
 
 				DrawSplineSegment(i, index, step);
-				
-				
 			}
 		}
 
