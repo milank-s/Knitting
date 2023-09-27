@@ -708,6 +708,8 @@
 	}
 
 	public void InitializeLevel(){
+		//this is doubling up the initialization done by the manager?
+		
 		//the stellation initializes its points on start...
 		//we may be forgiven for only initializing splines?
 		if (Spline.Splines.Count > 0){
@@ -728,8 +730,10 @@
 		Services.main.text.text = " ";
 		Services.main.levelText.text = " ";
 
-		// activeStellation.Setup();
-		// activeStellation.Enable();
+		//this needs to work for the editor to work
+		//but I dont like it
+		activeStellation.Setup();
+		activeStellation.Enable();
 
 		if (Services.StartPoint == null && Point.Points.Count > 0)
 		{

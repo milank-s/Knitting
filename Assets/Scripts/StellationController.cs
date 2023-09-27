@@ -216,8 +216,17 @@ public class StellationController : MonoBehaviour {
 	public void Awake()
 	{
 		Initialize();
+		
 	}
 	
+	public void Unlock(){
+		
+		ShowStellation(true);
+
+		foreach(Spline s in start._connectedSplines){
+			s.DrawEntireSpline();
+		}
+	}
 	public void Won()
 	{
 		
@@ -233,7 +242,9 @@ public class StellationController : MonoBehaviour {
 			}
 
 			if(hasUnlock){
-				unlock.ShowStellation(true);
+				unlock.Unlock();
+
+				//lets also draw in the splines off the starting point
 			}
 		}
 		else
@@ -351,6 +362,9 @@ public class StellationController : MonoBehaviour {
 			s.controller = this;
 			index++;
 		}
+
+
+		Setup();
 	}
 
 	public void AddSpline(Spline s){
@@ -481,16 +495,19 @@ public class StellationController : MonoBehaviour {
 		{
 			
 			//what if start is null
-			Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, start.transform);
 			// start.SwitchState(Point.PointState.on);
 			
 		}
 
-		foreach(Spline s in _splines){
-			if(!b){
-				s.SwitchState(Spline.SplineState.locked);
-			}else{
-				s.SwitchState(Spline.SplineState.on);
+		if(b && lockSplines){
+			//dont turn everything on, just the start;
+			_splines[0].SwitchState(Spline.SplineState.on);
+		
+		}else{
+			foreach(Spline s in _splines){
+				
+				s.SwitchState(b ? Spline.SplineState.on : Spline.SplineState.locked);
+				
 			}
 		}
 	}
@@ -554,6 +571,7 @@ public class StellationController : MonoBehaviour {
 		curSplineIndex ++;
 		if(curSplineIndex < _splines.Count && lockSplines){
 			_splines[curSplineIndex].SwitchState(Spline.SplineState.on);
+			_splines[curSplineIndex].DrawEntireSpline();
 		}
 	}
 	

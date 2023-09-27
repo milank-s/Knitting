@@ -387,6 +387,7 @@ public class MapEditor : MonoBehaviour
 
         typing = false;
         controller.Initialize();
+        controller.Setup();
         controller.Enable();
         controller.SetCameraInfo(true);
     }

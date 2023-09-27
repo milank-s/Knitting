@@ -46,7 +46,7 @@ public class Spline : MonoBehaviour
 	float rollingDistance;
 	float magnitude;
 	public static System.Collections.Generic.List<Spline> Splines = new System.Collections.Generic.List<Spline> ();
-	public static float drawSpeed = 10f;
+	public static float drawSpeed = 3f;
 	
 
 	[HideInInspector]
@@ -434,8 +434,6 @@ public class Spline : MonoBehaviour
 	
 	public void Lock()
 	{	
-
-		Debug.Log("locking spline");
 
 		foreach (Point p in SplinePoints)
 		{
