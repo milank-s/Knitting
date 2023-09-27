@@ -361,9 +361,11 @@ public class Spline : MonoBehaviour
 	public void SwitchState(SplineState t)
 	{
 
+		state = t;
+
 		if (t == SplineState.locked)
 		{
-			LockSpline();
+			Lock();
 		}
 
 		if (t == SplineState.on)
@@ -371,7 +373,6 @@ public class Spline : MonoBehaviour
 			Unlock();
 		}
 
-		state = t;
 	}
 
 	public void SetLineWidth(int i)
@@ -433,10 +434,10 @@ public class Spline : MonoBehaviour
 		}
 	}
 	
-	public void LockSpline()
+	public void Lock()
 	{	
-		
-		state = SplineState.locked;
+
+		Debug.Log("locking spline");
 
 		foreach (Point p in SplinePoints)
 		{
@@ -464,18 +465,7 @@ public class Spline : MonoBehaviour
 
 		StartPoint.SwitchState(Point.PointState.on);
 
-		// foreach (Point p in SplinePoints)
-		// {
-			
-		// 	if (p != null && p.state == Point.PointState.locked)
-		// 	{
-		// 		p.SwitchState(Point.PointState.off);
-		// 	}
-		// }
-
 		Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, SplinePoints[0].transform);
-
-		state = SplineState.on;
 
 		DrawEntireSpline();
 		

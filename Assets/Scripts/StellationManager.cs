@@ -60,9 +60,13 @@ public class StellationManager : MonoBehaviour
 				stellationSets[i].gameObject.SetActive(false);
 			}
 		}
-
+		
 		stellationSets[level].gameObject.SetActive(true);
 		controllers = stellationSets[level].controllers;
+		Services.main.activeStellation = controllers[checkpoint];
+
+		Services.StartPoint = controllers[checkpoint].start;
+		Services.main.InitializeLevel();
 
 		//each stellation set should also have its own checkpoint to place players at the appropriate spot
 		//and draw in all previous stellations based on this when resetting
@@ -122,9 +126,6 @@ public class StellationManager : MonoBehaviour
 				controllers[i].DrawStellation();
 			}
 		}
-		
-		Services.StartPoint = controllers[checkpoint].start;
-		Services.main.InitializeLevel();
 	}
 
 	public void SaveStellation(StellationController c){
