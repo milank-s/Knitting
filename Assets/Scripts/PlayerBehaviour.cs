@@ -1012,7 +1012,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				yield return null;
 			}
 
-			curSpline.draw = false;
 
 
 // 		while(index < newPointList.Count -1){

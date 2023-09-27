@@ -7,7 +7,7 @@ using UnityEngine.Events;
 
 public class StellationManager : MonoBehaviour
 {
-
+	public int level;
 	public int checkpoint;
 	public static StellationManager instance;
 	
@@ -55,9 +55,14 @@ public class StellationManager : MonoBehaviour
 	public void Start()
 	{
 		//this is macro position within the game and should be selected from the main menu
+		for(int i = 0; i < stellationSets.Count; i++){
+			if(i != level){
+				stellationSets[i].gameObject.SetActive(false);
+			}
+		}
 
-		stellationSets[checkpoint].gameObject.SetActive(true);
-		controllers = stellationSets[checkpoint].controllers;
+		stellationSets[level].gameObject.SetActive(true);
+		controllers = stellationSets[level].controllers;
 
 		//each stellation set should also have its own checkpoint to place players at the appropriate spot
 		//and draw in all previous stellations based on this when resetting
@@ -90,33 +95,35 @@ public class StellationManager : MonoBehaviour
 
 		List<StellationController> lockedStellations = new List<StellationController>();
 
-		for(int i = controllers.Count -1; i >= 0; i--)
+		for(int i = 0; i < controllers.Count; i++)
 		{
 			// if (i < controllers.Count - 1) 
 			// {
 			// 	controllers[i].unlock = controllers[i + 1];
 			// }
-
 			controllers[i].Setup();
-			if(controllers[i].hasUnlock){
+
+			if(i >= checkpoint && controllers[i].hasUnlock){
 				controllers[i].unlock.Disable();
 				lockedStellations.Add(controllers[i].unlock);
 			}
-			// controllers[i].EnableStellation(true);
+			
 		}
+		
+		SetStellation(controllers[checkpoint]);
 
 		for(int i = 0; i < controllers.Count; i++){
+
 			if(!lockedStellations.Contains(controllers[i])){
 				controllers[i].ShowStellation(true);
 			}
+
+			if(i <= checkpoint){
+				controllers[i].DrawStellation();
+			}
 		}
 		
-		Services.main.activeStellation = controllers[0];
-			
-		//DRAWING IN IS ONLY WORKING WHEN CALLED FROM HERE
-		//Services.main.activeStellation.EnableStellation(true);
-		SetStellation(controllers[0]);
-		
+		Services.StartPoint = controllers[checkpoint].start;
 		Services.main.InitializeLevel();
 	}
 

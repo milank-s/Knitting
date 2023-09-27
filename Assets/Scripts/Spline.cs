@@ -22,20 +22,25 @@ using System.Collections.Generic;
 
 public class Spline : MonoBehaviour
 {
-	public bool closed = false;
-	public enum SplineType{normal, moving, locked}
-	public enum SplineState{locked, on, done}
-	public SplineState state;
 	
 	public SplineType type = SplineType.normal;
 
-	public StellationController controller;
+	public enum SplineType{normal, moving, locked}
+	public enum SplineState{locked, on, done}
 
-	[HideInInspector] 
+	[Space(10)]
+	[Header("Bools")]
+	public bool closed = false;
+	public bool bidirectional = true;
+	public bool drawingIn = false;
+
+	
 	public static float shake;
 	public static float amplitude = 0.25f;
 	public static float noiseSpeed = 100;
 	public static float frequency = 20f;
+	
+	[HideInInspector]
 	public float distortion;
 	bool complete;
 	float rollingDistance;
@@ -43,7 +48,6 @@ public class Spline : MonoBehaviour
 	public static System.Collections.Generic.List<Spline> Splines = new System.Collections.Generic.List<Spline> ();
 	public static float drawSpeed = 2f;
 	
-	Coroutine drawRoutine;
 
 	[HideInInspector]
 	public System.Collections.Generic.List<Point> SplinePoints;
@@ -62,8 +66,6 @@ public class Spline : MonoBehaviour
 
 	public int numPoints => SplinePoints.Count;
 
-	public bool bidirectional = true;
-
 	private float _completion
 	{
 		get { return completion / SplinePoints.Count; }
@@ -72,12 +74,20 @@ public class Spline : MonoBehaviour
 	private float accuracyCoefficient;
 	
 	
+	[Header("Tuning")]
 	public float speed;
-	
-	[HideInInspector]
-	public float maxSpeed, boost; 
 
 	public static Spline Select;
+
+
+	[HideInInspector]
+	public StellationController controller;
+
+
+	
+	[Header("Ordering")]
+	public SplineState state;
+
 	public int order;
 	private bool _locked;
 	
@@ -91,8 +101,6 @@ public class Spline : MonoBehaviour
 
 	[Space(20)] [HideInInspector] public bool isPlayerOn, reactToPlayer;
 	
-	[HideInInspector]
-	public bool draw = true;
 	[HideInInspector]
 	public float distance = 0;
 	[HideInInspector]
@@ -120,11 +128,12 @@ public class Spline : MonoBehaviour
 		}
 	}
 	float drawProgress;
-	public bool drawingIn = false;
 	private bool drawnIn;
 	private int lowHitPoint = int.MaxValue;
 	private int highHitPoint = -int.MaxValue;
 	
+	[Header("Visuals")]
+
 	public int lineMaterial = 0;
 	public int lineWidth = 1;
 	private float textureWidth = 1;
@@ -140,7 +149,6 @@ public class Spline : MonoBehaviour
 			return this == Spline.Select;
 		}
 	}
-
 	
 	public Point EndPoint{
 		get {
@@ -175,8 +183,7 @@ public class Spline : MonoBehaviour
 
 	public void OnSplineExit ()
 	{
-		
-		draw = false;
+
 		isPlayerOn = false;
 		reactToPlayer = false;
 		//line.StopDrawing3DAuto();
@@ -210,51 +217,15 @@ public class Spline : MonoBehaviour
 	
 	public void OnSplineEnter (Point p1, Point p2)
 	{
-		if (!line.isAutoDrawing)
-		{
-			//line.Draw3DAuto();
-		}
 
 		StartDrawRoutine(p1);
 		
-		draw = true;
 		selectedIndex = SplinePoints.IndexOf(p1);
 		playerIndex = selectedIndex * curveFidelity;
 		int i = SplinePoints.IndexOf (p1);
 		int j = SplinePoints.IndexOf (p2);
 
 		SetSelectedPoint(p1);
-		//find the range of indices the player has been on
-		//most likely super bugged right now
-
-		if (i < lowHitPoint) {
-			lowHitPoint = i;
-			draw = true;
-		} else if (i > highHitPoint) {
-			highHitPoint = i;
-			draw = true;
-		}
-
-		if (j > highHitPoint) {
-			highHitPoint = j;
-			draw = true;
-		} else if (j < lowHitPoint) {
-			lowHitPoint = j;
-			draw = true;
-		}
-
-		//draw the line segments the player has been on
-		if (draw) {
-			int indexdiff = j - i;
-
-			if (indexdiff == -1 || indexdiff > 1) {
-				reversed = true;
-
-			} else {
-				reversed = false;
-			}
-		}
-
 		
 		//CalculateDistance ();
 
@@ -348,7 +319,8 @@ public class Spline : MonoBehaviour
 		stepSize = (1.0f / (float)curveFidelity);
 		Select = this;
 		Splines.Add (this);
-		Material newMat;
+
+		// Material newMat;
 //		newMat = Services.Prefabs.lines[3];
 //		Texture tex = newMat.mainTexture;
 //		float length = newMat.mainTextureScale.x;
@@ -357,9 +329,6 @@ public class Spline : MonoBehaviour
 //		line.texture = tex;
 //		line.textureScale = newMat.mainTextureScale.x;
 	}
-
-	//TODO
-//	I WANT THE BEST Spline DRAWING Function< OF ALL FUCKING TIME>
 	public void Initialize()
 	{	
 		SetUpReferences();
@@ -492,8 +461,7 @@ public class Spline : MonoBehaviour
 
 	public void Unlock()
 	{
-		//fancy animation bullshit
-		
+
 		StartPoint.SwitchState(Point.PointState.on);
 
 		// foreach (Point p in SplinePoints)
@@ -541,7 +509,6 @@ public class Spline : MonoBehaviour
 
 				distanceDelta = rollingDistance - distanceDelta;
 
-				
 				DrawSplineSegment(i, index, step);
 				
 				
@@ -849,9 +816,6 @@ public class Spline : MonoBehaviour
 
 	void OnDestroy ()
 	{
-		if(drawRoutine != null){
-			StopCoroutine(drawRoutine);
-		}
 
 		Splines.Remove (this);
 		if (controller != null)

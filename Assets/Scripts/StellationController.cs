@@ -215,8 +215,6 @@ public class StellationController : MonoBehaviour {
 
 	public void Awake()
 	{
-
-		
 		Initialize();
 	}
 	
@@ -427,18 +425,6 @@ public class StellationController : MonoBehaviour {
 		}		
 		startIndex ++;
 	}
-	// public void Draw(){
-		
-	// 	if(!lockSplines){
-	// 		// foreach(Spline s in _splines){
-	// 		// 	if(!_splinesToUnlock.Contains(s)){
-	// 		// 		s.StartDrawRoutine();
-	// 		// 	}
-	// 		// }
-
-	// 		_splines[0].SwitchState(Spline.SplineState.on);
-	// 	}
-	// }
 	
 	public void Enable()
 	{	
@@ -461,6 +447,18 @@ public class StellationController : MonoBehaviour {
 	public void Disable(){
 		isPlayerOn = false;
 		ShowStellation(false);
+	}
+
+	public void DrawStellation(){
+		if(!lockSplines){
+			foreach(Spline s in _splines){
+				if(!_splinesToUnlock.Contains(s)){
+					s.DrawEntireSpline();
+				}
+			}
+
+			// _splines[0].SwitchState(Spline.SplineState.on);
+		}
 	}
 
 	public void ShowStellation(bool b)
@@ -492,10 +490,6 @@ public class StellationController : MonoBehaviour {
 			if (_splines.Count > 0)
 			{
 				_splines[0].SwitchState(Spline.SplineState.on);
-//				foreach (Point p in _splines[0].SplinePoints)
-//				{
-//					p.SwitchState(Point.PointState.off);
-//				}
 			}
 			else
 			{

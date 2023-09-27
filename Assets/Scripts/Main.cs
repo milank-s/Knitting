@@ -635,18 +635,12 @@
 				
 				foreach (Spline s in Spline.Splines)
 				{
-					if(true) { //!s.drawingIn){
+					if(s.state == Spline.SplineState.on) { //!s.drawingIn){
 						
 						s.UpdateSpline();
 						s.line.Draw3D();
 					}
-					// if (!s.locked && !s.reactToPlayer && !s.isPlayerOn)
-					// {
-					// 	s.DrawSpline();
-						
-					// // }
-					// s.DrawSpline();
-					// s.line.Draw3D();
+					
 				}
 			}
 			else

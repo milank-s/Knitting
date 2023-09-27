@@ -70,19 +70,10 @@ public class SplineEditor : Editor {
         }
         EditorGUILayout.EndHorizontal();
 
-        GUILayout.Space(15);
-        Undo.RecordObject(spline, "closed");
-        spline.closed = EditorGUILayout.Toggle("closed", spline.closed);
         
         //add closed function;
         //add lock button;
         GUILayout.Space(15);
-
-        if(GUILayout.Button("Add Point"))
-        {
-            Undo.RecordObject(spline, "added point");
-            spline.AddNewPoint(spline.SplinePoints.Count);
-        }
 
 
         if(GUILayout.Button("Reverse Direction"))
