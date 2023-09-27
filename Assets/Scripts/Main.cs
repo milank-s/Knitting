@@ -733,7 +733,7 @@
 		//this needs to work for the editor to work
 		//but I dont like it
 		activeStellation.Setup();
-		activeStellation.Enable();
+		activeStellation.OnPlayerEnter();
 
 		if (Services.StartPoint == null && Point.Points.Count > 0)
 		{

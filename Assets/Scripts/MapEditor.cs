@@ -388,8 +388,8 @@ public class MapEditor : MonoBehaviour
         typing = false;
         controller.Initialize();
         controller.Setup();
-        controller.Enable();
-        controller.SetCameraInfo(true);
+        controller.OnPlayerEnter();
+        // controller.SetCameraInfo(true);
     }
 
     public void ToggleTurtleMode()

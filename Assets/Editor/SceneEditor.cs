@@ -17,7 +17,7 @@ public class SceneManager : Editor
 
         if(GUILayout.Button("Reset"))
         {
-            script.ResetProgress();
+            script.ResetSaves();
         }
 
         if(GUILayout.Button("Load"))

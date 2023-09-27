@@ -221,7 +221,7 @@ public class StellationController : MonoBehaviour {
 	
 	public void Unlock(){
 		
-		ShowStellation(true);
+		Show(true);
 
 		foreach(Spline s in start._connectedSplines){
 			s.DrawEntireSpline();
@@ -409,8 +409,12 @@ public class StellationController : MonoBehaviour {
 		lapCount = 0;
 		isComplete = false;
 		won = false;
+		isPlayerOn = false;
 
 		_escapeSplines = new List<Spline>();
+
+		//do we need to go through all our points?
+		//I would hate to do that
 
 		foreach(Spline s in _splines){
 			if (s.type == Spline.SplineType.locked)
@@ -444,7 +448,11 @@ public class StellationController : MonoBehaviour {
 		startIndex ++;
 	}
 	
-	public void Enable()
+	public void OnPlayerExit(){
+		isPlayerOn = false;
+	}
+
+	public void OnPlayerEnter()
 	{	
 		isPlayerOn = true;
 		Services.main.activeStellation = this;
@@ -459,12 +467,7 @@ public class StellationController : MonoBehaviour {
 		Services.main.text.text = text;
 		Services.main.levelText.text = title;
 
-		ShowStellation(true);
-	}
-
-	public void Disable(){
-		isPlayerOn = false;
-		ShowStellation(false);
+		Show(true);
 	}
 
 	public void DrawStellation(){
@@ -477,7 +480,7 @@ public class StellationController : MonoBehaviour {
 		}
 	}
 
-	public void ShowStellation(bool b)
+	public void Show(bool b)
 	{
 		foreach (Point p in _points)
 		{

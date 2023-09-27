@@ -52,26 +52,9 @@ public class StellationManager : MonoBehaviour
 			OnUnload();
 		}
 	}
-	public void Start()
-	{
-		//this is macro position within the game and should be selected from the main menu
-		for(int i = 0; i < stellationSets.Count; i++){
-			if(i != level){
-				stellationSets[i].gameObject.SetActive(false);
-			}
-		}
+
+	void LoadSavedStellations(){
 		
-		stellationSets[level].gameObject.SetActive(true);
-		controllers = stellationSets[level].controllers;
-		Services.main.activeStellation = controllers[checkpoint];
-
-		Services.StartPoint = controllers[checkpoint].start;
-		Services.main.InitializeLevel();
-
-		//each stellation set should also have its own checkpoint to place players at the appropriate spot
-		//and draw in all previous stellations based on this when resetting
-		
-
 		//I have no idea what this is about but I think its a way to save connections to file
 		//depends if you want persistent connections or not
 
@@ -94,6 +77,26 @@ public class StellationManager : MonoBehaviour
 			}
 		}
 		}
+	}
+
+	void Setup(){
+		//this is macro position within the game and should be selected from the main menu
+		for(int i = 0; i < stellationSets.Count; i++){
+			if(i != level){
+				stellationSets[i].gameObject.SetActive(false);
+			}
+		}
+		
+		stellationSets[level].gameObject.SetActive(true);
+		controllers = stellationSets[level].controllers;
+		Services.main.activeStellation = controllers[checkpoint];
+
+		Services.StartPoint = controllers[checkpoint].start;
+		Services.main.InitializeLevel();
+
+		//each stellation set should also have its own checkpoint to place players at the appropriate spot
+		//and draw in all previous stellations based on this when resetting
+		
 
 		//second loop, load the stellations and set up any necessary unlocks
 
@@ -106,19 +109,19 @@ public class StellationManager : MonoBehaviour
 
 			//disable stellations which locked and make sure they're not enabled after
 			if(i >= checkpoint && controllers[i].hasUnlock){
-				controllers[i].unlock.Disable();
+				controllers[i].unlock.Show(false);
 				lockedStellations.Add(controllers[i].unlock);
 			}
 			
 		}
 		
-		SetStellation(controllers[checkpoint]);
+		controllers[checkpoint].OnPlayerEnter();
 
 		for(int i = 0; i < controllers.Count; i++){
 
 			//show points but dont draw in splines for unaccessed stellations
 			if(!lockedStellations.Contains(controllers[i])){
-				controllers[i].ShowStellation(true);
+				controllers[i].Show(true);
 			}
 
 			//draw in splines for accessed stellations
@@ -126,6 +129,12 @@ public class StellationManager : MonoBehaviour
 				controllers[i].DrawStellation();
 			}
 		}
+	}
+	public void Start()
+	{
+		
+		Setup();
+		
 	}
 
 	public void SaveStellation(StellationController c){
@@ -139,8 +148,17 @@ public class StellationManager : MonoBehaviour
 
 	public void ResetCheckpoint(){
 
+		//if resetting player
+
+			//call my initialize function
+			
+			//warp player and camera to start point?
+			//point color player is on is not being reset?
+
+			Setup();
 	}
-	public void ResetProgress(){
+
+	public void ResetSaves(){
 		
 		for(int i = controllers.Count -1; i >= 0; i--)
 		{
@@ -154,17 +172,6 @@ public class StellationManager : MonoBehaviour
 		}
 	}
 
-	//this method will be important for checkpointing the player
-	//to the start in case they die/fly off
-	public void SetStellation(StellationController c)
-	{
-		//do we actually want to disable?
-		if(Services.main.activeStellation != null){
-			//Services.main.activeStellation.Disable();
-		}
-
-		c.Enable();
-	}
 	
 	//old old old
 	public void FinishLevel(){
@@ -184,9 +191,9 @@ public class StellationManager : MonoBehaviour
 		{
 			if (Services.main.activeStellation.hasUnlock)
 			{
-				Services.main.activeStellation.Disable();
-				Services.main.activeStellation.unlock.Enable();		
-				Services.main.WarpPlayerToNewPoint(Services.main.activeStellation.start);
+				// Services.main.activeStellation.Disable();
+				// Services.main.activeStellation.unlock.Enable();		
+				//Services.main.WarpPlayerToNewPoint(Services.main.activeStellation.start);
 
 				//this only applies if we're flying
 			}
