@@ -7,17 +7,18 @@ using UnityEngine.Events;
 
 public class StellationManager : MonoBehaviour
 {
+
+	public int checkpoint;
 	public static StellationManager instance;
-	[SerializeField] List<StellationController> controllers;
+	
+	public List<StellationGroup> stellationSets;
+	List<StellationController> controllers;
 
 	[Space(15)]
 	public UnityEvent OnCompleteLap;
 	public UnityEvent OnCompleteStellation;
 	public UnityEvent OnLeaveStart;
 	public UnityEvent OnNextStart;
-
-	[HideInInspector]
-	public int index;
 
 	public bool save;
 	string[] stellations;
@@ -53,24 +54,30 @@ public class StellationManager : MonoBehaviour
 	}
 	public void Start()
 	{
-		if (controllers.Count < 1)
-		{
-			controllers = GetComponentsInChildren<StellationController>().ToList();
-		}
+		//this is macro position within the game and should be selected from the main menu
 
-		//first loop. save the file names and whether or not they have been played
-		//delete all the stellations and reload their stellations from the appropriate file
+		stellationSets[checkpoint].gameObject.SetActive(true);
+		controllers = stellationSets[checkpoint].controllers;
+
+		//each stellation set should also have its own checkpoint to place players at the appropriate spot
+		//and draw in all previous stellations based on this when resetting
+		
+
+		//I have no idea what this is about but I think its a way to save connections to file
+		//depends if you want persistent connections or not
+
 		if(save){
 		for(int i = controllers.Count -1; i >= 0; i--)
 		{
 			if(PlayerPrefs.HasKey(controllers[i].name)){
 				
+				//player has played the level, load from the buffer file
 				Destroy(controllers[i].gameObject);
 				StellationController c = MapEditor.instance.Load(controllers[i].name + "Played");
 				c.transform.parent = transform;
 				controllers[i] = c;
+
 				
-				//player has played the level, load from the buffer file
 			}else{
 				PlayerPrefs.SetInt(controllers[i].name, 1);
 				controllers[i].name = controllers[i].name + "Played";

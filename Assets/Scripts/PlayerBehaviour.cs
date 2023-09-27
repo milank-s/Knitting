@@ -93,13 +93,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public float normalizedAccuracy => (1 + accuracy)/2f;
 	public float potentialSpeed => flow + speed + boost;
-	public float easedAccuracy => Mathf.Pow(Mathf.Clamp01(accuracy), accuracyCoefficient);
+	public float easedAccuracy => Mathf.Clamp01(Mathf.Pow(Mathf.Clamp01(accuracy), accuracyCoefficient));
 	public float actualSpeed
 	{
 		get
 		{
-			// float adjustedAccuracy = goingForward ? Mathf.Pow(accuracy, accuracyCoefficient) : -Mathf.Pow(accuracy, accuracyCoefficient);
-			
 			//lets just stop using the deceleration timer
 			//adjustedAccuracy = (adjustedAccuracy * (1-decelerationTimer));
 
@@ -112,7 +110,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 			// return (speed) * cursorDir.magnitude * easedAccuracy + flow + boost;
-			return (speed + flow) * cursorDir.magnitude * easedAccuracy + boost;
+			return speed + flow * cursorDir.magnitude * easedAccuracy + boost;
 		}
 	}
 
