@@ -446,7 +446,6 @@ public class Point : MonoBehaviour
 			case PointState.on:
 				if (prevState != PointState.on)
 				{
-					//TurnOn();
 					foreach(Spline sp in _connectedSplines){
 						sp.StartDrawRoutine(this);
 					}
@@ -498,6 +497,8 @@ public class Point : MonoBehaviour
 //		damping = Mathf.Clamp(damping - 100, 100, 10000);
 		
 		SwitchState(PointState.on);
+		
+		controller.TryToUnlock();
 
 		if(pointType != PointTypes.ghost)
 		{
@@ -509,7 +510,6 @@ public class Point : MonoBehaviour
 				controller.NextWord();
 			}
 			
-			controller.TryToUnlock();
 
 			switch (pointType)
 			{

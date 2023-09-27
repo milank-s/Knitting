@@ -49,7 +49,7 @@ public class StellationController : MonoBehaviour {
 	public List<Point> _startPoints;
 
 	[HideInInspector]
-	public List<Spline> _splinesToUnlock;
+	public List<Spline> _escapeSplines;
 	
 	[HideInInspector]
 	public int startIndex;
@@ -261,7 +261,7 @@ public class StellationController : MonoBehaviour {
 
 		_points = new List<Point>();
 		_splines = new List<Spline>();
-		_splinesToUnlock = new List<Spline>();
+		_escapeSplines = new List<Spline>();
 		_startPoints = new List<Point>();
 
 		//stupid code for old maps that didnt have scoreCount idk. 
@@ -348,16 +348,6 @@ public class StellationController : MonoBehaviour {
 			_splines.Add(s);
 			s.SetSplineType(s.type);
 			
-			if (s.type == Spline.SplineType.locked)
-			{
-				_splinesToUnlock.Add(s);
-			}
-
-			if (lockSplines && s.order != 0)
-			{
-				s.SwitchState(Spline.SplineState.locked);
-			}
-
 			s.controller = this;
 			index++;
 		}
@@ -406,6 +396,20 @@ public class StellationController : MonoBehaviour {
 		isComplete = false;
 		won = false;
 
+		_escapeSplines = new List<Spline>();
+
+		foreach(Spline s in _splines){
+			if (s.type == Spline.SplineType.locked)
+				{
+					_escapeSplines.Add(s);
+				}
+
+				if (lockSplines && s.order != 0)
+				{
+					s.SwitchState(Spline.SplineState.locked);
+				}
+		}
+
 		//why is this here
 //		Services.main.state = Main.GameState.playing;
 }
@@ -452,12 +456,10 @@ public class StellationController : MonoBehaviour {
 	public void DrawStellation(){
 		if(!lockSplines){
 			foreach(Spline s in _splines){
-				if(!_splinesToUnlock.Contains(s)){
+				if(!_escapeSplines.Contains(s)){
 					s.DrawEntireSpline();
 				}
 			}
-
-			// _splines[0].SwitchState(Spline.SplineState.on);
 		}
 	}
 
@@ -467,16 +469,7 @@ public class StellationController : MonoBehaviour {
 		{
 			if (b)
 			{
-				foreach (Spline s in _splinesToUnlock)
-				{
-					s.SwitchState(Spline.SplineState.locked);
-				}
-				
-				//only unlock points which wont be unlocked via splines
-				if (p._connectedSplines.Count == 0)
-				{
-					p.SwitchState(Point.PointState.off);
-				}
+				p.SwitchState(Point.PointState.on);	
 			}
 			else
 			{
@@ -487,15 +480,17 @@ public class StellationController : MonoBehaviour {
 		if (b)
 		{
 			
-			if (_splines.Count > 0)
-			{
-				_splines[0].SwitchState(Spline.SplineState.on);
-			}
-			else
-			{
-				//what if start is null
-				Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, start.transform);
-				start.SwitchState(Point.PointState.on);
+			//what if start is null
+			Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, start.transform);
+			// start.SwitchState(Point.PointState.on);
+			
+		}
+
+		foreach(Spline s in _splines){
+			if(!b){
+				s.SwitchState(Spline.SplineState.locked);
+			}else{
+				s.SwitchState(Spline.SplineState.on);
 			}
 		}
 	}
@@ -510,7 +505,7 @@ public class StellationController : MonoBehaviour {
 
 		//this was to save time but now its causing problems
 
-		if (curSplineIndex < (_splines.Count - _splinesToUnlock.Count) - 1 && laps > 0)
+		if (curSplineIndex < (_splines.Count - _escapeSplines.Count) - 1 && laps > 0)
 		{
 			return;
 		}
@@ -554,17 +549,11 @@ public class StellationController : MonoBehaviour {
 		return _startPoints[startIndex % _startPoints.Count];
 	}
 
-	public void UnlockSpline(Spline spline)
+	public void OnCompleteSpline(Spline spline)
 	{
-
 		curSplineIndex ++;
-		
-		foreach (Spline s in _splines)
-		{
-			if (s.order == curSplineIndex && !_splinesToUnlock.Contains(s) && s.state == Spline.SplineState.locked) 
-			{
-				s.SwitchState(Spline.SplineState.on);
-			}
+		if(curSplineIndex < _splines.Count && lockSplines){
+			_splines[curSplineIndex].SwitchState(Spline.SplineState.on);
 		}
 	}
 	
@@ -705,9 +694,9 @@ public class StellationController : MonoBehaviour {
 		}
 	}
 
-	public void Unlock()
+	public void ShowEscape()
 	{
-		foreach (Spline s in _splinesToUnlock)
+		foreach (Spline s in _escapeSplines)
 		{
 			s.SwitchState(Spline.SplineState.on);
 		}

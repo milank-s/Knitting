@@ -448,17 +448,17 @@ public class MapEditor : MonoBehaviour
                 {
                     selectedSpline.SetSplineType(Spline.SplineType.normal);
 
-                    if (controller._splinesToUnlock.Contains(selectedSpline))
+                    if (controller._escapeSplines.Contains(selectedSpline))
                     {
-                        controller._splinesToUnlock.Remove(selectedSpline);
+                        controller._escapeSplines.Remove(selectedSpline);
                     }
                 }
                 else
                 {
                     selectedSpline.SetSplineType(Spline.SplineType.locked);
-                    if (!controller._splinesToUnlock.Contains(selectedSpline))
+                    if (!controller._escapeSplines.Contains(selectedSpline))
                     {
-                        controller._splinesToUnlock.Add(selectedSpline);
+                        controller._escapeSplines.Add(selectedSpline);
                     }
                 }
                 

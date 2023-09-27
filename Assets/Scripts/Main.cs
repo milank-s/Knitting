@@ -728,8 +728,8 @@
 		Services.main.text.text = " ";
 		Services.main.levelText.text = " ";
 
-		activeStellation.Setup();
-		activeStellation.Enable();
+		// activeStellation.Setup();
+		// activeStellation.Enable();
 
 		if (Services.StartPoint == null && Point.Points.Count > 0)
 		{

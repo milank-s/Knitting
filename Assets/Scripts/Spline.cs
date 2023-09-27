@@ -46,7 +46,7 @@ public class Spline : MonoBehaviour
 	float rollingDistance;
 	float magnitude;
 	public static System.Collections.Generic.List<Spline> Splines = new System.Collections.Generic.List<Spline> ();
-	public static float drawSpeed = 2f;
+	public static float drawSpeed = 10f;
 	
 
 	[HideInInspector]
@@ -211,14 +211,12 @@ public class Spline : MonoBehaviour
 		if (!complete && controller != null)
 		{
 			complete = true;
-			controller.UnlockSpline(this);
+			controller.OnCompleteSpline(this);
 		}
 	}
 	
 	public void OnSplineEnter (Point p1, Point p2)
 	{
-
-		StartDrawRoutine(p1);
 		
 		selectedIndex = SplinePoints.IndexOf(p1);
 		playerIndex = selectedIndex * curveFidelity;
@@ -370,7 +368,7 @@ public class Spline : MonoBehaviour
 
 		if (t == SplineState.on)
 		{
-			Unlock();
+			//draw spline in or no?
 		}
 
 	}
@@ -447,9 +445,11 @@ public class Spline : MonoBehaviour
 				if( p._connectedSplines.Count <= 1){
 					p.SwitchState(Point.PointState.locked);
 				}else{
+
 					foreach(Spline s in p._connectedSplines){
+						
 						if(s.state != SplineState.locked){
-							continue;
+							break;
 						}
 					}
 					
@@ -458,17 +458,6 @@ public class Spline : MonoBehaviour
 			}
 		}
 
-	}
-
-	public void Unlock()
-	{
-
-		StartPoint.SwitchState(Point.PointState.on);
-
-		Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, SplinePoints[0].transform);
-
-		DrawEntireSpline();
-		
 	}
 
 	void SetLinePoint(Vector3 v, int index){
@@ -812,9 +801,9 @@ public class Spline : MonoBehaviour
 		{
 			controller._splines.Remove(this);
 			
-			if (controller._splinesToUnlock.Contains(this))
+			if (controller._escapeSplines.Contains(this))
 			{
-				controller._splinesToUnlock.Remove(this);
+				controller._escapeSplines.Remove(this);
 			}
 			
 		}

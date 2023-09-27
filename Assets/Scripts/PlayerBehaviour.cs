@@ -2344,7 +2344,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if (curPoint.controller.isComplete)
 				{
-					curPoint.controller.Unlock();
+					curPoint.controller.ShowEscape();
 				}
 
 		

@@ -101,12 +101,10 @@ public class StellationManager : MonoBehaviour
 
 		for(int i = 0; i < controllers.Count; i++)
 		{
-			// if (i < controllers.Count - 1) 
-			// {
-			// 	controllers[i].unlock = controllers[i + 1];
-			// }
+		
 			controllers[i].Setup();
 
+			//disable stellations which locked and make sure they're not enabled after
 			if(i >= checkpoint && controllers[i].hasUnlock){
 				controllers[i].unlock.Disable();
 				lockedStellations.Add(controllers[i].unlock);
@@ -118,10 +116,12 @@ public class StellationManager : MonoBehaviour
 
 		for(int i = 0; i < controllers.Count; i++){
 
+			//show points but dont draw in splines for unaccessed stellations
 			if(!lockedStellations.Contains(controllers[i])){
 				controllers[i].ShowStellation(true);
 			}
 
+			//draw in splines for accessed stellations
 			if(i <= checkpoint){
 				controllers[i].DrawStellation();
 			}

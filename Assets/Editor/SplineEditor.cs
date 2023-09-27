@@ -131,57 +131,57 @@ public class SplineEditor : Editor {
 		}
 	}
 
-	    void OnSceneGUI( )
-	    {
+	    // void OnSceneGUI( )
+	    // {
 
-	        spline = target as Spline;
-          handleTransform = spline.transform;
-          handleRotation = handleTransform.rotation;
+	    //     spline = target as Spline;
+      //     handleTransform = spline.transform;
+      //     handleRotation = handleTransform.rotation;
 
-	        if( spline == null)
-	            return;
+	    //     if( spline == null)
+	    //         return;
 
-					Vector3 pos = Vector3.zero;
-					Vector3 curPos = Vector3.zero;
+			// 		Vector3 pos = Vector3.zero;
+			// 		Vector3 curPos = Vector3.zero;
 
-					for (int i = 0; i < spline.SplinePoints.Count - (spline.closed? 0 : 0); i++) {
+			// 		for (int i = 0; i < spline.SplinePoints.Count - (spline.closed? 0 : 0); i++) {
 
-            if(i < spline.SplinePoints.Count){
-              ShowPoint(i);
-            }
+      //       if(i < spline.SplinePoints.Count){
+      //         ShowPoint(i);
+      //       }
 
-    				Handles.color = new Color(0.2f, 0.2f, 0.2f);
+    	// 			Handles.color = new Color(0.2f, 0.2f, 0.2f);
 
-            if(i < spline.SplinePoints.Count - 1 || spline.closed){
-    				      Handles.DrawDottedLine(spline.SplinePoints[i].Pos, spline.SplinePoints[(i + 1) % spline.SplinePoints.Count].Pos, 5f);
-            }
+      //       if(i < spline.SplinePoints.Count - 1 || spline.closed){
+    	// 			      Handles.DrawDottedLine(spline.SplinePoints[i].Pos, spline.SplinePoints[(i + 1) % spline.SplinePoints.Count].Pos, 5f);
+      //       }
 
-            Handles.color = new Color(1,1,1);
+      //       Handles.color = new Color(1,1,1);
 	
-		 		 			for (int k = 0; k < Spline.curveFidelity + 1; k++) {
+		 	// 	 			for (int k = 0; k < Spline.curveFidelity + 1; k++) {
 
-								float j = (float)k / (float)(Spline.curveFidelity);
-								curPos = spline.GetPointAtIndex (i, j);
+			// 					float j = (float)k / (float)(Spline.curveFidelity);
+			// 					curPos = spline.GetPointAtIndex (i, j);
 
-								if(i == 0 && k ==0){
-									Handles.DrawLine(curPos, curPos);
-									pos = curPos;
-								}else{
-									Handles.DrawLine(curPos, pos);
-									pos = curPos;
-								}
+			// 					if(i == 0 && k ==0){
+			// 						Handles.DrawLine(curPos, curPos);
+			// 						pos = curPos;
+			// 					}else{
+			// 						Handles.DrawLine(curPos, pos);
+			// 						pos = curPos;
+			// 					}
 
-		 		 			}
-		 		 		}
+		 	// 	 			}
+		 	// 	 		}
 
-	        // iterate over game objects added to the array...
-	        // for( int i = 0; i < t.GameObjects.Length; i++ )
-	        // {
-	        //     // ... and draw a line between them
-	        //     if( t.GameObjects[i] != null )
-	        //         Handles.DrawLine( center, t.GameObjects[i].transform.position );
-	        // }
-	    }
+	    //     // iterate over game objects added to the array...
+	    //     // for( int i = 0; i < t.GameObjects.Length; i++ )
+	    //     // {
+	    //     //     // ... and draw a line between them
+	    //     //     if( t.GameObjects[i] != null )
+	    //     //         Handles.DrawLine( center, t.GameObjects[i].transform.position );
+	    //     // }
+	    // }
 
 
       private void ShowPoint (int index) {
