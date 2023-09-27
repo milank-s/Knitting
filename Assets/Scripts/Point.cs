@@ -446,9 +446,6 @@ public class Point : MonoBehaviour
 			case PointState.on:
 				if (prevState != PointState.on)
 				{
-					foreach(Spline sp in _connectedSplines){
-						sp.StartDrawRoutine(this);
-					}
 					
 					StartCoroutine(LightUp());
 				}
@@ -484,6 +481,7 @@ public class Point : MonoBehaviour
 		proximity = 1;
 		timeOnPoint = 0;
 		timesHit++;
+		
 		OnPointEnter();
 		
 		// if (controller.CheckSpeed())
@@ -497,6 +495,10 @@ public class Point : MonoBehaviour
 //		damping = Mathf.Clamp(damping - 100, 100, 10000);
 		
 		SwitchState(PointState.on);
+		
+		foreach(Spline sp in _connectedSplines){
+			sp.StartDrawRoutine(this);
+		}
 		
 		controller.TryToUnlock();
 
