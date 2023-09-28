@@ -72,11 +72,11 @@ public class Oscilloscope : MonoBehaviour
 
     
     public void ResetXSpeed(){
-        ySpeed =1;
+        xSpeed =1;
     }
 
     public void ResetYSpeed(){
-        xSpeed = 1;
+        ySpeed = 1;
     }
 
     public void ResetScale(){
