@@ -498,6 +498,8 @@
 
 	public void OpenMenu()
 	{	
+		RenderSettings.fog = false;
+
 		if (SceneController.instance.curSetIndex < 0)
 		{
 			

@@ -26,6 +26,7 @@ public class Oscilloscope : MonoBehaviour
     void Start(){
         center = transform.position;
         line = new VectorLine("Oscillator", new List<Vector3>(), 1, LineType.Continuous);
+        line.layer = LayerMask.NameToLayer("Default");
     }
     public void Update(){
         AnimateCurve();
