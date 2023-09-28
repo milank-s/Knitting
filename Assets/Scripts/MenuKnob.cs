@@ -14,7 +14,7 @@ public class MenuKnob : MonoBehaviour
 {
     public MyFloatEvent ChangeValue;
     public UnityEvent Reset;
-    
+
     bool clicked;
     Vector2 mousePos;
     public float sensitivity = 1000;
@@ -26,9 +26,15 @@ public class MenuKnob : MonoBehaviour
         if((Time.time - timeLastClicked) < 1){
             //Reset value
             ResetValue();
+            
+            transform.localEulerAngles = new Vector3(-90, 0, 0);
         }
+        
 
         timeLastClicked = Time.time;
+
+        
+
         clicked = true;
         mousePos = Input.mousePosition;
     }

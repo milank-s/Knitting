@@ -43,24 +43,23 @@ public class Oscilloscope : MonoBehaviour
 
     public void SetAmplitude(float f){
         
-        amplitude += Mathf.Clamp(f, minAmplitude, maxAmplitude);
+        amplitude = Mathf.Clamp(f + amplitude, minAmplitude, maxAmplitude);
     }
 
     public void SetFreq(float f){
-        frequency += Mathf.Clamp(f, minFreq, maxFreq);
+        frequency =  Mathf.Clamp(frequency + f, minFreq, maxFreq);
     }
 
     public void SetTimescale(float f){
-        timeScale += Mathf.Clamp(f, minTimescale, maxTimescale);
+        timeScale = Mathf.Clamp(f + timeScale, minTimescale, maxTimescale);
     }
 
     public void SetScale(float f){
-        f *= 0.1f;
-        scale += Mathf.Clamp(f, minScale, maxScale);
+        scale = Mathf.Clamp(f + scale, minScale, maxScale);
     }
 
     public void SetNoiseScale(float f){
-        scale += f;
+        scale = f;
     }
 
     public void SetNoiseFreqY(float f){
@@ -77,7 +76,7 @@ public class Oscilloscope : MonoBehaviour
     }
 
     public void ResetYSpeed(){
-        xSpeed =1;
+        xSpeed = 1;
     }
 
     public void ResetScale(){
