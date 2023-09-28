@@ -33,34 +33,60 @@ public class Oscilloscope : MonoBehaviour
         line.Draw3D();
     }
 
+    public void SetXSpeed(float f){
+        xSpeed += f;
+    }
+    
+    public void SetYSpeed(float f){
+        ySpeed += f;
+    }
+
     public void SetAmplitude(float f){
-        amplitude = Mathf.Clamp(f, minAmplitude, maxAmplitude);
+        
+        amplitude += Mathf.Clamp(f, minAmplitude, maxAmplitude);
     }
 
     public void SetFreq(float f){
-        frequency = Mathf.Clamp(f, minFreq, maxFreq);
+        frequency += Mathf.Clamp(f, minFreq, maxFreq);
     }
 
     public void SetTimescale(float f){
-        timeScale = Mathf.Clamp(f, minTimescale, maxTimescale);
+        timeScale += Mathf.Clamp(f, minTimescale, maxTimescale);
     }
 
     public void SetScale(float f){
-        scale = Mathf.Clamp(f, minScale, maxScale);
+        f *= 0.1f;
+        scale += Mathf.Clamp(f, minScale, maxScale);
     }
 
     public void SetNoiseScale(float f){
-        scale = f;
+        scale += f;
     }
 
     public void SetNoiseFreqY(float f){
-        noiseFreqX = f;
+        noiseFreqX += f;
     }
 
      public void SetNoiseFreqX(float f){
-        noiseFreqY = f;
+        noiseFreqY += f;
     }
 
+    
+    public void ResetXSpeed(){
+        ySpeed =1;
+    }
+
+    public void ResetYSpeed(){
+        xSpeed =1;
+    }
+
+    public void ResetScale(){
+        scale = 1;
+    }
+
+    public void ResetFreq(){
+        frequency = 0.1f;
+    }
 
     public void AnimateCurve(){
         List<Vector3> positions = new List<Vector3>();
