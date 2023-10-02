@@ -545,8 +545,8 @@
 			OpenSettings();
 		}
 		
-		ShowWord("", false);
-		ShowImage(null, false);
+		SceneController.instance.ShowWord("", false);
+		SceneController.instance.ShowImage(null, false);
 	}
 
 	public void Pause(bool pause)

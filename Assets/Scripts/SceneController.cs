@@ -17,6 +17,10 @@ public class SceneController : MonoBehaviour
     {
         get { return levelSets[curSetIndex]; }
     }
+
+    [SerializeField] SpriteRenderer image;
+    [SerializeField] TMPro.TextMeshPro word;
+
     public EventSystem UISystem;
     public Button levelButton;
     
@@ -136,10 +140,36 @@ public class SceneController : MonoBehaviour
     
     public void SelectLevelSet()
     {
-        Services.main.ShowImage(curLevelSet.image);
-        Services.main.ShowWord(curLevelSet.title);    
+        ShowImage(curLevelSet.image);
+        ShowWord(curLevelSet.title);    
         Services.main.levelReadout.text = curSetIndex + ".";
     }
+
+    public void ShowWord(string m,  bool show = true)
+	{
+		word.text = m;
+		if (show)
+		{
+			word.color = Color.white;
+		}
+		else
+		{
+			word.color = Color.clear;
+		}
+	}
+    public void ShowImage(Sprite s, bool show = true)
+	{
+		image.sprite = s;
+		if (show)
+		{
+			image.color = Color.white;
+		}
+		else
+		{
+			image.color = Color.clear;
+			
+		}
+	}
 
     public void LoadLevelSet()
     {
