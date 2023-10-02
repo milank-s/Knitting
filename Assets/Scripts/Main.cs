@@ -36,7 +36,7 @@
 	public MapEditor editor;
 	public GameObject editorUI;
 	public Camera mainCam;
-	public GameObject menu;
+	public MenuController menuController;
 	public GameObject settings;
 	private bool settingsOpen;
 	public GameObject volumeSettings;
@@ -139,6 +139,23 @@
 				MapEditor.typing = false;
 			}
 		}
+	}
+
+	public void OpenMenu(){
+	
+		if(OnReset != null){
+			OnReset.Invoke();
+		}
+
+		state = Main.GameState.menu;
+		playerInput.SwitchCurrentActionMap("UI");
+		
+		if (MapEditor.editing)
+		{
+			ToggleEditMode();
+		}
+
+		Services.menu.Show(true);
 	}
 
 	public void Quit()
@@ -331,7 +348,6 @@
 		
 		Pause(false);
 		FullReset();
-		
 		OpenMenu();
 
 	}
@@ -417,6 +433,7 @@
 		Services.mainCam = mainCam;
 		Services.Prefabs = prefabs;
 		Services.Player = Player;
+		Services.menu = menuController;
 		Services.fx = fx;
 		CameraFollow.instance = mainCam.GetComponent<CameraFollow>();
 		Services.PlayerBehaviour = Player.GetComponent<PlayerBehaviour>();
@@ -458,7 +475,7 @@
 				OpenMenu();
 			}else{
 				SceneController.instance.curSetIndex = -1;
-				CloseMenu();
+				Services.menu.Show(false);
 			}
 		}else{
 			if(SceneManager.sceneCount > 1){
@@ -496,58 +513,6 @@
 		}
 	}
 
-	public void OpenMenu()
-	{	
-		RenderSettings.fog = false;
-
-		if (SceneController.instance.curSetIndex < 0)
-		{
-			
-			SceneController.instance.curSetIndex = 0;
-		}
-		
-		Services.Player.SetActive(false);
-		
-		menu.SetActive(true);	
-		SceneController.instance.SelectLevelSet();
-
-		state = GameState.menu;
-		
-		playerInput.SwitchCurrentActionMap("UI");
-		
-		if (MapEditor.editing)
-		{
-			ToggleEditMode();
-		}
-		
-		if(OnReset != null){
-			OnReset.Invoke();
-		}
-		
-		Cursor.lockState = CursorLockMode.None;
-		Cursor.visible = true;
-		
-		EventSystem.current.SetSelectedGameObject(SceneController.instance.levelButton.gameObject);
-	}
-
-	public void CloseMenu()
-	{
-		menu.SetActive(false);
-		
-		if (curLevel != "Editor") 
-		{
-			Cursor.visible = false;
-			Cursor.lockState = CursorLockMode.Locked;
-		}
-
-		if (settingsOpen)
-		{
-			OpenSettings();
-		}
-		
-		SceneController.instance.ShowWord("", false);
-		SceneController.instance.ShowImage(null, false);
-	}
 
 	public void Pause(bool pause)
 	{
@@ -556,7 +521,6 @@
 		
 		if (pause)
 		{
-			
 			EventSystem.current.SetSelectedGameObject(pauseResumeButton);
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;
@@ -564,8 +528,6 @@
 		}
 		else
 		{
-
-
 			if (!MapEditor.editing)
 			{
 				Cursor.lockState = CursorLockMode.Locked;
@@ -587,7 +549,7 @@
 			SceneController.instance.OpenEditor();
 			editor.LoadInEditor(loadFileName);
 			openFileOnStart = false;
-			menu.SetActive(false);
+			Services.menu.Show(false);
 		}
 
 		CameraFollow.instance.uiCam.fieldOfView = CameraFollow.instance.cam.fieldOfView;
@@ -791,7 +753,7 @@
 
 				if (state == GameState.menu)
 				{
-					CloseMenu();
+					Services.menu.Show(false);
 				}
 				
 				if (editor.controller == null)
@@ -871,34 +833,6 @@
 		//PauseScreen.color = Color.clear;
 	}
 
-	public void ShowWord(string m,  bool show = true)
-	{
-		Word.text = m;
-		if (show)
-		{
-			Word.color = Color.white;
-		}
-		else
-		{
-			Word.color = Color.clear;
-		}
-	}
-	
-	public void ShowImage(Sprite s, bool show = true)
-	{
-		image.sprite = s;
-		if (show)
-		{
-			image.color = Color.white;
-		}
-		else
-		{
-			image.color = Color.clear;
-			
-		}
-	}
-
-
 	public IEnumerator FlashImage(bool fadeIn = false)
 	{
 		float t = 0;
@@ -940,30 +874,10 @@
 	public IEnumerator LevelIntro(LevelSet l)
 	{
 		
-//		ShowWord(l.title);
-//		ShowImage(l.image);
-
-		description.text = l.description;
+		//this is where we zoom into the oscilloscope?
 		
-//		yield return new WaitForSeconds(0.25f);
-//		
-//		ShowWord("", false);
-		Word.gameObject.SetActive(false);
-
-//		float t = 0;
-//		while (t < 3)
-//		{
-//			t += Time.deltaTime;
-//			if (Input.anyKeyDown)
-//			{
-//				break;
-//			}
-//			yield return null;
-//		}
-
 		yield return null;
 		
-		Word.gameObject.SetActive(true);
 		
 		 if (!SceneController.instance.curLevelSet.isScene)
             {
@@ -973,11 +887,6 @@
             {
                 StartCoroutine(LoadSceneRoutine());
             }
-
-		
-		description.text = "";
-
-//		ShowImage(null, false);
 
 		state = GameState.playing;
 		

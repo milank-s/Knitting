@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public static class Services{
+	public static MenuController menu;
 	public static Point StartPoint{ get; set; } 
 	public static GameObject Cursor { get; set; }
 	public static GameObject Player { get; set; }
