@@ -71,7 +71,7 @@ public class MenuController : MonoBehaviour
         oscilloscopeModel.SetActive(true);
     }
     void CloseMenu(){
-        if (Services.main.curLevel != "Editor") 
+        if (SceneController.curLevelName != "Editor") 
 		{
 			Cursor.visible = false;
 			Cursor.lockState = CursorLockMode.Locked;

@@ -490,7 +490,7 @@ public class StellationController : MonoBehaviour {
 		{
 			if (b)
 			{
-				p.SwitchState(Point.PointState.on);	
+				p.SwitchState(Point.PointState.off);	
 			}
 			else
 			{

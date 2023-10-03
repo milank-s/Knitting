@@ -1,14 +1,20 @@
 ﻿
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class SceneController : MonoBehaviour
 {
-    public Point startPoint;
+    [Header("Testing in Editor")]
+    public bool openFileOnStart;
+    public string loadFileName;
+    
+    
+    [Header("Level progression data")]
     public List<StellationController> activeScenes;
 
     public int curSetIndex;
@@ -21,7 +27,8 @@ public class SceneController : MonoBehaviour
     public Button levelButton;
     
     public List<LevelSet> levelSets;
-    public int curLevel;
+    public static int curLevel;
+    public static string curLevelName;
     void Awake()
     {
         //read from json file to set unlocked index; 
@@ -40,6 +47,13 @@ public class SceneController : MonoBehaviour
 
     void Update()
     {
+
+        if(openFileOnStart){
+			OpenEditor();
+			MapEditor.instance.LoadInEditor(loadFileName);
+			openFileOnStart = false;
+			Services.menu.Show(false);
+		}
 
         if (Input.GetKeyDown(KeyCode.Period))
         {
@@ -72,6 +86,57 @@ public class SceneController : MonoBehaviour
         }
     }
     
+    //go back to menu after level set
+	public void FinishLevelSet(){
+		
+		StartCoroutine(CompleteLevelSet());
+	}
+
+	IEnumerator CompleteLevelSet(){
+		
+        //typical level ending sequence
+		yield return StartCoroutine(FinishLevel());
+
+        //queue up next level on menu
+		SceneController.instance.SelectNextLevel(true);
+
+        //return to menu
+		Services.main.QuitLevel();
+
+	}
+
+    public void OnStart(){
+        	//get any open scene in order to play it
+		if (SceneManager.sceneCount > 1)
+		{
+			for (int i = 0; i < SceneManager.sceneCount; i++)
+			{
+				if (SceneManager.GetSceneAt(i).name != "Main")
+				{
+					curLevelName = SceneManager.GetSceneAt(i).name;
+				}
+			}
+		}
+		
+		if(!openFileOnStart){
+			if(curLevelName == ""){
+				Services.main.OpenMenu();
+			}else{
+				curSetIndex = -1;
+				Services.menu.Show(false);
+			}
+		}else{
+			if(SceneManager.sceneCount > 1){
+				SceneManager.UnloadSceneAsync(curLevelName);
+				curLevelName = "";
+			}
+
+			Services.main.OpenMenu();
+		}
+
+		Time.timeScale = 1;
+    }
+
     public void OpenEditor()
     {
         
@@ -130,22 +195,12 @@ public class SceneController : MonoBehaviour
         Services.menu.SelectLevelSet(curLevelSet);
     }
 
-    public void LoadLevelSet()
-    {
-        
-        if (Services.main.state == Main.GameState.menu)
-        {
-            curLevel = 0;
-            StartCoroutine(Services.main.LevelIntro(curLevelSet));
-            
-        }
-    }
-    
+
     public void SkipStellation(){
 
          curLevel++;
         
-        if (curSetIndex == -1 && Services.main.curLevel == "")
+        if (curSetIndex == -1 &&  curLevelName == "")
         {
             //we're in the editor, dont do anything
             return;
@@ -155,12 +210,12 @@ public class SceneController : MonoBehaviour
         //stopgap stuff for when I want to test the level without going through the menu;
         if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
             
-            Services.main.LoadNextLevel(curLevelSet.isScene, false);
+            LoadLevel(false);
             
         }
         else
         {
-                //reopen menu, empty scene;
+            //reopen menu, empty scene;
                 
            Services.main.QuitLevel();
             
@@ -171,7 +226,7 @@ public class SceneController : MonoBehaviour
 
         curLevel++;
         
-        if (curSetIndex == -1 && Services.main.curLevel == "")
+        if (curSetIndex == -1 && curLevelName == "")
         {
             //we're in the editor, dont do anything
             return;
@@ -181,17 +236,90 @@ public class SceneController : MonoBehaviour
         //stopgap stuff for when I want to test the level without going through the menu;
         if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
             
-            Services.main.LoadNextLevel(curLevelSet.isScene);
+            LoadLevel();
             
         }
         else
         {
-                //reopen menu, empty scene;
-                
-           Services.main.FinishLevelSet();
+            //reopen menu, empty scene;
+           FinishLevelSet();
             
         }
     }
+
+    //when loading a stellation file
+	public void LoadFile()
+	{
+
+		curLevelName = GetCurLevel();
+
+		if (SceneController.instance.activeScenes.Count > 0)
+		{
+			SceneController.instance.UnloadStellation(SceneController.instance.activeScenes[0]);
+		}
+		
+		StellationController c = MapEditor.instance.Load(curLevelName);
+		Services.main.activeStellation = c;
+		
+		if (!MapEditor.editing)
+		{
+			SceneController.instance.activeScenes.Add(c);
+		}
+
+		Services.main.InitializeLevel();
+	}
+
+    void LoadScene(){
+		
+		if(SceneManager.sceneCount > 1){
+			if (curLevelName != "")
+			{
+				SceneManager.UnloadSceneAsync(curLevel);
+			}
+		}
+		
+		int s = curLevel;
+		//this could be bugged
+		Services.PlayerBehaviour.Reset();
+		Services.main.FullReset();
+		
+		curLevel = s;
+		curLevelName = GetCurLevel();
+
+		if (curLevelName != "")
+		{
+			SceneManager.LoadScene(curLevel, LoadSceneMode.Additive);
+		}
+	}
+
+    public IEnumerator LoadLevelRoutine(bool isScene){
+
+		yield return StartCoroutine(FinishLevel());
+		LoadLevel(false);
+	}
+
+    //transition between levels in the flow of play
+	public IEnumerator FinishLevel(){
+
+		Services.main.state = Main.GameState.paused;
+		yield return null;
+		float t = 0;
+	}
+
+    
+
+    public void LoadLevel(bool delay = true){
+
+		if(delay){
+			StartCoroutine(LoadLevelRoutine(curLevelSet.isScene));
+		}else{
+			if(curLevelSet.isScene){
+				LoadScene();
+			}else{
+				LoadFile();
+			}
+		}
+	}
 
     public void UnloadStellation(StellationController s)
     {

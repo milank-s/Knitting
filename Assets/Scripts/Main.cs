@@ -1,14 +1,14 @@
-	 using System.Collections;
+	using System.Collections;
 	using System.Collections.Generic;
-	 using AudioHelm;
-	 using UnityEditor;
-	 using UnityEngine;
-	 using UnityEngine.EventSystems;
-	 using UnityEngine.UI;
-	 using UnityEngine.SceneManagement;
-	 using UnityEngine.InputSystem;
+	using AudioHelm;
+	using UnityEditor;
+	using UnityEngine;
+	using UnityEngine.EventSystems;
+	using UnityEngine.UI;
+	using UnityEngine.SceneManagement;
+	using UnityEngine.InputSystem;
 
-	 public class Main : MonoBehaviour {
+	public class Main : MonoBehaviour {
 
 	public enum GameState {playing, paused, editing, menu}
 
@@ -31,7 +31,6 @@
 	public Transform pointParent;
 	public Transform splineParent;
 	public Transform stellationParent;
-	public string curLevel;
 	public MapEditor editor;
 	public GameObject editorUI;
 	public Camera mainCam;
@@ -151,13 +150,11 @@
 		if(OnReset != null){
 			OnReset.Invoke();
 		}
-
 	
 		GlitchEffect.Fizzle(0.2f);
 
 		//this is currently game breaking?
 		//I would prefer not to do this.... but the OnLoadLevel func is worth calling	
-		
 		
 		if(StellationManager.instance != null){
 			//reset scene
@@ -168,7 +165,7 @@
 		}else{
 			//this doesnt work for the editor
 			if(SceneController.instance.curSetIndex != -1){
-				StartCoroutine(LoadFileRoutine());
+				SceneController.instance.LoadFile();
 			}else{
 				ToggleEditMode();
 			}
@@ -192,7 +189,7 @@
         Services.main.splineParent = null;
         
         SceneController.instance.activeScenes.Clear();
-        SceneController.instance.curLevel = 0;   
+        SceneController.curLevel = 0;   
 		
 		Spline.frequency = 5.324f;
 		Spline.shake = 0;
@@ -205,139 +202,26 @@
 		Spline.Splines.Clear();
 	}
 	
-
-	//this is called in the flow of play with the old level set and file system
-	public void LoadNextLevel(bool isScene, bool delay = true){
-
-		if(delay){
-			StartCoroutine(LoadLevelRoutine(isScene));
-		}else{
-			if(isScene){
-				StartCoroutine(LoadSceneRoutine());
-			}else{
-				StartCoroutine(LoadFileRoutine());
-			}
-		}
-	}
-
-	//transition between levels in the flow of play
-	public IEnumerator FinishLevel(){
-
-		state = GameState.paused;
-		yield return null;
-		float t = 0;
-	}
-
-
-	//called at the end of a level in a level set
-	public IEnumerator LoadLevelRoutine(bool isScene){
-
-		yield return StartCoroutine(FinishLevel());
-
-		if(isScene){
-			StartCoroutine(LoadSceneRoutine());
-		}else{
-			StartCoroutine(LoadFileRoutine());
-		}
-	}
-
-	//when loading a unity scene
-	IEnumerator LoadSceneRoutine(){
-		
-		if(SceneManager.sceneCount > 1){
-			if (curLevel != "")
-			{
-				yield return SceneManager.UnloadScene(curLevel);
-			}
-		}
-		
-		int s = SceneController.instance.curLevel;
-		//this could be bugged
-		Services.PlayerBehaviour.Reset();
-		FullReset();
-		
-		SceneController.instance.curLevel = s;
-		curLevel = SceneController.instance.GetCurLevel();
-
-		if (curLevel != "")
-		{
-			SceneManager.LoadScene(curLevel, LoadSceneMode.Additive);
-		}
-	}
-
-	//when loading a stellation file
-	public IEnumerator LoadFileRoutine()
-	{
-
-		yield return null;
-		
-		Time.timeScale = 0;
-
-		curLevel = SceneController.instance.GetCurLevel();
-
-		if (SceneController.instance.activeScenes.Count > 0)
-		{
-			SceneController.instance.UnloadStellation(SceneController.instance.activeScenes[0]);
-		}
-		
-		StellationController c = editor.Load(curLevel);
-		activeStellation = c;
-		
-		if (!MapEditor.editing)
-		{
-			SceneController.instance.activeScenes.Add(c);
-		}
-
-		Time.timeScale = 1;
-
-		InitializeLevel();
-	}
-
-	//go back to menu after level set
-	public void FinishLevelSet(){
-		
-		StartCoroutine(CompleteLevelSet());
-	}
-
-	public IEnumerator CompleteLevelSet(){
-		
-		yield return StartCoroutine(FinishLevel());
-		
-		if(state == GameState.menu) yield break;
-
-		SceneController.instance.SelectNextLevel(true);
-
-		QuitLevel();
-
-	}
 	
 	public void QuitLevel()
 	{
-		
 		state = GameState.menu;
 		
 		//more general method of unloading scenes
 		if(SceneManager.sceneCount > 1){
-			SceneManager.UnloadSceneAsync(curLevel);
+			SceneManager.UnloadSceneAsync(SceneController.curLevelName);
 		}
 
-		// if (SceneController.instance.curSetIndex > -1 && SceneController.instance.curLevelSet.isScene)
-		// {
-		// 	SceneManager.UnloadSceneAsync(curLevel);
-		// }
-
-		curLevel = "";
+		SceneController.curLevelName = "";
 		
 		Pause(false);
 		FullReset();
 		OpenMenu();
-
 	}
 	
 	public void Awake ()
 	{
-		
-		curLevel = "";
+
 		Point.Points = new List<Point>();
 		Spline.Splines = new List<Spline>();
 		Services.GameUI = canvas;
@@ -369,36 +253,8 @@
 		state = GameState.menu;
 		MapEditor.editing = true;
 		ToggleEditMode();
+		SceneController.instance.OnStart();
 		
-			//get any open scene in order to play it
-		if (SceneManager.sceneCount > 1)
-		{
-			for (int i = 0; i < SceneManager.sceneCount; i++)
-			{
-				if (SceneManager.GetSceneAt(i).name != "Main")
-				{
-					curLevel = SceneManager.GetSceneAt(i).name;
-				}
-			}
-		}
-		
-		if(!openFileOnStart){
-			if(curLevel == ""){
-				OpenMenu();
-			}else{
-				SceneController.instance.curSetIndex = -1;
-				Services.menu.Show(false);
-			}
-		}else{
-			if(SceneManager.sceneCount > 1){
-				SceneManager.UnloadSceneAsync(curLevel);
-				curLevel = "";
-			}
-
-			OpenMenu();
-		}
-
-		Time.timeScale = 1;
 
 	}
 
@@ -432,13 +288,6 @@
 	
 	void Update()
 	{
-
-		if(openFileOnStart){
-			SceneController.instance.OpenEditor();
-			editor.LoadInEditor(loadFileName);
-			openFileOnStart = false;
-			Services.menu.Show(false);
-		}
 
 		CameraFollow.instance.uiCam.fieldOfView = CameraFollow.instance.cam.fieldOfView;
 	
@@ -759,25 +608,16 @@
 		} 
 	}
 	
-	public IEnumerator LevelIntro(LevelSet l)
+	public IEnumerator EnterLevelSet(LevelSet l)
 	{
 		//this is where we zoom into the oscilloscope?
+		yield return null;
 
-		yield return StartCoroutine(Services.menu.LeaveMenuRoutine());
-		
-		
-		 if (!SceneController.instance.curLevelSet.isScene)
-            {
-                StartCoroutine(LoadFileRoutine());
-            }
-            else
-            {
-                StartCoroutine(LoadSceneRoutine());
-            }
-
+		SceneController.curLevel = 0;
 		state = GameState.playing;
-		
 		playerInput.SwitchCurrentActionMap("Player");
+
+		SceneController.instance.LoadLevel();
 	}
 	
 	
