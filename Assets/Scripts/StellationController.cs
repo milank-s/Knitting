@@ -441,8 +441,6 @@ public class StellationController : MonoBehaviour {
 		if(startIndex%_startPoints.Count == 0 && !isComplete){
 			//start the timer bro;
 			timer = 0;
-			Services.main.levelText.text = "";
-			Services.main.text.text = "";
 			
 			Services.PlayerBehaviour.LeftStartPoint();
 
@@ -463,9 +461,6 @@ public class StellationController : MonoBehaviour {
 		Services.main.activeStellation = this;
 	
 		SetCameraInfo();
-
-		Services.main.text.text = text;
-		Services.main.levelText.text = title;
 
 		Show(true);
 

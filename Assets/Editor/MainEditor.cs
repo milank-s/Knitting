@@ -22,6 +22,7 @@ public class MainEditor : Editor
         {
             mainScript.Awake();
         }
+        
         if(GUILayout.Button("LOAD"))
         {
             Undo.RecordObject(mainScript, "savedFile");

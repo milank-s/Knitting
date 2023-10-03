@@ -907,7 +907,8 @@ public class MapEditor : MonoBehaviour
 
      void PlaySavedEffect()
     {
-        StartCoroutine(Services.main.FlashWord());
+        Services.fx.word.text = "SAVED";
+        StartCoroutine(Services.fx.FlashWord());
     }
 
     void EditSelectedPoint()
@@ -1329,9 +1330,6 @@ public class MapEditor : MonoBehaviour
     }
     public StellationController Load(string fileName, StellationController stellationController = null)
     {
-        
-        
-
         GameObject parent;
         GameObject pointParent;
         

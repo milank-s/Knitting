@@ -18,6 +18,7 @@ public class FXManager : MonoBehaviour
     public MeshFilter flyingParticleMesh, flyingParticleTrailMesh, flyingTrailMesh, playerTrailMesh, brakeParticleMesh;
     public GameObject MeshPrefab;
     public Text readout;
+    public Text word;
     public GameObject[] spawnableSprites;
     public List<GameObject> spawnedSprites;
     private int lineIndex;
@@ -72,6 +73,26 @@ public class FXManager : MonoBehaviour
       //Services.PlayerBehaviour.OnStoppedTraversing += BakeTraversingParticles;
       Services.main.OnReset += Reset;
   }
+
+    public IEnumerator FlashWord(bool fadeIn = false)
+	{
+		
+		float t = 0;
+		while (t < 1)
+		{
+			if (!fadeIn)
+			{
+				word.color = Color.Lerp(Color.white, Color.clear, t);
+			}
+			else
+			{
+				word.color = Color.Lerp(Color.white, Color.clear, 1-t);
+			}
+
+			t += Time.deltaTime * 2;
+			yield return null;
+		} 
+	}
 
   public void ShowUnfinished()
   {
@@ -449,5 +470,54 @@ public class FXManager : MonoBehaviour
       }
   }
  
+// public IEnumerator FadeIn(){
+		
+	// 	float t = 0;
+	// 	yield return new WaitForSecondsRealtime(0.33f);
+		
+	// 	while (t < 1){
+	// 		//PauseScreen.color = Color.Lerp(Color.black, Color.clear, Easing.QuadEaseIn(t/fadeLength));
+	// 		GlitchEffect.SetValues(1-t);
+	// 		t += Time.unscaledDeltaTime/fadeLength;
+	// 		yield return null;
+	// 	}
+
+	// 	GlitchEffect.SetValues(0);
+	// 	//PauseScreen.color = Color.clear;
+	// }
+
+	// public IEnumerator FlashImage(bool fadeIn = false)
+	// {
+	// 	float t = 0;
+	// 	while (t < 1)
+	// 	{
+	// 		if (!fadeIn)
+	// 		{
+	// 			image.color = Color.Lerp(Color.white, Color.clear, t);
+	// 		}
+	// 		else
+	// 		{
+	// 			image.color = Color.Lerp(Color.white, Color.clear, 1-t);
+	// 		}
+	// 		t += Time.deltaTime/2;
+	// 		yield return null;
+	// 	} 
+	// }
+	
+	
+	// public IEnumerator FadeOut(){
+		
+	// 	float t = 0;
+	// 	while (t < 1)
+	// 	{
+	// 		// PauseScreen.color = Color.Lerp(Color.clear, Color.black, Easing.QuadEaseIn(t/fadeLength));
+	// 		GlitchEffect.SetValues(t);
+	// 		t += Time.unscaledDeltaTime/fadeLength;
+	// 		yield return null;
+	// 	}
+
+	// 	GlitchEffect.SetValues(1);
+	// 	//PauseScreen.color = Color.black;
+	// }
   
 }

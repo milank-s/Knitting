@@ -32,6 +32,7 @@ public class SceneController : MonoBehaviour
     void Awake()
     {
         //read from json file to set unlocked index; 
+        curLevelName = "";
         unlockedIndex = levelSets.Count;
         activeScenes = new List<StellationController>();
         instance = this;
@@ -223,7 +224,6 @@ public class SceneController : MonoBehaviour
     }
     public void LoadNextStellation()
     {
-
         curLevel++;
         
         if (curSetIndex == -1 && curLevelName == "")
@@ -235,15 +235,9 @@ public class SceneController : MonoBehaviour
 
         //stopgap stuff for when I want to test the level without going through the menu;
         if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
-            
             LoadLevel();
-            
-        }
-        else
-        {
-            //reopen menu, empty scene;
+        }else{
            FinishLevelSet();
-            
         }
     }
 
@@ -279,7 +273,6 @@ public class SceneController : MonoBehaviour
 		}
 		
 		int s = curLevel;
-		//this could be bugged
 		Services.PlayerBehaviour.Reset();
 		Services.main.FullReset();
 		
@@ -288,11 +281,11 @@ public class SceneController : MonoBehaviour
 
 		if (curLevelName != "")
 		{
-			SceneManager.LoadScene(curLevel, LoadSceneMode.Additive);
+			SceneManager.LoadScene(curLevelName, LoadSceneMode.Additive);
 		}
 	}
 
-    public IEnumerator LoadLevelRoutine(bool isScene){
+    public IEnumerator LoadLevelRoutine(){
 
 		yield return StartCoroutine(FinishLevel());
 		LoadLevel(false);
@@ -311,7 +304,7 @@ public class SceneController : MonoBehaviour
     public void LoadLevel(bool delay = true){
 
 		if(delay){
-			StartCoroutine(LoadLevelRoutine(curLevelSet.isScene));
+			StartCoroutine(LoadLevelRoutine());
 		}else{
 			if(curLevelSet.isScene){
 				LoadScene();

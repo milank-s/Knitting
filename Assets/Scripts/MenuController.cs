@@ -23,16 +23,6 @@ public class MenuController : MonoBehaviour
 	[SerializeField] GameObject settingsButton;
 
     public bool settingsOpen;
-
-    public IEnumerator LeaveMenuRoutine(){
-
-        Show(false);
-
-        levelDisplay.SetActive(false);
-        oscilloscopeModel.SetActive(false);
-
-        yield return new WaitForSeconds(1f);
-    }
     
     public void Show(bool b){
 
@@ -43,6 +33,8 @@ public class MenuController : MonoBehaviour
         }
 
         menuRoot.SetActive(b);
+		levelDisplay.SetActive(b);
+        oscilloscopeModel.SetActive(b);
     }
 
     void OpenMenu(){
@@ -66,9 +58,6 @@ public class MenuController : MonoBehaviour
 		EventSystem.current.SetSelectedGameObject(SceneController.instance.levelButton.gameObject);
 
 		SelectLevelSet(SceneController.instance.curLevelSet);
-
-        levelDisplay.SetActive(true);
-        oscilloscopeModel.SetActive(true);
     }
     void CloseMenu(){
         if (SceneController.curLevelName != "Editor") 
