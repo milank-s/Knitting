@@ -25,11 +25,18 @@ public class CameraFollow : MonoBehaviour {
 		CameraDolly.topBound = float.NegativeInfinity;
 		CameraDolly.bottomBound = float.PositiveInfinity;
 	}
+
+	public void Reset(){
+		targetPos = Vector3.zero;
+		transform.position = Vector3.zero;
+		desiredFOV = 40;
+		cam.fieldOfView = 40;
+	}
 	
 	public void WarpToPosition(Vector3 pos)
 	{
 		targetPos = pos;
-		transform.position = pos;	
+		transform.position = pos + offset;	
 		cam.fieldOfView = desiredFOV;
 	}
 

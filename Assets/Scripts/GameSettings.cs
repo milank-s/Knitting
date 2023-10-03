@@ -75,7 +75,7 @@ public class GameSettings : MonoBehaviour
         PlayerPrefs.SetInt("ResolutionWidth", newWidth);
         PlayerPrefs.SetInt("ResolutionHeight", newHeight);
         
-        Services.main.OpenSettings();
+        Services.menu.OpenSettings();
         PlayerPrefs.Save();
     }
     

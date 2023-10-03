@@ -14,7 +14,6 @@
 
 	public GameState state;
 
-	
 	[Header("Components")]
 	public GameObject cursor;
 	public GameObject Player;
@@ -37,10 +36,6 @@
 	public GameObject editorUI;
 	public Camera mainCam;
 	public MenuController menuController;
-	public GameObject settings;
-	private bool settingsOpen;
-	public GameObject volumeSettings;
-	public GameObject settingsButton;
 	public CrawlerManager crawlerManager;
 	public bool useVibration;
 	public bool useGamepad;
@@ -86,22 +81,6 @@
 	[SerializeField] public string loadFileName;
 
 
-	public void OpenSettings()
-	{
-		settingsOpen = !settingsOpen;
-		
-		settings.SetActive(settingsOpen);
-		
-		if (settingsOpen)
-		{
-			EventSystem.current.SetSelectedGameObject(volumeSettings);
-		}
-		else
-		{
-			EventSystem.current.SetSelectedGameObject(settingsButton);
-		}
-	}
-
 	public void OpenEditorFileOnLoad(string l){
 		loadFileName = l;
 		openFileOnStart = true;
@@ -117,9 +96,9 @@
 	{
 		if (state == GameState.menu)
 		{
-			if (settingsOpen)
+			if (Services.menu.settingsOpen)
 			{
-				OpenSettings();
+				Services.menu.OpenSettings();
 			}
 			else
 			{
@@ -225,7 +204,9 @@
 		Point.Points.Clear();
 		Spline.Splines.Clear();
 	}
+	
 
+	//this is called in the flow of play with the old level set and file system
 	public void LoadNextLevel(bool isScene, bool delay = true){
 
 		if(delay){
@@ -239,33 +220,19 @@
 		}
 	}
 
+	//transition between levels in the flow of play
 	public IEnumerator FinishLevel(){
 
 		state = GameState.paused;
 		yield return null;
 		float t = 0;
-
-			//fuck this
-
-		// while(!Input.GetMouseButton(0)){
-
-		// 	//do some cool parallax shit
-		// 	//cut off sound, let reverb do the rest
-		// 	//bake all particles
-			
-		// 	if(state == GameState.menu) yield break;
-
-		// 	t += Time.fixedUnscaledDeltaTime;
-		// 	Time.timeScale = Mathf.Clamp01(1-t);
-
-		// 	yield return null;
-		// }
 	}
+
+
+	//called at the end of a level in a level set
 	public IEnumerator LoadLevelRoutine(bool isScene){
 
 		yield return StartCoroutine(FinishLevel());
-
-		if(state == GameState.menu) yield break;
 
 		if(isScene){
 			StartCoroutine(LoadSceneRoutine());
@@ -274,17 +241,35 @@
 		}
 	}
 
+	//when loading a unity scene
+	IEnumerator LoadSceneRoutine(){
+		
+		if(SceneManager.sceneCount > 1){
+			if (curLevel != "")
+			{
+				yield return SceneManager.UnloadScene(curLevel);
+			}
+		}
+		
+		int s = SceneController.instance.curLevel;
+		//this could be bugged
+		Services.PlayerBehaviour.Reset();
+		FullReset();
+		
+		SceneController.instance.curLevel = s;
+		curLevel = SceneController.instance.GetCurLevel();
+
+		if (curLevel != "")
+		{
+			SceneManager.LoadScene(curLevel, LoadSceneMode.Additive);
+		}
+	}
+
+	//when loading a stellation file
 	public IEnumerator LoadFileRoutine()
 	{
 
-		GlitchEffect.Fizzle(0.25f);
-		yield return new WaitForSecondsRealtime(0.25f);
-		/*if (delay > 0)
-		{
-			yield return StartCoroutine(FadeOut());
-		}*/
-
-		//ermmmmm, I guess I can assign it here?
+		yield return null;
 		
 		Time.timeScale = 0;
 
@@ -306,12 +291,9 @@
 		Time.timeScale = 1;
 
 		InitializeLevel();
-		
-		//awkwardddddd
-		//start audio
-		AudioManager.instance.PlayLevelSounds();
-		
 	}
+
+	//go back to menu after level set
 	public void FinishLevelSet(){
 		
 		StartCoroutine(CompleteLevelSet());
@@ -350,76 +332,6 @@
 		FullReset();
 		OpenMenu();
 
-	}
-	
-	IEnumerator LoadSceneRoutine(){
-		
-		GlitchEffect.Fizzle(0.25f);
-		yield return new WaitForSecondsRealtime(0.25f);
-
-		if(SceneManager.sceneCount > 1){
-			if (curLevel != "")
-			{
-				yield return SceneManager.UnloadScene(curLevel);
-			}
-		}
-		
-		int s = SceneController.instance.curLevel;
-		//this could be bugged
-		Services.PlayerBehaviour.Reset();
-		FullReset();
-		
-		SceneController.instance.curLevel = s;
-		curLevel = SceneController.instance.GetCurLevel();
-
-		if (curLevel != "")
-		{
-			SceneManager.LoadScene(curLevel, LoadSceneMode.Additive);
-		}
-	}
-
-	public void LoadScene()
-	{
-		//StartCoroutine(LoadSceneRoutine());
-		
-		state = GameState.paused;
-
-		if(SceneManager.sceneCount > 1){
-			if (curLevel != "")
-			{
-				SceneManager.UnloadScene(curLevel);
-			}
-		}
-
-		GlitchEffect.Fizzle(0.25f);
-		int s = SceneController.instance.curLevel;
-		//this could be bugged
-		Services.PlayerBehaviour.Reset();
-		FullReset();
-		
-		SceneController.instance.curLevel = s;
-		curLevel = SceneController.instance.GetCurLevel();
-
-		if (curLevel != "")
-		{
-			SceneManager.LoadScene(curLevel, LoadSceneMode.Additive);
-		}
-		else
-		{
-			// FullReset();
-			//OpenMenu();
-		}
-
-//		if (curLevel != "Editor")
-//		{
-//			Cursor.visible = false;
-//			Cursor.lockState = CursorLockMode.Locked;
-//		}
-//		else
-//		{
-//			Cursor.lockState = CursorLockMode.None;
-//			Cursor.visible = true;
-//		}
 	}
 	
 	public void Awake ()
@@ -489,30 +401,6 @@
 		Time.timeScale = 1;
 
 	}
-
-	public void TryChangeSetting(InputAction.CallbackContext context)
-	{
-		Vector2 input = context.ReadValue<Vector2>();
-		
-		if (settingsOpen)
-		{
-			foreach (SettingValue s in GameSettings.i.settings)
-			{
-				if (s.gameObject == EventSystem.current.currentSelectedGameObject)
-				{
-					if (input.x > 0f)
-					{
-						s.ChangeValue(1);
-					}
-					else if (input.x < 0)
-					{
-						s.ChangeValue(-1);
-					}
-				}
-			}
-		}
-	}
-
 
 	public void Pause(bool pause)
 	{
@@ -873,10 +761,9 @@
 	
 	public IEnumerator LevelIntro(LevelSet l)
 	{
-		
 		//this is where we zoom into the oscilloscope?
-		
-		yield return null;
+
+		yield return StartCoroutine(Services.menu.LeaveMenuRoutine());
 		
 		
 		 if (!SceneController.instance.curLevelSet.isScene)

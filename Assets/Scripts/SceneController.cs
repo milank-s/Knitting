@@ -67,7 +67,7 @@ public class SceneController : MonoBehaviour
             }
             else
             {
-                Services.main.TryChangeSetting(context);
+                Services.menu.TryChangeSetting(context);
             }
         }
     }
@@ -132,13 +132,10 @@ public class SceneController : MonoBehaviour
 
     public void LoadLevelSet()
     {
+        
         if (Services.main.state == Main.GameState.menu)
         {
-      
             curLevel = 0;
-            Services.main.FullReset();
-            Services.menu.Show(false);
-            
             StartCoroutine(Services.main.LevelIntro(curLevelSet));
             
         }

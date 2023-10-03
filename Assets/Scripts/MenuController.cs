@@ -2,14 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public enum MenuSelection{game, editor, oscilloscope}
 public class MenuController : MonoBehaviour
 {
-
     MenuSelection selection;
     [SerializeField] GameObject menuRoot;
+    [SerializeField] GameObject oscilloscopeModel;
     [SerializeField] GameObject levelDisplay;
     [SerializeField] GameObject oscilloscopeDisplay;
     [SerializeField] GameObject editorDisplay;
@@ -17,8 +18,22 @@ public class MenuController : MonoBehaviour
     [SerializeField] TMPro.TextMeshProUGUI levelTitle;
     [SerializeField] TMPro.TextMeshProUGUI levelNumber;
 
-    bool settingsOpen;
+	[SerializeField] GameObject settings;
+	[SerializeField] GameObject volumeSettings;
+	[SerializeField] GameObject settingsButton;
 
+    public bool settingsOpen;
+
+    public IEnumerator LeaveMenuRoutine(){
+
+        Show(false);
+
+        levelDisplay.SetActive(false);
+        oscilloscopeModel.SetActive(false);
+
+        yield return new WaitForSeconds(1f);
+    }
+    
     public void Show(bool b){
 
         if(b){
@@ -31,6 +46,9 @@ public class MenuController : MonoBehaviour
     }
 
     void OpenMenu(){
+
+        CameraFollow.instance.Reset();    
+
         RenderSettings.fog = false;
 
 		if (SceneController.instance.curSetIndex < 0)
@@ -41,12 +59,16 @@ public class MenuController : MonoBehaviour
 		
 		Services.Player.SetActive(false);
 	
-		SelectLevelSet(SceneController.instance.curLevelSet);
 		
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
 		
 		EventSystem.current.SetSelectedGameObject(SceneController.instance.levelButton.gameObject);
+
+		SelectLevelSet(SceneController.instance.curLevelSet);
+
+        levelDisplay.SetActive(true);
+        oscilloscopeModel.SetActive(true);
     }
     void CloseMenu(){
         if (Services.main.curLevel != "Editor") 
@@ -62,6 +84,7 @@ public class MenuController : MonoBehaviour
 		
 		ShowWord("", false);
 		ShowImage(null, false);
+        levelNumber.text = "";
     }
 
     public void SelectLevelSet(LevelSet l)
@@ -71,9 +94,43 @@ public class MenuController : MonoBehaviour
         levelNumber.text = SceneController.instance.curSetIndex + ".";
     }
 
-    void OpenSettings(){
-
+    public void OpenSettings(){
+        settingsOpen = !settingsOpen;
+		settings.SetActive(settingsOpen);
+		
+		if (settingsOpen)
+		{
+			EventSystem.current.SetSelectedGameObject(volumeSettings);
+		}
+		else
+		{
+			EventSystem.current.SetSelectedGameObject(settingsButton);
+		}
     }
+
+    public void TryChangeSetting(InputAction.CallbackContext context)
+	{
+		Vector2 input = context.ReadValue<Vector2>();
+		
+		if (settingsOpen)
+		{
+			foreach (SettingValue s in GameSettings.i.settings)
+			{
+				if (s.gameObject == EventSystem.current.currentSelectedGameObject)
+				{
+					if (input.x > 0f)
+					{
+						s.ChangeValue(1);
+					}
+					else if (input.x < 0)
+					{
+						s.ChangeValue(-1);
+					}
+				}
+			}
+		}
+	}
+
 
     public void ShowImage(Sprite s, bool show = true){
 

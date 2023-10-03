@@ -185,7 +185,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Awake(){
 		joystickLocked = true;
-		accuracy = 1;
+		accuracy = 0;
 		pointDest = null;
 		traversedPoints = new List<Point> ();
 
@@ -224,19 +224,20 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 	public void Initialize()
 	{
-		//Reset();
-
-		//PointManager.ResetPoints ();
+		
 		cursorDistance = minCursorDistance;
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
+		cursorPos = transform.position;
 		traversedPoints.Add (curPoint);
 		curPoint.OnPlayerEnterPoint();
 		flow = 0;
 		speed = Services.main.activeStellation.startSpeed;
 		acceleration = Services.main.activeStellation.acceleration;
 		maxSpeed = Services.main.activeStellation.maxSpeed;
-		
+
+		CameraFollow.instance.WarpToPosition(curPoint.Pos);
+
 		ResetFX();
 
 //		Material newMat;
@@ -1617,7 +1618,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		traversedPoints.Add (curPoint);
 		state = PlayerState.Switching;
 
-
 		Initialize();
 
 	}
@@ -1988,7 +1988,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		playerSprite.transform.up = cursorDir;
 
-		l.positionCount = 2;
 		// l.SetPosition(0, transform.position);
 		// l.SetPosition(1, cursorPos);
 	}

@@ -355,6 +355,8 @@ public class Point : MonoBehaviour
 		tension = initTension;
 		continuity = initContinuity;
 		timesHit = 0;
+		c = 0;
+		cooldown = 0;
 	}
 
 	public void CleanText()

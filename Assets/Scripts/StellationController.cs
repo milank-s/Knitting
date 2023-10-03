@@ -416,6 +416,11 @@ public class StellationController : MonoBehaviour {
 		//do we need to go through all our points?
 		//I would hate to do that
 
+		foreach (Point p in _points)
+		{
+			p.Reset();
+		}
+
 		foreach(Spline s in _splines){
 			if (s.type == Spline.SplineType.locked)
 				{
