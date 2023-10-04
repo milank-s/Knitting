@@ -47,12 +47,13 @@ public class GameSettings : MonoBehaviour
             
         }
         
-        SetSettingText(toReturn, s);
+        SetSettingText(toReturn, s, i);
+
         PlayerPrefs.Save();
 
     }
 
-    public void SetSettingText(string t, Setting s)
+    public void SetSettingText(string t, Setting s, int i = 0)
     {
         
         foreach (SettingValue v in settings)
@@ -62,6 +63,7 @@ public class GameSettings : MonoBehaviour
                 if (v._text.text != t)
                 {
                     changeSettingFX.Play();
+                    Services.menu.RotateXKnob(i);
                 }
                 v._text.text = t;
                 break;

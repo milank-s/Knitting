@@ -67,6 +67,9 @@ public class SceneController : MonoBehaviour
     {
         if (context.phase == InputActionPhase.Started && Services.main.state == Main.GameState.menu)
         {
+            
+            Services.menu.RotateYKnob(context.ReadValue<Vector2>());
+
             if (levelButton.gameObject == UISystem.currentSelectedGameObject)
             {
                 Vector2 input = context.ReadValue<Vector2>();
@@ -82,7 +85,9 @@ public class SceneController : MonoBehaviour
             }
             else
             {
+                
                 Services.menu.TryChangeSetting(context);
+                
             }
         }
     }
@@ -193,7 +198,7 @@ public class SceneController : MonoBehaviour
             GlitchEffect.Fizzle(0.25f);
         }
 
-        Services.menu.SelectLevelSet(curLevelSet, true);
+        Services.menu.SelectLevelSet(curLevelSet, increment, true);
     }
 
 

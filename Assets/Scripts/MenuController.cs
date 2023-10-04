@@ -33,37 +33,61 @@ public class MenuController : MonoBehaviour
 	
 	[Header("Oscilloscope")]
     public MenuKnob gameStateKnob;
+    public MenuKnob levelSelectKnob;
+    public MenuKnob optionSelectKnob;
+    public Transform submitButton;
+    public Transform escapeButton;
 
     public bool settingsOpen;
+	bool changedSelection;
 
+	float navDir;
 	GameObject selection;
 	public void Start(){
 		selection = EventSystem.current.currentSelectedGameObject;
 	}
 
 	void Update(){
-		if((Services.main.state == Main.GameState.menu || Services.main.state == Main.GameState.paused) && EventSystem.current.currentSelectedGameObject != selection){
-			selection = EventSystem.current.currentSelectedGameObject;
-			audio.PlayOneShot(selectSFX);
+		if((Services.main.state == Main.GameState.menu || Services.main.state == Main.GameState.paused)){
+			if(EventSystem.current.currentSelectedGameObject != selection){
+				selection = EventSystem.current.currentSelectedGameObject;
+				changedSelection = true;
+				audio.PlayOneShot(selectSFX);
+				if(Mathf.Abs(navDir) > 0.1f){
+					optionSelectKnob.transform.Rotate(0, Mathf.Sign(navDir) * 23, 0);
+				}
+			}else{
+				changedSelection = false;
+			}
 		}	
 	}
 
-    public void GameModeSelect(Main.GameState newState){
+
+    public void GameModeSelect(int i){
+		MenuSelection newState = (MenuSelection)i;
         switch(newState){
 			
-			case Main.GameState.editing:
-				gameStateKnob.transform.localEulerAngles = new Vector3(-90, 90, 0);
+			case MenuSelection.game:
+				gameStateKnob.transform.localEulerAngles = new Vector3(0, 90, -90);
 			break;
 
-			case Main.GameState.playing:
+			case MenuSelection.editor:
 				
-				gameStateKnob.transform.localEulerAngles = new Vector3(-90, 45, 0);
+				gameStateKnob.transform.localEulerAngles = new Vector3(45, 90, -90);
+			break;
+
+			case MenuSelection.oscilloscope:
+				
+				gameStateKnob.transform.localEulerAngles = new Vector3(90, 90, -90);
 			break;
 			
         }
     }
 
-    
+    public void OnSubmit(){
+		// audio.PlayOneShot(submitSFX);
+		PushButton(submitButton);
+	}
     public void Show(bool b){
 
         if(b){
@@ -100,7 +124,7 @@ public class MenuController : MonoBehaviour
 		
 		EventSystem.current.SetSelectedGameObject(SceneController.instance.levelButton.gameObject);
 
-		SelectLevelSet(SceneController.instance.curLevelSet);
+		SelectLevelSet(SceneController.instance.curLevelSet, true);
     }
     void CloseMenu(){
 
@@ -120,11 +144,35 @@ public class MenuController : MonoBehaviour
         levelNumber.text = "";
     }
 
-    public void SelectLevelSet(LevelSet l, bool playSound = false)
+	public void PushButton(Transform t){
+		StartCoroutine(PushButtonRoutine(t));
+	}
+
+	public IEnumerator PushButtonRoutine(Transform trans){
+		float t = 0;
+		Vector3 start = trans.localPosition;
+
+		while(t < 1){
+			trans.localPosition = new Vector3(start.x, start.y, -Mathf.Cos(t * (Mathf.PI/2))/10f);
+			t += Time.deltaTime * 5;
+			yield return null;
+		}
+
+		trans.localPosition = new Vector3(start.x, start.y, 0);
+	}
+    public void SelectLevelSet(LevelSet l, bool increment, bool playSound = false)
     {
 		if(playSound){
 			audio.PlayOneShot(changeLevelSFX);
+			
+			if(increment){
+				
+				levelSelectKnob.transform.Rotate(new Vector3(0, -23,0 ));
+			}else{
+				levelSelectKnob.transform.Rotate(new Vector3(0, 23,0 ));
+			}
 		}
+
 
         ShowImage(l.image);
         ShowWord(l.title);    
@@ -141,20 +189,33 @@ public class MenuController : MonoBehaviour
 		}
 		else
 		{
+			PushButton(escapeButton);
 			EventSystem.current.SetSelectedGameObject(settingsButton);
 		}
     }
 
+	public void RotateYKnob(Vector2 v){
+
+		navDir = v.y;
+	}
+
+	public void RotateXKnob(float x){
+
+		levelSelectKnob.transform.Rotate(new Vector3(0, x * -23, 0));
+	}
+	
     public void TryChangeSetting(InputAction.CallbackContext context)
 	{
 		Vector2 input = context.ReadValue<Vector2>();
 		
 		if (settingsOpen)
 		{
+
 			foreach (SettingValue s in GameSettings.i.settings)
 			{
 				if (s.gameObject == EventSystem.current.currentSelectedGameObject)
 				{
+
 					if (input.x > 0f)
 					{
 						s.ChangeValue(1);
