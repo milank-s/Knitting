@@ -8,7 +8,15 @@ using UnityEngine.UI;
 public enum MenuSelection{game, editor, oscilloscope}
 public class MenuController : MonoBehaviour
 {
-    MenuSelection selection;
+
+	[Header("SFX")]
+
+	[SerializeField] AudioSource audio;
+	[SerializeField] AudioClip selectSFX;
+	[SerializeField] AudioClip submitSFX;
+	[SerializeField] AudioClip changeLevelSFX;
+
+	[Header("UI")]
     [SerializeField] GameObject menuRoot;
     [SerializeField] GameObject oscilloscopeModel;
     [SerializeField] GameObject levelDisplay;
@@ -22,7 +30,39 @@ public class MenuController : MonoBehaviour
 	[SerializeField] GameObject volumeSettings;
 	[SerializeField] GameObject settingsButton;
 
+	
+	[Header("Oscilloscope")]
+    public MenuKnob gameStateKnob;
+
     public bool settingsOpen;
+
+	GameObject selection;
+	public void Start(){
+		selection = EventSystem.current.currentSelectedGameObject;
+	}
+
+	void Update(){
+		if((Services.main.state == Main.GameState.menu || Services.main.state == Main.GameState.paused) && EventSystem.current.currentSelectedGameObject != selection){
+			selection = EventSystem.current.currentSelectedGameObject;
+			audio.PlayOneShot(selectSFX);
+		}	
+	}
+
+    public void GameModeSelect(Main.GameState newState){
+        switch(newState){
+			
+			case Main.GameState.editing:
+				gameStateKnob.transform.localEulerAngles = new Vector3(-90, 90, 0);
+			break;
+
+			case Main.GameState.playing:
+				
+				gameStateKnob.transform.localEulerAngles = new Vector3(-90, 45, 0);
+			break;
+			
+        }
+    }
+
     
     public void Show(bool b){
 
@@ -38,6 +78,9 @@ public class MenuController : MonoBehaviour
     }
 
     void OpenMenu(){
+
+		GlitchEffect.Fizzle(0.2f);
+
 
         CameraFollow.instance.Reset();    
 
@@ -60,6 +103,7 @@ public class MenuController : MonoBehaviour
 		SelectLevelSet(SceneController.instance.curLevelSet);
     }
     void CloseMenu(){
+
         if (SceneController.curLevelName != "Editor") 
 		{
 			Cursor.visible = false;
@@ -76,8 +120,12 @@ public class MenuController : MonoBehaviour
         levelNumber.text = "";
     }
 
-    public void SelectLevelSet(LevelSet l)
+    public void SelectLevelSet(LevelSet l, bool playSound = false)
     {
+		if(playSound){
+			audio.PlayOneShot(changeLevelSFX);
+		}
+
         ShowImage(l.image);
         ShowWord(l.title);    
         levelNumber.text = SceneController.instance.curSetIndex + ".";
@@ -119,8 +167,6 @@ public class MenuController : MonoBehaviour
 			}
 		}
 	}
-
-
     public void ShowImage(Sprite s, bool show = true){
 
 		levelImage.sprite = s;

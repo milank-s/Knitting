@@ -1655,7 +1655,7 @@ MonoBehaviour:
   ChangeValue:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7215002527859566981}
+      - m_Target: {fileID: 1458525632}
         m_TargetAssemblyTypeName: Oscilloscope, Assembly-CSharp
         m_MethodName: SetScale
         m_Mode: 0
@@ -1670,7 +1670,7 @@ MonoBehaviour:
   Reset:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7215002527859566981}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: Oscilloscope, Assembly-CSharp
         m_MethodName: ResetScale
         m_Mode: 1
@@ -2951,7 +2951,7 @@ MonoBehaviour:
   ChangeValue:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7215002527859566981}
+      - m_Target: {fileID: 1458525632}
         m_TargetAssemblyTypeName: Oscilloscope, Assembly-CSharp
         m_MethodName: SetXSpeed
         m_Mode: 0
@@ -2966,7 +2966,7 @@ MonoBehaviour:
   Reset:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7215002527859566981}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: Oscilloscope, Assembly-CSharp
         m_MethodName: ResetXSpeed
         m_Mode: 1
@@ -3734,7 +3734,7 @@ MonoBehaviour:
   ChangeValue:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7215002527859566981}
+      - m_Target: {fileID: 1458525632}
         m_TargetAssemblyTypeName: Oscilloscope, Assembly-CSharp
         m_MethodName: SetFreq
         m_Mode: 0
@@ -3749,7 +3749,7 @@ MonoBehaviour:
   Reset:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7215002527859566981}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: Oscilloscope, Assembly-CSharp
         m_MethodName: ResetFreq
         m_Mode: 1
@@ -3997,7 +3997,7 @@ MonoBehaviour:
   ChangeValue:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7215002527859566981}
+      - m_Target: {fileID: 1458525632}
         m_TargetAssemblyTypeName: Oscilloscope, Assembly-CSharp
         m_MethodName: SetYSpeed
         m_Mode: 0
@@ -4012,7 +4012,7 @@ MonoBehaviour:
   Reset:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7215002527859566981}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: Oscilloscope, Assembly-CSharp
         m_MethodName: ResetYSpeed
         m_Mode: 1
@@ -4750,14 +4750,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7215002527859566978}
-  - component: {fileID: 7215002527859566981}
   m_Layer: 0
   m_Name: Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7215002527859566978
 Transform:
   m_ObjectHideFlags: 0
@@ -4772,40 +4771,6 @@ Transform:
   m_Father: {fileID: 7215002529588051105}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7215002527859566981
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7215002527859566979}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b8eea91207b1734fa356decce472268, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  xBounds: 1.5
-  yBounds: 1.5
-  frequency: 0.1
-  amplitude: 0.5
-  scale: 1
-  timeScale: 1
-  steps: 200
-  xSpeed: 1
-  ySpeed: 1
-  noiseScale: 0
-  noiseFreqX: 1
-  noiseFreqY: 1
-  minFreq: 0.05
-  maxFreq: 6.28
-  minSteps: 2
-  maxSteps: 1000
-  maxTimescale: 10
-  minTimescale: 0
-  minAmplitude: 0.1
-  maxAmplitude: 5
-  minScale: 0.96
-  maxScale: 1.02
 --- !u!1 &7215002528738369143
 GameObject:
   m_ObjectHideFlags: 0
@@ -4908,6 +4873,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7215002529588051105}
+  - component: {fileID: 1458525632}
   m_Layer: 0
   m_Name: Oscilloscope
   m_TagString: Untagged
@@ -4931,6 +4897,40 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1458525632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7215002529588051102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8eea91207b1734fa356decce472268, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  xBounds: 1.5
+  yBounds: 1.5
+  frequency: 0.1
+  amplitude: 0.5
+  scale: 1
+  timeScale: 1
+  steps: 200
+  xSpeed: 1
+  ySpeed: 1
+  noiseScale: 0
+  noiseFreqX: 1
+  noiseFreqY: 1
+  minFreq: 0.05
+  maxFreq: 6.28
+  minSteps: 2
+  maxSteps: 1000
+  maxTimescale: 10
+  minTimescale: 0
+  minAmplitude: 0.1
+  maxAmplitude: 5
+  minScale: 0.96
+  maxScale: 1.02
 --- !u!1 &7376508147405812425
 GameObject:
   m_ObjectHideFlags: 0

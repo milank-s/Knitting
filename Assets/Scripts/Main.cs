@@ -429,6 +429,7 @@
 
 	public void EnterLevelSet()
 	{
+		Services.fx.Fade(true , 1f);
 		SceneController.curLevel = 0;
 		state = GameState.playing;
 		playerInput.SwitchCurrentActionMap("Player");

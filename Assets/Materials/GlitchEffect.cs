@@ -20,6 +20,10 @@ using UnityEngine.Rendering;
 [RequireComponent(typeof(Camera))]
 public class GlitchEffect : MonoBehaviour
 {
+	public float minIntensity = 0;
+	public float maxIntensity = 1;
+	public float minFreq = 0;
+	public float maxFreq = 1;
 	public Texture2D displacementMap;
 	public Shader Shader;
 	[Header("Glitch Intensity")]
@@ -37,14 +41,14 @@ public class GlitchEffect : MonoBehaviour
 		_material = new Material(Shader);
 	}
 
-	public static void SetValues(float t)
+	public void SetValues(float t)
 	{
-		intensity = Mathf.Lerp(0, 1f, t);
-		frequency = Mathf.Lerp(1, 20, t);
+		intensity = Mathf.Lerp(minIntensity, maxIntensity, t);
+		frequency = Mathf.Lerp(minFreq, maxFreq, t);
 	}
 	void OnRenderImage(RenderTexture source, RenderTexture destination)
 	{
-		float yScroll = Time.time/5f;
+		float yScroll = 1; //Time.time/5f;
 		_material.SetFloat("_Intensity", intensity);
 		_material.SetFloat("_Noise", yScroll);
 		_material.SetFloat("_Frequency", frequency);
@@ -61,12 +65,12 @@ public class GlitchEffect : MonoBehaviour
 		float t = 0;
 		while (t < 1)
 		{
-			SetValues(Mathf.Sin(t * Mathf.PI));
+			instance.SetValues(Mathf.Sin(t * Mathf.PI));
 			t += Time.unscaledDeltaTime / time;
 			yield return null;
 		}
 		
-		SetValues(0);
+		instance.SetValues(0);
 	}
 
 	// Called by camera to apply image effect

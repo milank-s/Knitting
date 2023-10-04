@@ -25,6 +25,9 @@ public class FXManager : MonoBehaviour
     private List<Vector3> linePositions;
     private VectorLine line;
     private List<VectorLine> splineDir;
+
+    public Image overlay;
+
     public bool drawGraffiti;
     [SerializeField] private GameObject fxPrefab;
   private int index;
@@ -470,21 +473,30 @@ public class FXManager : MonoBehaviour
       }
   }
  
-// public IEnumerator FadeIn(){
-		
-	// 	float t = 0;
-	// 	yield return new WaitForSecondsRealtime(0.33f);
-		
-	// 	while (t < 1){
-	// 		//PauseScreen.color = Color.Lerp(Color.black, Color.clear, Easing.QuadEaseIn(t/fadeLength));
-	// 		GlitchEffect.SetValues(1-t);
-	// 		t += Time.unscaledDeltaTime/fadeLength;
-	// 		yield return null;
-	// 	}
+ public void Fade(bool fadeIn, float time){
+    if(fadeIn){
+        StartCoroutine(FadeIn(time));
+    }else{
+        StartCoroutine(FadeOut(time));
+    }
+ }
 
-	// 	GlitchEffect.SetValues(0);
-	// 	//PauseScreen.color = Color.clear;
-	// }
+public IEnumerator FadeIn(float fadeLength){
+		
+		float t = 0;
+		
+		while (t < 1){
+
+			overlay.color = Color.Lerp(Color.black, Color.clear, Easing.QuadEaseIn(t/fadeLength));
+			//GlitchEffect.SetValues(1-t);
+            
+			t += Time.unscaledDeltaTime/fadeLength;
+			yield return null;
+		}
+
+		//GlitchEffect.SetValues(0);
+		overlay.color = Color.clear;
+	}
 
 	// public IEnumerator FlashImage(bool fadeIn = false)
 	// {
@@ -505,19 +517,19 @@ public class FXManager : MonoBehaviour
 	// }
 	
 	
-	// public IEnumerator FadeOut(){
+	public IEnumerator FadeOut(float fadeLength){
 		
-	// 	float t = 0;
-	// 	while (t < 1)
-	// 	{
-	// 		// PauseScreen.color = Color.Lerp(Color.clear, Color.black, Easing.QuadEaseIn(t/fadeLength));
-	// 		GlitchEffect.SetValues(t);
-	// 		t += Time.unscaledDeltaTime/fadeLength;
-	// 		yield return null;
-	// 	}
+		float t = 0;
+		while (t < 1)
+		{
+			overlay.color = Color.Lerp(Color.clear, Color.black, Easing.QuadEaseIn(t/fadeLength));
+			// GlitchEffect.SetValues(t);
+			t += Time.unscaledDeltaTime/fadeLength;
+			yield return null;
+		}
 
-	// 	GlitchEffect.SetValues(1);
-	// 	//PauseScreen.color = Color.black;
-	// }
+		// GlitchEffect.SetValues(1);
+		overlay.color = Color.black;
+	}
   
 }

@@ -4,11 +4,13 @@ using UnityEngine;
 using Vectrosity;
 public class Oscilloscope : MonoBehaviour
 {
-
+    
+    
+    [Header("Screensize")]
     public float xBounds = 5;
     public float yBounds = 5;
 
-    [Header("Public values")]
+    [Header("Start Values")]
     public float frequency = 1;
     public float amplitude = 1;
     public float scale = 1.01f;
@@ -18,7 +20,8 @@ public class Oscilloscope : MonoBehaviour
     public float ySpeed = 1;
     public float noiseScale;
     public float noiseFreqX, noiseFreqY;
-
+    
+    [Header("Constraints")]
 
     public float minFreq, maxFreq, minSteps, maxSteps, maxTimescale, minTimescale, minAmplitude, maxAmplitude, minScale, maxScale;
     Vectrosity.VectorLine line;
@@ -26,7 +29,7 @@ public class Oscilloscope : MonoBehaviour
     void Start(){
         center = transform.position;
         line = new VectorLine("Oscillator", new List<Vector3>(), 1, LineType.Continuous);
-        line.layer = LayerMask.NameToLayer("Default");
+        line.layer = LayerMask.NameToLayer("Oscilloscope");
     }
     public void Update(){
         AnimateCurve();

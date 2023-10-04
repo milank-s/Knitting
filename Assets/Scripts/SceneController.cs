@@ -190,10 +190,10 @@ public class SceneController : MonoBehaviour
         }
         
         if(index != curSetIndex){
-            GlitchEffect.Fizzle(0.1f);
+            GlitchEffect.Fizzle(0.25f);
         }
 
-        Services.menu.SelectLevelSet(curLevelSet);
+        Services.menu.SelectLevelSet(curLevelSet, true);
     }
 
 
