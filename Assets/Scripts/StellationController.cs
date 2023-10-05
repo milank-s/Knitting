@@ -224,7 +224,7 @@ public class StellationController : MonoBehaviour {
 		Show(true);
 
 		foreach(Spline s in start._connectedSplines){
-			s.DrawEntireSpline();
+			s.StartDrawRoutine(start);
 		}
 	}
 	public void Won()
@@ -800,7 +800,7 @@ public class StellationController : MonoBehaviour {
 			}
 		}else{
 			if(teleport){
-			CameraFollow.instance.WarpToPosition(targetPos);
+				CameraFollow.instance.WarpToPosition(targetPos);
 			}else{
 				CameraFollow.targetPos = targetPos;
 			}

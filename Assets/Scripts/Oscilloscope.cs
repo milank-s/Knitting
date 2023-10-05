@@ -31,6 +31,7 @@ public class Oscilloscope : MonoBehaviour
         line = new VectorLine("Oscillator", new List<Vector3>(), 1, LineType.Continuous);
         line.layer = LayerMask.NameToLayer("Oscilloscope");
     }
+
     public void Update(){
         AnimateCurve();
         line.Draw3D();

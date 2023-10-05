@@ -385,11 +385,15 @@ public class MapEditor : MonoBehaviour
             controllerTitle.text = "stellation title";
         }
 
+        
+
         typing = false;
         controller.Initialize();
         controller.Setup();
         controller.OnPlayerEnter();
-        // controller.SetCameraInfo(true);
+        
+        Services.main.EnterUIMode();
+        controller.SetCameraInfo(true);
     }
 
     public void ToggleTurtleMode()

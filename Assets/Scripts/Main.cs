@@ -415,12 +415,11 @@
 
 		if (!MapEditor.editing)
 		{
-			playerInput.SwitchCurrentActionMap("Player");
 			Services.Player.SetActive(true);
 			Services.PlayerBehaviour.Initialize();
+			EnterPlayMode();
 		}
 
-		EnterPlayMode();
 		
 		if(OnLoadLevel != null){
 			OnLoadLevel(activeStellation);
@@ -431,14 +430,16 @@
 	{
 		Services.fx.Fade(true , 1f);
 		SceneController.curLevel = 0;
-		state = GameState.playing;
-		playerInput.SwitchCurrentActionMap("Player");
+		
+		EnterPlayMode();
+
 		Services.menu.Show(false);
 		SceneController.instance.LoadLevel();
 	}
 
 	public void EnterPlayMode()
 	{
+		playerInput.SwitchCurrentActionMap("Player");
 		Cursor.lockState = CursorLockMode.Locked;
 		state = GameState.playing;
 	}
@@ -447,6 +448,7 @@
 	{
 		playerInput.SwitchCurrentActionMap("UI");
 		Cursor.lockState = CursorLockMode.None;
+		// state = GameState.editing;
 	}
 	
 	public void ToggleEditMode()
@@ -497,11 +499,11 @@
 
 				Vector3 cameraPos = CameraFollow.instance.cam.transform.position;
 				cameraPos.z = 0;
+
 				CameraFollow.instance.WarpToPosition(cameraPos);
 				
 				//SynthController.instance.StopNotes();
-				
-				EnterUIMode();
+
 				//whyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
 				//just so I can bring up the pause menu?
 				state = GameState.playing;

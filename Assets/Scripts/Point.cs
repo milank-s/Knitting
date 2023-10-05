@@ -448,7 +448,11 @@ public class Point : MonoBehaviour
 			case PointState.on:
 				if (prevState != PointState.on)
 				{
-					
+					foreach(Spline sp in _connectedSplines){
+						if(!sp.drawingIn){
+							sp.StartDrawRoutine(this);
+						}
+					}
 					StartCoroutine(LightUp());
 				}
 				//PointManager.AddPointHit(this);
@@ -489,19 +493,15 @@ public class Point : MonoBehaviour
 		
 		// if (controller.CheckSpeed())
 		// {
-			if(textMesh != null){
-				textMesh.GetComponent<FadeTextOnPoint>().alpha = 1;
-			}
+		if(textMesh != null){
+			textMesh.GetComponent<FadeTextOnPoint>().alpha = 1;
+		}
 		// }
 
 //		stiffness = Mathf.Clamp(stiffness -100, 100, 10000);
 //		damping = Mathf.Clamp(damping - 100, 100, 10000);
 		
 		SwitchState(PointState.on);
-		
-		foreach(Spline sp in _connectedSplines){
-			sp.StartDrawRoutine(this);
-		}
 		
 		controller.TryToUnlock();
 

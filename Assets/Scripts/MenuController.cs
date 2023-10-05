@@ -99,6 +99,7 @@ public class MenuController : MonoBehaviour
         menuRoot.SetActive(b);
 		levelDisplay.SetActive(b);
         oscilloscopeModel.SetActive(b);
+		oscilloscopeDisplay.SetActive(b);
     }
 
     void OpenMenu(){

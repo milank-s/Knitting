@@ -46,7 +46,7 @@ public class Spline : MonoBehaviour
 	float rollingDistance;
 	float magnitude;
 	public static System.Collections.Generic.List<Spline> Splines = new System.Collections.Generic.List<Spline> ();
-	public static float drawSpeed = 2f;
+	public static float drawSpeed = 3f;
 	
 
 	[HideInInspector]
@@ -419,6 +419,12 @@ public class Spline : MonoBehaviour
 		closed = false;
 		drawingIn= false;
 		drawnIn = false;
+		
+		upperPointIndex = 0;
+		lowerPointIndex = 0;
+		upperDrawIndex = upperPointIndex * curveFidelity + 1;
+		lowerDrawIndex = upperPointIndex * curveFidelity - 2;
+
 		ResetVectorLine();
 		line.StopDrawing3DAuto();
 		
@@ -597,6 +603,8 @@ public class Spline : MonoBehaviour
 			upperDrawIndex = upperPointIndex * curveFidelity + 1;
 			lowerDrawIndex = upperPointIndex * curveFidelity - 2;
 		}
+
+		Debug.Log(s);
 
 		drawingIn = true;
 	}
