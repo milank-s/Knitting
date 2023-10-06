@@ -601,6 +601,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				Vector3 screenPointAtStart = Services.mainCam.WorldToScreenPoint(curPoint.Pos);
 				Vector3 screenPointAtEnd = Services.mainCam.WorldToScreenPoint(p.Pos);
+
 				float d = (screenPointAtEnd - screenPointAtStart).magnitude;
 				if(d < distance){
 					distance = d;
@@ -806,7 +807,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		prog = Mathf.Clamp01(prog);
 		Vector3 splineDir = curSpline.GetDirection (prog);
 		if(!goingForward){splineDir = -splineDir;}
-		Debug.DrawLine(transform.position, transform.position + splineDir, Color.red);
+		
+		//Debug.DrawLine(transform.position, transform.position + splineDir, Color.red);
+		
 		//might be best to remove the z
 		//splineDir.z = 0;
 
@@ -818,7 +821,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		Vector3 screenSpaceDirection = (screenPointAtEnd - screenPointAtStart).normalized;
 
-		Debug.DrawLine(transform.position, transform.position + screenSpaceDirection, Color.green);
+		//Debug.DrawLine(transform.position, transform.position + screenSpaceDirection, Color.green);
 
 		float alignment = Vector2.Angle (cursorDir, screenSpaceDirection);
 
@@ -950,17 +953,18 @@ public class PlayerBehaviour: MonoBehaviour {
 		progress = 0;
 		curPoint.PlayerOnPoint(cursorDir, flow);
 
-		l.positionCount = 2;
 		//l.SetPosition (0, Vector3.Lerp(transform.position, cursorPos, Easing.QuadEaseOut(boostTimer)));
 
 		if(foundConnection){
+			l.positionCount = 2;
 			l.SetPosition(0, pointDest.Pos);
+			l.SetPosition (1, transform.position);
 		}else{
-			l.SetPosition(0, cursorPos);
+			
+			l.positionCount = 0;
 		}
 
-		l.SetPosition (1, transform.position);
-
+		
 		playerSprite.transform.localScale = Vector3.Lerp(playerSprite.transform.localScale, new Vector3(Mathf.Clamp(1 - (boostTimer), 0.1f, 0.25f), Mathf.Clamp(boostTimer, 0.25f, 0.75f), 0.25f), Time.deltaTime * 10);
 
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
@@ -2184,7 +2188,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				foreach (Spline s in pointDest._connectedSplines)
 				{
 					s.reactToPlayer = true;
-					s.line.Draw3DAuto();
+					//s.line.Draw3DAuto();
 				}
 
 				//this is making it impossible to get off points that are widows. wtf.

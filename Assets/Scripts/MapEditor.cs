@@ -799,7 +799,9 @@ public class MapEditor : MonoBehaviour
                 }
                 else if(!Input.GetMouseButton(0))
                 {
-                    cam.transform.position += Vector3.forward * Input.mouseScrollDelta.y * Time.deltaTime * 10;
+                    //never move camera on the z, its annoying af
+
+                    //cam.transform.position += Vector3.forward * Input.mouseScrollDelta.y * Time.deltaTime * 10;
                 }
 
                 if (!typing)
@@ -920,7 +922,8 @@ public class MapEditor : MonoBehaviour
         {
             if (Point.Points.Count > 0)
             {
-                cam.transform.position = new Vector3(center.x, center.y, center.z - cameraDistance);
+                //no more going on z
+                cam.transform.position = new Vector3(center.x, center.y, cam.transform.position.z); // center.z - cameraDistance);
             }
         }
         
