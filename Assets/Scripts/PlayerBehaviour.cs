@@ -236,7 +236,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		acceleration = Services.main.activeStellation.acceleration;
 		maxSpeed = Services.main.activeStellation.maxSpeed;
 
-		CameraFollow.instance.WarpToPosition(curPoint.Pos);
+		//CameraFollow.instance.WarpToPosition(curPoint.Pos);
 
 		ResetFX();
 

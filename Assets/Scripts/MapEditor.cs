@@ -113,7 +113,6 @@ public class MapEditor : MonoBehaviour
     public Toggle splineLockToggle;
     public Slider scoreSlider;
     public Text scoreText;
-    public Toggle fixedCamera;
     public Toggle lockXToggle;
     public Toggle lockYToggle;
     public Toggle lockZToggle;
@@ -1275,10 +1274,12 @@ public class MapEditor : MonoBehaviour
 
     public void SetCameraPos(){
         controller.cameraPos = Services.mainCam.transform.position;
+        Debug.Log("set camera pos");
     }
 
     public void UseCameraPos(bool b){
-        controller.setCameraPos  = b;
+        controller.setCameraPos = b;
+        Debug.Log("use camera pos");
     }
 
     public void LoadFromDropDown(Int32 i)

@@ -604,8 +604,6 @@ public class Spline : MonoBehaviour
 			lowerDrawIndex = upperPointIndex * curveFidelity - 2;
 		}
 
-		Debug.Log(s);
-
 		drawingIn = true;
 	}
 
