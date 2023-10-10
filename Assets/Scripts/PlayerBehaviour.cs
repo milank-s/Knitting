@@ -93,6 +93,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	[HideInInspector]
 	public Vector3 curDirection;
+	public Vector3 directionDelta;
 
 	public float normalizedAccuracy => (1 + accuracy)/2f;
 	public float potentialSpeed => flow + speed + boost;
@@ -782,6 +783,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			cursorDistance = minCursorDistance;
 		}
 		else{
+			
+			//what in gods name is happening here? old level completion code
+
 			if (curPoint.pointType == PointTypes.end && !curPoint.controller.isComplete)
 			{
 				StayOnPoint();
@@ -806,10 +810,15 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		return false;
 	}
+
 	public float GetAccuracy(float prog){
 		prog = Mathf.Clamp01(prog);
-		curDirection = curSpline.GetDirection (prog);
-		if(!goingForward){curDirection = -curDirection;}
+		
+		Vector3 newDirection = curSpline.GetDirection (prog);
+		if(!goingForward){newDirection = -newDirection;}
+
+		directionDelta = newDirection - curDirection;
+		curDirection = newDirection;
 		
 		//Debug.DrawLine(transform.position, transform.position + splineDir, Color.red);
 		
@@ -1665,6 +1674,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	public void SetPlayerAtStart(Spline s, Point p2){
+
 		int indexdiff = s.SplinePoints.IndexOf (p2) - s.SplinePoints.IndexOf (curPoint);
 
 
@@ -2200,9 +2210,12 @@ public class PlayerBehaviour: MonoBehaviour {
 				//this is making it impossible to get off points that are widows. wtf.
 				SetPlayerAtStart (curSpline, pointDest);
 
+				//I guess I just enter splines while I'm stopped now
+				//it pisses me off but I'm sure there's some reason				
 				//curSpline.OnSplineEnter (true, curPoint, pointDest, false);
 
-				//SetCursorAlignment ();
+				curDirection = curSpline.GetDirection(progress);
+				if(!goingForward){curDirection = -curDirection;}
 
 				//PlayerMovement ();
 

@@ -786,10 +786,6 @@ public class StellationController : MonoBehaviour {
 		CameraFollow.instance.lockY = lockY;
 		CameraFollow.instance.lockZ = lockZ;
 
-		Vector3 targetPos = center;
-
-
-		
 		if(setCameraPos){
 			if(teleport){
 				CameraFollow.instance.WarpToPosition(cameraPos);
@@ -798,9 +794,9 @@ public class StellationController : MonoBehaviour {
 			}
 		}else{
 			if(teleport){
-				CameraFollow.instance.WarpToPosition(targetPos);
+				CameraFollow.instance.WarpToPosition(center);
 			}else{
-				CameraFollow.targetPos = targetPos;
+				CameraFollow.targetPos = center;
 			}
 		}
 

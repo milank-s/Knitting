@@ -180,7 +180,7 @@ public class MapEditor : MonoBehaviour
     private Vector3 scalePivot;
     private Vector3 scaleDelta;
 
-    Vector3 viewDir;
+    Vector3 viewDir = Vector3.forward;
     
     private bool recenterScalePivot;
 
@@ -404,15 +404,12 @@ public class MapEditor : MonoBehaviour
             controllerTitle.text = "stellation title";
         }
 
-        
-
         typing = false;
         controller.Initialize();
         controller.Setup();
         controller.OnPlayerEnter();
         
         Services.main.EnterUIMode();
-        controller.SetCameraInfo(true);
     }
 
     public void ToggleTurtleMode()
@@ -1133,11 +1130,15 @@ public class MapEditor : MonoBehaviour
        } 
     }
     
+    void OnDrawGizmos(){
+        
+        Gizmos.DrawWireCube(center, bounds);
+    }
     void ManageSelectionUI()
     {
         int index = 0;
 
-        lowerLeft = new Vector3(Mathf.Infinity, Mathf.Infinity, -Mathf.Infinity);
+        lowerLeft = new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
         upperRight = new Vector3(-Mathf.Infinity, -Mathf.Infinity, -Mathf.Infinity);
 
         if (pointSelected)
@@ -1157,7 +1158,6 @@ public class MapEditor : MonoBehaviour
                 p.Step();
                 ComparePointPosition(p);
             }
-
         }
     }
 
@@ -1185,12 +1185,12 @@ public class MapEditor : MonoBehaviour
 
             if (p.Pos.z > upperRight.z)
             {
-                upperRight.z = 0;
+                upperRight.z = p.Pos.z;
             }
 
-            if (p.Pos.z > lowerLeft.z)
+            if (p.Pos.z < lowerLeft.z)
             {
-                lowerLeft.z = 0;
+                lowerLeft.z = p.Pos.z;
             }
         }
 
@@ -1811,8 +1811,6 @@ void DragCamera()
         {
 
             case Tool.move:
-
-                
 
                 if (pointSelected)
                 {

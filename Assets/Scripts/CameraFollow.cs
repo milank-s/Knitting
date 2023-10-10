@@ -2,14 +2,17 @@
 using System.Collections;
 
 public class CameraFollow : MonoBehaviour {
+	public Transform rotationVis;
 	public float speed;
 	public Camera uiCam;
 	public Transform target;
 	private Vector3 velocity = Vector2.zero;
 	public Vector3 offset;
 	Vector3 nudge;
-	Vector3 shake;
 	Vector3 lerpedPos;
+
+
+	Quaternion rot;
 	public Camera cam;
 	public bool fixedCamera;
 
@@ -56,8 +59,16 @@ public class CameraFollow : MonoBehaviour {
 
 		if(Services.PlayerBehaviour.state == PlayerState.Traversing){
 
-			// Vector3 pole = playerDir.x > 0? Vector3.up : Vector3.down;
+
+			//I wasn't smart enough to get this working
+			//why dont you just track the players rotation delta and apply it to the camera?
+			//obviously billboarding will make this a shitshow but it cant be that hard
+			Vector3 delta = Services.PlayerBehaviour.directionDelta;
+			Vector3 rot = (delta.z * 360f) * Vector3.up;
+			rotationVis.Rotate(rot);
+			
 			Vector3 pole = Vector3.up;
+
 			toPlayer = Vector3.Cross(pole, Services.PlayerBehaviour.curDirection).normalized;
 
 			Debug.DrawLine(pos, pos + pole, Color.green);
