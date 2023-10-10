@@ -150,19 +150,30 @@ public class MapEditor : MonoBehaviour
         get { return selectedPoints.Count > 0; }
     }
 
-    private Vector3 delta
+    private Vector3 deltaWorld
     {
         get
         {
            return worldPos - lastPos;
         }
     }
-    private Vector3 curPos;
+
+    Vector2 deltaScreen{
+         get
+        {
+           return (mousePos - lastMousePos)/100f;
+        }
+    }
+    private Vector3 mousePos;
     private Vector3 lastPos;
     private Vector3 worldPos;
+    private Vector3 lastMousePos;
     private Vector3 rotationPivot;
     private Vector3 scalePivot;
     private Vector3 scaleDelta;
+
+    Vector3 viewDir;
+    
     private bool recenterScalePivot;
 
     
@@ -310,8 +321,8 @@ public class MapEditor : MonoBehaviour
         cam = Services.mainCam;
         l.enabled = false;
         //Services.main.EnterEditMode(editing);
-        curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
-        worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
+        mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
+        worldPos = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y,
             cameraDistance));
         
         DirectoryInfo directoryInfo = new DirectoryInfo(Application.streamingAssetsPath + "/Levels");
@@ -678,12 +689,13 @@ public class MapEditor : MonoBehaviour
             PanCamera();
         }
 
-
         lastPos = worldPos;
-        curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
-        worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
+        lastMousePos = mousePos;
+        mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
+        worldPos = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y,
             cameraDistance));
-        cursor.transform.position = curPos;
+        
+        cursor.transform.position = mousePos;
     }
 
     public void DeselectAll()
@@ -792,8 +804,41 @@ public class MapEditor : MonoBehaviour
                 {
                     ShuffleSplineOrder(1);
                 }
+                bool recenter = false;
                 
+                if(Input.GetKeyDown(KeyCode.X)){
+                    if(viewDir == Vector3.right){
+                         viewDir = Vector3.left;
+                    }else{
+                        viewDir = Vector3.right;
+                    }
+
+                    recenter = true;
+                }
+
+                if(Input.GetKeyDown(KeyCode.Y)){
+                     recenter = true;
+                    if(viewDir == Vector3.down){
+                         viewDir = Vector3.up;
+                    }else{
+                        viewDir = Vector3.down;
+                    }
+                }
+
+                if(Input.GetKeyDown(KeyCode.Z)){
+                     recenter = true;
+                    if(viewDir == Vector3.forward){
+                         viewDir = Vector3.back;
+                    }else{
+                        viewDir = Vector3.forward;
+                    }
+                }
                 
+                if(recenter){
+                    Services.mainCam.transform.forward = viewDir;
+                    CenterCamera();
+                }
+
                 if (!Input.GetKey(KeyCode.LeftShift))
                 {
                     cam.fieldOfView = Mathf.Clamp(cam.fieldOfView - Input.mouseScrollDelta.y * Time.deltaTime * 100f, 10, 160);
@@ -917,6 +962,30 @@ public class MapEditor : MonoBehaviour
         StartCoroutine(Services.fx.FlashWord());
     }
 
+    void CenterCamera(){
+        //we want to play the camera at the closest bound based on its view dir
+        //and then add the offset
+
+
+        cam.transform.position = center;
+        if(viewDir == Vector3.left){
+            cam.transform.position -= (center.x + CameraFollow.instance.offset.z) * Vector3.right;
+        }else if(viewDir == Vector3.right){
+            cam.transform.position += (center.x + CameraFollow.instance.offset.z) * Vector3.right;
+        }
+
+         if(viewDir == Vector3.up){
+            cam.transform.position += (center.y + CameraFollow.instance.offset.z) * Vector3.up;
+        }else if(viewDir == Vector3.down){
+            cam.transform.position -= (center.y + CameraFollow.instance.offset.z) * Vector3.up;
+        }
+
+         if(viewDir == Vector3.forward){
+            cam.transform.position += (center.z + CameraFollow.instance.offset.z) * Vector3.forward;
+        }else if(viewDir == Vector3.back){
+            cam.transform.position -= (center.z + CameraFollow.instance.offset.z) * Vector3.forward;
+        }
+    }
     void EditSelectedPoint()
     {
         if (Input.GetKeyDown(KeyCode.F))
@@ -924,7 +993,7 @@ public class MapEditor : MonoBehaviour
             if (Point.Points.Count > 0)
             {
                 //no more going on z
-                cam.transform.position = new Vector3(center.x, center.y, cam.transform.position.z); // center.z - cameraDistance);
+                CenterCamera();
             }
         }
         
@@ -1152,14 +1221,12 @@ public class MapEditor : MonoBehaviour
         
     void MoveSelectedPoints()
     {
-        Vector3 pos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
-            Mathf.Abs(cam.transform.position.z) - activePoint.Pos.z));
 
         foreach (Point p in selectedPoints)
         {
 
-            p.transform.position += new Vector3(delta.x, delta.y,
-                -Input.mouseScrollDelta.y * Time.deltaTime * 10f);
+            p.transform.position += new Vector3(deltaWorld.x, deltaWorld.y,
+                deltaWorld.z);
             p.initPos = p.Pos;
         }
     }
@@ -1573,18 +1640,19 @@ public class MapEditor : MonoBehaviour
     
 void DragCamera()
     {
-        Services.mainCam.transform.position -= delta;
+        Services.mainCam.transform.localPosition -= deltaWorld;
 
-        curPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
-        worldPos = cam.ScreenToWorldPoint(new Vector3(curPos.x, curPos.y,
+        mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
+        worldPos = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y,
             cameraDistance));
         lastPos = worldPos;
     }
     
     void PanCamera()
     {
-        cam.transform.position = new Vector3(cam.transform.position.x, cam.transform.position.y, Mathf.Clamp(cam.transform.position.z, -20, -2));
-        Vector3 viewportPos = cam.ScreenToViewportPoint(curPos);
+        //these directions need to be rotated by the viewdir
+
+       Vector3 viewportPos = cam.ScreenToViewportPoint(mousePos);
         
         if (viewportPos.y > 0.95f && viewportPos.y < 1)
         {
@@ -1783,7 +1851,7 @@ void DragCamera()
             case Tool.select:
                 
                 Vector3 screenPos = cam.WorldToViewportPoint(lastPos);
-                Vector3 viewPortPos = cam.ScreenToViewportPoint(curPos);
+                Vector3 viewPortPos = cam.ScreenToViewportPoint(mousePos);
 
                 
                 if (Input.GetMouseButton(0) && hitPoint == null && !pointSelected &&  !dragging)
@@ -1911,24 +1979,26 @@ void DragCamera()
                 if (Input.GetMouseButton(0))
                 {
                     cursor.transform.position = cam.WorldToScreenPoint(rotationPivot);
-                    float xAngle = Mathf.Sign(delta.x) * delta.magnitude * 100f;
-                    float yAngle = Mathf.Sign(delta.y) * delta.magnitude * 100f;
+                    float xAngle = Mathf.Sign(deltaScreen.x) * deltaScreen.magnitude * 100f;
+                    float yAngle = Mathf.Sign(deltaScreen.y) * deltaScreen.magnitude * 100f;
                     
                     cursor.transform.Rotate(0, 0, xAngle);
 
                     foreach (Point p in selectedPoints)
                     {
                         
-                        if(Input.GetKey(KeyCode.LeftAlt)){
-                            Vector3 pivot = new Vector3(rotationPivot.x, rotationPivot.y, rotationPivot.z);
-                            p.transform.RotateAround(pivot, Vector3.up, -xAngle);
-                        }else if(Input.GetKey(KeyCode.RightAlt)){
-                            Vector3 pivot = new Vector3(rotationPivot.x, rotationPivot.y, rotationPivot.z);
-                            p.transform.RotateAround(pivot, Vector3.right, yAngle);
-                        }else{
-                            Vector3 pivot = new Vector3(rotationPivot.x, rotationPivot.y, p.Pos.z);
-                            p.transform.RotateAround(pivot, Vector3.forward, xAngle);
-                        }
+                        p.transform.RotateAround(rotationPivot, viewDir, xAngle);
+
+                        // if(Input.GetKey(KeyCode.LeftAlt)){
+                        //     Vector3 pivot = new Vector3(rotationPivot.x, rotationPivot.y, rotationPivot.z);
+                        //     p.transform.RotateAround(pivot, Vector3.up, -xAngle);
+                        // }else if(Input.GetKey(KeyCode.RightAlt)){
+                        //     Vector3 pivot = new Vector3(rotationPivot.x, rotationPivot.y, rotationPivot.z);
+                        //     p.transform.RotateAround(pivot, Vector3.right, yAngle);
+                        // }else{
+                        //     Vector3 pivot = new Vector3(rotationPivot.x, rotationPivot.y, p.Pos.z);
+                        //     p.transform.RotateAround(pivot, Vector3.forward, xAngle);
+                        // }
 
                     }
 
@@ -2197,7 +2267,7 @@ void DragCamera()
                     //if(recenterScalePivot) scalePivot = center;  //this leads to an infinite loop
 
                     cursor.transform.position = cam.WorldToScreenPoint(scalePivot);
-                    scaleDelta += delta;
+                    scaleDelta += (Vector3)deltaScreen;
                     foreach (Point p in selectedPoints)
                     {
                         Vector3 diff = p.initPos - scalePivot;

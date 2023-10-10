@@ -210,7 +210,6 @@ public class StellationController : MonoBehaviour {
 	public void AdjustCamera()
 	{
 		CameraFollow.instance.desiredFOV = desiredFOV;
-
 	}
 
 	public void Awake()

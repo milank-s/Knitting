@@ -91,6 +91,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		gravity,
 		decelerationTimer;
 
+	[HideInInspector]
+	public Vector3 curDirection;
+
 	public float normalizedAccuracy => (1 + accuracy)/2f;
 	public float potentialSpeed => flow + speed + boost;
 	public float easedAccuracy => Mathf.Clamp01(Mathf.Pow(Mathf.Clamp01(accuracy), accuracyCoefficient));
@@ -466,7 +469,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(curSpline != null){
 				//accuracy = GetAccuracy(progress);
 				float maxAcc = -100;
-				for(int i = 0; i < 5; i++){
+				for(int i = 0; i < 1; i++){
 					float sign = goingForward ? 1 : -1;
 					float curAcc = GetAccuracy(progress + (float)i * sign * 0.05f);
 					if(curAcc > maxAcc){
@@ -805,8 +808,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 	public float GetAccuracy(float prog){
 		prog = Mathf.Clamp01(prog);
-		Vector3 splineDir = curSpline.GetDirection (prog);
-		if(!goingForward){splineDir = -splineDir;}
+		curDirection = curSpline.GetDirection (prog);
+		if(!goingForward){curDirection = -curDirection;}
 		
 		//Debug.DrawLine(transform.position, transform.position + splineDir, Color.red);
 		
@@ -814,15 +817,18 @@ public class PlayerBehaviour: MonoBehaviour {
 		//splineDir.z = 0;
 
 		
-		Debug.DrawLine(transform.position, transform.position + splineDir, Color.yellow);
+		//Debug.DrawLine(transform.position, transform.position + curDirection, Color.yellow);
 
-		Vector3 screenPointAtStart = Services.mainCam.WorldToScreenPoint(transform.position);
-		Vector3 screenPointAtEnd = Services.mainCam.WorldToScreenPoint(transform.position + splineDir);
+		Vector2 screenPointAtStart = Services.mainCam.WorldToViewportPoint(transform.position);
+		Vector2 screenPointAtEnd = Services.mainCam.WorldToViewportPoint(transform.position + curDirection);
 
-		Vector3 screenSpaceDirection = (screenPointAtEnd - screenPointAtStart).normalized;
+		Vector2 screenSpaceDirection = (screenPointAtEnd - screenPointAtStart).normalized;
 
-		//Debug.DrawLine(transform.position, transform.position + screenSpaceDirection, Color.green);
+		Debug.DrawLine(transform.position, transform.position + (Vector3)screenSpaceDirection, Color.magenta);
+		Debug.DrawLine(transform.position, transform.position + (Vector3)cursorDir, Color.cyan);
 
+
+		//we have to find a way to flatten the cursor dir to screen space as well
 		float alignment = Vector2.Angle (cursorDir, screenSpaceDirection);
 
 		return (90 - alignment) / 90;
@@ -1392,9 +1398,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		float speedGain = (easedAccuracy - 0.66f) * 3f;
-		Vector3 curSplineDir = curSpline.GetDirection(progress);
-		float gravityCoefficient = Mathf.Clamp01(-curSplineDir.y);
-		float gravityPull = -curSplineDir.y - curSplineDir.z;
+	
+		float gravityCoefficient = Mathf.Clamp01(-curDirection.y);
+		float gravityPull = -curDirection.y - curDirection.z;
 
 		// speedGain = speedGain > 0 ? speedGain * acceleration : speedGain * decay;
 		
@@ -1950,7 +1956,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
 			screenPos += new Vector3(cursorDir.x / Services.mainCam.aspect, cursorDir.y, 0)/cursorDistance;
-			screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Mathf.Abs(transform.position.z - Services.mainCam.transform.position.z));
+			screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), transform.position.z);
 			cursorPos = Services.mainCam.ViewportToWorldPoint(screenPos);
 		}
 

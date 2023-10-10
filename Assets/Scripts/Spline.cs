@@ -925,8 +925,7 @@ public class Spline : MonoBehaviour
 
 	public Vector3 GetVelocity (float t)
 	{
-		int i = SplinePoints.IndexOf (Selected);
-		return GetVelocityAtIndex (i, t);
+		return GetVelocityAtIndex (selectedIndex, t);
 	}
 
 	public void UpdateSplineSegment(int i, int segmentIndex, float t){

@@ -7,13 +7,15 @@ public class CameraFollow : MonoBehaviour {
 	public Transform target;
 	private Vector3 velocity = Vector2.zero;
 	public Vector3 offset;
+	Vector3 nudge;
+	Vector3 shake;
+	Vector3 lerpedPos;
 	public Camera cam;
 	public bool fixedCamera;
 
 	public bool lockX, lockY, lockZ;
 	public float desiredFOV;
 	public static Vector3 targetPos;
-	Vector3 nudge = Vector3.zero;
 	
 	public static CameraFollow instance;
 	// Use this for initialization
@@ -48,18 +50,35 @@ public class CameraFollow : MonoBehaviour {
 		//find its bounds
 		// get around them
 
-		Vector3 desiredPos = Services.Player.transform.position;
-		desiredPos.z = Services.Player.transform.position.z + offset.z;
-		
+		Vector3 pos = Services.Player.transform.position;
+		Vector3 playerDir = Services.PlayerBehaviour.curDirection;
+		Vector3 toPlayer;
 
-		
+		if(Services.PlayerBehaviour.state == PlayerState.Traversing){
 
+			// Vector3 pole = playerDir.x > 0? Vector3.up : Vector3.down;
+			Vector3 pole = Vector3.up;
+			toPlayer = Vector3.Cross(pole, Services.PlayerBehaviour.curDirection).normalized;
+
+			Debug.DrawLine(pos, pos + pole, Color.green);
+			Debug.DrawLine(pos, pos + Services.PlayerBehaviour.curDirection, Color.red);
+			Debug.DrawLine(pos, pos + toPlayer, Color.blue);
+
+			transform.rotation = Quaternion.LookRotation(toPlayer, Vector3.up);
+
+		}else{
+			toPlayer = transform.forward;
+		}
+
+		//this now needs to be rotated using the current player direction pole
+		pos += toPlayer * offset.z;
+		
 		if(Services.PlayerBehaviour.state != PlayerState.Flying){
 			
 			if(Services.PlayerBehaviour.state == PlayerState.Traversing){
 				//nudge wasn't working with backwards ughhhh
 				
-					nudge = Services.PlayerBehaviour.curSpline.GetVelocity(Services.PlayerBehaviour.progress);
+					nudge = Services.PlayerBehaviour.curDirection;
 
 				if(!Services.PlayerBehaviour.goingForward){
 					nudge = -nudge;
@@ -74,32 +93,22 @@ public class CameraFollow : MonoBehaviour {
 			}
 			
 		}else{
-			nudge = Services.PlayerBehaviour.playerSprite.transform.up;
+			nudge = transform.TransformVector(Services.PlayerBehaviour.cursorDir);
 		}
 
-		desiredPos += nudge/5f;
-
-		
-		
 		if(lockX){
-			desiredPos.x = targetPos.x;
+			pos.x = targetPos.x;
 		}
 
 		if(lockY){
-			desiredPos.y = targetPos.y;
+			pos.y = targetPos.y;
 		}
 
 		if(lockZ){
-			if(Services.main.activeStellation != null){
-				desiredPos.z = Services.main.activeStellation.pos.z + offset.z;
-			}else{
-				desiredPos.z = targetPos.z;
-			}
+			pos.z = targetPos.z;
 		}
-		
 	
 		cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, desiredFOV, Time.deltaTime * 3);
-
 
 		float height;
 		float yPos;
@@ -113,17 +122,14 @@ public class CameraFollow : MonoBehaviour {
 				  (Services.PlayerBehaviour.actualSpeed + 0.5f)/2f 
 			: Vector3.zero;
 
-		Vector3 finalPos = new Vector3(desiredPos.x, desiredPos.y, desiredPos.z);
-		
-		transform.position = Vector3.SmoothDamp(transform.position, finalPos + shake,
-			ref velocity, 0.25f);
+		lerpedPos = Vector3.SmoothDamp(lerpedPos, nudge/5f + shake,
+			ref velocity, speed);
 
 		height = Mathf.Abs(CameraDolly.topBound - CameraDolly.bottomBound);
 		yPos = Mathf.Lerp(CameraDolly.bottomBound, CameraDolly.topBound, 0.5f);
 		xPos = Mathf.Lerp(CameraDolly.leftBound, CameraDolly.rightBound, 0.5f);
 
-
-		
+		transform.position = pos + lerpedPos;
 		//		if (fixedCamera && Services.PlayerBehaviour.curSpline != null)
 //		{
 //			Vector3 curSplinePos = Services.PlayerBehaviour.curSpline.transform.position;
