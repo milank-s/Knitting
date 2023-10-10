@@ -616,12 +616,10 @@ public class Point : MonoBehaviour
 	{
 
 		bool buttonUp = Services.PlayerBehaviour.buttonUp;
-		bool buttonDown = Services.PlayerBehaviour.buttonDown;
+		bool buttonPressed = Services.PlayerBehaviour.buttonWasPressed;
+
+		if(Services.PlayerBehaviour.buttonDown) return false;
 		
-		if (buttonDown)
-		{
-			return false;
-		}
 		
 		switch (pointType)
 		{
@@ -653,7 +651,7 @@ public class Point : MonoBehaviour
 				break;
 			
 			case PointTypes.stop:
-				if (buttonUp)
+				if (buttonPressed)
 				{
 					return true;
 				}
@@ -663,7 +661,7 @@ public class Point : MonoBehaviour
 				}
 				break;
 			case PointTypes.connect:
-			if (buttonUp)
+			if (buttonPressed)
 				{
 					return true;
 				}
@@ -675,7 +673,7 @@ public class Point : MonoBehaviour
 
 			case PointTypes.fly:
 
-				if (buttonUp)
+				if (buttonPressed)
 				{
 					return true;
 				}

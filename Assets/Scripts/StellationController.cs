@@ -788,7 +788,6 @@ public class StellationController : MonoBehaviour {
 		CameraFollow.instance.lockZ = lockZ;
 
 		Vector3 targetPos = center;
-		targetPos.z += CameraFollow.instance.offset.z;
 
 
 		

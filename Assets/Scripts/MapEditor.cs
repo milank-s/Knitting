@@ -364,6 +364,7 @@ public class MapEditor : MonoBehaviour
         lockXToggle.isOn = controller.lockX;
         lockYToggle.isOn = controller.lockY;
         lockZToggle.isOn = controller.lockZ;
+
         ChangeWinCondition((int)controller.unlockMethod);
         
         //load from controller name
@@ -1276,13 +1277,13 @@ public class MapEditor : MonoBehaviour
     }
 
     public void SetCameraPos(){
-        controller.cameraPos = Services.mainCam.transform.position;
-        Debug.Log("set camera pos");
+        Vector3 pos = Services.mainCam.transform.position;
+        pos.z -= CameraFollow.instance.offset.z;
+        controller.cameraPos = pos;
     }
 
     public void UseCameraPos(bool b){
         controller.setCameraPos = b;
-        Debug.Log("use camera pos");
     }
 
     public void LoadFromDropDown(Int32 i)
