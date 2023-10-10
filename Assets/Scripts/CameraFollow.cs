@@ -64,14 +64,15 @@ public class CameraFollow : MonoBehaviour {
 			Debug.DrawLine(pos, pos + Services.PlayerBehaviour.curDirection, Color.red);
 			Debug.DrawLine(pos, pos + toPlayer, Color.blue);
 
-			transform.rotation = Quaternion.LookRotation(toPlayer, Vector3.up);
+			// transform.rotation = Quaternion.LookRotation(toPlayer, Vector3.up);
 
 		}else{
 			toPlayer = transform.forward;
 		}
 
 		//this now needs to be rotated using the current player direction pole
-		pos += toPlayer * offset.z;
+		// pos += toPlayer * offset.z;
+		pos += offset;
 		
 		if(Services.PlayerBehaviour.state != PlayerState.Flying){
 			

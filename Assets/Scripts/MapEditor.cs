@@ -138,6 +138,14 @@ public class MapEditor : MonoBehaviour
     {
         get { return Vector3.Lerp(upperRight, lowerLeft, 0.5f); }
     }
+
+    private Vector3 bounds{
+          get { return upperRight - lowerLeft; }
+    }
+
+    private Vector3 extents{
+          get { return bounds/2f; }
+    }
     private Vector3 upperRight, lowerLeft;
 
     private Point hitPoint;
@@ -965,25 +973,24 @@ public class MapEditor : MonoBehaviour
     void CenterCamera(){
         //we want to play the camera at the closest bound based on its view dir
         //and then add the offset
-
-
         cam.transform.position = center;
+
         if(viewDir == Vector3.left){
-            cam.transform.position -= (center.x + CameraFollow.instance.offset.z) * Vector3.right;
+            cam.transform.position += (extents.x + cameraDistance) * Vector3.right;
         }else if(viewDir == Vector3.right){
-            cam.transform.position += (center.x + CameraFollow.instance.offset.z) * Vector3.right;
+            cam.transform.position -= (extents.x + cameraDistance) * Vector3.right;
         }
 
          if(viewDir == Vector3.up){
-            cam.transform.position += (center.y + CameraFollow.instance.offset.z) * Vector3.up;
+            cam.transform.position -= (extents.y + cameraDistance) * Vector3.up;
         }else if(viewDir == Vector3.down){
-            cam.transform.position -= (center.y + CameraFollow.instance.offset.z) * Vector3.up;
+            cam.transform.position += (extents.y + cameraDistance) * Vector3.up;
         }
 
          if(viewDir == Vector3.forward){
-            cam.transform.position += (center.z + CameraFollow.instance.offset.z) * Vector3.forward;
+            cam.transform.position -= (extents.z + cameraDistance) * Vector3.forward;
         }else if(viewDir == Vector3.back){
-            cam.transform.position -= (center.z + CameraFollow.instance.offset.z) * Vector3.forward;
+            cam.transform.position += (extents.z + cameraDistance) * Vector3.forward;
         }
     }
     void EditSelectedPoint()

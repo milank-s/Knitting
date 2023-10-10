@@ -1956,7 +1956,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
 			screenPos += new Vector3(cursorDir.x / Services.mainCam.aspect, cursorDir.y, 0)/cursorDistance;
-			screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), transform.position.z);
+			screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), -CameraFollow.instance.offset.z);
 			cursorPos = Services.mainCam.ViewportToWorldPoint(screenPos);
 		}
 
