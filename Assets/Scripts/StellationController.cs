@@ -165,7 +165,7 @@ public class StellationController : MonoBehaviour {
 						}
 
 						if(s.SplinePoints[i].pointType != PointTypes.ghost){
-							Gizmos.DrawWireSphere(s.SplinePoints[i].transform.position, 0.1f);
+							Gizmos.DrawWireSphere(s.SplinePoints[i].transform.position, 0.033f);
 						}
 
 						Gizmos.color = Color.white;

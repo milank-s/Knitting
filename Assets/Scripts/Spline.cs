@@ -1031,12 +1031,12 @@ public class Spline : MonoBehaviour
 
 	public Vector3 GetInitVelocity (Point p)
 	{
-		return GetVelocityAtIndex (GetPointIndex (p), 0.01f);
+		return GetVelocityAtIndex (GetPointIndex (p), 0.1f);
 	}
 
 	public Vector3 GetReversedInitVelocity (Point p)
 	{
-		return -GetVelocityAtIndex (GetPointIndex (p), 0.99f);
+		return -GetVelocityAtIndex (GetPointIndex (p), 0.9f);
 	}
 
 	public float CompareAngleAtPoint (Vector2 direction, Point p, out Vector3 dir, bool reversed = false)

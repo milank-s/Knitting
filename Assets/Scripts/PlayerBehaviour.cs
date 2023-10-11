@@ -1782,7 +1782,9 @@ public class PlayerBehaviour: MonoBehaviour {
 						Vector2 p1 = Services.mainCam.WorldToScreenPoint(curPoint.Pos);
 						Vector2 p2 = Services.mainCam.WorldToScreenPoint(p.Pos);
 						Vector3 toPoint = (p2 - p1).normalized;
-						float screenAngle = Vector2.Angle(cursorDir, toPoint);
+						float directAngle = Vector2.Angle(cursorDir, toPoint);
+
+						bool tangent = false;
 
 						Vector3 startdir = Vector3.zero;
 
@@ -1795,27 +1797,27 @@ public class PlayerBehaviour: MonoBehaviour {
 							curAngle = s.CompareAngleAtPoint (cursorDir, curPoint, out startdir);
 
 						}else{
-							Debug.Log("!!!!!!!!!!!!!!!!!!ILLEGAL!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+							Debug.Log("!!!!!!!!!ILLEGAL!!!!!!!!");
 						}
 						
+						if(Mathf.Abs(Vector3.Dot(startdir.normalized, Services.mainCam.transform.forward)) > 0.75f){
+							tangent = true;
+						}
 						// adjustedAngle = (adjustedAngle + curAngle) / 2f;
 						//adjustedAngle = screenAngle < curAngle ? screenAngle : curAngle;
-						adjustedAngle = curAngle;
+						adjustedAngle = tangent ? directAngle : curAngle;
 						
 						Vector2 screenDir = Services.mainCam.WorldToScreenPoint(curPoint.Pos + startdir);
 						screenDir = (screenDir - p1).normalized;
 
-						// composite
-						Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(Vector3.Lerp(toPoint, screenDir, 0.5f)), Color.magenta/2f);
-						
-						//I would like to use this
-						Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(toPoint), Color.blue/3f);
-						
+						if(tangent){
+							Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(toPoint), Color.blue/3f);
+						}else{
 						//this is being used but is buggy
-						Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection((Vector3)screenDir)/3f, Color.red);
-						
+							Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection((Vector3)screenDir)/3f, Color.magenta);
+						}
 						//this isn't being used, just for my own sanity
-						//Debug.DrawLine(transform.position, transform.position + startdir.normalized, Color.magenta/2.5f);
+						Debug.DrawLine(transform.position, transform.position + startdir.normalized, Color.black/5f);
 						
 
 						if (adjustedAngle < minAngle) {
