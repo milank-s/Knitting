@@ -1811,7 +1811,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						screenDir = (screenDir - p1).normalized;
 
 						if(tangent){
-							Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(toPoint), Color.blue/3f);
+							Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(toPoint)/3f, Color.blue);
 						}else{
 						//this is being used but is buggy
 							Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection((Vector3)screenDir)/3f, Color.magenta);
