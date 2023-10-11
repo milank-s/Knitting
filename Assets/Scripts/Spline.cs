@@ -1000,9 +1000,6 @@ public class Spline : MonoBehaviour
 		
 		Vector3 v = GetFirstDerivative (SplinePoints [i].Pos, Point2.Pos, r1, r2, t);
 
-		//this was..... probably a hangover from finding the point in worldspace. fug
-		// v = transform.TransformPoint (v) - transform.position;
-
 		// why did I need this
 		// if (v == Vector3.zero && t == 1) {
 		// 	v = GetVelocityAtIndex (i, 0.99f);

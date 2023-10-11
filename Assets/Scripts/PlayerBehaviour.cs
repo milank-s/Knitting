@@ -78,7 +78,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public StateChange OnFlying;
 	public StateChange OnStoppedFlying;
 	public StateChange OnStoppedTraversing;
-	[HideInInspector] public float progress,
+	[HideInInspector] public float progress, adjustedProgress,
 		accuracy,
 		flow = 0,
 		boost,
@@ -93,7 +93,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	[HideInInspector]
 	public Vector3 curDirection;
-	public Vector3 directionDelta;
+	[HideInInspector]
+	public Vector3 deltaDir;
+	[HideInInspector]
+	public float deltaAngle;
 
 	public float normalizedAccuracy => (1 + accuracy)/2f;
 	public float potentialSpeed => flow + speed + boost;
@@ -816,8 +819,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		Vector3 newDirection = curSpline.GetDirection (prog);
 		if(!goingForward){newDirection = -newDirection;}
-
-		directionDelta = newDirection - curDirection;
+		
+		deltaAngle = Vector3.SignedAngle(newDirection, curDirection, Vector3.up);
+		deltaDir = newDirection - curDirection;
 		curDirection = newDirection;
 		
 		//Debug.DrawLine(transform.position, transform.position + splineDir, Color.red);
@@ -1496,13 +1500,16 @@ public class PlayerBehaviour: MonoBehaviour {
 					//minus the extra distance as a fraction of the distance travelled this iteration
 					//scaled to the difference of the positions
 					progress = step - (spillover/diff) * (step - prevStep);
+					adjustedProgress = progress;
 					return;
 				}else{
 					prevStep = step;
 				}
 			}
 
-			progress = 1.1f;
+			// progress = 1.1f; ????????????
+			progress = 1;
+			adjustedProgress = 1;
 			return;
 
 		}else{
@@ -1522,6 +1529,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					//plus the extra distance as a fraction of the distance travelled this iteration
 					//scaled to the difference of the positions
 					progress = step + (spillover/diff) * (prevStep - step);
+					adjustedProgress = 1-progress;
 					return;
 				}else{
 					prevStep = step;
@@ -1529,6 +1537,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 			progress = 0; 
+			adjustedProgress = 1;
 			return;
 		}
 	}

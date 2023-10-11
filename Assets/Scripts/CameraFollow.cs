@@ -2,7 +2,6 @@
 using System.Collections;
 
 public class CameraFollow : MonoBehaviour {
-	public Transform rotationVis;
 	public float speed;
 	public Camera uiCam;
 	public Transform target;
@@ -11,8 +10,8 @@ public class CameraFollow : MonoBehaviour {
 	Vector3 nudge;
 	Vector3 lerpedPos;
 
-
-	Quaternion rot;
+	float rot;
+	Vector3 delta;
 	public Camera cam;
 	public bool fixedCamera;
 
@@ -63,27 +62,41 @@ public class CameraFollow : MonoBehaviour {
 			//I wasn't smart enough to get this working
 			//why dont you just track the players rotation delta and apply it to the camera?
 			//obviously billboarding will make this a shitshow but it cant be that hard
-			Vector3 delta = Services.PlayerBehaviour.directionDelta;
-			Vector3 rot = (delta.z * 360f) * Vector3.up;
-			rotationVis.Rotate(rot);
+			rot += Services.PlayerBehaviour.deltaAngle;
+
+			if(rot > 360) rot -= 360;
+			if(rot < 0) rot += 360;
+
+			float radians = Mathf.Sin(rot * Mathf.Deg2Rad);
+
+			// toPlayer = Quaternion.AngleAxis(rot, Vector3.up) * Vector3.forward;
+			Quaternion r1 = Services.PlayerBehaviour.curPoint.transform.rotation;
+			Quaternion r2 = Services.PlayerBehaviour.pointDest.transform.rotation;
+			
+			toPlayer = Quaternion.AngleAxis(rot, Vector3.up) * Vector3.forward;
+
+
 			
 			Vector3 pole = Vector3.up;
 
-			toPlayer = Vector3.Cross(pole, Services.PlayerBehaviour.curDirection).normalized;
+			// toPlayer = Vector3.Cross(pole, Services.PlayerBehaviour.curDirection).normalized;
 
-			Debug.DrawLine(pos, pos + pole, Color.green);
-			Debug.DrawLine(pos, pos + Services.PlayerBehaviour.curDirection, Color.red);
-			Debug.DrawLine(pos, pos + toPlayer, Color.blue);
+			// Debug.DrawLine(pos, pos + pole, Color.green);
+			// Debug.DrawLine(pos, pos + Services.PlayerBehaviour.curDirection, Color.red);
+			// Debug.DrawLine(pos, pos + toPlayer, Color.blue);
 
-			// transform.rotation = Quaternion.LookRotation(toPlayer, Vector3.up);
+			float t = Services.PlayerBehaviour.progress;
+			if(!Services.PlayerBehaviour.goingForward) t = 1-t;
+			transform.rotation = Quaternion.Lerp(r1, r2, t);
+			Debug.DrawLine(pos, pos + transform.forward * 3);
 
 		}else{
 			toPlayer = transform.forward;
 		}
 
 		//this now needs to be rotated using the current player direction pole
-		// pos += toPlayer * offset.z;
-		pos += offset;
+		pos += transform.forward * offset.z;
+		// pos += offset;
 		
 		if(Services.PlayerBehaviour.state != PlayerState.Flying){
 			
