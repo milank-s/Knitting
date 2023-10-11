@@ -6,12 +6,9 @@ public class CameraFollow : MonoBehaviour {
 	public Camera uiCam;
 	public Transform target;
 	private Vector3 velocity = Vector2.zero;
-	public Vector3 offset;
 	Vector3 nudge;
-	Vector3 lerpedPos;
-
+	Vector3 offset;
 	float rot;
-	Vector3 delta;
 	public Camera cam;
 	public bool fixedCamera;
 
@@ -39,8 +36,10 @@ public class CameraFollow : MonoBehaviour {
 	
 	public void WarpToPosition(Vector3 pos)
 	{
+		//this assumes view dir is forward
+
 		targetPos = pos;
-		transform.position = pos + offset;	
+		transform.position = pos - Main.cameraDistance * Vector3.forward;	
 		cam.fieldOfView = desiredFOV;
 	}
 
@@ -95,8 +94,7 @@ public class CameraFollow : MonoBehaviour {
 		}
 
 		//this now needs to be rotated using the current player direction pole
-		pos += transform.forward * offset.z;
-		// pos += offset;
+		pos -= transform.forward * (Main.cameraDistance);
 		
 		if(Services.PlayerBehaviour.state != PlayerState.Flying){
 			
@@ -139,6 +137,8 @@ public class CameraFollow : MonoBehaviour {
 		float yPos;
 		float xPos;
 
+		float zoom = Services.PlayerBehaviour.state == PlayerState.Flying ? 1 : 0;
+
 		Vector3 shake = Services.PlayerBehaviour.state == 
 		
 		PlayerState.Traversing ? 
@@ -147,104 +147,13 @@ public class CameraFollow : MonoBehaviour {
 				  (Services.PlayerBehaviour.actualSpeed + 0.5f)/2f 
 			: Vector3.zero;
 
-		lerpedPos = Vector3.SmoothDamp(lerpedPos, nudge/5f + shake,
-			ref velocity, speed);
+		Vector3 lerpedPos = nudge/5f + shake - transform.forward * (zoom);
+		offset = Vector3.SmoothDamp(offset, lerpedPos, ref velocity, speed);
 
 		height = Mathf.Abs(CameraDolly.topBound - CameraDolly.bottomBound);
 		yPos = Mathf.Lerp(CameraDolly.bottomBound, CameraDolly.topBound, 0.5f);
 		xPos = Mathf.Lerp(CameraDolly.leftBound, CameraDolly.rightBound, 0.5f);
 
-		transform.position = pos + lerpedPos;
-		//		if (fixedCamera && Services.PlayerBehaviour.curSpline != null)
-//		{
-//			Vector3 curSplinePos = Services.PlayerBehaviour.curSpline.transform.position;
-//			targetPos = new Vector3(curSplinePos.x, curSplinePos.y,
-//				Services.PlayerBehaviour.transform.position.z + offset.z);
-//		}
-//		else
-//		{
-//			targetPos = new Vector3(target.position.x, target.position.y,
-//				Services.PlayerBehaviour.transform.position.z + offset.z);
-//			//desiredFOV = Mathf.Clamp(CameraDolly.FOVForHeightAndDistance(height, -offset.z) + 5, 15f, 100);
-//		}
-
-		//		if (target.position.x > CameraDolly.rightBound)
-//		{
-//			CameraDolly.rightBound = target.position.x;
-//		}
-//
-//		if (target.position.x < CameraDolly.leftBound)
-//		{
-//			CameraDolly.leftBound = target.position.x;
-//		}
-//
-//		if (target.position.y > CameraDolly.topBound)
-//		{
-//			CameraDolly.topBound = target.position.y;
-//		}
-//
-//		if (target.position.y < CameraDolly.bottomBound)
-//		{
-//			CameraDolly.bottomBound = target.position.y;
-//		}
-//
-//		CameraDolly.topBound -= Time.deltaTime / 5f;
-//		CameraDolly.bottomBound += Time.deltaTime / 5f;
-//		CameraDolly.rightBound -= Time.deltaTime / 5f;
-//		CameraDolly.leftBound += Time.deltaTime / 5f;
-
-//
-//		CameraDolly.topBound =
-//			Mathf.Clamp(CameraDolly.topBound, target.position.y + 0.25f, target.position.y + 100);
-//		CameraDolly.bottomBound =
-//			Mathf.Clamp(CameraDolly.bottomBound, target.position.y - 100, target.position.y - 0.25f);
-//		CameraDolly.rightBound =
-//			Mathf.Clamp(CameraDolly.rightBound, target.position.x + 0.25f, target.position.x + 100);
-//		CameraDolly.leftBound =
-//			Mathf.Clamp(CameraDolly.leftBound, target.position.x - 100, target.position.x - 0.25f);
-		
-		// if (Services.Cursor.transform.position.x > CameraDolly.CameraDolly.rightBound) {
-		// 	CameraDolly.rightBound = Services.Cursor.transform.position.x;
-		// } else {
-		// 	CameraDolly.rightBound = CameraDolly.CameraDolly.rightBound;
-		// }
-		//
-		// if (Services.Cursor.transform.position.x < CameraDolly.CameraDolly.leftBound) {
-		// 	CameraDolly.leftBound = Services.Cursor.transform.position.x;
-		// } else {
-		// 	CameraDolly.leftBound = CameraDolly.CameraDolly.leftBound;
-		// }
-		//
-		// if (Services.Cursor.transform.position.y > CameraDolly.CameraDolly.topBound) {
-		// 	CameraDolly.topBound = Services.Cursor.transform.position.y;
-		// } else {
-		// 	CameraDolly.topBound = CameraDolly.CameraDolly.topBound;
-		// }
-		//
-		// if (Services.Cursor.transform.position.y < CameraDolly.CameraDolly.bottomBound) {
-		// 	CameraDolly.bottomBound = Services.Cursor.transform.position.y;
-		// } else {
-		// 	CameraDolly.bottomBound = CameraDolly.CameraDolly.bottomBound;
-		// }
-		
-		// if(target.GetComponent<PlayerBehaviour>().state != PlayerState.Animating){
-		// 	cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, desiredFOV, Time.deltaTime * speed);
-		// 	transform.position = Vector3.SmoothDamp (transform.position, target.position + offset, ref velocity, speed);
-		// }else{
-
-		//-transform.position.z
-		// Debug.Log(CameraDolly.FOVForHeightAndDistance (height, offset.z));
-		// this is negative
-		
-		
-		// new Vector3(curSplinePos.x, curSplinePos.y Services.PlayerBehaviour.transform.position.z)
-		//Vector3.Lerp(Services.PlayerBehaviour.transform.position, new Vector3(xPos, yPos, Services.PlayerBehaviour.transform.position.z), 1f)
-
-//					transform.position = new Vector3(targetPos.x, targetPos.y, Services.PlayerBehaviour.transform.position.z + offset.z);
-		// }
-
-		// Vector3 targetPos = Vector3.Lerp(new Vector3 (xPos, yPos, target.position.z + offset.z), target.position + offset, 0.5f);
-
-//		GetComponent<Camera>().orthographicSize = 10 + Mathf.Abs(target.GetComponent<PlayerTraversal> ().GetFlow());
+		transform.position = pos + offset;
 	}
 }

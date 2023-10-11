@@ -21,10 +21,9 @@ public class SplineUtil : MonoBehaviour {
 
 
 	public static Vector3 GetScreenSpaceDirection(Vector3 pos, Vector3 dir){
-		Vector3 splineStartPoint = Services.mainCam.WorldToScreenPoint(pos);
-		Vector3 screenPointAtEnd = Services.mainCam.WorldToScreenPoint(pos + dir.normalized);
-		Vector3 screenSpaceDirection = (screenPointAtEnd - splineStartPoint).normalized;
-		return screenSpaceDirection;
+		Vector2 start = Services.mainCam.WorldToViewportPoint(pos);
+		Vector2 end = Services.mainCam.WorldToViewportPoint(pos + dir);
+		return (end - start).normalized;
 	}
 	static public SplinePointPair ConnectPoints(Spline s, Point p1, Point p2){
 

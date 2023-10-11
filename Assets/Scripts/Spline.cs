@@ -1020,13 +1020,13 @@ public class Spline : MonoBehaviour
 
 	public int GetPointIndex (Point point)
 	{
-		foreach (Point p in SplinePoints) {
-			if (point == p) {
-				return SplinePoints.IndexOf (p);
-			}
-		}
+		// foreach (Point p in SplinePoints) {
+		// 	if (point == p) {
+				return SplinePoints.IndexOf (point);
+		// 	}
+		// }
 
-		return 0;
+		// return 0;
 	}
 
 	public Vector3 GetInitVelocity (Point p)
@@ -1039,9 +1039,9 @@ public class Spline : MonoBehaviour
 		return -GetVelocityAtIndex (GetPointIndex (p), 0.99f);
 	}
 
-	public float CompareAngleAtPoint (Vector3 direction, Point p, bool reversed = false)
+	public float CompareAngleAtPoint (Vector2 direction, Point p, out Vector3 dir, bool reversed = false)
 	{
-		Vector3 dir = Vector3.zero;
+		dir = Vector3.zero;
 		if (reversed) {
 			dir = GetReversedInitVelocity (p);
 		} else {

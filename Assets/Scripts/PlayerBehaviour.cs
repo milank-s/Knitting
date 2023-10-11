@@ -55,6 +55,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		get { return Mathf.Clamp01(curSpeed / 2); }
 	}
+
+	[HideInInspector]
 	public float flyingSpeed;
 
 	public bool glitching;
@@ -93,6 +95,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	[HideInInspector]
 	public Vector3 curDirection;
+
+	[HideInInspector]
+	public Vector2 screenSpaceDir;
 	[HideInInspector]
 	public Vector3 deltaDir;
 	[HideInInspector]
@@ -381,6 +386,14 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void Step()
 	{
 		
+		Vector2 p1 = Services.mainCam.WorldToViewportPoint(transform.position);
+		Vector2 p2 = Services.mainCam.WorldToViewportPoint(transform.position + curDirection);
+
+		screenSpaceDir = (p2 - p1).normalized;
+
+		Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(cursorDir), Color.cyan);
+		Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(screenSpaceDir), Color.magenta);
+
 		if(state == PlayerState.Traversing){
 			glitching = accuracy < 0 || joystickLocked;
 		}else if(state == PlayerState.Switching){
@@ -473,14 +486,15 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(curSpline != null){
 				//accuracy = GetAccuracy(progress);
 				float maxAcc = -100;
-				for(int i = 0; i < 1; i++){
-					float sign = goingForward ? 1 : -1;
-					float curAcc = GetAccuracy(progress + (float)i * sign * 0.05f);
-					if(curAcc > maxAcc){
-						maxAcc = curAcc;
-					}
-				}
+				// for(int i = 0; i < 1; i++){
+				// 	float sign = goingForward ? 1 : -1;
+				// 	float curAcc = GetAccuracy(progress + (float)i * sign * 0.05f);
+				// 	if(curAcc > maxAcc){
+				// 		maxAcc = curAcc;
+				// 	}
+				// }
 
+				maxAcc = GetAccuracy(progress);
 				//Code for placing player sprite on the line instead of the spline
 
 				//find out the real position on the cursplines line
@@ -539,28 +553,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		//we arent even using this anymore
 		if (state != PlayerState.Animating && state != PlayerState.Flying && curPoint.HasSplines () && curSpline != null) {
 
-
 			//curSpline.UpdateSpline();
 //			ManageSound();
-
-			//curPoint.controller.Step();
-
-			foreach(Spline s in curPoint._connectedSplines){
-				//should always be drawn
-				if(!s.locked)
-				{
-					//s.DrawSpline( s.SplinePoints.IndexOf(curPoint));
-				}
-			}
-
-			if(pointDest != null){
-				foreach(Spline s in pointDest._connectedSplines){
-					if(!s.locked && s!=curSpline)
-					{
-						//s.DrawSpline(s.SplinePoints.IndexOf(pointDest));
-					}
-				}
-			}
 
 			//old reset button
 			if (flow <= 0.01f && state == PlayerState.Traversing) {
@@ -633,11 +627,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (!foundConnection && CanLeavePoint())
 		{
 			cursorSprite.sprite = traverseSprite;
-			// cursorSprite.transform.position = pointDest.Pos;
 
 			if (curPoint.pointType == PointTypes.ghost)
 			{
 				canTraverse = true;
+
 				if (curSpline != null)
 				{
 					curSpline.SetSelectedPoint(curPoint);
@@ -649,18 +643,22 @@ public class PlayerBehaviour: MonoBehaviour {
 				bool newPointSelected = prevPointDest == null || prevPointDest != pointDest;
 
 				if (newPointSelected){
-					//Services.fx.ShowSplineDirection(curSpline);
+					// Services.fx.ShowSplineDirection(curSpline);
 				}
 
 				if( pointDest.pointType != PointTypes.ghost)
 				{
 
 					Services.fx.ShowNextPoint(pointDest);
+
 					if (newPointSelected)
 					{
 						Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, pointDest.transform);
 					}
 
+				}else{
+					
+					Services.fx.nextPointSprite.enabled = false;
 				}
 			}
 
@@ -832,17 +830,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		//Debug.DrawLine(transform.position, transform.position + curDirection, Color.yellow);
 
-		Vector2 screenPointAtStart = Services.mainCam.WorldToViewportPoint(transform.position);
-		Vector2 screenPointAtEnd = Services.mainCam.WorldToViewportPoint(transform.position + curDirection);
-
-		Vector2 screenSpaceDirection = (screenPointAtEnd - screenPointAtStart).normalized;
-
-		Debug.DrawLine(transform.position, transform.position + (Vector3)screenSpaceDirection, Color.magenta);
-		Debug.DrawLine(transform.position, transform.position + (Vector3)cursorDir, Color.cyan);
-
-
 		//we have to find a way to flatten the cursor dir to screen space as well
-		float alignment = Vector2.Angle (cursorDir, screenSpaceDirection);
+		float alignment = Vector2.Angle (cursorDir, screenSpaceDir);
 
 		return (90 - alignment) / 90;
 		//StopAngleDiff = Mathf.Lerp (20, 50, Mathf.Abs(flow));
@@ -1771,6 +1760,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 						if((!loopingBackwards && indexDifference > 1) || (!loopingForwards && indexDifference < -1)){
 							//the delta in point index is greater than one but its not a loop. illegal
+							Debug.Log("!!!!!!!! ILLEGAL !!!!!!!!!");
 							continue;
 						}
 						
@@ -1788,26 +1778,39 @@ public class PlayerBehaviour: MonoBehaviour {
 						
 						// indexDifference > 1 means we looped backwards
 						// indexDifference == -1 means we went backward one point
-			
+
+						Vector2 p1 = Services.mainCam.WorldToViewportPoint(curPoint.Pos);
+						Vector2 p2 = Services.mainCam.WorldToViewportPoint(p.Pos);
+						float screenAngle = Vector2.Angle(cursorDir, (p2 - p1));
+
+						Vector3 startdir = Vector3.zero;
+
 						if (canMoveBackward && backwards && s.bidirectional) {
 							
-							curAngle = s.CompareAngleAtPoint (cursorDir, p, true);	
-							Vector3 next = p.Pos;
-							Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
-							adjustedAngle = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
-							adjustedAngle = (adjustedAngle + curAngle) / 2f;
+							curAngle = s.CompareAngleAtPoint (cursorDir, p, out startdir, true);	
 							
 						} else if(canMoveForward && forward){
 
-							curAngle = s.CompareAngleAtPoint (cursorDir, curPoint);
-							
-							//code that cheats towards the end position of the point could still be useful
-							Vector3 next = p.Pos;
-							Vector3 dirToNextPoint = (next - curPoint.Pos).normalized;
-							adjustedAngle = Vector3.Angle(cursorDir, SplineUtil.GetScreenSpaceDirection(curPoint.Pos, dirToNextPoint));
-							adjustedAngle = (adjustedAngle + curAngle) / 2f;
+							curAngle = s.CompareAngleAtPoint (cursorDir, curPoint, out startdir);
+
+						}else{
+							Debug.Log("!!!!!!!!!!!!!!!!!!ILLEGAL!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 						}
 						
+						// adjustedAngle = (adjustedAngle + curAngle) / 2f;
+						//adjustedAngle = screenAngle < curAngle ? screenAngle : curAngle;
+						adjustedAngle = curAngle;
+						
+						Vector2 screenDir = Services.mainCam.WorldToViewportPoint(curPoint.Pos + startdir);
+						screenDir = (screenDir - p1).normalized;
+
+						//this is being used but is buggy
+						Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection((Vector3)screenDir), Color.red);
+						
+						//this isn't being used, just for my own sanity
+						Debug.DrawLine(transform.position, transform.position + startdir, Color.magenta);
+						
+
 						if (adjustedAngle < minAngle) {
 							
 							minAngle = adjustedAngle;
@@ -1817,19 +1820,16 @@ public class PlayerBehaviour: MonoBehaviour {
 
 							if(forward){
 								facingForward = true;
-								maybeNextSpline.SetSelectedPoint(curPoint);
+								// maybeNextSpline.SetSelectedPoint(curPoint);
 							}else{
 								facingForward = false;
-								maybeNextSpline.SetSelectedPoint(maybeNextPoint);
+								// maybeNextSpline.SetSelectedPoint(maybeNextPoint);
 							}
 						}
 					}
 				}
 			}
 		}
-			//this is causing bugs
-
-// && (Input.GetButtonDown("Button1")
 			
 			if(actualAngle < 180){
 				accuracy = (90 - actualAngle) / 90;
@@ -1860,10 +1860,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if(facingForward){
 					progress = 0;
+					curDirection = curSpline.GetInitVelocity (curPoint);
 				}else{
 					progress = 1;
+					curDirection = curSpline.GetReversedInitVelocity (curPoint);
 				}
-
 				
 				return true;
 			}
@@ -1975,7 +1976,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
 			screenPos += new Vector3(cursorDir.x / Services.mainCam.aspect, cursorDir.y, 0)/cursorDistance;
-			screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), -CameraFollow.instance.offset.z);
+			screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Main.cameraDistance);
 			cursorPos = Services.mainCam.ViewportToWorldPoint(screenPos);
 		}
 
@@ -2204,9 +2205,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				//calculate distance here still?
 
-				VectorLine v = velocityLine2;
-				velocityLine2 = velocityLine;
-				velocityLine = v;
+				// VectorLine v = velocityLine2;
+				// velocityLine2 = velocityLine;
+				// velocityLine = v;
 
 				state = PlayerState.Traversing;
 
@@ -2222,9 +2223,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				//I guess I just enter splines while I'm stopped now
 				//it pisses me off but I'm sure there's some reason				
 				//curSpline.OnSplineEnter (true, curPoint, pointDest, false);
-
-				curDirection = curSpline.GetDirection(progress);
-				if(!goingForward){curDirection = -curDirection;}
 
 				//PlayerMovement ();
 

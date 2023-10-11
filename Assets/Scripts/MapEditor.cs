@@ -1352,7 +1352,7 @@ public class MapEditor : MonoBehaviour
 
     public void SetCameraPos(){
         Vector3 pos = Services.mainCam.transform.position;
-        pos.z -= CameraFollow.instance.offset.z;
+        pos.z += Main.cameraDistance;
         controller.cameraPos = pos;
     }
 

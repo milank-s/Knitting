@@ -778,7 +778,7 @@ public class StellationController : MonoBehaviour {
 		center = Vector3.Lerp(lowerLeft, upperRight, 0.5f);
 
 		float height = Mathf.Abs(upperRight.y - lowerLeft.y);
-		float fov = CameraDolly.FOVForHeightAndDistance(height, -CameraFollow.instance.offset.z) + 10f;
+		float fov = CameraDolly.FOVForHeightAndDistance(height, Main.cameraDistance) + 10f;
 	
 		//CameraFollow.instance.desiredFOV = fov;
 		//CameraFollow.instance.cam.fieldOfView = fov;
@@ -800,8 +800,6 @@ public class StellationController : MonoBehaviour {
 			}
 		}
 
-		
-	
 		//I think we need to set far clipping plane and fog here
 
 	}
