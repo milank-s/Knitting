@@ -1797,7 +1797,9 @@ public class PlayerBehaviour: MonoBehaviour {
 							curAngle = s.CompareAngleAtPoint (cursorDir, curPoint, out startdir);
 
 						}else{
-							Debug.Log("!!!!!!!!!ILLEGAL!!!!!!!!");
+							//ghost point intersections dont let you change direction
+							//leave cur angle infinite
+							continue;
 						}
 						
 						if(Mathf.Abs(Vector3.Dot(startdir.normalized, Services.mainCam.transform.forward)) > 0.75f){
