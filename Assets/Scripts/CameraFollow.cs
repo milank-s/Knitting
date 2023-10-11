@@ -87,7 +87,7 @@ public class CameraFollow : MonoBehaviour {
 			float t = Services.PlayerBehaviour.progress;
 			if(!Services.PlayerBehaviour.goingForward) t = 1-t;
 			transform.rotation = Quaternion.Lerp(r1, r2, t);
-			Debug.DrawLine(pos, pos + transform.forward * 3);
+			Debug.DrawLine(pos, pos - transform.forward * Main.cameraDistance);
 
 		}else{
 			toPlayer = transform.forward;

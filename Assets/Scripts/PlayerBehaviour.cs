@@ -386,13 +386,13 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void Step()
 	{
 		
-		Vector2 p1 = Services.mainCam.WorldToViewportPoint(transform.position);
-		Vector2 p2 = Services.mainCam.WorldToViewportPoint(transform.position + curDirection);
+		Vector2 p1 = Services.mainCam.WorldToScreenPoint(transform.position);
+		Vector2 p2 = Services.mainCam.WorldToScreenPoint(transform.position + curDirection);
 
 		screenSpaceDir = (p2 - p1).normalized;
 
-		Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(cursorDir), Color.cyan);
-		Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(screenSpaceDir), Color.magenta);
+		Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(cursorDir)/5f, Color.cyan);
+		Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(screenSpaceDir)/2f, Color.yellow);
 
 		if(state == PlayerState.Traversing){
 			glitching = accuracy < 0 || joystickLocked;
@@ -1779,9 +1779,10 @@ public class PlayerBehaviour: MonoBehaviour {
 						// indexDifference > 1 means we looped backwards
 						// indexDifference == -1 means we went backward one point
 
-						Vector2 p1 = Services.mainCam.WorldToViewportPoint(curPoint.Pos);
-						Vector2 p2 = Services.mainCam.WorldToViewportPoint(p.Pos);
-						float screenAngle = Vector2.Angle(cursorDir, (p2 - p1));
+						Vector2 p1 = Services.mainCam.WorldToScreenPoint(curPoint.Pos);
+						Vector2 p2 = Services.mainCam.WorldToScreenPoint(p.Pos);
+						Vector3 toPoint = (p2 - p1).normalized;
+						float screenAngle = Vector2.Angle(cursorDir, toPoint);
 
 						Vector3 startdir = Vector3.zero;
 
@@ -1801,14 +1802,20 @@ public class PlayerBehaviour: MonoBehaviour {
 						//adjustedAngle = screenAngle < curAngle ? screenAngle : curAngle;
 						adjustedAngle = curAngle;
 						
-						Vector2 screenDir = Services.mainCam.WorldToViewportPoint(curPoint.Pos + startdir);
+						Vector2 screenDir = Services.mainCam.WorldToScreenPoint(curPoint.Pos + startdir);
 						screenDir = (screenDir - p1).normalized;
 
+						// composite
+						Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(Vector3.Lerp(toPoint, screenDir, 0.5f)), Color.magenta/2f);
+						
+						//I would like to use this
+						Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(toPoint), Color.blue/3f);
+						
 						//this is being used but is buggy
-						Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection((Vector3)screenDir), Color.red);
+						Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection((Vector3)screenDir)/3f, Color.red);
 						
 						//this isn't being used, just for my own sanity
-						Debug.DrawLine(transform.position, transform.position + startdir, Color.magenta);
+						//Debug.DrawLine(transform.position, transform.position + startdir.normalized, Color.magenta/2.5f);
 						
 
 						if (adjustedAngle < minAngle) {
