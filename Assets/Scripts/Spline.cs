@@ -185,8 +185,6 @@ public class Spline : MonoBehaviour
 	{
 
 		isPlayerOn = false;
-		reactToPlayer = false;
-		//line.StopDrawing3DAuto();
 		drawTimer = 0;
 		
 		
@@ -214,21 +212,14 @@ public class Spline : MonoBehaviour
 			controller.OnCompleteSpline(this);
 		}
 	}
-	
-	public void OnSplineEnter (Point p1, Point p2)
+
+
+	public void OnSplineEnter ()
 	{
-		
-		selectedIndex = SplinePoints.IndexOf(p1);
-		playerIndex = selectedIndex * curveFidelity;
-		int i = SplinePoints.IndexOf (p1);
-		int j = SplinePoints.IndexOf (p2);
-
-		SetSelectedPoint(p1);
-		
-		//CalculateDistance ();
-
+	
 		isPlayerOn = true;
-
+		CalculateDistance();
+		
 		/*								Old sound stuff
 		if (enter) {
 			if (curSound != null && sound != null) {
@@ -257,21 +248,14 @@ public class Spline : MonoBehaviour
 				SplinePoints[i].AddPoint(SplinePoints[i-1]);
 				SplinePoints[i-1].AddPoint(SplinePoints[i]);
 			}
-
-			SetSelectedPoint(SplinePoints[i]);
-			//CalculateDistance();
-			//distance += segmentDistance;
 		}
 
 		if(closed){
 			StartPoint.AddPoint (EndPoint);
 			EndPoint.AddPoint(StartPoint);
-			SetSelectedPoint(EndPoint);
-			//CalculateDistance();
-			//distance += segmentDistance;
 		}
 
-		reactToPlayer = false;
+		selectedIndex = 0;
 	}
 
 	public void ChangeMaterial(int i)
@@ -338,8 +322,10 @@ public class Spline : MonoBehaviour
 	public void SetSelectedPoint(Point p){
 		
 		Selected = p;
+		playerIndex = selectedIndex * curveFidelity;
 		selectedIndex = SplinePoints.IndexOf(p);
 	}
+
 	public void SetSplineType(SplineType t)
 	{
 
@@ -488,8 +474,9 @@ public class Spline : MonoBehaviour
 				
 				distanceDelta = rollingDistance;
 
-				UpdateSplineSegment(i, index, step);
-
+				//trying to save meager amounts of compute
+				if(!populatedPointPositions || (isPlayerOn || reactToPlayer)) UpdateSplineSegment(i, index, step);
+				
 				distanceDelta = rollingDistance - distanceDelta;
 
 				DrawSplineSegment(i, index, step);
@@ -693,17 +680,8 @@ public class Spline : MonoBehaviour
 		Vector3 direction = pointVelocities[segmentIndex].normalized;
 		Vector3 distortionVector = new Vector3(-direction.y, direction.x, direction.z);
 	
-		//amplitude = Mathf.Clamp01(Services.PlayerBehaviour.potentialSpeed/5f) + shake;
-		//Mathf.Sin(Time.time * frequency + phase - segmentIndex)
-		
-		//NewFrequency(newFrequency);		
-
-		//(-Time.time * noiseSpeed) + 
-	
-
 		//I want to lerp to 0 at the 0 and 1 values of the spline if it is not closed
 
-		float distortionSmooth = 0;
 		float smooth = 1;
 
 		if(!closed){
@@ -718,20 +696,19 @@ public class Spline : MonoBehaviour
 
 		distortion = (Mathf.PerlinNoise((-Time.time * noiseSpeed) + (rollingDistance * frequency), 1.321738f) * 2f - 1f);
 
-		// if(!drawingIn){
+		
 			if (isPlayerOn)
 			{
-				//UnityEngine.Random.Range(- distortion, distortion)
 				v += distortionVector * distortion * magnitude * Mathf.Clamp01(invertedDistance) * smooth;
 			}
 			else if(reactToPlayer)
 			{
-				//I'm not even sure what this is doing
 				v += distortionVector * distortion * magnitude * Mathf.Clamp01(-indexDiff + 10);
 			}
-		// }
 
-		v += distortionVector * distortion * shake * smooth;
+		// float pointDistortion = Mathf.Lerp()
+		v += distortionVector * distortion * smooth * (shake);// + pointDistortion);
+		
 		SetLinePoint(v, segmentIndex);
 		
 //		if (segmentIndex < line.GetSegmentNumber())

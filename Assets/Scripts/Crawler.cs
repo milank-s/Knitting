@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Crawler : MonoBehaviour
 {
+    public bool forward = true;
     public float progress;
     private Spline spline;
     private int curIndex;
@@ -12,55 +13,69 @@ public class Crawler : MonoBehaviour
 
     public bool running;
 
+    int dir;
     [SerializeField] private SpriteRenderer mesh;
     
     void Step()
     {
         if (running)
         {
-            if (progress < 1)
-            {
-                progress += Time.deltaTime * speed; // spline.distance;
-                transform.position = spline.GetPointAtIndex(curIndex, progress);
-            }
-            else
-            {
+            if(progress < 0 || progress > 1){
                 GetNextPoint();
             }
+
+          
+            progress += Time.deltaTime * speed * dir; // spline.distance;
+               
+            transform.position = spline.GetPointAtIndex(curIndex, progress);
         }
     }
 
     void GetNextPoint()
     {
-        progress = 0;
+        progress = forward ? 0 : 1;
         
-        if(curIndex < spline.SplinePoints.Count - 1)
-        {
-            curIndex++;
+        if(forward){
+            if(curIndex < spline.SplinePoints.Count - 1)
+            {
+                curIndex++;
+            }
+            else
+            {
+                curIndex = 0;
+            }
+        }else{
+            if(curIndex > 0)
+            {
+                curIndex--;
+            }
+            else
+            {
+                curIndex = spline.SplinePoints.Count -1;
+            }
         }
-        else
-        {
-            curIndex = 0;
-        }
         
-        
-        spline.SplinePoints[curIndex].OnPointEnter();
+        EnterPoint( spline.SplinePoints[curIndex]);
         
     }
 
-    public void Stop()
+    public virtual void EnterPoint(Point p){
+        p.OnPointEnter();
+    }
+
+    public virtual void Stop()
     {
         running = false;
         mesh.enabled = false;
     }
 
-    public void Init(Spline s)
+    public virtual void Init(Spline s)
     {
         curIndex = 0;
         progress = 0;
         spline = s;
-        speed = 2;
         running = true;
         mesh.enabled = true;
+        dir = forward ? 1 : -1;
     }
 }

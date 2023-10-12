@@ -7,6 +7,9 @@ using UnityEngine.UI;
 public class FXManager : MonoBehaviour
 {
     public enum FXType{fizzle, burst, rotate, pulse, cross, glitch}
+     public enum ParticleType{radialBurst}
+
+     public GameObject circleEffect;
     public SpriteRenderer nextPointSprite;
 
     public TrailRenderer cursorTrail;
@@ -19,6 +22,7 @@ public class FXManager : MonoBehaviour
     public GameObject MeshPrefab;
     public Text readout;
     public Text word;
+    public ParticleSystem[] particlePrefabs;
     public GameObject[] spawnableSprites;
     public List<GameObject> spawnedSprites;
     private int lineIndex;
@@ -299,6 +303,10 @@ public class FXManager : MonoBehaviour
       //StartCoroutine(FlashSprite(newSprite.transform));
   }
 
+  public void SpawnParticle(Vector3 pos, ParticleType p){
+    ParticleSystem newParticles = Instantiate(particlePrefabs[(int)p], pos, Quaternion.identity);
+  }
+
   IEnumerator FlashSprite(Transform tr)
   {
       SpriteRenderer[] sprites = tr.GetComponentsInChildren<SpriteRenderer>();
@@ -463,6 +471,11 @@ public class FXManager : MonoBehaviour
           
 
   }
+
+    public void SpawnCircle(Transform t){
+        GameObject fx = Instantiate (circleEffect, transform.position, Quaternion.identity);
+        fx.transform.parent = t;
+    }
 
   public void DrawLine()
   {

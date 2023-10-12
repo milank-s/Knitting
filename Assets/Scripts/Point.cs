@@ -56,12 +56,13 @@ public class Point : MonoBehaviour
 
 	public static float hitColorLerp;
 	public static int pointCount = 0;
-
 	public static float boostAmount = 0.5f;
+	public float distortion;
 	
 	[Space(10)]
 	[Header("Curve")]
 	public static List<Point> Points;
+
 	public float tension;
 	public float bias;
 	public float continuity;
@@ -463,11 +464,6 @@ public class Point : MonoBehaviour
 	}
 
 	public void OnPointEnter(){
-		if(Services.main.activeStellation != controller){
-			Services.main.activeStellation.OnPlayerExit();
-			controller.OnPlayerEnter();
-			//entered new stellation	
-		}
 
 		if(pointType != PointTypes.ghost){
 			if(Services.main.OnPointEnter != null){
@@ -477,14 +473,17 @@ public class Point : MonoBehaviour
 			if(OnEnter != null){
 				OnEnter.Invoke();
 			}
-
-			GameObject fx = Instantiate (Services.Prefabs.circleEffect, transform.position, Quaternion.identity);
-			fx.transform.parent = transform;
 		}
 	}
 	
 	public void OnPlayerEnterPoint()
 	{
+		if(Services.main.activeStellation != controller){
+			Services.main.activeStellation.OnPlayerExit();
+			controller.OnPlayerEnter();
+			//entered new stellation	
+		}
+		
 		proximity = 1;
 		timeOnPoint = 0;
 		timesHit++;

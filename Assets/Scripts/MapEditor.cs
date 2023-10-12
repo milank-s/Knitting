@@ -1116,6 +1116,8 @@ public class MapEditor : MonoBehaviour
                     }
                 }
 
+                controller.RemovePoint(pointToDelete);
+
                 Destroy(pointToDelete.gameObject);
     }
 
@@ -2089,6 +2091,7 @@ void DragCamera()
                         {
                             newPoint = SplineUtil.CreatePoint(worldPos);
                             newPoint.SetPointType(curPointType);
+                            controller.AddPoint(newPoint);
 
                             if (Input.GetKey(KeyCode.LeftShift))
                             {
@@ -2329,7 +2332,10 @@ void DragCamera()
 
     public void SetTension(float t)
     {
-        activePoint.tension = t;
+        
+        foreach(Point p in selectedPoints){
+            p.tension = t;
+        }
         tensionSliderVal.ChangeValue(t);
 
     }
@@ -2337,14 +2343,18 @@ void DragCamera()
     
     public void SetBias(float t)
     {
-        activePoint.bias = t;
+        foreach(Point p in selectedPoints){
+            p.bias = t;
+        }
         biasSliderVal.ChangeValue(t);
     }
 
     
     public void SetContinuity(float t)
     {
-        activePoint.continuity = t;
+        foreach(Point p in selectedPoints){
+            p.continuity = t;
+        }
         continuitySliderVal.ChangeValue(t);
     }
 

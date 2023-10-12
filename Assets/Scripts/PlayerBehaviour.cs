@@ -75,7 +75,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	public StateChange OnStartTraversing;
 	public StateChange OnLeaveAnyPoint;
 	public StateChange OnEnterAnyPoint;
-
 	public StateChange OnTraversing;
 	public StateChange OnFlying;
 	public StateChange OnStoppedFlying;
@@ -716,8 +715,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						
 						
 						canTraverse = true;
-						curSpline.OnSplineEnter(curPoint, pointDest);
-						curSpline.CalculateDistance();
+						curSpline.OnSplineEnter();
 						//handle entering and distance calc
 						
 						
@@ -766,10 +764,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 
-		if (timeOnPoint == 0 && curPoint.pointType != PointTypes.ghost && ((buttonDown || buttonUp) || !curPoint.CanLeave()))
+		if (timeOnPoint == 0)// && curPoint.pointType != PointTypes.ghost && ((buttonDown || buttonUp) || !curPoint.CanLeave()))
 		{
 			// this shouldnt happen if the player is never stopped on the point
-			//maybe move it under the else statement below
 			
 			curPoint.velocity += (Vector3)cursorDir * (1-easedAccuracy) * potentialSpeed;
 			//curPoint.GetComponent<Rigidbody>().velocity += (Vector3)cursorDir * (1-easedAccuracy) * potentialSpeed;
@@ -1354,7 +1351,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					curPoint = newPoint;
 					curSpline.SetSelectedPoint(drawnPoint);
 					traversedPoints.Add(drawnPoint);
-				  curSpline.OnSplineEnter (drawnPoint, curPoint);
+				  curSpline.OnSplineEnter ();
 				// } else {
 				// 	CreateJoint (newPointList [newPointList.Count - 1].GetComponent<Rigidbody> ());
 				// }
@@ -1735,9 +1732,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				if(s.locked){
 					continue;
 				}else{
-					
-					//uh this seems gross
-					s.SetSelectedPoint(curPoint);
 
 				foreach (Point p in curPoint.GetNeighbours()) {
 
@@ -1831,10 +1825,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 							if(forward){
 								facingForward = true;
-								// maybeNextSpline.SetSelectedPoint(curPoint);
 							}else{
 								facingForward = false;
-								// maybeNextSpline.SetSelectedPoint(maybeNextPoint);
 							}
 						}
 					}
@@ -1854,18 +1846,19 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				splineDest.CalculateDistance();
 
-				if(curSpline != null){
+				//SURELY NONE OF THIS SHIT SHOULD HAPPEN HERE
+				// if(curSpline != null){
 
-					if (curSpline != splineDest)
-					{
-						curSpline.OnSplineExit();
-						splineDest.OnSplineEnter(curPoint, pointDest);
-					}
-				}
-				else
-				{
-					splineDest.OnSplineEnter(curPoint, pointDest);
-				}
+					// if (curSpline != splineDest)
+					// {
+						// curSpline.OnSplineExit();
+						// splineDest.OnSplineEnter(curPoint, pointDest);
+					// }
+				// }
+				// else
+				// {
+				// 	splineDest.OnSplineEnter(curPoint, pointDest);
+				// }
 				
 				curSpline = splineDest;
 
@@ -2222,11 +2215,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				state = PlayerState.Traversing;
 
-				foreach (Spline s in pointDest._connectedSplines)
-				{
-					s.reactToPlayer = true;
-					//s.line.Draw3DAuto();
-				}
 
 				//this is making it impossible to get off points that are widows. wtf.
 				SetPlayerAtStart (curSpline, pointDest);
@@ -2337,18 +2325,12 @@ public class PlayerBehaviour: MonoBehaviour {
 
 					foreach (Spline s in pointDest._connectedSplines)
 					{
-						//s.reactToPlayer = true;
+						s.reactToPlayer = true;
+						s.SetSelectedPoint(pointDest);
 					}
 				}
 
 				curPoint = pointDest;
-
-				foreach (Point p in curPoint._neighbours)
-				{
-//					p.velocity = Vector3.Lerp((curPoint.Pos - p.Pos).normalized, curPoint.velocity.normalized, 0.5f) * curPoint.velocity.magnitude / 3f;
-//					p.TurnOn();
-				}
-
 				
 				if(curPoint.pointType != PointTypes.ghost){
 					

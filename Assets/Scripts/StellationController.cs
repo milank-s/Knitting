@@ -391,6 +391,15 @@ public class StellationController : MonoBehaviour {
 		}
 	}
 	
+	public void RemovePoint(Point p){
+		if (_points.Contains(p)){
+			_points.Remove(p);
+		}
+
+		if(_startPoints.Contains(p)){
+			_startPoints.Remove(p);
+		}
+	}
 	public int TryComparePoints(Point p1, Point p2){
 		if(p1._connectedSplines.Count > 0 && p2._connectedSplines.Count > 0){
 			return p1._connectedSplines[0].order.CompareTo(p2._connectedSplines[0].order);
