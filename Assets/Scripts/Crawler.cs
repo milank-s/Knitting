@@ -18,7 +18,6 @@ Crawler : MonoBehaviour
     protected Vector3 lastPos;
     protected Vector3 delta;
     int dir;
-    [SerializeField] private SpriteRenderer mesh;
     
     public virtual void Step()
     {

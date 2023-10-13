@@ -44,7 +44,7 @@ public class Blocker : Crawler
    }
 
     void DamageMe(){
-        Services.fx.EmitLinearBurst(10, 1, transform, Services.PlayerBehaviour.transform.forward);
+        Services.fx.EmitRadialBurst(10, 1, transform);
         Stop();
     }
 
