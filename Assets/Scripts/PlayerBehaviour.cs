@@ -715,7 +715,6 @@ public class PlayerBehaviour: MonoBehaviour {
 						
 						
 						canTraverse = true;
-						curSpline.OnSplineEnter();
 						//handle entering and distance calc
 						
 						
@@ -949,11 +948,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		boostTimer = Mathf.Clamp01(boostTimer);
-
-		if (curSpline != null)
-		{
-			curSpline.distortion = boostTimer;
-		}
 
 		progress = 0;
 		curPoint.PlayerOnPoint(cursorDir, flow);
@@ -1846,10 +1840,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				splineDest.CalculateDistance();
 
-				//SURELY NONE OF THIS SHIT SHOULD HAPPEN HERE
-				// if(curSpline != null){
-
-					// if (curSpline != splineDest)
+				//  if (curSpline != splineDest)
 					// {
 						// curSpline.OnSplineExit();
 						// splineDest.OnSplineEnter(curPoint, pointDest);
@@ -1860,14 +1851,18 @@ public class PlayerBehaviour: MonoBehaviour {
 				// 	splineDest.OnSplineEnter(curPoint, pointDest);
 				// }
 				
-				curSpline = splineDest;
+
+				//idk if you should do this? you're not technically on the spline
+				//what is reading curspline while the player is stopped on the point?
+
+				// curSpline = splineDest;
 
 				if(facingForward){
 					progress = 0;
-					curDirection = curSpline.GetInitVelocity (curPoint);
+					curDirection = splineDest.GetInitVelocity (curPoint);
 				}else{
 					progress = 1;
-					curDirection = curSpline.GetReversedInitVelocity (curPoint);
+					curDirection = splineDest.GetReversedInitVelocity (curPoint);
 				}
 				
 				return true;
@@ -2104,7 +2099,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		switch (state)
 		{
 			case PlayerState.Traversing:
-				//Services.fx.BakeParticles(sparks, Services.fx.brakeParticleMesh);
+				Services.fx.BakeParticles(sparks, Services.fx.brakeParticleMesh);
 
 				//this isn't accurate, its called on ghost points
 
@@ -2215,6 +2210,14 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				state = PlayerState.Traversing;
 
+				if(curSpline != null){
+					if (curSpline != splineDest){
+						curSpline.OnSplineExit();
+					}
+				}
+
+				curSpline = splineDest;
+				curSpline.OnSplineEnter();
 
 				//this is making it impossible to get off points that are widows. wtf.
 				SetPlayerAtStart (curSpline, pointDest);
@@ -2276,7 +2279,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				if(curSpline != null){
 					curSpline.OnSplineExit();
-					curSpline.reactToPlayer = false;
 				}
 
 				curSpline = null;
@@ -2294,12 +2296,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				//stop players from popping off the line as soon as they enter a point
 
 				decelerationTimer = 0;
-
-				if (curSpline != null)
-				{
-					curSpline.OnSplineExit();
-//					idk if this should happen
-				}
 
 				directionIndicator.enabled = false;
 

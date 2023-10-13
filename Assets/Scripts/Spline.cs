@@ -114,7 +114,9 @@ public class Spline : MonoBehaviour
 	private float distanceFromPlayer;
 	private float invertedDistance;
 	private int playerIndex;
-	private int selectedIndex;
+
+	[HideInInspector]
+	public int selectedIndex;
 	private int upperDrawIndex;
 	private int lowerDrawIndex;
 	private int upperPointIndex;
@@ -166,6 +168,9 @@ public class Spline : MonoBehaviour
 	private float pitch;
 	private float phase;
 	private float volume;
+
+	private Point curPoint;
+	private Point nextPoint;
 
 	private static string path;
 
@@ -461,12 +466,21 @@ public class Spline : MonoBehaviour
 
 	public void UpdateSpline()
 	{
+		distortion = Mathf.Lerp(distortion, 0, Time.deltaTime * 2);
+
 		UpdateDrawRange();
 		
 		float distanceDelta = 0;
 		
 		for (int i = 0; i < SplinePoints.Count - (closed ? 0 : 1); i++)
 		{
+			curPoint = SplinePoints[i];
+			if(i == SplinePoints.Count - 1){
+				nextPoint = SplinePoints[0];
+			}else{
+				nextPoint = SplinePoints[i+1];
+			}
+
 			for (int k = 0; k < curveFidelity; k++)
 			{
 				int index = (i * curveFidelity) + k;
@@ -606,6 +620,7 @@ public class Spline : MonoBehaviour
 		}
 		
 		magnitude = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f) - shake, 0, 1f) * amplitude * Mathf.Clamp01(segmentDistance);
+		magnitude += distortion;
 
 		if (isPlayerOn || reactToPlayer)
 		{
@@ -678,6 +693,8 @@ public class Spline : MonoBehaviour
 		//float newFrequency = 1 + Mathf.Abs(Services.PlayerBehaviour.curSpeed);
 		
 		Vector3 direction = pointVelocities[segmentIndex].normalized;
+
+		//this isn't going to fly in 3d.... cross product?
 		Vector3 distortionVector = new Vector3(-direction.y, direction.x, direction.z);
 	
 		//I want to lerp to 0 at the 0 and 1 values of the spline if it is not closed
@@ -694,21 +711,21 @@ public class Spline : MonoBehaviour
 			}
 		}
 
-		distortion = (Mathf.PerlinNoise((-Time.time * noiseSpeed) + (rollingDistance * frequency), 1.321738f) * 2f - 1f);
-
+		float noise = (Mathf.PerlinNoise((-Time.time * noiseSpeed) + (rollingDistance * frequency), 1.321738f) * 2f - 1f);
 		
-			if (isPlayerOn)
-			{
-				v += distortionVector * distortion * magnitude * Mathf.Clamp01(invertedDistance) * smooth;
-			}
-			else if(reactToPlayer)
-			{
-				v += distortionVector * distortion * magnitude * Mathf.Clamp01(-indexDiff + 10);
-			}
-
-		// float pointDistortion = Mathf.Lerp()
-		v += distortionVector * distortion * smooth * (shake);// + pointDistortion);
 		
+		if (isPlayerOn)
+		{
+			v += distortionVector * noise * magnitude * Mathf.Clamp01(invertedDistance) * smooth;
+		}
+		else if(reactToPlayer)
+		{
+			v += distortionVector * noise * magnitude * Mathf.Clamp01(-indexDiff + 10);
+		}
+
+		float pointDistortion = Mathf.Lerp(curPoint.distortion, nextPoint.distortion, step);
+		v += distortionVector * noise * smooth * (shake + pointDistortion);
+
 		SetLinePoint(v, segmentIndex);
 		
 //		if (segmentIndex < line.GetSegmentNumber())
@@ -731,38 +748,24 @@ public class Spline : MonoBehaviour
 				j = pointIndex + 1;
 			}
 
-			if ((reactToPlayer || isPlayerOn))
+			if (true)
 			{
-//				if (segmentIndex <= playerIndex)
-//				{
-//					Color c = Color.white;
-//					line.SetColor(c, segmentIndex);
-//				}
-//				else
-				{
-//					Color c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step);
-//					(Color.white * (_completion -1))
-					Color c;
-					if (isPlayerOn)
-					{
-						 c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step);
-							//Mathf.Pow(distanceFromPlayer / Mathf.Clamp(SplinePoints.Count - 1, 1, 3), 2));
-					}
-					else
-					{
-						c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step);
-					}
 
-					//c += (Color.white * Mathf.Clamp01(_completion - 1));
-					c.a = 1;
-					line.SetColor(c, segmentIndex);
-				}
+
+				Color c;
+				c = Color.Lerp(curPoint._color, nextPoint._color, step);
+				
+
+				//c += (Color.white * Mathf.Clamp01(_completion - 1));
+				c.a = 1;
+				line.SetColor(c, segmentIndex);
+				
 			}
 			else
 			{
 				if (!MapEditor.editing && shouldDraw)
 				{
-					Color c = Color.Lerp(SplinePoints[pointIndex]._color, SplinePoints[j]._color, step);
+					Color c = Color.Lerp(curPoint._color, nextPoint._color, step);
 					//c = Color.Lerp(c, Color.white, invertedDistance);
 					//c += (Color.white * Mathf.Clamp01(_completion - 1));
 					c.a = 1;

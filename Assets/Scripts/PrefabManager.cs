@@ -5,6 +5,8 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class PrefabManager : MonoBehaviour {
 
+
+	public List<Crawler> crawlers;
 	public GameObject soundEffectObject;
 	public GameObject spawnedText;
 	public GameObject text;

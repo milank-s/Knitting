@@ -11,7 +11,6 @@ public class FXManager : MonoBehaviour
 
      public GameObject circleEffect;
     public SpriteRenderer nextPointSprite;
-
     public TrailRenderer cursorTrail;
     public LineRenderer nextSpline;
     public SpriteRenderer nextSplineArrow;

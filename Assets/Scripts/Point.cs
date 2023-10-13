@@ -58,6 +58,7 @@ public class Point : MonoBehaviour
 	public static int pointCount = 0;
 	public static float boostAmount = 0.5f;
 	public float distortion;
+	float glow;
 	
 	[Space(10)]
 	[Header("Curve")]
@@ -116,17 +117,9 @@ public class Point : MonoBehaviour
 			return this==Select;
 		}
 	}
-	private Vector3 _velocity;
+	[HideInInspector]
+	public Vector3 velocity;
 
-	public Vector3 velocity
-	{
-		set
-		{
-			_velocity = value;
-		}
-
-		get { return _velocity; }
-	}
 
 	public Vector3 Pos => transform.position;
 
@@ -221,6 +214,9 @@ public class Point : MonoBehaviour
 		Point.pointCount++;
 	}
 
+	public void AddForce(Vector3 vel){
+		velocity += vel;
+	}
 	public void TurnOn()
 	{
 		StartCoroutine(LightUp());
@@ -306,11 +302,14 @@ public class Point : MonoBehaviour
 	public void Step(){
 
 		//Pos = transform.position;
+		
 
 		if (!MapEditor.editing)
 		{
 			SetColor();
-			// Movement();
+			
+			distortion = Mathf.Lerp(distortion, 0, Time.deltaTime * 2);
+			glow = Mathf.Lerp(glow, 0, Time.deltaTime * 2);
 			if (!isKinematic)
 			{
 				Movement();
@@ -325,11 +324,11 @@ public class Point : MonoBehaviour
 	public void Movement(){
 		
 		Vector3 stretch = transform.position - (anchorPos); // + controller.pos);
-		Vector3 force = -stiffness * stretch - damping * _velocity;
+		Vector3 force = -stiffness * stretch - damping * velocity;
 		Vector3 acceleration = force / mass;
 
-		_velocity += acceleration * Time.deltaTime;
-		transform.position += _velocity * Time.deltaTime;
+		velocity += acceleration * Time.deltaTime;
+		transform.position += velocity * Time.deltaTime;
 	}
 
 	public void AddSpline(Spline s){
@@ -469,6 +468,8 @@ public class Point : MonoBehaviour
 			if(Services.main.OnPointEnter != null){
 				Services.main.OnPointEnter(this);
 			}
+
+			glow = 1;
 
 			if(OnEnter != null){
 				OnEnter.Invoke();
@@ -736,7 +737,8 @@ public class Point : MonoBehaviour
 		// c = (Mathf.Sin (3 * (Time.time + timeOffset))/4 + 0.3f) + proximity;
 //		c = proximity + Mathf.Sin(Time.time + timeOffset)/10 + 0.11f;
 		// ACCRETION IS SHOWING POINTS THAT IT SHOULDNT?????
-		c = proximity + (state == PointState.on ? Mathf.Sin(Time.time * 2 + timeOffset)/20 : 0.0f); // + timesHit/5f;
+		c = glow + proximity + (state == PointState.on ? Mathf.Sin(Time.time * 2 + timeOffset)/20 : 0.0f); // + timesHit/5f;
+		
 		// accretion
 		
 //		SR.color = Color.Lerp (color, new Color (1,1,1, c), Time.deltaTime * 5);

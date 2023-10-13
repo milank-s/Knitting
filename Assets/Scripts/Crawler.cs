@@ -2,21 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Crawler : MonoBehaviour
+public class 
+
+
+Crawler : MonoBehaviour
 {
     public bool forward = true;
-    public float progress;
-    private Spline spline;
-    private int curIndex;
-    public float speed;
-    public Spline startSpline;
+    protected Spline spline;
+    protected int curIndex;
+    public float speed = 1;
 
     public bool running;
+    protected float progress;
 
+    protected Vector3 lastPos;
+    protected Vector3 delta;
     int dir;
     [SerializeField] private SpriteRenderer mesh;
     
-    void Step()
+    public virtual void Step()
     {
         if (running)
         {
@@ -24,15 +28,18 @@ public class Crawler : MonoBehaviour
                 GetNextPoint();
             }
 
-          
             progress += Time.deltaTime * speed * dir; // spline.distance;
                
             transform.position = spline.GetPointAtIndex(curIndex, progress);
+            delta = (transform.position - lastPos).normalized;
+            lastPos = transform.position;
+            transform.forward = delta;
         }
     }
 
     void GetNextPoint()
     {
+        
         progress = forward ? 0 : 1;
         
         if(forward){
@@ -66,16 +73,23 @@ public class Crawler : MonoBehaviour
     public virtual void Stop()
     {
         running = false;
-        mesh.enabled = false;
+        gameObject.SetActive(false);
     }
 
-    public virtual void Init(Spline s)
+    public virtual void Init(){
+        running = false;
+
+    }
+
+    public virtual void Setup(Spline s, bool f)
     {
-        curIndex = 0;
-        progress = 0;
+        curIndex = f? 0 : s.SplinePoints.Count - 1;
+        forward = f;
+        progress = forward ? 0 : 1;
         spline = s;
         running = true;
-        mesh.enabled = true;
         dir = forward ? 1 : -1;
+        transform.position = s.SplinePoints[curIndex].Pos;
+        lastPos = transform.position;
     }
 }

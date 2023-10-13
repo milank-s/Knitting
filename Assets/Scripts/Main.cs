@@ -31,7 +31,6 @@
 	public MapEditor editor;
 	public Camera mainCam;
 	public MenuController menuController;
-	public CrawlerManager crawlerManager;
 	public PrefabManager prefabs;
 	public FXManager fx;
 	
