@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum CrawlerType {blocker, follower}
+public enum CrawlerType {blocker, follower, bird}
 public class CrawlerManager : MonoBehaviour
 {
     public int crawlerCount = 10;

@@ -10,14 +10,14 @@ Crawler : MonoBehaviour
     public bool forward = true;
     protected Spline spline;
     protected int curIndex;
-    public float speed = 1;
-
+    public float baseSpeed = 1;
+    protected float speed;
     public bool running;
     protected float progress;
 
     protected Vector3 lastPos;
     protected Vector3 delta;
-    int dir;
+    protected int dir;
     
     public virtual void Step()
     {
@@ -36,7 +36,13 @@ Crawler : MonoBehaviour
         }
     }
 
-    void GetNextPoint()
+    public void ReverseDir(){
+        forward = !forward;
+        dir = forward ? 1 : -1;
+        speed = Mathf.Abs(speed);
+    }
+
+    public virtual void GetNextPoint()
     {
         
         progress = forward ? 0 : 1;
@@ -82,6 +88,7 @@ Crawler : MonoBehaviour
 
     public virtual void Setup(Spline s, bool f)
     {
+        speed = baseSpeed;
         curIndex = f? 0 : s.SplinePoints.Count - 1;
         forward = f;
         progress = forward ? 0 : 1;

@@ -9,37 +9,34 @@ public class BoidFlocking : MonoBehaviour
 	private float maxVelocity;
 	private float randomness;
 	private GameObject chasee;
-	private Rigidbody rigidbody;
 
+	Vector3 velocity;
 
-	void Start ()
-	{
-		rigidbody = GetComponent<Rigidbody> ();
-		StartCoroutine ("BoidSteering");
+	public void SetVelocity(Vector3 v){
+		velocity = v;
 	}
 	
-	IEnumerator BoidSteering ()
+	void Steer ()
 	{
-		while (true)
+		
+		if (inited)
 		{
-			if (inited)
+			velocity = velocity + Calc () * Time.deltaTime;
+			
+			// enforce minimum and maximum speeds for the boids
+			float speed = velocity.magnitude;
+			if (speed > maxVelocity)
 			{
-				rigidbody.velocity = rigidbody.velocity + Calc () * Time.deltaTime;
-				
-				// enforce minimum and maximum speeds for the boids
-				float speed = rigidbody.velocity.magnitude;
-				if (speed > maxVelocity)
-				{
-					rigidbody.velocity = rigidbody.velocity.normalized * maxVelocity;
-				}
-				else if (speed < minVelocity)
-				{
-					rigidbody.velocity = rigidbody.velocity.normalized * minVelocity;
-				}
+				velocity = velocity.normalized * maxVelocity;
 			}
-			float waitTime = Random.Range(0.3f, 0.5f);
-			yield return new WaitForSeconds (waitTime);
+			else if (speed < minVelocity)
+			{
+				velocity = velocity.normalized * minVelocity;
+			}
 		}
+
+		transform.position += velocity * Time.deltaTime;
+		
 	}
 	
 	private Vector3 Calc ()
@@ -53,7 +50,7 @@ public class BoidFlocking : MonoBehaviour
 		Vector3 follow = chasee.transform.localPosition;
 		
 		flockCenter = flockCenter - transform.localPosition;
-		flockVelocity = flockVelocity - rigidbody.velocity;
+		flockVelocity = flockVelocity - velocity;
 		follow = follow - transform.localPosition;
 		
 		return (flockCenter + flockVelocity + follow * 2 + randomize * randomness);

@@ -11,7 +11,9 @@ public class Blocker : Crawler
    public override void EnterPoint(Point p){
         base.EnterPoint(p);
 
-        if(p.pointType != PointTypes.ghost){
+        //we need to figure out what these boys are getting up to
+        
+        if(p.pointType == PointTypes.stop){
             p.AddForce(Random.onUnitSphere * speed * force);
             p.distortion += 0.2f;
             Stop();
