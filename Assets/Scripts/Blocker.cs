@@ -12,7 +12,7 @@ public class Blocker : Crawler
         base.EnterPoint(p);
 
         //we need to figure out what these boys are getting up to
-        
+
         if(p.pointType == PointTypes.stop){
             p.AddForce(Random.onUnitSphere * speed * force);
             p.distortion += 0.2f;
@@ -20,14 +20,11 @@ public class Blocker : Crawler
         }
    }
 
-   public void OnTriggerEnter(Collider col){
+   public override void OnTriggerEnter(Collider col){
     
     //lets just make them only collide with the player so we dont need to waste time sorting tags
     //
-
-    if(Services.PlayerBehaviour.state != PlayerState.Traversing || spline != Services.PlayerBehaviour.curSpline) return;
-
-    if(base.curIndex != spline.selectedIndex) return; 
+    base.OnTriggerEnter(col);
 
     float p = Services.PlayerBehaviour.progress;
 

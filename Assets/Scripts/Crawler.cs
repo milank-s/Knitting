@@ -9,6 +9,7 @@ Crawler : MonoBehaviour
 {
     public bool forward = true;
     protected Spline spline;
+    protected Point point;
     protected int curIndex;
     public float baseSpeed = 1;
     protected float speed;
@@ -19,6 +20,9 @@ Crawler : MonoBehaviour
     protected Vector3 delta;
     protected int dir;
     
+    public virtual void Start(){
+
+    }
     public virtual void Step()
     {
         if (running)
@@ -36,10 +40,19 @@ Crawler : MonoBehaviour
         }
     }
 
+    public virtual void OnTriggerEnter(Collider col){
+        if(Services.PlayerBehaviour.state != PlayerState.Traversing || !spline.isPlayerOn) return;
+
+        if(curIndex != spline.selectedIndex) return; 
+    }
+
     public void ReverseDir(){
         forward = !forward;
         dir = forward ? 1 : -1;
         speed = Mathf.Abs(speed);
+    }
+
+    public virtual void BreakOff(){
     }
 
     public virtual void GetNextPoint()
@@ -67,7 +80,8 @@ Crawler : MonoBehaviour
             }
         }
         
-        EnterPoint( spline.SplinePoints[curIndex]);
+        point = spline.SplinePoints[curIndex];
+        EnterPoint(point);
         
     }
 

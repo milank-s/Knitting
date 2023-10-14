@@ -67,6 +67,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	[Space(10)]
 
 	[HideInInspector]
+	public Vector3 pos;
+	
+	[HideInInspector]
 	public bool goingForward = true;
 	public bool facingForward;
 
@@ -384,7 +387,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Step()
 	{
-		
+		pos = transform.position;
 		Vector2 p1 = Services.mainCam.WorldToScreenPoint(transform.position);
 		Vector2 p2 = Services.mainCam.WorldToScreenPoint(transform.position + curDirection);
 

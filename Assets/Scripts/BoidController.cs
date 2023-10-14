@@ -1,48 +1,48 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using System.Collections.Generic;
 public class BoidController : MonoBehaviour{
 	public float minVelocity = 5;
 	public float maxVelocity = 20;
 	public float randomness = 1;
-	public int flockSize = 20;
-	public GameObject prefab;
-	public GameObject chasee;
 	
 	public Vector3 flockCenter;
 	public Vector3 flockVelocity;
 	
-	private GameObject[] boids;
+	private List<BoidFlocking> boids;
 	
-	void Start()
-	{
-		StartCoroutine (FindBoids ());
+	public static BoidController instance;
+
+	int flockSize;
+
+	void Awake(){
+		instance = this;
+		boids = new List<BoidFlocking>();
 	}
-	
+
 	void Update (){
-		if (boids != null) {
-			Vector3 theCenter = Vector3.zero;
-			Vector3 theVelocity = Vector3.zero;
-		
-			foreach (GameObject boid in boids) {
-				if (boid.GetComponent<BoidFlocking> ().enabled) {
-					theCenter = theCenter + boid.transform.localPosition;
-					theVelocity = theVelocity + boid.GetComponent<Rigidbody> ().velocity;
-				}
-				
-				flockCenter = theCenter / (flockSize);
-				flockVelocity = theVelocity / (flockSize);
+	
+		Vector3 theCenter = Vector3.zero;
+		Vector3 theVelocity = Vector3.zero;
+	
+		foreach (BoidFlocking boid in boids) {
+			if (boid.enabled) {
+				theCenter = theCenter + boid.transform.position;
+				theVelocity = theVelocity + boid.velocity;	
 			}
+			
+			flockCenter = theCenter / (flockSize);
+			flockVelocity = theVelocity / (flockSize);
 		}
+		
 	}
 
-	IEnumerator FindBoids(){
-
-		yield return new WaitForSeconds(0.5f);
-		boids = GameObject.FindGameObjectsWithTag ("Node");
-
-		foreach (GameObject b in boids) {
-			b.GetComponent<BoidFlocking> ().SetController (gameObject);
-		}
+	public void AddBoid(BoidFlocking b){
+		boids.Add(b);
+		b.minVelocity = minVelocity;
+		b.maxVelocity = maxVelocity;
+		b.randomness = randomness;
+		b.controller = this;
+		flockSize = boids.Count;
 	}
 }

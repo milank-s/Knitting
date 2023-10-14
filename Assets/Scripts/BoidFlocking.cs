@@ -3,37 +3,39 @@ using System.Collections;
 
 public class BoidFlocking : MonoBehaviour
 {
-	private GameObject Controller;
-	private bool inited = false;
-	private float minVelocity;
-	private float maxVelocity;
-	private float randomness;
-	private GameObject chasee;
+	public float minVelocity;
+	public float maxVelocity;
+	public float randomness;
 
-	Vector3 velocity;
+	public Vector3 pointTarget;
+	public Vector3 velocity;
+	public BoidController controller;
 
+	public void Start(){
+		
+		BoidController.instance.AddBoid(this);
+		this.enabled = false;
+	}
 	public void SetVelocity(Vector3 v){
 		velocity = v;
 	}
-	
-	void Steer ()
+
+	public void Steer ()
 	{
 		
-		if (inited)
+		velocity = velocity + Calc () * Time.deltaTime;
+		
+		// enforce minimum and maximum speeds for the boids
+		float speed = velocity.magnitude;
+		if (speed > maxVelocity)
 		{
-			velocity = velocity + Calc () * Time.deltaTime;
-			
-			// enforce minimum and maximum speeds for the boids
-			float speed = velocity.magnitude;
-			if (speed > maxVelocity)
-			{
-				velocity = velocity.normalized * maxVelocity;
-			}
-			else if (speed < minVelocity)
-			{
-				velocity = velocity.normalized * minVelocity;
-			}
+			velocity = velocity.normalized * maxVelocity;
 		}
+		else if (speed < minVelocity)
+		{
+			velocity = velocity.normalized * minVelocity;
+		}
+		
 
 		transform.position += velocity * Time.deltaTime;
 		
@@ -44,26 +46,13 @@ public class BoidFlocking : MonoBehaviour
 		Vector3 randomize = new Vector3 ((Random.value *2) -1, (Random.value * 2) -1, (Random.value * 2) -1);
 		
 		randomize.Normalize();
-		BoidController boidController = Controller.GetComponent<BoidController>();
-		Vector3 flockCenter = boidController.flockCenter;
-		Vector3 flockVelocity = boidController.flockVelocity;
-		Vector3 follow = chasee.transform.localPosition;
 		
-		flockCenter = flockCenter - transform.localPosition;
-		flockVelocity = flockVelocity - velocity;
-		follow = follow - transform.localPosition;
+		Vector3 flockCenter = controller.flockCenter - transform.position;
+		Vector3 flockVelocity = controller.flockVelocity - velocity;
+		Vector3 follow = pointTarget - transform.position;
+		Vector3 avoid = transform.position - Services.PlayerBehaviour.pos;
 		
-		return (flockCenter + flockVelocity + follow * 2 + randomize * randomness);
+		return (flockCenter + flockVelocity + (follow * 100) + avoid + randomize * randomness);
 	}
-	
-	public void SetController (GameObject theController)
-	{
-		Controller = theController;
-		BoidController boidController = Controller.GetComponent<BoidController>();
-		minVelocity = boidController.minVelocity;
-		maxVelocity = boidController.maxVelocity;
-		randomness = boidController.randomness;
-		chasee = boidController.chasee;
-		inited = true;
-	}
+
 }
