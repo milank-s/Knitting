@@ -27,7 +27,7 @@ public class Bird : Crawler
         base.BreakOff();
         lerp = 0;
         flying = true;
-        velocity = (Services.PlayerBehaviour.curDirection * Services.PlayerBehaviour.actualSpeed);
+        velocity = (transform.forward * Services.PlayerBehaviour.actualSpeed);
         dest = GetClosestPoint();
         trail.emitting = true;
         // boidBehaviour.SetVelocity(transform.forward * speed);
@@ -78,6 +78,10 @@ public class Bird : Crawler
         transform.position += velocity * Time.deltaTime;
         transform.forward = velocity;
        
+        if(lerp > 1){
+            trail.emitting = false;
+        }
+
         if(dist < 0.01f){
             
             // boidBehaviour.enabled = false;

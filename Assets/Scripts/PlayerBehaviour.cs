@@ -470,11 +470,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		Effects ();
 
 		if (state == PlayerState.Flying) {
-				if(OnFlying != null){
-					OnFlying.Invoke();
-				}
+			if(OnFlying != null){
+				OnFlying.Invoke();
+			}
 			FreeMovement ();
-			 cursorSprite.sprite = canFlySprite;
+			cursorSprite.sprite = canFlySprite;
 			return;
 		}
 
@@ -626,7 +626,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		Point prevPointDest = pointDest;
 
-		if (!foundConnection && CanLeavePoint())
+		if (!foundConnection && TryLeavePoint())
 		{
 			cursorSprite.sprite = traverseSprite;
 
@@ -710,16 +710,12 @@ public class PlayerBehaviour: MonoBehaviour {
 						//canTraverse = true;
 
 						if(curPoint.pointType == PointTypes.connect){
-							curPoint.SetPointType(PointTypes.normal);
+							//curPoint.SetPointType(PointTypes.normal);
 						}
 						
 						foundConnection = false;
 						Connect();
-						
-						
-						canTraverse = true;
-						//handle entering and distance calc
-						
+
 						
 					}
 					//no need to do this now, it will happen via the CanLeavePoint func next frame
@@ -884,8 +880,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		// pointDest.tension = 1;
 
 		Services.main.activeStellation.AddSpline(spp.s);
-
+		
+		
 		splineDest = spp.s;
+		splineDest.SetSelectedPoint(curPoint);
 
 		//why should you set pointdest here if you're already using it above as the target point?
 		// pointDest = spp.p;
@@ -1706,11 +1704,12 @@ public class PlayerBehaviour: MonoBehaviour {
 	//MAKE SURE THAT YOU CAN STILL PLACE POINTS WHILE NOT FLYING OFF THE EDGE
 	//DONT CONFUSE FLYING WITH
 
-	public bool CanLeavePoint()
+	public bool TryLeavePoint()
 	{
 		float minAngle = Mathf.Infinity;
 		float adjustedAngle = Mathf.Infinity;
 		float actualAngle = Mathf.Infinity;
+
 		if (curPoint.HasSplines ()) {
 
 			splineDest = null;
@@ -1718,6 +1717,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			Point maybeNextPoint = null;
 			Spline maybeNextSpline = null;
+
 			foreach (Spline s in curPoint.GetSplines()) {
 
 				float curAngle = Mathf.Infinity;
@@ -1725,103 +1725,112 @@ public class PlayerBehaviour: MonoBehaviour {
 				if(s.locked){
 					continue;
 				}else{
+					
+				
+				int curIndex = s.selectedIndex;
+				bool looping = false;
+				bool forward = true;
 
-				foreach (Point p in curPoint.GetNeighbours()) {
+				for(int i = -1; i < 2; i+=2){
 
-					if (!p._connectedSplines.Contains (s)) {
-						//do nothing if the point is in another spline
-					} else {
-						int indexDifference = s.SplinePoints.IndexOf (p) - s.SplinePoints.IndexOf (curPoint);
+					int nextIndex = curIndex + i;
+					
+					if(nextIndex < 0){
+						if(!s.closed || s.SplinePoints.Count < 2) continue;
+						looping = true;
+						nextIndex = s.SplinePoints.Count - 1;
+					}
+					
+					if(nextIndex > s.SplinePoints.Count - 1){
+						if(!s.closed || s.SplinePoints.Count < 2) continue;
+						looping = true;
+						nextIndex = 0;
+					}
 
-						//make sure that you're not making an illegal move
-						bool looping = false;
+					forward = i == 1;
+					Point p = s.SplinePoints[nextIndex];
 
-						if(s.closed && s.SplinePoints.Count > 2 && ((p == s.StartPoint && curPoint == s.EndPoint) || (p == s.EndPoint && curPoint == s.StartPoint))){
-							looping = true;
-						}
+					int indexDifference = nextIndex - curIndex;
+					// bool backwards = indexDifference == -1 || indexDifference > 1; 
+					// bool forward = indexDifference == 1 || indexDifference < -1;
+					// bool loopingBackwards = looping && backwards;
+					// bool loopingForwards = looping && forward;
 
-						bool backwards = indexDifference == -1 || indexDifference > 1; 
-						bool forward = indexDifference == 1 || indexDifference < -1;
-						bool loopingBackwards = looping && backwards;
-						bool loopingForwards = looping && forward;
 
-						if((!loopingBackwards && indexDifference > 1) || (!loopingForwards && indexDifference < -1)){
-							//the delta in point index is greater than one but its not a loop. illegal
-							Debug.Log("!!!!!!!! ILLEGAL !!!!!!!!!");
-							continue;
-						}
+					// if((!loopingBackwards && indexDifference > 1) || (!loopingForwards && indexDifference < -1)){
 						
-						// bool forward = loopingForwards || !movingBackwards;
-						// bool backwards = loopingBackwards || movingBackwards;
-						bool isGhostPoint = curPoint.pointType == PointTypes.ghost;
+					// 	// you are are trying to path to a point that 
+					// }
 						
-						//need to check that we're not actually at the start of a new spline thats just facing the other direction
+					bool isGhostPoint = curPoint.pointType == PointTypes.ghost;
+					
+					//need to check that we're not actually at the start of a new spline thats just facing the other direction
 
-						bool intersection = s != curSpline;
+					bool intersection = s != curSpline;
 
-						bool canMoveBackward = (!goingForward && isGhostPoint) || !isGhostPoint || intersection; // || s.SplinePoints.IndexOf (curPoint) == s.SplinePoints.Count -1;
-						bool canMoveForward = (isGhostPoint && goingForward) || !isGhostPoint || intersection; // | s.SplinePoints.IndexOf (curPoint) == 0;
+					bool canMoveBackward = (!goingForward && isGhostPoint) || !isGhostPoint || intersection; // || s.SplinePoints.IndexOf (curPoint) == s.SplinePoints.Count -1;
+					bool canMoveForward = (isGhostPoint && goingForward) || !isGhostPoint || intersection; // | s.SplinePoints.IndexOf (curPoint) == 0;
+					
+					
+					// indexDifference > 1 means we looped backwards
+					// indexDifference == -1 means we went backward one point
+
+					Vector2 p1 = Services.mainCam.WorldToScreenPoint(curPoint.Pos);
+					Vector2 p2 = Services.mainCam.WorldToScreenPoint(p.Pos);
+					Vector3 toPoint = (p2 - p1).normalized;
+					float directAngle = Vector2.Angle(cursorDir, toPoint);
+
+					bool tangent = false;
+
+					Vector3 startdir = Vector3.zero;
+
+					if (canMoveBackward && !forward && s.bidirectional) {
 						
+						curAngle = s.CompareAngleAtPoint (cursorDir, p, out startdir, true);	
 						
-						// indexDifference > 1 means we looped backwards
-						// indexDifference == -1 means we went backward one point
+					} else if(canMoveForward && forward){
 
-						Vector2 p1 = Services.mainCam.WorldToScreenPoint(curPoint.Pos);
-						Vector2 p2 = Services.mainCam.WorldToScreenPoint(p.Pos);
-						Vector3 toPoint = (p2 - p1).normalized;
-						float directAngle = Vector2.Angle(cursorDir, toPoint);
+						curAngle = s.CompareAngleAtPoint (cursorDir, curPoint, out startdir);
 
-						bool tangent = false;
+					}else{
+						//ghost point intersections dont let you change direction
+						//leave cur angle infinite
+						continue;
+					}
+					
+					if(Mathf.Abs(Vector3.Dot(startdir.normalized, Services.mainCam.transform.forward)) > 0.75f){
+						tangent = true;
+					}
+					// adjustedAngle = (adjustedAngle + curAngle) / 2f;
+					//adjustedAngle = screenAngle < curAngle ? screenAngle : curAngle;
+					adjustedAngle = tangent ? directAngle : curAngle;
+					
+					Vector2 screenDir = Services.mainCam.WorldToScreenPoint(curPoint.Pos + startdir);
+					screenDir = (screenDir - p1).normalized;
 
-						Vector3 startdir = Vector3.zero;
+					if(tangent){
+						Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(toPoint)/3f, Color.blue);
+					}else{
+					//this is being used but is buggy
+						Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection((Vector3)screenDir)/3f, Color.magenta);
+					}
+					//this isn't being used, just for my own sanity
+					Debug.DrawLine(transform.position, transform.position + startdir.normalized, Color.black/5f);
+					
 
-						if (canMoveBackward && backwards && s.bidirectional) {
-							
-							curAngle = s.CompareAngleAtPoint (cursorDir, p, out startdir, true);	
-							
-						} else if(canMoveForward && forward){
+					if (adjustedAngle < minAngle) {
+						
+						minAngle = adjustedAngle;
+						actualAngle = curAngle;
+						maybeNextSpline = s;
+						maybeNextPoint = p;
 
-							curAngle = s.CompareAngleAtPoint (cursorDir, curPoint, out startdir);
-
+						if(forward){
+							facingForward = true;
 						}else{
-							//ghost point intersections dont let you change direction
-							//leave cur angle infinite
-							continue;
+							facingForward = false;
 						}
 						
-						if(Mathf.Abs(Vector3.Dot(startdir.normalized, Services.mainCam.transform.forward)) > 0.75f){
-							tangent = true;
-						}
-						// adjustedAngle = (adjustedAngle + curAngle) / 2f;
-						//adjustedAngle = screenAngle < curAngle ? screenAngle : curAngle;
-						adjustedAngle = tangent ? directAngle : curAngle;
-						
-						Vector2 screenDir = Services.mainCam.WorldToScreenPoint(curPoint.Pos + startdir);
-						screenDir = (screenDir - p1).normalized;
-
-						if(tangent){
-							Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(toPoint)/3f, Color.blue);
-						}else{
-						//this is being used but is buggy
-							Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection((Vector3)screenDir)/3f, Color.magenta);
-						}
-						//this isn't being used, just for my own sanity
-						Debug.DrawLine(transform.position, transform.position + startdir.normalized, Color.black/5f);
-						
-
-						if (adjustedAngle < minAngle) {
-							
-							minAngle = adjustedAngle;
-							actualAngle = curAngle;
-							maybeNextSpline = s;
-							maybeNextPoint = p;
-
-							if(forward){
-								facingForward = true;
-							}else{
-								facingForward = false;
-							}
-						}
 					}
 				}
 			}

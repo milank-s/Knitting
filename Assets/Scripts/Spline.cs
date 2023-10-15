@@ -316,6 +316,7 @@ public class Spline : MonoBehaviour
 //		line.texture = tex;
 //		line.textureScale = newMat.mainTextureScale.x;
 	}
+	
 	public void Initialize()
 	{	
 		SetUpReferences();
