@@ -449,7 +449,7 @@ public class Point : MonoBehaviour
 				if (prevState != PointState.on)
 				{
 					foreach(Spline sp in _connectedSplines){
-						if(!sp.drawingIn){
+						if(!sp.drawing){
 							sp.StartDrawRoutine(this);
 						}
 					}

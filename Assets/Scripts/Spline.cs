@@ -32,7 +32,8 @@ public class Spline : MonoBehaviour
 	[Header("Bools")]
 	public bool closed = false;
 	public bool bidirectional = true;
-	public bool drawingIn = false;
+	public bool drawing = false;
+	public bool drawn = false;
 
 	
 	public static float shake;
@@ -317,7 +318,8 @@ public class Spline : MonoBehaviour
 		SetUpReferences();
 		ResetVectorLine();
 		completion = 0;
-		drawingIn = false;
+		drawing = false;
+		drawn = false;
 		populatedPointPositions = false;
 		Selected = StartPoint;
 	}
@@ -405,8 +407,8 @@ public class Spline : MonoBehaviour
 
 		complete = false;
 		SplinePoints.Clear();
-		drawingIn= false;
-		drawnIn = false;
+		drawn = false;
+		drawing = false;
 		
 		upperPointIndex = 0;
 		lowerPointIndex = 0;
@@ -465,6 +467,8 @@ public class Spline : MonoBehaviour
 	{
 		distortion = Mathf.Lerp(distortion, 0, Time.deltaTime * 2);
 
+		if((drawn && (!reactToPlayer && !isPlayerOn)) && !MapEditor.editing) return;
+
 		UpdateDrawRange();
 		
 		float distanceDelta = 0;
@@ -486,11 +490,16 @@ public class Spline : MonoBehaviour
 				distanceDelta = rollingDistance;
 
 				//trying to save meager amounts of compute
+				
+				//I do this once to populate, and then only when player is on
 				if(!populatedPointPositions || (isPlayerOn || reactToPlayer)) UpdateSplineSegment(i, index, step);
 				
 				distanceDelta = rollingDistance - distanceDelta;
 
-				DrawSplineSegment(i, index, step);
+				if(populatedPointPositions && (MapEditor.editing || (drawing || (isPlayerOn || reactToPlayer)))){
+					DrawSplineSegment(i, index, step);
+				}
+				
 			}
 		}
 
@@ -505,8 +514,6 @@ public class Spline : MonoBehaviour
 			DrawLine(i, segindex, step);
 		
 		}else{
-			
-			if(!populatedPointPositions || !drawingIn) return;
 
 			//we're in range
 			
@@ -516,6 +523,8 @@ public class Spline : MonoBehaviour
 			}
 
 			//behaviour for drawing in the spline
+
+			//lets make sure we know when this is done
 
 			if(segindex == upperDrawIndex && segindex < totalLineSegments){
 				
@@ -535,7 +544,6 @@ public class Spline : MonoBehaviour
 
 					if(upperDrawIndex == upperPointIndex * curveFidelity + curveFidelity){
 						upperPointIndex ++;
-						
 						if(upperPointIndex < SplinePoints.Count){
 							SplinePoints[upperPointIndex].SwitchState(Point.PointState.on);
 						}
@@ -565,6 +573,13 @@ public class Spline : MonoBehaviour
 					}
 				}
 			}
+
+			
+			if(upperPointIndex >= SplinePoints.Count && lowerPointIndex < 0){
+				drawn = true; 
+				drawing = false;
+			}
+
 		}
 	}
 
@@ -581,28 +596,29 @@ public class Spline : MonoBehaviour
 	public void DrawEntireSpline(){
 		if(state != SplineState.on) return;
 
-		if(!drawingIn){
+		if(!drawing && !drawn){
+			
+			drawing = true;
 			upperPointIndex = 0;
 			lowerPointIndex = 0;
 			upperDrawIndex = upperPointIndex * curveFidelity + 1;
 			lowerDrawIndex = upperPointIndex * curveFidelity - 2;
 		}
 
-		drawingIn = true;
 	}
 
 	public void StartDrawRoutine(Point p){
 
 		if(state != SplineState.on) return;
 
-		if(!drawingIn){
+		if(!drawing && !drawn){
+			
+			drawing = true;
 			upperPointIndex = SplinePoints.IndexOf(p);
 			lowerPointIndex = upperPointIndex;
 			upperDrawIndex = upperPointIndex * curveFidelity + 1;
 			lowerDrawIndex = upperPointIndex * curveFidelity - 2;
 		}
-
-		drawingIn = true;
 	}
 
 	public void UpdateDrawRange(int pointIndex = 0)
