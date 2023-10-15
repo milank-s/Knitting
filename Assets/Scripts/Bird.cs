@@ -27,7 +27,7 @@ public class Bird : Crawler
         base.BreakOff();
         lerp = 0;
         flying = true;
-        velocity = (transform.forward * Services.PlayerBehaviour.actualSpeed);
+        velocity = (transform.forward * (speed + boost));
         dest = GetClosestPoint();
         trail.emitting = true;
         // boidBehaviour.SetVelocity(transform.forward * speed);
@@ -53,7 +53,7 @@ public class Bird : Crawler
         return pointDest.Pos;
     }
     public override void OnTriggerEnter(Collider col){
-        base.OnTriggerEnter(col);
+        if(Services.PlayerBehaviour.state == PlayerState.Switching) return;
 
         if(!flying){
             BreakOff();

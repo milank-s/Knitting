@@ -423,6 +423,7 @@ public class MapEditor : MonoBehaviour
     {
         Services.main.OnReset.Invoke();
         Services.main.activeStellation = controller;
+        Services.main.activeStellation.Initialize();
         controller.isPlayerOn = true;
         
         if (pointSelected)
@@ -1761,10 +1762,7 @@ void DragCamera()
 
     public void AddSpline(Spline s)
     {
-        if (!controller._splines.Contains(s))
-        {
-            controller._splines.Add(s);
-        }
+        controller.AddSpline(s);
     }
     
     void RemoveSelectedSpline(Spline s)
@@ -2050,6 +2048,7 @@ void DragCamera()
                         {
                             SplinePointPair spp = SplineUtil.ConnectPoints(selectedSpline,
                                 activePoint, hitPoint);
+
                             if (spp.s != null)
                             {
                                 spp.s.transform.parent = splinesParent;
@@ -2057,7 +2056,7 @@ void DragCamera()
                                 
                                 if (spp.s.controller == null)
                                 {
-                                     AddSpline(spp.s);
+                                    AddSpline(spp.s);
                                     spp.s.order = controller._splines.IndexOf(spp.s);
                                     spp.s.controller = controller;
                                 }

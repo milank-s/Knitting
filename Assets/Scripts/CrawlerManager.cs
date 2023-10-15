@@ -28,7 +28,7 @@ public class CrawlerManager : MonoBehaviour
         Services.main.OnReset += Reset;
     }
 
-    void Update(){
+    public void Step(){
         spawnTimer += Time.deltaTime;
         if(spawnTimer > spawnFrequency){
             spawnTimer = 0;

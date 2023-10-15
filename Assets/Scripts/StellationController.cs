@@ -17,6 +17,8 @@ public class StellationController : MonoBehaviour {
 	public bool isPlayerOn;
 	public bool lockSplines;
 
+	List<CrawlerManager> crawlers;
+
 	[HideInInspector]
 	public bool isComplete;
 	[HideInInspector]
@@ -267,6 +269,7 @@ public class StellationController : MonoBehaviour {
 	public void Initialize()
 	{
 		
+		crawlers = GetComponentsInChildren<CrawlerManager>().ToList();
 		rootKey = UnityEngine.Random.Range(36, 49);
 
 		_points = new List<Point>();
@@ -606,6 +609,9 @@ public class StellationController : MonoBehaviour {
 	{
 		if (isPlayerOn)
 		{
+			foreach(CrawlerManager c in crawlers){
+				c.Step();
+			}
 			//why the hell are you doing this
 			// transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime);
 

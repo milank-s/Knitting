@@ -129,7 +129,7 @@ public class SplineUtil : MonoBehaviour {
 	}
 
 
-		static public Spline CreateSpline (Point firstP, Point nextP){
+	static public Spline CreateSpline (Point firstP, Point nextP){
 
 		GameObject newSpline = (GameObject)Instantiate (Resources.Load<GameObject>("Prefabs/Spline"), Vector3.zero, Quaternion.identity);
 
@@ -143,9 +143,6 @@ public class SplineUtil : MonoBehaviour {
 
 		s.AddPoint (null, firstP);
 		s.AddPoint (null, nextP);
-
-		//		s.GetComponentInChildren<SpriteRenderer> ().sprite = Services.Prefabs.Symbols [UnityEngine.Random.Range (0, Services.Prefabs.Symbols.Length)];
-		//		s.GetComponentInChildren<TextMesh> ().text = Spline.Splines.Count.ToString ();
 
 		s.transform.position = Vector3.Lerp (firstP.Pos, nextP.Pos, 0.5f);
 

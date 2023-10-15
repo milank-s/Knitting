@@ -482,7 +482,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			return;
 		}
 
-		boost -= Time.deltaTime * 2f;
+		boost = Mathf.Lerp(boost, 0, Time.deltaTime * 2f);
+		
 		if (boost < 0)
 		{
 			boost = 0;

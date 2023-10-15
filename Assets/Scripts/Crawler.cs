@@ -12,8 +12,7 @@ Crawler : MonoBehaviour
     protected Point point;
     protected int curIndex;
     public float baseSpeed = 1;
-    public float boostAmount = 0.25f;
-    float boost;
+    protected float boost;
     protected float speed;
     public bool running;
     protected float progress;
@@ -60,9 +59,15 @@ Crawler : MonoBehaviour
     }
 
     public virtual void OnTriggerEnter(Collider col){
-        if(Services.PlayerBehaviour.state != PlayerState.Traversing || !spline.isPlayerOn) return;
+        
+    }
 
-        if(curIndex != spline.selectedIndex) return; 
+    public virtual bool CollidedOnSpline(){
+         if(Services.PlayerBehaviour.state != PlayerState.Traversing || !spline.isPlayerOn) return false;
+
+        if(curIndex != spline.selectedIndex) return false;
+
+        return true; 
     }
 
     public void ReverseDir(){
@@ -75,7 +80,7 @@ Crawler : MonoBehaviour
     }
 
     public virtual void OnPoint(){
-        boost += boostAmount;
+        boost += Point.boostAmount;
     }
     public virtual void GetNextPoint()
     {

@@ -318,6 +318,7 @@ public class Spline : MonoBehaviour
 		ResetVectorLine();
 		completion = 0;
 		drawingIn = false;
+		Selected = StartPoint;
 	}
 
 	public void SetSelectedPoint(Point p){
