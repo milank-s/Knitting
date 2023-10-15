@@ -714,7 +714,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						}
 						
 						foundConnection = false;
-						CreatePoint();
+						Connect();
 						
 						
 						canTraverse = true;
@@ -836,7 +836,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		//StopAngleDiff = Mathf.Lerp (20, 50, Mathf.Abs(flow));
 	}
 
-	bool CanCreatePoint(){
+	bool CanConnect(){
 
 		//spherecast around player???
 		
@@ -875,22 +875,18 @@ public class PlayerBehaviour: MonoBehaviour {
 		return false;
 	}
 
-	void CreatePoint(){
+	void Connect(){
 		SplinePointPair spp = SplineUtil.ConnectPoints (curSpline, curPoint, pointDest);
 		//Adding points multiple times to each other is happening HERE
 		//Could restrict points to never try and add their immediate neighbours?
 		l.positionCount = 0;
 
 		// pointDest.tension = 1;
-		
-
-		if (curSpline != null && curSpline != spp.s) {
-			curSpline.OnSplineExit ();
-		}
 
 		Services.main.activeStellation.AddSpline(spp.s);
 
-		curSpline = spp.s;
+		splineDest = spp.s;
+
 		//why should you set pointdest here if you're already using it above as the target point?
 		// pointDest = spp.p;
 
@@ -1290,7 +1286,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			// 	// curSpline.OnSplineEnter (true, drawnPoint, curPoint, false);
 			// }
 
-			if(CanCreatePoint()){
+			if(CanConnect()){
 				//remove current point from curspline and connect drawnPoint to pointDest on current spline
 				// curSpline.SplinePoints.Remove(curPoint);
 				// drawnPoint._neighbours.Remove(curPoint);
@@ -1299,7 +1295,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				//this is bugged if the player flies right into the point without creating any on the way
 				//the player is warping back to the start of the last spline for no REASON
 
-				CreatePoint();
+				Connect();
 
 				curPoint.GetComponent<Collider>().enabled = true;
 				curPoint.velocity = cursorDir * Mathf.Abs(flow);

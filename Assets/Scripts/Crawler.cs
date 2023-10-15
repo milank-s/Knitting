@@ -12,6 +12,8 @@ Crawler : MonoBehaviour
     protected Point point;
     protected int curIndex;
     public float baseSpeed = 1;
+    public float boostAmount = 0.25f;
+    float boost;
     protected float speed;
     public bool running;
     protected float progress;
@@ -20,23 +22,40 @@ Crawler : MonoBehaviour
     protected Vector3 delta;
     protected int dir;
     
-    public virtual void Start(){
+        public virtual void Init(){
+        running = false;
 
     }
+
+    public virtual void Setup(Spline s, bool f)
+    {
+        speed = baseSpeed;
+        curIndex = f? 0 : s.SplinePoints.Count - 1;
+        forward = f;
+        progress = forward ? 0 : 1;
+        spline = s;
+        running = true;
+        dir = forward ? 1 : -1;
+        transform.position = s.SplinePoints[curIndex].Pos;
+        lastPos = transform.position;
+    }
+
     public virtual void Step()
     {
         if (running)
         {
             if(progress < 0 || progress > 1){
+                OnPoint();
                 GetNextPoint();
             }
 
-            progress += Time.deltaTime * speed * dir; // spline.distance;
+            boost = Mathf.Lerp(boost, 0, Time.deltaTime);
+            progress += Time.deltaTime * (speed + boost) * dir; // spline.distance;
                
             transform.position = spline.GetPointAtIndex(curIndex, progress);
-            delta = (transform.position - lastPos).normalized;
+            delta = (transform.position - lastPos);
             lastPos = transform.position;
-            transform.forward = delta;
+            transform.forward = delta.normalized;
         }
     }
 
@@ -55,6 +74,9 @@ Crawler : MonoBehaviour
     public virtual void BreakOff(){
     }
 
+    public virtual void OnPoint(){
+        boost += boostAmount;
+    }
     public virtual void GetNextPoint()
     {
         
@@ -93,23 +115,5 @@ Crawler : MonoBehaviour
     {
         running = false;
         gameObject.SetActive(false);
-    }
-
-    public virtual void Init(){
-        running = false;
-
-    }
-
-    public virtual void Setup(Spline s, bool f)
-    {
-        speed = baseSpeed;
-        curIndex = f? 0 : s.SplinePoints.Count - 1;
-        forward = f;
-        progress = forward ? 0 : 1;
-        spline = s;
-        running = true;
-        dir = forward ? 1 : -1;
-        transform.position = s.SplinePoints[curIndex].Pos;
-        lastPos = transform.position;
     }
 }

@@ -7,18 +7,29 @@ public class Bird : Crawler
     // [SerializeField] BoidFlocking boidBehaviour;
 
     bool flying = false;
-
+    float minSpeed = 1;
+    float maxSpeed = 5;
     Point pointDest;
     Vector3 velocity;
     Vector3 dest;
+    Vector3 scale;
     float lerp;
+    
+    [SerializeField] TrailRenderer trail;
+
+    public override void Init()
+    {
+        base.Init();
+        scale = transform.localScale;
+    }
     public override void BreakOff()
     {
         base.BreakOff();
         lerp = 0;
         flying = true;
-        velocity = (transform.forward * speed);
+        velocity = (Services.PlayerBehaviour.curDirection * Services.PlayerBehaviour.actualSpeed);
         dest = GetClosestPoint();
+        trail.emitting = true;
         // boidBehaviour.SetVelocity(transform.forward * speed);
         // boidBehaviour.pointTarget = GetClosestPoint();
         // boidBehaviour.enabled = true;
@@ -28,7 +39,7 @@ public class Bird : Crawler
     Vector3 GetClosestPoint(){
         
         float minDist = Mathf.Infinity;
-        Vector3 pos = transform.position;
+        Vector3 pos = transform.position + velocity;
         foreach(Point p in spline.SplinePoints){
             if(p == point) continue;
 
@@ -53,17 +64,25 @@ public class Bird : Crawler
 
     void FlyStep(){
 
-        lerp += Time.deltaTime;
-        Vector3 diff = dest - transform.position;
+        lerp += Time.deltaTime / 2f;
+        Vector3 pointPos = pointDest.Pos;
+        Vector3 diff = pointPos - transform.position;
 
-        velocity = Vector3.Lerp(velocity, diff, lerp);
-        if(velocity.magnitude < 1) velocity.Normalize();
+        velocity = Vector3.Lerp(velocity, diff.normalized, Mathf.Sin(lerp * (Mathf.PI/2f)));
+        
+        float mag = velocity.magnitude;
+        float dist = diff.magnitude;
+        
+        if(mag > maxSpeed) velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
+
         transform.position += velocity * Time.deltaTime;
-
-        if(Vector3.Distance(pointDest.Pos, transform.position) < 0.05f){
+        transform.forward = velocity;
+       
+        if(dist < 0.01f){
             
             // boidBehaviour.enabled = false;
-            Debug.Log("back on lines");
+            trail.emitting = false;
+            Services.fx.BakeTrail(trail, Services.fx.flyingTrailMesh);
             curIndex = spline.GetPointIndex(pointDest);
             flying = false;
             progress = forward ? 0 : 1;
@@ -72,6 +91,8 @@ public class Bird : Crawler
     }
 
     public override void Step(){
+
+        transform.localScale = Vector3.Lerp(scale, new Vector3(scale.x, scale.y, scale.z * 2), speed/baseSpeed);
 
         if(!flying){
             
@@ -107,7 +128,7 @@ public class Bird : Crawler
                 speed = Mathf.Lerp(speed, baseSpeed, Time.deltaTime * 2);
             }
         }else{
-            // boidBehaviour.Steer();
+            
             FlyStep();
         }
     }
