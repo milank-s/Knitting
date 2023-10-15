@@ -318,6 +318,7 @@ public class Spline : MonoBehaviour
 		ResetVectorLine();
 		completion = 0;
 		drawingIn = false;
+		populatedPointPositions = false;
 		Selected = StartPoint;
 	}
 
@@ -404,7 +405,6 @@ public class Spline : MonoBehaviour
 
 		complete = false;
 		SplinePoints.Clear();
-		closed = false;
 		drawingIn= false;
 		drawnIn = false;
 		
@@ -1090,6 +1090,8 @@ public class Spline : MonoBehaviour
 			pointCount = (SplinePoints.Count-1) * curveFidelity;
 		}
 		
+		lowerDrawIndex = 0;
+		upperDrawIndex = 0;
 		line.points3 = new System.Collections.Generic.List<Vector3>(pointCount);	
 	}
 		
@@ -1177,6 +1179,7 @@ public class Spline : MonoBehaviour
 			SplinePoints [newIndex - 1].AddPoint (p);
 		}
 
+		populatedPointPositions = false;
 	}
 
 	public void DrawVelocity (Vector3 pos, float t, Vector3 direction)

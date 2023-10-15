@@ -12,7 +12,7 @@ public class SplineUtil : MonoBehaviour {
 		newPoint.GetComponent<Collider> ().enabled = true;
 
 		#if !UNITY_EDITOR
-	newPoint.Initialize();
+		newPoint.Initialize();
 		#endif
 		
 		return newPoint;

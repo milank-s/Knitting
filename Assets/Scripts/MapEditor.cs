@@ -2085,19 +2085,21 @@ void DragCamera()
                 else if (raycastNull || Input.GetKey(KeyCode.LeftAlt))
                 {
                         
-                    if (Input.GetMouseButtonDown(0))
+                    if (Input.GetMouseButtonDown(0)){
+
+                        pointCreated = true;
+                        newPoint = SplineUtil.CreatePoint(worldPos);
+                        newPoint.SetPointType(curPointType);
+                        controller.AddPoint(newPoint);
+                        newPoint.transform.parent = pointsParent;
+
+                        if (Input.GetKey(KeyCode.LeftShift))
+                        {
+                            newPoint.tension = 1;
+                        }
+                        
                         if (selectedPoints.Count > 0)
                         {
-                            newPoint = SplineUtil.CreatePoint(worldPos);
-                            newPoint.SetPointType(curPointType);
-                            controller.AddPoint(newPoint);
-
-                            if (Input.GetKey(KeyCode.LeftShift))
-                            {
-                                newPoint.tension = 1;
-                            }
-
-                            newPoint.transform.parent = pointsParent;
 
                             SplinePointPair spp = SplineUtil.ConnectPoints(selectedSpline,
                                 activePoint, newPoint);
@@ -2114,23 +2116,17 @@ void DragCamera()
                                 }
                                 
                                 RemoveSelectedPoint(activePoint);
-                                AddSelectedPoint(newPoint);
                                 AddSelectedSpline(spp.s);
                                 
                             }
                             
-                            pointCreated = true;
 
                         }
-                        else
-                        {
-                            pointCreated = true;
-                            newPoint = SplineUtil.CreatePoint(worldPos);
-                            newPoint.SetPointType(curPointType);
-                            newPoint.transform.parent = pointsParent;
-                            AddSelectedPoint(newPoint);
-                        }
+                       
+                        AddSelectedPoint(newPoint);
+
                     }
+                }
 
 
                 if (pointCreated)
