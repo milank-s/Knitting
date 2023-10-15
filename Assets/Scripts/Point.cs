@@ -661,6 +661,9 @@ public class Point : MonoBehaviour
 				}
 				break;
 			case PointTypes.connect:
+
+			return true;
+			
 			if (buttonPressed)
 				{
 					return true;

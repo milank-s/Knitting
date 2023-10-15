@@ -249,10 +249,14 @@ public class PlayerBehaviour: MonoBehaviour {
 		speed = Services.main.activeStellation.startSpeed;
 		acceleration = Services.main.activeStellation.acceleration;
 		maxSpeed = Services.main.activeStellation.maxSpeed;
-
+	
+		foreach(Spline s in curPoint._connectedSplines){
+			s.SetSelectedPoint(curPoint);
+		}
 		//CameraFollow.instance.WarpToPosition(curPoint.Pos);
 
 		ResetFX();
+		
 
 //		Material newMat;
 //		newMat = Services.Prefabs.lines[3];
@@ -623,12 +627,13 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void PlayerOnPoint(){
 
 		canTraverse = false;
-
+		bool hasPath = false;
 		Point prevPointDest = pointDest;
 
-		if (!foundConnection && TryLeavePoint())
+		if (TryLeavePoint()) // && !foundConnection)
 		{
 			cursorSprite.sprite = traverseSprite;
+			hasPath = true;
 
 			if (curPoint.pointType == PointTypes.ghost)
 			{
@@ -684,15 +689,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			Services.fx.nextPointSprite.enabled = false;
 		}
 
-		if(!canTraverse){
+		if(!hasPath){
 
-			// if (curPoint.pointType == PointTypes.connect)
-			// {
-			// 	freeCursor = true;
-			// }
-			
-
-			
 			foundConnection = false;
 
 			if (CanConnectFromPoint(curPoint))
@@ -722,27 +720,13 @@ public class PlayerBehaviour: MonoBehaviour {
 					//canTraverse = true;
 
 				}
-				else if (curPoint.pointType == PointTypes.connect)
-				{
-					//this looks bad rn
-//					l.positionCount = 2;
-//
-//					l.SetPosition(0, pointDest.Pos);
-//					l.SetPosition(1, transform.position);
 
-//					cursorOnPoint.SetPosition(0, pointDest.Pos);
-//					cursorOnPoint.SetPosition(1, cursorPos);
-					// cursorSprite.sprite = canConnectSprite;
-					// Services.fx.ShowNextPoint(pointDest);
-				}
 			}
 			else if (TryToFly())
 				{
 					cursorSprite.sprite = canFlySprite;
 					if (buttonWasPressed)
 					{
-						//buttonDownTimer = 0;
-						//boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
 						SwitchState(PlayerState.Flying);
 
 						return;
@@ -764,10 +748,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (timeOnPoint == 0)// && curPoint.pointType != PointTypes.ghost && ((buttonDown || buttonUp) || !curPoint.CanLeave()))
 		{
-			// this shouldnt happen if the player is never stopped on the point
 			
 			curPoint.velocity += (Vector3)cursorDir * (1-easedAccuracy) * potentialSpeed;
-			//curPoint.GetComponent<Rigidbody>().velocity += (Vector3)cursorDir * (1-easedAccuracy) * potentialSpeed;
+			
 		}
 
 		if (canTraverse)
@@ -879,7 +862,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		// pointDest.tension = 1;
 
-		Services.main.activeStellation.AddSpline(spp.s);
+		if(curSpline != null && spp.s != curSpline){
+			Services.main.activeStellation.AddSpline(spp.s);
+			spp.s.StartDrawRoutine(curPoint);
+		}
 		
 		
 		splineDest = spp.s;
@@ -1722,7 +1708,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				float curAngle = Mathf.Infinity;
 
-				if(s.locked){
+				if(s.state == Spline.SplineState.off){
 					continue;
 				}else{
 					
@@ -1751,16 +1737,6 @@ public class PlayerBehaviour: MonoBehaviour {
 					Point p = s.SplinePoints[nextIndex];
 
 					int indexDifference = nextIndex - curIndex;
-					// bool backwards = indexDifference == -1 || indexDifference > 1; 
-					// bool forward = indexDifference == 1 || indexDifference < -1;
-					// bool loopingBackwards = looping && backwards;
-					// bool loopingForwards = looping && forward;
-
-
-					// if((!loopingBackwards && indexDifference > 1) || (!loopingForwards && indexDifference < -1)){
-						
-					// 	// you are are trying to path to a point that 
-					// }
 						
 					bool isGhostPoint = curPoint.pointType == PointTypes.ghost;
 					
@@ -2237,11 +2213,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				//PlayerMovement ();
 
 				t.emitting = true;
-
-				if (curSpeed > flyingSpeedThreshold)
-				{
-					Services.fx.flyingParticles.Play();
-				}
 
 				if (curPoint.pointType != PointTypes.ghost)
 				{

@@ -26,7 +26,7 @@ public class Spline : MonoBehaviour
 	public SplineType type = SplineType.normal;
 
 	public enum SplineType{normal, moving, locked}
-	public enum SplineState{locked, on, done}
+	public enum SplineState{off, on}
 
 	[Space(10)]
 	[Header("Bools")]
@@ -91,12 +91,7 @@ public class Spline : MonoBehaviour
 	public int order;
 	private bool _locked;
 	
-	
-	public bool locked
-	{
-		get { return state == SplineState.locked; }
-	}
-	
+
 	public static int curveFidelity = 10;
 
 	[Space(20)] [HideInInspector] public bool isPlayerOn, reactToPlayer;
@@ -316,7 +311,7 @@ public class Spline : MonoBehaviour
 //		line.texture = tex;
 //		line.textureScale = newMat.mainTextureScale.x;
 	}
-	
+
 	public void Initialize()
 	{	
 		SetUpReferences();
@@ -337,7 +332,7 @@ public class Spline : MonoBehaviour
 
 		if (t == SplineType.locked)
 		{
-			state = SplineState.locked;
+			state = SplineState.off;
 		}
 
 		if (t == SplineType.normal)
@@ -353,7 +348,7 @@ public class Spline : MonoBehaviour
 
 		state = t;
 
-		if (t == SplineState.locked)
+		if (t == SplineState.off)
 		{
 			Lock();
 		}
@@ -444,7 +439,7 @@ public class Spline : MonoBehaviour
 
 					foreach(Spline s in p._connectedSplines){
 						
-						if(s.state != SplineState.locked){
+						if(s.state != SplineState.off){
 							break;
 						}
 					}
