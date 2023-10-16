@@ -633,7 +633,7 @@ public class Spline : MonoBehaviour
 		}
 		
 		
-		magnitude = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f) - shake, 0, 1f) * amplitude * Mathf.Clamp01(segmentDistance);
+		magnitude = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.easedAccuracy, 2f) - shake, 0, 1f) * amplitude * Mathf.Clamp01(segmentDistance);
 		magnitude += distortion;
 
 		if (isPlayerOn || reactToPlayer)
