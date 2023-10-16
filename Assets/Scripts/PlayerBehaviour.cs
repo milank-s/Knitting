@@ -128,7 +128,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(curSpline.speed == 0){
 				return speed + flow * cursorDir.magnitude * easedAccuracy + boost;
 			}else{
-				return Mathf.Clamp(speed + flow + boost, 0, maxSpeed); //(curSpline.speed * (goingForward ? 1 : -1));
+				return Mathf.Clamp(flow + boost, 0, maxSpeed); //(curSpline.speed * (goingForward ? 1 : -1));
 			}
 		}
 	}
@@ -1405,8 +1405,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		//this never works in practice because you're multiplying flow to 0 when you have 0 accuracy
 		//you need to use a -1 to 1 accuracy range
-		
-		Debug.Log(actualSpeed);
 
 		if(flow <= 0 && onBelt){
 			//ok they're being pushed back
