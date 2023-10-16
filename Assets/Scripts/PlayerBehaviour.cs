@@ -123,8 +123,13 @@ public class PlayerBehaviour: MonoBehaviour {
 				return flyingSpeed;
 			}
 
+		
 			// return (speed) * cursorDir.magnitude * easedAccuracy + flow + boost;
-			return speed + flow * cursorDir.magnitude * easedAccuracy + boost;
+			if(curSpline.speed == 0){
+				return speed + flow * cursorDir.magnitude * easedAccuracy + boost;
+			}else{
+				return Mathf.Clamp((curSpline.speed * (goingForward ? 1 : -1)) + flow + boost, 0, maxSpeed);
+			}
 		}
 	}
 
@@ -1362,6 +1367,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //		adding this value to flow
 //		MAKE FLOW NON REVERSIBLE. ADJUST LINE ACCURACY WITH FLOW TO MAKE PLAYER NOT STOP AT INTERSECTIONS
 //		NEGOTIATE FLOW CANCELLING OUT CURRENT SPEED
+
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
 		//flow -= Vector3.Dot(Vector3.up, curSpline.GetDirection(progress))/100f;
 		if (curSpeed < flyingSpeedThreshold && Services.fx.flyingParticles.isPlaying)
@@ -1369,31 +1375,53 @@ public class PlayerBehaviour: MonoBehaviour {
 			Services.fx.flyingParticles.Pause();
 		}
 
-		float splineSpeed = 0;
-		if(curSpline != null && flow < curSpline.speed && !curSpline.bidirectional){
-			splineSpeed = curSpline.speed;
-		}
+		float splineSpeed = curSpline.speed;
+
+		//time to find out what the deal with this is
+		
 
 		float speedGain = (easedAccuracy - 0.66f) * 3f;
-	
+		
 		float gravityCoefficient = Mathf.Clamp01(-curDirection.y);
 		float gravityPull = -curDirection.y - curDirection.z;
 
 		// speedGain = speedGain > 0 ? speedGain * acceleration : speedGain * decay;
 		
+		bool onBelt = curSpline.speed > 0;
+		
+		//no gaining speed upstream
+		if(onBelt && !goingForward) speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
+		//no losing flow upstream
+		if(onBelt && goingForward) speedGain = Mathf.Clamp(speedGain, 0, maxSpeed);
+
+		
 		flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);// * gravityCoefficient;
-		flow += splineSpeed * Time.deltaTime;
-		//flow -= Mathf.Clamp01(-gravityPull) * Time.deltaTime;
+		
+		if(onBelt && !goingForward) flow -= splineSpeed * Time.deltaTime;
+		
+
 		flow = Mathf.Clamp(flow, 0, maxSpeed);
+
+		//flow -= Mathf.Clamp01(-gravityPull) * Time.deltaTime;
+
+		//this never works in practice because you're multiplying flow to 0 when you have 0 accuracy
+		//you need to use a -1 to 1 accuracy range
+		
+		Debug.Log(actualSpeed);
+
+		if(actualSpeed == 0 && onBelt){
+			//ok they're being pushed back
+
+			//this is probably all kinds of fucked
+			goingForward = !goingForward;
+			Point p = pointDest;
+			pointDest = curPoint;
+			curPoint = p;	
+		}
 
 		if (!joystickLocked)
 		{
-			curSpeed = actualSpeed;
-			//float finalSpeed = (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
-			float finalSpeed = curSpeed * Time.deltaTime;
-			//lets do some math
-			
-			CalculateMovementDistance(finalSpeed);
+			CalculateMovementDistance(actualSpeed * Time.deltaTime);
 			
 			//progress += goingForward ? finalSpeed : -finalSpeed;
 
@@ -2306,6 +2334,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 				}
 
+				
 				curPoint = pointDest;
 				
 				if(curPoint.pointType != PointTypes.ghost){

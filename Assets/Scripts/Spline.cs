@@ -467,7 +467,8 @@ public class Spline : MonoBehaviour
 	{
 		distortion = Mathf.Lerp(distortion, 0, Time.deltaTime * 2);
 
-		if((drawn && (!reactToPlayer && !isPlayerOn)) && !MapEditor.editing) return;
+		bool shouldDraw = !populatedPointPositions || MapEditor.editing || drawing || (!reactToPlayer && !isPlayerOn);
+		if(!shouldDraw) return;
 
 		UpdateDrawRange();
 		
@@ -492,11 +493,11 @@ public class Spline : MonoBehaviour
 				//trying to save meager amounts of compute
 				
 				//I do this once to populate, and then only when player is on
-				if(!populatedPointPositions || (isPlayerOn || reactToPlayer)) UpdateSplineSegment(i, index, step);
+				if(MapEditor.editing || !populatedPointPositions || (isPlayerOn || reactToPlayer)) UpdateSplineSegment(i, index, step);
 				
 				distanceDelta = rollingDistance - distanceDelta;
 
-				if(populatedPointPositions && (MapEditor.editing || (drawing || (isPlayerOn || reactToPlayer)))){
+				if(populatedPointPositions){
 					DrawSplineSegment(i, index, step);
 				}
 				
@@ -627,10 +628,10 @@ public class Spline : MonoBehaviour
 		rollingDistance = 0;
 		prevPos = SplinePoints[0].Pos;
 		
-		if (!bidirectional)
-		{
+		if(speed > 0){
 			line.textureOffset -= Time.deltaTime * speed * 5f;
 		}
+		
 		
 		magnitude = Mathf.Clamp(Mathf.Pow(1 - Services.PlayerBehaviour.normalizedAccuracy, 2f) - shake, 0, 1f) * amplitude * Mathf.Clamp01(segmentDistance);
 		magnitude += distortion;
