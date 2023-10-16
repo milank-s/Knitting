@@ -115,21 +115,21 @@ public class PlayerBehaviour: MonoBehaviour {
 			//lets just stop using the deceleration timer
 			//adjustedAccuracy = (adjustedAccuracy * (1-decelerationTimer));
 
-			if (progress >= 0.9f && accuracy < 0.5f && pointDest.pointType != PointTypes.ghost)
-			{
-				//adjustedAccuracy = 1;
-			}
+		
 			if(state == PlayerState.Flying){
 				return flyingSpeed;
 			}
 
-		
+			if(state == PlayerState.Traversing){
 			// return (speed) * cursorDir.magnitude * easedAccuracy + flow + boost;
-			if(curSpline.speed == 0){
-				return speed + flow * cursorDir.magnitude * easedAccuracy + boost;
-			}else{
-				return Mathf.Clamp(flow + boost, 0, maxSpeed); //(curSpline.speed * (goingForward ? 1 : -1));
+				if(curSpline.speed == 0){
+					return speed + flow * cursorDir.magnitude * easedAccuracy + boost;
+				}else{
+					return Mathf.Clamp(flow + boost, 0, maxSpeed); //(curSpline.speed * (goingForward ? 1 : -1));
+				}
 			}
+
+			return speed + flow * cursorDir.magnitude * easedAccuracy + boost;
 		}
 	}
 
@@ -1787,6 +1787,10 @@ public class PlayerBehaviour: MonoBehaviour {
 					Vector3 startdir = Vector3.zero;
 
 					if (canMoveBackward && !forward && s.bidirectional) {
+						
+						//don't enter conveyor belts that will instantly push you back
+						//it's a little janky but better than re-entering the same point every frame
+						if(!isGhostPoint && actualSpeed < s.speed) continue;
 						
 						curAngle = s.CompareAngleAtPoint (cursorDir, p, out startdir, true);	
 						
