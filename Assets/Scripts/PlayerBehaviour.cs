@@ -128,7 +128,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(curSpline.speed == 0){
 				return speed + flow * cursorDir.magnitude * easedAccuracy + boost;
 			}else{
-				return Mathf.Clamp((curSpline.speed * (goingForward ? 1 : -1)) + flow + boost, 0, maxSpeed);
+				return Mathf.Clamp(speed + flow + boost, 0, maxSpeed); //(curSpline.speed * (goingForward ? 1 : -1));
 			}
 		}
 	}
@@ -1394,9 +1394,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		//no losing flow upstream
 		if(onBelt && goingForward) speedGain = Mathf.Clamp(speedGain, 0, maxSpeed);
 
-		
+		if(onBelt && goingForward && actualSpeed < curSpline.speed) flow = curSpline.speed; 
 		flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);// * gravityCoefficient;
-		
 		if(onBelt && !goingForward) flow -= splineSpeed * Time.deltaTime;
 		
 
@@ -1409,7 +1408,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		Debug.Log(actualSpeed);
 
-		if(actualSpeed == 0 && onBelt){
+		if(flow <= 0 && onBelt){
 			//ok they're being pushed back
 
 			//this is probably all kinds of fucked
