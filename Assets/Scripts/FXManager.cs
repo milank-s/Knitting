@@ -393,7 +393,7 @@ public class FXManager : MonoBehaviour
       fx.SetTrigger(type.ToString());
 
       fx.transform.position = Services.Player.transform.position;
-      fx.transform.up = Services.Player.transform.up;
+      fx.transform.up = Services.Cursor.transform.up;
       index = (index + 1) % fxInstances.Count;
   }
 
@@ -472,7 +472,7 @@ public class FXManager : MonoBehaviour
   }
 
     public void SpawnCircle(Transform t){
-        GameObject fx = Instantiate (circleEffect, transform.position, Quaternion.identity);
+        GameObject fx = Instantiate (circleEffect, t.position, Quaternion.identity);
         fx.transform.parent = t;
     }
 

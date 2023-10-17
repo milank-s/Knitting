@@ -648,7 +648,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 					if (newPointSelected)
 					{
-						Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, pointDest.transform);
+						// Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, pointDest.transform);
 					}
 
 				}else{
@@ -1996,7 +1996,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 		cursor.transform.position = cursorPos;
-		cursor.transform.up = cursorPos - transform.position;
+		cursor.transform.rotation = Quaternion.LookRotation(Services.mainCam.transform.forward, cursorDir);
 
 
 		if(buttonDown && state == PlayerState.Traversing)
@@ -2010,6 +2010,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		renderer.transform.forward = curDirection;
+		
 
 		// l.SetPosition(0, transform.position);
 		// l.SetPosition(1, cursorPos);
@@ -2157,6 +2158,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						buttonDownTimer = 0;
 						boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
 						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
+						Services.fx.SpawnCircle(curPoint.transform);
 						Services.fx.EmitRadialBurst(10,boostTimer + 1, curPoint.transform);
 						Services.fx.EmitLinearBurst(5, boostTimer + 1, curPoint.transform, -cursorDir);
 					}
@@ -2339,7 +2341,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				
 				curPoint.OnPlayerEnterPoint();
-
 
 				//SPLINE IS NULL WHEN YOU ARE FLYING, THIS SUCKS
 				if (curSpline != null)
