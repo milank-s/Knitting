@@ -228,9 +228,13 @@ public class StellationController : MonoBehaviour {
 			s.StartDrawRoutine(start);
 		}
 	}
+
+	public void HitPoint(Point p){
+		_pointshit.Add(p);
+	}
+
 	public void Won()
 	{
-		
 		won = true;
 		
 		//We are in a scene that supports multiple controllers

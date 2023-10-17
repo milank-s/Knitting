@@ -307,6 +307,8 @@
 					activeStellation.Step();
 				}
 
+				Services.fx.Step();
+				
 				if (Services.PlayerBehaviour.curPoint != null)
 				{
 					Services.PlayerBehaviour.Step();

@@ -488,10 +488,12 @@ public class Point : MonoBehaviour
 	{
 		if(Services.main.activeStellation != controller){
 			Services.main.activeStellation.OnPlayerExit();
-			controller.OnPlayerEnter();
+			controller.OnPlayerEnter();		
 			//entered new stellation	
 		}
-		
+
+		Services.main.activeStellation.HitPoint(this);
+
 		proximity = 1;
 		timeOnPoint = 0;
 		timesHit++;

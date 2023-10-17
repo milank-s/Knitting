@@ -146,7 +146,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	private Spline drawnSpline;
 	private Point drawnPoint;
-	private List<Point> traversedPoints;
+	[SerializeField]
+	public List<Point> traversedPoints;
 	private List<Point> inventory;
 	private float curDrawDistance = 0.1f;
 	[Space(10)]
@@ -253,7 +254,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		speed = Services.main.activeStellation.startSpeed;
 		acceleration = Services.main.activeStellation.acceleration;
 		maxSpeed = Services.main.activeStellation.maxSpeed;
-	
+
 		foreach(Spline s in curPoint._connectedSplines){
 			s.SetSelectedPoint(curPoint);
 		}
@@ -394,6 +395,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void Step()
 	{
 		pos = transform.position;
+
 		Vector2 p1 = Services.mainCam.WorldToScreenPoint(transform.position);
 		Vector2 p2 = Services.mainCam.WorldToScreenPoint(transform.position + curDirection);
 
@@ -634,16 +636,14 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 			else
 			{
-
 				bool newPointSelected = prevPointDest == null || prevPointDest != pointDest;
 
 				if (newPointSelected){
-					// Services.fx.ShowSplineDirection(curSpline);
+					Services.fx.ShowSplineDirection(splineDest);
 				}
 
 				if( pointDest.pointType != PointTypes.ghost)
 				{
-
 					Services.fx.ShowNextPoint(pointDest);
 
 					if (newPointSelected)
@@ -1812,11 +1812,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						maybeNextSpline = s;
 						maybeNextPoint = p;
 
-						if(forward){
-							facingForward = true;
-						}else{
-							facingForward = false;
-						}
+						facingForward = forward;
 						
 					}
 				}
@@ -1851,6 +1847,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				//what is reading curspline while the player is stopped on the point?
 
 				// curSpline = splineDest;
+
+				goingForward = facingForward;
 
 				if(facingForward){
 					progress = 0;

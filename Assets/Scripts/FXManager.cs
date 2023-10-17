@@ -31,6 +31,8 @@ public class FXManager : MonoBehaviour
 
     public Image overlay;
 
+    public float graffitiInterval = 0.1f;
+    float graffitiTimer;
     public bool drawGraffiti;
     [SerializeField] private GameObject fxPrefab;
   private int index;
@@ -99,7 +101,9 @@ public class FXManager : MonoBehaviour
 			yield return null;
 		} 
 	}
-
+public void Step(){
+    DrawGraffiti();
+}
   public void ShowUnfinished()
   {
       showPointsRoutine = StartCoroutine(ShowUnfinishedPoints());
@@ -109,7 +113,7 @@ public class FXManager : MonoBehaviour
   {
 
       //this is bugging out if you reset on the same spline, and it doesnt work in reverse yet
-     //lineDirectionRoutine.Add(StartCoroutine(DrawSplineDirection(s)));
+     lineDirectionRoutine.Add(StartCoroutine(DrawSplineDirection(s)));
    
   }
      IEnumerator DrawSplineDirection(Spline s)
@@ -118,7 +122,13 @@ public class FXManager : MonoBehaviour
 
         if(lineDirectionRoutine.Count == 0)yield break;
         
-        Vector3 offset = s.GetVelocity(0.1f);
+        bool forward = Services.PlayerBehaviour.goingForward;
+        int sign = (forward ? 1 : -1);
+        float start = forward ? 0.1f : 0.9f;
+        int pointIndex = s.selectedIndex;
+        Vector3 offset = s.GetVelocity(start);
+
+        //doesnt work in 3d bro, gotta get cross product
         offset = new Vector3(-offset.y, offset.x, 0) / 10f;
         
         VectorLine newLine;
@@ -141,10 +151,15 @@ public class FXManager : MonoBehaviour
         newLine.lineWidth = height * 2;
 
         Vector3 endpoint = s.GetPointForPlayer(0.5f);
-        Vector3 endDir = s.GetDirection(0.5f);
+        Vector3 endDir = s.GetDirection(0.5f) * sign;
+
+    
       for (int i = 0; i < Spline.curveFidelity; i++)
       {
-          newLine.points3.Add(s.GetPointForPlayer((0.5f * i)/Spline.curveFidelity) + offset);
+            float step = (0.5f * i)/Spline.curveFidelity;
+            float oneMinus = forward ? step: 1-step;
+
+          newLine.points3.Add(s.GetPointAtIndex(index, oneMinus) + offset);
           newLine.Draw3D();
           yield return new WaitForSeconds(0.02f);
       }
@@ -160,6 +175,7 @@ public class FXManager : MonoBehaviour
           newLine.Draw3D();
           yield return new WaitForSeconds(0.02f);
       }
+
       nextSplineArrow.enabled = false;
       
       lineDirectionRoutine.Remove(thisRoutine);
@@ -221,6 +237,8 @@ public class FXManager : MonoBehaviour
           StopCoroutine(graffitiRoutine);
           graffitiRoutine = null;
       }
+
+      
 
       if(showPointsRoutine != null){
           StopCoroutine(showPointsRoutine);
@@ -421,69 +439,33 @@ public class FXManager : MonoBehaviour
       linearParticles.Emit(i);
   }
 
-  public IEnumerator DrawGraffiti()
+  public void DrawGraffiti()
   {
-      float t = 0.1f;
+    graffitiTimer += Time.deltaTime;
 
-     // while (t > 0)
-     // {
-          lineIndex ++;
-          Vector3[] positions = new Vector3[playerTrail.positionCount];
-          playerTrail.GetPositions(positions);
+    if(graffitiTimer > graffitiInterval){
 
-          List<Vector3> pos = new List<Vector3>();
+        graffitiTimer = 0;
+        List<Vector3> pos = new List<Vector3>();
 
-          if (playerTrail.positionCount > 0)
-          {
-              for (int i = 0; i < 25; i++)
-              {
-                  if ( i > 20  || Random.Range(0, 100) < 50)
-                  {
-                      pos.Add(positions[Mathf.Clamp(playerTrail.positionCount - i, 0, playerTrail.positionCount - 1)] +
-                              (Vector3) Random.insideUnitCircle * (i/25f)/25f);
-                  }
-              }
+        if (playerTrail.positionCount > 0)
+        {
+            //could also use Services.activeStellation._pointsHit;
+            foreach(Point p in Services.PlayerBehaviour.traversedPoints)
+            {
+                    pos.Add(p.Pos +(Vector3) Random.onUnitSphere * 0.1f);
+            }
 
-
-              line.points3 = pos;
-              line.Draw3D();
-          }
-          
-
-          //t -= Time.deltaTime;
-
-          yield return new WaitForSecondsRealtime(0.05f);
-
-          if (drawGraffiti)
-          {
-              graffitiRoutine = StartCoroutine(DrawGraffiti());
-          }
-          else
-          {
-              line.points3 = new List<Vector3>();
-              line.Draw3D();
-              graffitiRoutine = null;
-          }
-
-          // }
-
-          
-
+            line.points3 = pos;
+            line.Draw3D();
+        }
+    }
   }
 
     public void SpawnCircle(Transform t){
         GameObject fx = Instantiate (circleEffect, t.position, Quaternion.identity);
         fx.transform.parent = t;
     }
-
-  public void DrawLine()
-  {
-      if (!drawGraffiti)
-      {
-          drawGraffiti = true;
-          graffitiRoutine = StartCoroutine(DrawGraffiti());
-      }
-  }
  
  public void Fade(bool fadeIn, float time){
     if(fadeIn){
