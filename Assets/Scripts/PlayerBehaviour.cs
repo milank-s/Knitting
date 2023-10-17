@@ -2256,7 +2256,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				pointDest = null;
 				l.positionCount = 0;
 
-				flyingSpeed = flow + speed + boost;
+				flyingSpeed = flow + speed;
 
 				//THIS MAY NOT BE NECESSARY UNLESS WE CAN FLY OFF OF SPLINES, NOT JUST POINTS
 				//curPoint.OnPointExit();

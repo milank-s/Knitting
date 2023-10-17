@@ -99,20 +99,14 @@ public class CameraFollow : MonoBehaviour {
 		if(Services.PlayerBehaviour.state != PlayerState.Flying){
 			
 			if(Services.PlayerBehaviour.state == PlayerState.Traversing){
-				//nudge wasn't working with backwards ughhhh
-				
-					nudge = Services.PlayerBehaviour.curDirection;
+			
+				nudge = Vector3.Lerp(nudge, Vector3.zero, Time.deltaTime * 3);
 
-				if(!Services.PlayerBehaviour.goingForward){
-					nudge = -nudge;
-				}
-				
 			}else if(Services.PlayerBehaviour.state == PlayerState.Switching){
 				if(Services.PlayerBehaviour.pointDest != null){
 					nudge = (Services.PlayerBehaviour.pointDest.Pos - Services.PlayerBehaviour.curPoint.Pos).normalized;
 				}
-				//we could do lots of diff position hinting here using the point dest if connecting or about to traverse
-				// nudge = Services.PlayerBehaviour.playerSprite.transform.up;
+				
 			}
 			
 		}else{

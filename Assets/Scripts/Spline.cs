@@ -35,6 +35,7 @@ public class Spline : MonoBehaviour
 	public bool drawing = false;
 	public bool drawn = false;
 
+	public bool hitEnd, hitStart;
 	
 	public static float shake;
 	public static float amplitude = 0.25f;
@@ -405,6 +406,8 @@ public class Spline : MonoBehaviour
 	public void Reset()
 	{
 
+		hitEnd  = false;
+		hitStart = false;
 		complete = false;
 		SplinePoints.Clear();
 		drawn = false;
@@ -412,8 +415,6 @@ public class Spline : MonoBehaviour
 		
 		upperPointIndex = 0;
 		lowerPointIndex = 0;
-		upperDrawIndex = upperPointIndex * curveFidelity + 1;
-		lowerDrawIndex = upperPointIndex * curveFidelity - 2;
 
 		ResetVectorLine();
 		line.StopDrawing3DAuto();
@@ -467,7 +468,7 @@ public class Spline : MonoBehaviour
 	{
 		distortion = Mathf.Lerp(distortion, 0, Time.deltaTime * 2);
 
-		bool shouldDraw = !populatedPointPositions || MapEditor.editing || drawing || (!reactToPlayer && !isPlayerOn);
+		bool shouldDraw = MapEditor.editing || drawing || (reactToPlayer || isPlayerOn);
 		if(!shouldDraw) return;
 
 		UpdateDrawRange();
@@ -509,7 +510,6 @@ public class Spline : MonoBehaviour
 
 	void DrawSplineSegment(int i, int segindex, float step){
 
-
 		if(MapEditor.editing){
 					
 			DrawLine(i, segindex, step);
@@ -521,17 +521,10 @@ public class Spline : MonoBehaviour
 			if(segindex < upperDrawIndex && segindex > lowerDrawIndex){
 				
 				DrawLine(i, segindex, step);
-			}
+			}else{
 
-			//behaviour for drawing in the spline
-
-			//lets make sure we know when this is done
-
-			if(segindex == upperDrawIndex && segindex < totalLineSegments){
+			if(!hitEnd && segindex == upperDrawIndex){
 				
-				//todo, add lower and upper bound
-
-				//get the distance to the next point on the line segment
 				float dist = Vector3.Distance(pointPositions[segindex], pointPositions[segindex-1]);
 
 				drawProgress += (drawSpeed/dist) * Time.deltaTime;
@@ -545,6 +538,9 @@ public class Spline : MonoBehaviour
 
 					if(upperDrawIndex == upperPointIndex * curveFidelity + curveFidelity){
 						upperPointIndex ++;
+
+						hitEnd = upperPointIndex >= SplinePoints.Count - (closed ? 0 : 1);
+
 						if(upperPointIndex < SplinePoints.Count){
 							SplinePoints[upperPointIndex].SwitchState(Point.PointState.on);
 						}
@@ -553,8 +549,9 @@ public class Spline : MonoBehaviour
 				}
 			}
 
-			if(segindex == lowerDrawIndex){
-				
+			if(!hitStart && segindex == lowerDrawIndex){
+			
+
 				float dist = Vector3.Distance(pointPositions[segindex], pointPositions[segindex + 1]);
 				drawProgress += (drawSpeed/dist) * Time.deltaTime;
 
@@ -570,13 +567,16 @@ public class Spline : MonoBehaviour
 
 						if(lowerPointIndex >= 0){
 							SplinePoints[lowerPointIndex].SwitchState(Point.PointState.on);
+						}else{
+							hitStart = true;
 						}
 					}
 				}
 			}
+			}
 
 			
-			if(upperPointIndex >= SplinePoints.Count && lowerPointIndex < 0){
+			if(hitEnd && hitStart){
 				drawn = true; 
 				drawing = false;
 			}
@@ -619,6 +619,9 @@ public class Spline : MonoBehaviour
 			lowerPointIndex = upperPointIndex;
 			upperDrawIndex = upperPointIndex * curveFidelity + 1;
 			lowerDrawIndex = upperPointIndex * curveFidelity - 2;
+
+			if(lowerDrawIndex < 0) hitStart = true;
+			if(upperDrawIndex > totalLineSegments) hitEnd = true;
 		}
 	}
 
@@ -1109,6 +1112,11 @@ public class Spline : MonoBehaviour
 		
 		lowerDrawIndex = 0;
 		upperDrawIndex = 0;
+
+		hitEnd = false;
+		hitStart = false;
+		drawn = false;
+
 		line.points3 = new System.Collections.Generic.List<Vector3>(pointCount);	
 	}
 		

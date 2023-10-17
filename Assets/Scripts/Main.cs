@@ -14,7 +14,7 @@
 	[Header("Editor info")]
 	[SerializeField] public string loadFileName;
 
-	public enum GameState {playing, paused, editing, menu}
+	public enum GameState {playing, paused, menu}
 
 	public GameState state;
 
@@ -449,7 +449,6 @@
 	{
 		playerInput.SwitchCurrentActionMap("UI");
 		Cursor.lockState = CursorLockMode.None;
-		// state = GameState.editing;
 	}
 	
 	public void ToggleEditMode()
