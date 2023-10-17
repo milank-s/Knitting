@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class Collectible : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    bool collected = false; 
+    Vector3 startPos;
+
+    public void Reset(){
+        transform.position = startPos;
+        collected = false;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public void OnPickup(){
+        collected = true;
     }
 }

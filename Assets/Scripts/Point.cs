@@ -105,8 +105,9 @@ public class Point : MonoBehaviour
 	public float c = 0;
 	public float accretion;
 	public static Point Select;
-	private FadeSprite activationSprite;
-	public SpriteRenderer SR;
+	public MeshRenderer renderer;
+	public MeshFilter meshFilter;
+	Material mat;
 	private float timeOnPoint;
 	public int timesHit = 0;
 	
@@ -183,22 +184,23 @@ public class Point : MonoBehaviour
 
 	void Awake()
 	{
+		mat = renderer.sharedMaterial;
 		initPos = transform.position;
 		state = PointState.off;
 		//Pos = transform.position;
 
 		if (MapEditor.editing)
 		{
-			SR.color = Color.white;
+			mat.color = Color.white;
 		}
 		else
 		{
-			SR.color = Color.black;
+			mat.color = Color.black;
 		}
 //		stiffness = 1600;
 //		damping = 1000;
 //		mass = 20;
-		activationSprite = GetComponentInChildren<FadeSprite> ();
+
 		timeOffset = Point.pointCount;
 
 		_neighbours = new List<Point> ();
@@ -261,9 +263,9 @@ public class Point : MonoBehaviour
 
 	public void SetPointType(PointTypes t)
 	{
-		SR.enabled = true;
+		renderer.enabled = true;
 		pointType = t;
-		SR.sprite = SR.sprite = Services.Prefabs.pointSprites[(int)t];
+		meshFilter.mesh= Services.Prefabs.pointMeshes[(int)t];
 
 		switch(t){
 
@@ -280,7 +282,7 @@ public class Point : MonoBehaviour
 				break;
 
 			case PointTypes.ghost:
-				SR.enabled = false;
+				renderer.enabled = false;
 				break;
 			
 			case PointTypes.normal:
@@ -292,7 +294,7 @@ public class Point : MonoBehaviour
 				break;
 			
 			case PointTypes.end:
-				SR.color = Color.white;
+				mat.color = Color.white;
 				color = Color.white;
 				
 				break;
@@ -317,8 +319,11 @@ public class Point : MonoBehaviour
 		}
 		else
 		{
-			SR.color = Color.white;
+			mat.color = Color.white;
 		}
+
+
+		transform.LookAt(Services.mainCam.transform.position, Vector3.up);
 	}
 
 	public void Movement(){
@@ -744,18 +749,18 @@ public class Point : MonoBehaviour
 		
 		// accretion
 		
-//		SR.color = Color.Lerp (color, new Color (1,1,1, c), Time.deltaTime * 5);
+//		mat.color = Color.Lerp (color, new Color (1,1,1, c), Time.deltaTime * 5);
 
 		if (state == PointState.locked)
 		{
-			SR.color = Color.clear;
+			mat.color = Color.clear;
 			
 		}else
 		{
-			SR.color =  _color; 	
+			mat.color =  _color; 	
 		}
 
-//		SR.color += Color.white * Mathf.Sin(3 * (Time.time + timeOffset)) / 10;
+//		mat.color += Color.white * Mathf.Sin(3 * (Time.time + timeOffset)) / 10;
 	}
 
 	public void PlayerOnPoint(Vector3 direction, float force)

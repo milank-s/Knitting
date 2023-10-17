@@ -17,6 +17,7 @@ public class PrefabManager : MonoBehaviour {
 	public Sprite[] symbols;
 	public Material[] lines;
 	public Sprite[] pointSprites;
+	public Mesh[] pointMeshes;
 	public Material[] fontMaterials;
 	public Font[] fonts;
 

@@ -384,7 +384,6 @@ public class StellationController : MonoBehaviour {
 				p.hasController = true;
 				p.controller = this;
 				_points.Add(p);
-				p.SR.color = Color.white * 0.2f;
 				p.isKinematic = isKinematic;
 				
 				p.Initialize();
