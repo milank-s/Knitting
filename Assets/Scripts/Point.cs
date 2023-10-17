@@ -184,7 +184,7 @@ public class Point : MonoBehaviour
 
 	void Awake()
 	{
-		mat = renderer.sharedMaterial;
+		mat = renderer.material;
 		initPos = transform.position;
 		state = PointState.off;
 		//Pos = transform.position;
@@ -249,6 +249,7 @@ public class Point : MonoBehaviour
 		if (MapEditor.editing)
 		{
 			color = Color.white;
+			c = 1;
 		}
 		else
 		{
@@ -323,7 +324,7 @@ public class Point : MonoBehaviour
 		}
 
 
-		transform.LookAt(Services.mainCam.transform.position, Vector3.up);
+		//transform.LookAt(Services.mainCam.transform.position, Vector3.up);
 	}
 
 	public void Movement(){

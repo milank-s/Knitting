@@ -170,10 +170,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	public TrailRenderer shortTrail;
 	public ParticleSystem sparks;
 	private LineRenderer l;
-	public SpriteRenderer cursorSprite;
-	public SpriteRenderer playerSprite;
+	public MeshRenderer cursorRenderer;
+	public MeshRenderer renderer;
 	public SpriteRenderer boostIndicator;
-	public SpriteRenderer directionIndicator;
 	private int noteIndex;
 	public LineRenderer cursorOnPoint;
 	private VectorLine velocityLine;
@@ -302,7 +301,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		cursorDir = Vector3.zero;
 		cursorDir2 = Vector3.zero;
 		cursorPos = transform.position;
-		cursorSprite.enabled = true;
+		cursorRenderer.enabled = true;
 		progress = 0;
 
 		state = PlayerState.Switching;
@@ -332,7 +331,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public IEnumerator RetraceTrail()
 	{
-		cursorSprite.sprite = null;
 
 		Vector3[] positions = new Vector3[flyingTrail.positionCount];
 		flyingTrail.GetPositions(positions);
@@ -389,7 +387,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				boostTimer = 0;
 			}
 			buttonDownTimer = buttonDownBuffer;
-			directionIndicator.enabled = false;
 		}
 
 	}
@@ -413,19 +410,19 @@ public class PlayerBehaviour: MonoBehaviour {
 			glitching = false;
 		}
 
-		playerSprite.enabled = !glitching;
+		renderer.enabled = !glitching;
 		glitchFX.enabled = glitching;
 
 		if (joystickLocked)
 		{
-			cursorSprite.enabled = false;
+			cursorRenderer.enabled = false;
 			//show glitch effect if we're not on a point 
 
 		}
 		else
 		{
 			//hide glitch effect
-			cursorSprite.enabled = true;
+			cursorRenderer.enabled = true;
 		}
 
 		Point.hitColorLerp = connectTime;
@@ -434,7 +431,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (buttonDown)
 		{
 			boostIndicator.enabled = true;
-			directionIndicator.enabled = true;
+			// directionIndicator.enabled = true;
 			boostIndicator.transform.position = transform.position + (Vector3) cursorDir2 * ((Vector3)transform.position - cursorPos).magnitude;
 			boostIndicator.transform.up = cursorDir2;
 
@@ -469,7 +466,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			speedCoefficient = 0;
 		}
 
-		playerSprite.transform.localScale = Vector3.Lerp(playerSprite.transform.localScale, new Vector3(Mathf.Clamp(1 - (speedCoefficient * 2), 0.15f, 0.25f), Mathf.Clamp(speedCoefficient, 0.25f, 0.5f), 0.25f), Time.deltaTime * 10);
+		renderer.transform.localScale = Vector3.Lerp(renderer.transform.localScale, new Vector3(Mathf.Clamp(1 - (speedCoefficient * 2),1, 2), 1, Mathf.Clamp(speedCoefficient, 1, 2)), Time.deltaTime * 10);
 
 //		if (connectTime <= 0 && PointManager._pointsHit.Count > 0) {
 //			PointManager.ResetPoints ();
@@ -483,7 +480,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				OnFlying.Invoke();
 			}
 			FreeMovement ();
-			cursorSprite.sprite = canFlySprite;
+			
 			return;
 		}
 
@@ -520,12 +517,12 @@ public class PlayerBehaviour: MonoBehaviour {
        		 	float p = Spline.curveFidelity * progress;
         		float step = Mathf.Floor(p);
         		float diff = goingForward ? p - step : step - p;
-				//playerSprite.transform.up = (spriteDest2 - spriteDest1);
+				//renderer.transform.up = (spriteDest2 - spriteDest1);
 
 				accuracy = maxAcc;
 
 				transform.position = curSpline.GetPointForPlayer(progress);
-        		//playerSprite.transform.position = Vector3.Lerp(spriteDest1, spriteDest2, diff);
+        		//renderer.transform.position = Vector3.Lerp(spriteDest1, spriteDest2, diff);
 
 				if(OnTraversing != null){
 					OnTraversing.Invoke();
@@ -536,27 +533,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			PlayerMovement ();
 			CheckProgress ();
 
-		if(Mathf.Abs(flow) < 1){
-
-			Services.fx.drawGraffiti = false;
-			cursorSprite.sprite = traverseSprite;
-
-		 }else if (Mathf.Abs(flow) < 2){
-
-			//Services.fx.DrawLine();
-			 //cursorSprite.sprite = canMoveSprite;
-		 }else
-			{
-			 //cursorSprite.sprite = canFlySprite;
-		 }
-
-
 		}
 		//else if? should happen all on same frame?
 		if(state == PlayerState.Switching && curPoint != null)
 		{
 			transform.position = curPoint.Pos;
-			playerSprite.transform.position = Vector3.Lerp(playerSprite.transform.position, transform.position,Time.deltaTime * 10f);
+			renderer.transform.position = Vector3.Lerp(renderer.transform.position, transform.position,Time.deltaTime * 10f);
 			//gravity = 0;
 			//this could be fucking with
 			PlayerOnPoint();
@@ -638,7 +620,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (TryLeavePoint()) // && !foundConnection)
 		{
-			cursorSprite.sprite = traverseSprite;
+			//cursorRenderer.sprite = traverseSprite;
 			hasPath = true;
 
 			if (curPoint.pointType == PointTypes.ghost)
@@ -707,7 +689,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				{		
 					
 			 		foundConnection = true;
-					cursorSprite.sprite = traverseSprite;
+					// cursorRenderer.sprite = traverseSprite;
 					Services.fx.ShowNextPoint(pointDest);
 
 					if(buttonUp){
@@ -730,7 +712,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 			else if (TryToFly())
 				{
-					cursorSprite.sprite = canFlySprite;
+					// cursorRenderer.sprite = canFlySprite;
 					if (buttonWasPressed)
 					{
 						SwitchState(PlayerState.Flying);
@@ -953,7 +935,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		
-		playerSprite.transform.localScale = Vector3.Lerp(playerSprite.transform.localScale, new Vector3(Mathf.Clamp(1 - (boostTimer), 0.1f, 0.25f), Mathf.Clamp(boostTimer, 0.25f, 0.75f), 0.25f), Time.deltaTime * 10);
+		renderer.transform.localScale = Vector3.Lerp(renderer.transform.localScale, new Vector3(Mathf.Clamp(1 - (boostTimer), 1, 2), 1, Mathf.Clamp(boostTimer, 1, 2)), Time.deltaTime * 10);
 
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
 //		if (connectTime < 0) {
@@ -1533,8 +1515,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	public IEnumerator Unwind()
 	{
 
-		cursorSprite.sprite = null;
-
 		float t = curSpeed;
 		bool moving = true;
 		int pIndex = traversedPoints.Count -1;
@@ -1883,7 +1863,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 
-			cursorSprite.sprite = brakeSprite;
+			//cursorRenderer.sprite = brakeSprite;
 
 			return false;
 
@@ -2029,7 +2009,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			cursorDir = cursorDir2;
 		}
 
-		playerSprite.transform.up = cursorDir;
+		renderer.transform.forward = curDirection;
 
 		// l.SetPosition(0, transform.position);
 		// l.SetPosition(1, cursorPos);
@@ -2194,7 +2174,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Animating:
 
-				cursorSprite.enabled = true;
+				cursorRenderer.enabled = true;
 				break;
 		}
 	}
@@ -2306,7 +2286,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				decelerationTimer = 0;
 
-				directionIndicator.enabled = false;
+				// directionIndicator.enabled = false;
 
 				state = PlayerState.Switching;
 
@@ -2396,7 +2376,7 @@ public class PlayerBehaviour: MonoBehaviour {
 //				GranularSynth.rewinding.TurnOn();
 //				//turn off particles
 //
-				cursorSprite.enabled = false;
+				cursorRenderer.enabled = false;
 				state = PlayerState.Animating;
 
 //				if (state == PlayerState.Flying)
