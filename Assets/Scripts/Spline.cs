@@ -8,9 +8,7 @@ using System.Collections.Generic;
 //###################################################
 //###################################################
 
-
 //						TO DO					   
-
 
 //Better support for textures
 //More customization for how the spline is drawn (controls for static effect, bowing effect, etc)
@@ -84,7 +82,6 @@ public class Spline : MonoBehaviour
 
 	[HideInInspector]
 	public StellationController controller;
-
 
 	
 	[Header("Ordering")]

@@ -266,6 +266,7 @@ public class Point : MonoBehaviour
 	{
 		renderer.enabled = true;
 		pointType = t;
+		
 		meshFilter.mesh= Services.Prefabs.pointMeshes[(int)t];
 
 		switch(t){

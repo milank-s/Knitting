@@ -1190,7 +1190,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			Vector3 toPoint = pointDest.transform.position - transform.position;
 			Vector3 flyToPoint = toPoint.normalized * Time.deltaTime * (flyingSpeed);
 			transform.position += Vector3.ClampMagnitude(flyToPoint, toPoint.magnitude);
-
+			curDirection = toPoint.normalized;
 			// foreach (Spline p in pointDest._connectedSplines)
 			// {
 			// 	p.DrawSpline(p.SplinePoints.IndexOf(pointDest));
@@ -1212,7 +1212,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				flyingSpeed = Mathf.Clamp(flyingSpeed, 0, 1000);
 				Vector3 inertia = cursorDir * (flyingSpeed);
 				transform.position += inertia * Time.deltaTime;
-
+				curDirection = cursorDir;
+				
 				if(flyingSpeed == 0){
 					Services.main.ResetLevel();
 				}
@@ -2270,6 +2271,10 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				if(curSpline != null){
 					curSpline.OnSplineExit();
+				}
+
+				foreach(Spline s in curPoint._connectedSplines){
+					s.reactToPlayer = false;
 				}
 
 				curSpline = null;
