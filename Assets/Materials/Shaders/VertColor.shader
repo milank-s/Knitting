@@ -16,6 +16,7 @@ Shader "Unlit/VertColor"
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_fog
+            #pragma fullforwardshadows
 
             #include "UnityCG.cginc"
 
@@ -54,4 +55,5 @@ Shader "Unlit/VertColor"
             ENDCG
         }
     }
+    Fallback "VertexLit" 
 }

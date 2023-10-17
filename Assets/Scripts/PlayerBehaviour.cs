@@ -2429,7 +2429,7 @@ public class PlayerBehaviour: MonoBehaviour {
 // (accuracy < 0 && flow > 0) || accuracy > 0 && flow <
 			if (state != PlayerState.Switching)
 			{
-				e.rateOverTimeMultiplier = (1-normalizedAccuracy) * 50 * potentialSpeed;
+				e.rateOverTimeMultiplier = Mathf.Pow(1-easedAccuracy, 2) * 20 * potentialSpeed;
 			}else{
 				e.rateOverTimeMultiplier= 0;
 			}
