@@ -111,12 +111,17 @@ public class Spline : MonoBehaviour
 
 	[HideInInspector]
 	public int selectedIndex;
-	private int upperDrawIndex;
-	private int lowerDrawIndex;
-	private int upperPointIndex;
-	private int lowerPointIndex;
+	[HideInInspector]
+	public int upperDrawIndex;
+	[HideInInspector]
+	public int lowerDrawIndex;
+	[HideInInspector]
+	public int upperPointIndex;
+	[HideInInspector]
+	public int lowerPointIndex;
 
-	bool populatedPointPositions;
+	[HideInInspector]
+	public bool populatedPointPositions;
 
 	private int totalLineSegments{
 		get{

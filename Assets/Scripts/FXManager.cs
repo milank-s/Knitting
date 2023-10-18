@@ -57,7 +57,7 @@ public class FXManager : MonoBehaviour
       }
       
       line = new VectorLine (name, new List<Vector3> (20), 2, LineType.Continuous, Vectrosity.Joins.Weld);
-      line.color = new Color(1,1,1,1);
+      line.color = new Color(0.33f, 0.33f, 0.33f);
 
       linesDrawn = new List<VectorLine>();
       lineDirectionRoutine = new List<Coroutine>();
@@ -136,7 +136,7 @@ public void Step(){
         Coroutine thisRoutine = lineDirectionRoutine[lineDirectionRoutine.Count-1];
 
         newLine = new VectorLine (name, new List<Vector3> (), 2, LineType.Continuous, Vectrosity.Joins.Weld);
-        newLine.color = new Color(1,1,1,1);
+        newLine.color = new Color(1,1,1);
         newLine.smoothWidth = true;
         newLine.smoothColor = true;
       
@@ -452,7 +452,19 @@ public void Step(){
         //Vector3[] positions = new Vector3[Services.fx.playerTrail.positionCount];
         //Services.fx.playerTrail.GetPositions(positions);
         //line.points3 = positions.ToList();
-        line.points3 = Services.PlayerBehaviour.curSpline.line.points3;
+        List<Vector3> positions = new List<Vector3>();
+        Spline s = Services.PlayerBehaviour.curSpline;
+        if(!s.populatedPointPositions) return;
+
+        for(int i = 0; i < Spline.curveFidelity; i++){
+            //you sure this can't index out?
+            int j = s.selectedIndex * Spline.curveFidelity + i;
+            if(j < s.line.points3.Count){
+                positions.Add(s.line.points3[j]);
+            }
+        }
+
+        line.points3 = positions;
         line.rectTransform.position = Random.insideUnitSphere * 0.2f;
 
     // if (playerTrail.positionCount > 0 && playerTrail.positionCount != line.points3.Count)
@@ -472,6 +484,7 @@ public void Step(){
             line.points3[l1] = v2;
             line.points3[l2] = v1;
         }
+
         line.Draw3D();
 
         }else{
