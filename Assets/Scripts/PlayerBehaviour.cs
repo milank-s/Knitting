@@ -108,30 +108,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float normalizedAccuracy => (1 + accuracy)/2f;
 	public float potentialSpeed => flow + speed + boost;
 	public float easedAccuracy => Mathf.Clamp01(Mathf.Pow(Mathf.Clamp01(accuracy), accuracyCoefficient));
-	public float actualSpeed
-	{
-		get
-		{
-			//lets just stop using the deceleration timer
-			//adjustedAccuracy = (adjustedAccuracy * (1-decelerationTimer));
-
-		
-			if(state == PlayerState.Flying){
-				return flyingSpeed;
-			}
-
-			if(state == PlayerState.Traversing){
-			// return (speed) * cursorDir.magnitude * easedAccuracy + flow + boost;
-				if(curSpline.speed == 0){
-					return speed + flow * cursorDir.magnitude * easedAccuracy + boost;
-				}else{
-					return Mathf.Clamp(flow + boost, 0, maxSpeed); //(curSpline.speed * (goingForward ? 1 : -1));
-				}
-			}
-
-			return speed + flow * cursorDir.magnitude * easedAccuracy + boost;
-		}
-	}
 
 	[Header("Flying tuning")]
 	public float flyingSpeedThreshold = 3;
@@ -172,6 +148,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	private LineRenderer l;
 	public MeshRenderer cursorRenderer;
 	public MeshRenderer renderer;
+	public Transform visualRoot;
 	public SpriteRenderer boostIndicator;
 	private int noteIndex;
 	public LineRenderer cursorOnPoint;
@@ -395,6 +372,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Step()
 	{
+		
 		pos = transform.position;
 
 		Vector2 p1 = Services.mainCam.WorldToScreenPoint(transform.position);
@@ -404,6 +382,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(cursorDir)/5f, Color.cyan);
 		Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(screenSpaceDir)/2f, Color.yellow);
+
+		//curspeed going to zero making movement asymptotes
+
+		curSpeed = GetSpeed();
 
 		if(state == PlayerState.Traversing){
 			glitching = accuracy < 0 || joystickLocked;
@@ -461,7 +443,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		}else if (state == PlayerState.Flying){
 			speedCoefficient = flyingSpeed;
 		}else{
-			speedCoefficient = Mathf.Clamp01(Mathf.Pow(accuracy, 5) * actualSpeed + 0.25f);
+			//this math looks all kinds of fucked up
+			speedCoefficient = Mathf.Clamp01(Mathf.Pow(accuracy, 5) * curSpeed + 0.25f);
 		}
 
 		if (joystickLocked)
@@ -507,25 +490,26 @@ public class PlayerBehaviour: MonoBehaviour {
 				// }
 
 				maxAcc = GetAccuracy(progress);
-				//Code for placing player sprite on the line instead of the spline
 
-				//find out the real position on the cursplines line
-				int curStep = curSpline.SplinePoints.IndexOf(curPoint) * (Spline.curveFidelity) + (int)(Spline.curveFidelity * progress);
-				int lastStep = goingForward ? -1 : 1;
-				lastStep = curStep + lastStep;
+				//Code for placing player sprite on the line instead of the spline
+				//hiccups are being caused by double indices on points
+
+				int curStep = curSpline.playerIndex;
+				int nextStep = curStep + (goingForward ? 1 : -1);
 				int upperBound = curSpline.line.points3.Count-1;
-        		Vector3 spriteDest1 = curSpline.line.points3[Mathf.Clamp(lastStep, 0, upperBound)];
-        		Vector3 spriteDest2 = curSpline.line.points3[Mathf.Clamp(curStep, 0, upperBound)];
+        		Vector3 dest1 = curSpline.line.points3[Mathf.Clamp(curStep, 0, upperBound)];
+        		Vector3 dest2 = curSpline.line.points3[Mathf.Clamp(nextStep, 0, upperBound)];
 
        		 	float p = Spline.curveFidelity * progress;
         		float step = Mathf.Floor(p);
-        		float diff = goingForward ? p - step : step - p;
-				//renderer.transform.up = (spriteDest2 - spriteDest1);
+        		float diff = goingForward ?  Mathf.Abs(p - step) : 1-Mathf.Abs(p - step);
 
 				accuracy = maxAcc;
 
 				transform.position = curSpline.GetPointForPlayer(progress);
-        		//renderer.transform.position = Vector3.Lerp(spriteDest1, spriteDest2, diff);
+
+				//theres really no reason for this to affect logic but it seems to
+        		visualRoot.position = Vector3.Lerp(dest1, dest2, diff);
 
 				if(OnTraversing != null){
 					OnTraversing.Invoke();
@@ -541,7 +525,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		if(state == PlayerState.Switching && curPoint != null)
 		{
 			transform.position = curPoint.Pos;
-			renderer.transform.position = Vector3.Lerp(renderer.transform.position, transform.position,Time.deltaTime * 10f);
+			
+			//why do you need to do this at all?
+
+			visualRoot.position = Vector3.Lerp(visualRoot.position, transform.position,Time.deltaTime * 10f);
+			
 			//gravity = 0;
 			//this could be fucking with
 			PlayerOnPoint();
@@ -561,6 +549,25 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		buttonUp = false;
+	}
+
+	public float GetSpeed()
+	{
+		
+		if(state == PlayerState.Flying){
+			return flyingSpeed;
+		}
+
+		if(state == PlayerState.Traversing){
+			if(curSpline.speed == 0){
+				return speed + flow * cursorDir.magnitude * easedAccuracy + boost;
+			}else{
+				return Mathf.Clamp(flow + boost, 0, maxSpeed); //(curSpline.speed * (goingForward ? 1 : -1));
+			}
+		}
+
+		return speed + flow * cursorDir.magnitude * easedAccuracy + boost;
+	
 	}
 
 	bool FindPointToConnect(){
@@ -626,6 +633,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			//cursorRenderer.sprite = traverseSprite;
 			hasPath = true;
 
+			//I think this is bugging if the player enters a ghost point when their angle is > 
+			//that necessary to progress
+			
 			if (curPoint.pointType == PointTypes.ghost)
 			{
 				canTraverse = true;
@@ -905,8 +915,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 	void StayOnPoint(){
-
-		curSpeed = 0;
 
 		decelerationTimer = Mathf.Lerp(decelerationTimer, 0, Time.deltaTime * 2);
 		timeOnPoint += Time.deltaTime;
@@ -1378,7 +1386,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		//no losing flow upstream
 		if(onBelt && goingForward) speedGain = Mathf.Clamp(speedGain, 0, maxSpeed);
 
-		if(onBelt && goingForward && actualSpeed < curSpline.speed) flow = curSpline.speed; 
+		if(onBelt && goingForward && curSpeed < curSpline.speed) flow = curSpline.speed; 
 		flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);// * gravityCoefficient;
 		if(onBelt && !goingForward) flow -= splineSpeed * Time.deltaTime;
 		
@@ -1402,7 +1410,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (!joystickLocked)
 		{
-			CalculateMovementDistance(actualSpeed * Time.deltaTime);
+			CalculateMovementDistance(curSpeed * Time.deltaTime);
 			
 			//progress += goingForward ? finalSpeed : -finalSpeed;
 
@@ -1474,6 +1482,9 @@ public class PlayerBehaviour: MonoBehaviour {
 					//scaled to the difference of the positions
 					progress = step - (spillover/diff) * (step - prevStep);
 					adjustedProgress = progress;
+
+					if(progress > 1 || progress < 0) Debug.Log(progress);
+
 					return;
 				}else{
 					prevStep = step;
@@ -1503,6 +1514,9 @@ public class PlayerBehaviour: MonoBehaviour {
 					//scaled to the difference of the positions
 					progress = step + (spillover/diff) * (prevStep - step);
 					adjustedProgress = 1-progress;
+					
+					if(progress > 1 || progress < 0) Debug.Log(progress);
+
 					return;
 				}else{
 					prevStep = step;
@@ -1722,7 +1736,6 @@ public class PlayerBehaviour: MonoBehaviour {
 					
 				
 				int curIndex = s.selectedIndex;
-				bool looping = false;
 				bool forward = true;
 
 				for(int i = -1; i < 2; i+=2){
@@ -1731,13 +1744,11 @@ public class PlayerBehaviour: MonoBehaviour {
 					
 					if(nextIndex < 0){
 						if(!s.closed || s.SplinePoints.Count < 2) continue;
-						looping = true;
 						nextIndex = s.SplinePoints.Count - 1;
 					}
 					
 					if(nextIndex > s.SplinePoints.Count - 1){
 						if(!s.closed || s.SplinePoints.Count < 2) continue;
-						looping = true;
 						nextIndex = 0;
 					}
 
@@ -1772,7 +1783,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						
 						//don't enter conveyor belts that will instantly push you back
 						//it's a little janky but better than re-entering the same point every frame
-						if(!isGhostPoint && actualSpeed < s.speed) continue;
+						if(!isGhostPoint && curSpeed < s.speed) continue;
 						
 						curAngle = s.CompareAngleAtPoint (cursorDir, p, out startdir, true);	
 						
@@ -1829,10 +1840,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				splineDest = maybeNextSpline;
 				pointDest = maybeNextPoint;
-
-				//why bother with this here?
-
-				// splineDest.CalculateDistance();
 
 				//idk if you should do this? you're not technically on the spline
 				//what is reading curspline while the player is stopped on the point?
@@ -1958,7 +1965,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				cursorPos += (Vector3)inputVector;
 			}
 
-			Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
+			Vector3 screenPos = Services.mainCam.WorldToViewportPoint(visualRoot.position);
 			screenPos += new Vector3(cursorDir.x / Services.mainCam.aspect, cursorDir.y, 0)/CameraFollow.instance.cam.aspect;
 			screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Mathf.Abs(transform.position.z - Services.mainCam.transform.position.z));
 			cursorPos = Services.mainCam.ViewportToWorldPoint(screenPos);
@@ -1969,7 +1976,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			//cursorPos = transform.position + (Vector3)cursorDir2 / (Services.mainCam.fieldOfView * 0.1f);
 
-			Vector3 screenPos = Services.mainCam.WorldToViewportPoint(transform.position);
+			Vector3 screenPos = Services.mainCam.WorldToViewportPoint(visualRoot.position);
 			screenPos += new Vector3(cursorDir.x / Services.mainCam.aspect, cursorDir.y, 0)/cursorDistance;
 			screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Main.cameraDistance);
 			cursorPos = Services.mainCam.ViewportToWorldPoint(screenPos);
@@ -2119,8 +2126,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				Services.fx.flyingParticles.Pause();
 
-				//curSpeed = flyingSpeed;
-
 				boost = 0;
 				//Services.fx.BakeParticleTrail(Services.fx.flyingParticles, Services.fx.flyingParticleTrailMesh);
 
@@ -2215,7 +2220,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						curSpline.OnSplineExit();
 					}
 				}
-
+				
 				curSpline = splineDest;
 				curSpline.OnSplineEnter();
 
@@ -2268,7 +2273,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				state = PlayerState.Flying;
 				flyingTrail.emitting = true;
-				curSpeed = 0;
 				
 				if(curSpline != null){
 					curSpline.OnSplineExit();

@@ -106,7 +106,7 @@ public class Bird : Crawler
             //this might be broken for loops and reverse dirs
             
             if(onPlayerSpline){
-                float playerSpeed = Services.PlayerBehaviour.actualSpeed;
+                float playerSpeed = Services.PlayerBehaviour.curSpeed;
                 float playerProgress = Services.PlayerBehaviour.progress;
 
                 bool sameDir = Services.PlayerBehaviour.goingForward == forward;

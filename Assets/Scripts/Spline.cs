@@ -111,7 +111,7 @@ public class Spline : MonoBehaviour
 	private float colorDecay;
 	private float distanceFromPlayer;
 	private float invertedDistance;
-	private int playerIndex;
+	public int playerIndex;
 
 	[HideInInspector]
 	public int selectedIndex;
@@ -470,6 +470,7 @@ public class Spline : MonoBehaviour
 
 	public void UpdateSpline()
 	{
+		
 		distortion = Mathf.Lerp(distortion, 0, Time.deltaTime * 2);
 
 		bool shouldDraw = MapEditor.editing || drawing || (reactToPlayer || isPlayerOn);
@@ -826,7 +827,7 @@ public class Spline : MonoBehaviour
 	public int GetPlayerLineSegment ()
 	{
 		
-		return (SplinePoints.IndexOf(Selected) * curveFidelity) + (int)Mathf.Floor((float)curveFidelity * (float)Services.PlayerBehaviour.progress);
+		return (selectedIndex * curveFidelity) + (int)Mathf.Floor((float)curveFidelity * (float)Services.PlayerBehaviour.progress);
 	}
 
 	public Vector3 GetPointAtIndex (int i, float t)

@@ -138,7 +138,7 @@ public class CameraFollow : MonoBehaviour {
 		PlayerState.Traversing ? 
 		
 		(Vector3) Random.insideUnitCircle.normalized * Mathf.Pow(1 - Services.PlayerBehaviour.easedAccuracy, 2) *
-				  (Services.PlayerBehaviour.actualSpeed + 0.5f)/2f 
+				  (Services.PlayerBehaviour.curSpeed + 0.5f)/2f 
 			: Vector3.zero;
 
 		Vector3 lerpedPos = nudge/5f + shake - transform.forward * (zoom);
