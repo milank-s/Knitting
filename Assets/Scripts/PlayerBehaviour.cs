@@ -166,7 +166,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	public Sprite traverseSprite;
 	public SpriteRenderer glitchFX;
 	private PlayerSounds sounds;
-	public TrailRenderer t;
 	public TrailRenderer flyingTrail;
 	public TrailRenderer shortTrail;
 	public ParticleSystem sparks;
@@ -211,7 +210,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		connectTimeCoefficient = 1;
 		state = PlayerState.Switching;
 		l = GetComponent<LineRenderer> ();
-		t = GetComponentInChildren<TrailRenderer> ();
 
 		inventory = new List<Point>();
 		newPointList = new List<Transform> ();
@@ -322,12 +320,12 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void ResetFX()
 	{
-		t.Clear();
+	
 		flyingTrail.Clear();
 		shortTrail.Clear();
 		flyingTrail.emitting = false;
-		t.emitting = true;
-		Services.fx.cursorTrail.Clear();
+		Services.fx.playerTrail.emitting = false;
+		Services.fx.playerTrail.Clear();
 	}
 
 	public IEnumerator RetraceTrail()
@@ -2094,6 +2092,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			case PlayerState.Traversing:
 				Services.fx.BakeParticles(sparks, Services.fx.brakeParticleMesh);
+				Services.fx.playerTrail.emitting = false;
 
 				//this isn't accurate, its called on ghost points
 
@@ -2101,7 +2100,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				break;
 
 			case PlayerState.Flying:
-
 
 				if(OnStoppedFlying != null){
 					OnStoppedFlying.Invoke();
@@ -2204,6 +2202,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				// velocityLine = v;
 
 				state = PlayerState.Traversing;
+				
+				Services.fx.playerTrail.emitting = true;
 
 				if(curSpline != null){
 					if (curSpline != splineDest){
@@ -2222,8 +2222,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				//curSpline.OnSplineEnter (true, curPoint, pointDest, false);
 
 				//PlayerMovement ();
-
-				t.emitting = true;
 
 				if (curPoint.pointType != PointTypes.ghost)
 				{

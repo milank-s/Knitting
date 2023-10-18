@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Vectrosity;
 using UnityEngine.UI;
+using System.Linq;
 
 public class FXManager : MonoBehaviour
 {
@@ -44,7 +45,7 @@ public class FXManager : MonoBehaviour
   Coroutine showPointsRoutine;
   Coroutine graffitiRoutine;
  
-  IEnumerator Start()
+  void Start()
   {
 
       splineDir = new List<VectorLine>();
@@ -53,13 +54,10 @@ public class FXManager : MonoBehaviour
           GameObject newFX = Instantiate(fxPrefab, Vector3.up * 1000, Quaternion.identity);
           newFX.transform.parent = transform;
           fxInstances.Add(newFX.GetComponent<Animator>());
-          yield return null;
       }
       
       line = new VectorLine (name, new List<Vector3> (20), 2, LineType.Continuous, Vectrosity.Joins.Weld);
-      line.color = new Color(1,1,1,0.25f);
-      line.smoothWidth = true;
-      line.smoothColor = true;
+      line.color = new Color(1,1,1,1);
 
       linesDrawn = new List<VectorLine>();
       lineDirectionRoutine = new List<Coroutine>();
@@ -77,7 +75,10 @@ public class FXManager : MonoBehaviour
       Services.PlayerBehaviour.OnStartFlying += flyingParticles.Play;
       Services.PlayerBehaviour.OnStartFlying += PlayFlyingTrail;
       Services.PlayerBehaviour.OnStoppedFlying += BakeFlyingTrail;
+      
+
       Services.PlayerBehaviour.OnStartTraversing += Services.PlayerBehaviour.sparks.Play;
+
       //Services.PlayerBehaviour.OnStoppedTraversing += BakeTraversingParticles;
       Services.main.OnReset += Reset;
   }
@@ -159,7 +160,7 @@ public void Step(){
             float step = (0.5f * i)/Spline.curveFidelity;
             float oneMinus = forward ? step: 1-step;
 
-          newLine.points3.Add(s.GetPointAtIndex(index, oneMinus) + offset);
+          newLine.points3.Add(s.GetPointAtIndex(pointIndex, oneMinus) + offset);
           newLine.Draw3D();
           yield return new WaitForSeconds(0.02f);
       }
@@ -287,10 +288,8 @@ public void Step(){
           VectorLine.Destroy(ref v);
       }
       
-      line = new VectorLine (name, new List<Vector3> (20), 2, LineType.Continuous, Vectrosity.Joins.Weld);
-      line.color = new Color(1,1,1,0.25f);
-      line.smoothWidth = true;
-      line.smoothColor = true;
+      line = new VectorLine (name, new List<Vector3> (0), 1, LineType.Continuous);
+      line.color = new Color(1,1,1);
       
       drawGraffiti = false;
   }
@@ -442,25 +441,44 @@ public void Step(){
   public void DrawGraffiti()
   {
     graffitiTimer += Time.deltaTime;
-
-    if(graffitiTimer > graffitiInterval){
-
+    
+    
+    if(graffitiTimer > graffitiInterval && Services.PlayerBehaviour.state == PlayerState.Traversing){
+        
+        line.rectTransform.gameObject.SetActive(true);
         graffitiTimer = 0;
+
         List<Vector3> pos = new List<Vector3>();
+        //Vector3[] positions = new Vector3[Services.fx.playerTrail.positionCount];
+        //Services.fx.playerTrail.GetPositions(positions);
+        //line.points3 = positions.ToList();
+        line.points3 = Services.PlayerBehaviour.curSpline.line.points3;
+        line.rectTransform.position = Random.insideUnitSphere * 0.2f;
 
-        if (playerTrail.positionCount > 0)
-        {
-            //could also use Services.activeStellation._pointsHit;
-            foreach(Point p in Services.PlayerBehaviour.traversedPoints)
-            {
-                    pos.Add(p.Pos +(Vector3) Random.onUnitSphere * 0.1f);
-            }
+    // if (playerTrail.positionCount > 0 && playerTrail.positionCount != line.points3.Count)
+    // {
+    //     //could also use Services.activeStellation._pointsHit;
+    //     Vector3 v = playerTrail.GetPosition(playerTrail.positionCount-1);
 
-            line.points3 = pos;
-            line.Draw3D();
+        // line.points3.Add(v);
+        
+    // }
+
+        if(line.points3.Count > 0 && Random.Range(0, 100) > 50){
+            int l1 = Random.Range(0, line.points3.Count);
+            int l2 = Random.Range(0, line.points3.Count);
+            Vector3 v1 = line.points3[l1]; 
+            Vector3 v2 = line.points3[l2]; 
+            line.points3[l1] = v2;
+            line.points3[l2] = v1;
+        }
+        line.Draw3D();
+
+        }else{
+            if(line.rectTransform.gameObject.activeSelf)line.rectTransform.gameObject.SetActive(false);
         }
     }
-  }
+  
 
     public void SpawnCircle(Transform t){
         GameObject fx = Instantiate (circleEffect, t.position, Quaternion.identity);
