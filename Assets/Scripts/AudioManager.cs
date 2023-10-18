@@ -9,15 +9,11 @@ public class AudioManager : MonoBehaviour
         
     public AudioSource audioRecordings;
     public AudioHelmClock clock;
-    
     public AudioMixer SynthMaster;
-    
-    public Sampler drumSampler;
 
     public Sampler celloAttack;
     public Sampler celloSustain;
-    public Sampler clarinetSampler;
-    public Sampler pianoSampler;
+    
     [SerializeField] public SplineSinger splineSinger;
     
     void Awake(){
@@ -29,7 +25,7 @@ public class AudioManager : MonoBehaviour
         
         // Services.main.OnPointEnter += EnterPoint;
        // Services.main.OnPlayerEnterPoint += EnterPoint;
-        Services.main.OnPointEnter += EnterPoint;
+        Services.main.OnPlayerEnterPoint += EnterPoint;
         Services.main.OnLoadLevel += SoundSetup;
         Services.PlayerBehaviour.OnStartFlying += EnterFlying;
         Services.PlayerBehaviour.OnStartTraversing += EnterTraversing;

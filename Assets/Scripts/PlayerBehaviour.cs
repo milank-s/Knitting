@@ -508,8 +508,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				transform.position = curSpline.GetPointForPlayer(progress);
 
+				Vector3 dest = Vector3.Lerp(dest1, dest2, diff);
 				//theres really no reason for this to affect logic but it seems to
-        		visualRoot.position = Vector3.Lerp(dest1, dest2, diff);
+				Vector3 to = dest - transform.position;
+				Vector3 cross = Vector3.Cross(to, Vector3.up);
+        		visualRoot.localPosition = new Vector3(cross.magnitude * Mathf.Sign(cross.z), 0,0);
 
 				if(OnTraversing != null){
 					OnTraversing.Invoke();
@@ -1406,6 +1409,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			Point p = pointDest;
 			pointDest = curPoint;
 			curPoint = p;	
+
+			Debug.Log("reversing player dir");
 		}
 
 		if (!joystickLocked)
@@ -1671,7 +1676,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		int indexdiff = s.SplinePoints.IndexOf (p2) - s.SplinePoints.IndexOf (curPoint);
 
-
 		if (indexdiff == -1 || indexdiff > 1) {
 			s.SetSelectedPoint(p2);
 			goingForward = false;
@@ -1865,7 +1869,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					curDirection = splineDest.GetInitVelocity ();
 				}else{
 					progress = 1;
-					curDirection = splineDest.GetInitVelocity (pointDest, false);
+					curDirection = splineDest.GetInitVelocity (pointDest, true);
 				}
 				
 				return true;
@@ -2224,7 +2228,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				curSpline = splineDest;
 				curSpline.OnSplineEnter();
 
-				//this is making it impossible to get off points that are widows. wtf.
+				//I dont think you fully understand if selected should always = curpoint
+				//or just the point index floor on the players current segment
+
 				SetPlayerAtStart (curSpline, pointDest);
 
 				//I guess I just enter splines while I'm stopped now

@@ -125,6 +125,7 @@ public class SynthController : MonoBehaviour
 		curNote = GetNote(Services.PlayerBehaviour.curPoint); 
 		targetNote = GetNote(Services.PlayerBehaviour.pointDest)-12;
 
+		movementPad.NoteOn(curNote);
 		movementKeys.NoteOn(curNote);
 		
 		int note = GetNote(Services.PlayerBehaviour.curPoint);
@@ -156,8 +157,9 @@ public class SynthController : MonoBehaviour
 			
 			
 			//distortion isn't really working
-			float distortion = Mathf.Pow((1 - Services.PlayerBehaviour.normalizedAccuracy), 2) + Spline.shake + 0.1f;
-			movementPad.SetParameterPercent(Param.kDistortionMix, distortion);
+			float distortion = Mathf.Pow((1 - Services.PlayerBehaviour.easedAccuracy), 2) + Spline.shake;
+			
+			// movementPad.SetParameterPercent(Param.kDistortionMix, distortion);
 			movementPad.SetParameterPercent(Param.kVolume, Mathf.Clamp(accuracy, 0.1f, 0.75f));
 
 			//divide bounds into 12 pitches
