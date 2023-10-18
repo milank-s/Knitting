@@ -258,8 +258,6 @@ public class Spline : MonoBehaviour
 			StartPoint.AddPoint (EndPoint);
 			EndPoint.AddPoint(StartPoint);
 		}
-
-		selectedIndex = 0;
 	}
 
 	public void ChangeMaterial(int i)
@@ -586,16 +584,6 @@ public class Spline : MonoBehaviour
 		}
 	}
 
-	public void Spin(float speed)
-	{
-		int end = closed ? SplinePoints.Count : SplinePoints.Count - 1;
-		for (int i = 0; i < end; i++)
-		{
-			SplinePoints[i].isKinematic = true;
-			SplinePoints[i].transform.position -= GetInitVelocity(SplinePoints[i])* Time.deltaTime * speed;
-		}
-	}
-
 	public void DrawEntireSpline(){
 		if(state != SplineState.on) return;
 
@@ -717,6 +705,7 @@ public class Spline : MonoBehaviour
 
 		//float newFrequency = 1 + Mathf.Abs(Services.PlayerBehaviour.curSpeed);
 		
+		//no no no no non on o no nono ILLEGAL
 		Vector3 direction = pointVelocities[segmentIndex].normalized;
 
 		//this isn't going to fly in 3d.... cross product?
@@ -797,7 +786,6 @@ public class Spline : MonoBehaviour
 					line.SetColor(c, segmentIndex);
 				}
 			}
-
 	}
 
 	void OnDestroy ()
@@ -915,6 +903,47 @@ public class Spline : MonoBehaviour
 		}
 	}
 
+	public int CheckForLoop(int i){
+		if(i < 0){
+			if(closed) return SplinePoints.Count - 1;
+			return 0 ;
+		}
+		
+		if(i > SplinePoints.Count - 1){
+			if(closed) return 0;
+			return SplinePoints.Count - 1;
+		}
+
+		return i;
+	}
+	public Vector3 GetCachedPoint(int pointIndex, float f){
+		
+		if(f > 1 || f < 0) Debug.Log("progress is out of range");
+
+		int segIndex = pointIndex * curveFidelity + (int)((curveFidelity-1) * f);
+		if(segIndex >= pointPositions.Count) Debug.Log("pointPosition list out of range");
+
+		return pointPositions[segIndex];
+
+		Vector3 v1 = pointPositions[segIndex];
+		if(segIndex >= pointPositions.Count) return v1;
+
+		//starting to hate this
+		//have to determine if its going forward or backward and do all this gross index checking
+
+		float diff = f % (1f/curveFidelity);
+		Vector3 v2 = pointPositions[segIndex + 1];
+		
+		return Vector3.Lerp(v1, v2, diff);
+	}
+
+	public Vector3 GetCachedVelocity(int pointIndex, float f, bool reversed = false){
+		int segIndex = pointIndex * curveFidelity + (int)((curveFidelity-1)* f);
+		if(segIndex >= pointVelocities.Count) Debug.Log("pointVelocity list out of range");
+
+		return pointVelocities[segIndex] * (reversed ? -1 : 1);
+	}
+
 	//this could be the most expensive call in your project
 	public Vector3 GetPointForPlayer (float t)
 	{
@@ -935,18 +964,18 @@ public class Spline : MonoBehaviour
 
 	public void UpdateSplineSegment(int i, int segmentIndex, float t){
 		
-		Vector3 velocity = GetVelocityAtIndex (i, t);
 		Vector3 pos = GetPointAtIndex (i, t);
-		
+		Vector3 vel = GetVelocityAtIndex(i, t);
+
 		rollingDistance += (prevPos - pos).magnitude;
 		prevPos = pos;
 
 		if(segmentIndex >= pointPositions.Count){
 			pointPositions.Add(pos);
-			pointVelocities.Add(velocity);
+			pointVelocities.Add(vel);
 		}else{
 			pointPositions[segmentIndex] = pos;
-			pointVelocities[segmentIndex] = velocity;
+			pointVelocities[segmentIndex] = vel;
 		}
 	}
 
@@ -1025,30 +1054,23 @@ public class Spline : MonoBehaviour
 
 	public int GetPointIndex (Point point)
 	{
-		// foreach (Point p in SplinePoints) {
-		// 	if (point == p) {
-				return SplinePoints.IndexOf (point);
-		// 	}
-		// }
-
-		// return 0;
+		return SplinePoints.IndexOf (point);
 	}
 
-	public Vector3 GetInitVelocity (Point p)
+	public Vector3 GetInitVelocity (Point p, bool reversed = false)
 	{
-		return GetVelocityAtIndex (GetPointIndex (p), 0.1f);
+		return GetVelocityAtIndex (GetPointIndex(p), reversed ? 0.9f : 0.1f) * (reversed ? -1 : 1);
 	}
-
-	public Vector3 GetReversedInitVelocity (Point p)
+	public Vector3 GetInitVelocity ()
 	{
-		return -GetVelocityAtIndex (GetPointIndex (p), 0.9f);
+		return GetVelocityAtIndex (selectedIndex, 0.1f);
 	}
 
 	public float CompareAngleAtPoint (Vector2 direction, Point p, out Vector3 dir, bool reversed = false)
 	{
 		dir = Vector3.zero;
 		if (reversed) {
-			dir = GetReversedInitVelocity (p);
+			dir = GetInitVelocity (p, true);
 		} else {
 			dir = GetInitVelocity (p);
 		}
@@ -1086,7 +1108,7 @@ public class Spline : MonoBehaviour
 		for (int k = 0; k < curveFidelity; k++) {
 
 			float t = (float)k / (float)(curveFidelity);
-			distance += Vector3.Distance (GetPointAtIndex (i, t), GetPointAtIndex (i, t + step));
+			distance += Vector3.Distance (GetCachedPoint (i, t), GetCachedPoint (i, t + step));
 		}
 
 		return distance;
@@ -1162,6 +1184,7 @@ public class Spline : MonoBehaviour
 			{
 				newPos = GetPointAtIndex(i, 0.5f);
 			}
+
 			newPoint = SpawnPointPrefab.CreatePoint(newPos);
 			InsertPoint(newPoint, i+1);
 			

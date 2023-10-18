@@ -247,7 +247,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		transform.position = curPoint.Pos;
 		cursorPos = transform.position;
 		traversedPoints.Add (curPoint);
+
 		curPoint.OnPlayerEnterPoint();
+
 		flow = 0;
 		speed = Services.main.activeStellation.startSpeed;
 		acceleration = Services.main.activeStellation.acceleration;
@@ -256,6 +258,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		foreach(Spline s in curPoint._connectedSplines){
 			s.SetSelectedPoint(curPoint);
 		}
+
 		//CameraFollow.instance.WarpToPosition(curPoint.Pos);
 
 		ResetFX();
@@ -1827,9 +1830,14 @@ public class PlayerBehaviour: MonoBehaviour {
 				splineDest = maybeNextSpline;
 				pointDest = maybeNextPoint;
 
-				splineDest.CalculateDistance();
+				//why bother with this here?
 
-				//  if (curSpline != splineDest)
+				// splineDest.CalculateDistance();
+
+				//idk if you should do this? you're not technically on the spline
+				//what is reading curspline while the player is stopped on the point?
+
+								//  if (curSpline != splineDest)
 					// {
 						// curSpline.OnSplineExit();
 						// splineDest.OnSplineEnter(curPoint, pointDest);
@@ -1841,19 +1849,16 @@ public class PlayerBehaviour: MonoBehaviour {
 				// }
 				
 
-				//idk if you should do this? you're not technically on the spline
-				//what is reading curspline while the player is stopped on the point?
-
 				// curSpline = splineDest;
 
 				goingForward = facingForward;
 
 				if(facingForward){
 					progress = 0;
-					curDirection = splineDest.GetInitVelocity (curPoint);
+					curDirection = splineDest.GetInitVelocity ();
 				}else{
 					progress = 1;
-					curDirection = splineDest.GetReversedInitVelocity (curPoint);
+					curDirection = splineDest.GetInitVelocity (pointDest, false);
 				}
 				
 				return true;
@@ -2063,7 +2068,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				if(step == 0){
 					velocityLine.points3[i+1] = pos + curSpline.GetDirection(step + 0.01f) * Mathf.Pow((1-Mathf.Abs(f)), 2) * curSpeed * curSpline.segmentDistance * (s) * Spline.curveFidelity/2;
 				}else{
-				velocityLine.points3[i+1] = pos + curSpline.GetDirection(step) * Mathf.Pow((1-Mathf.Abs(f)), 2) * curSpeed * curSpline.segmentDistance * (s - f) * Spline.curveFidelity/2;
+					velocityLine.points3[i+1] = pos + curSpline.GetDirection(step) * Mathf.Pow((1-Mathf.Abs(f)), 2) * curSpeed * curSpline.segmentDistance * (s - f) * Spline.curveFidelity/2;
 				}
 			}else{
 				velocityLine.points3[i + 1] = Vector3.Lerp(velocityLine.points3[i + 1], velocityLine.points3[i], Time.deltaTime);

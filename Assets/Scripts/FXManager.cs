@@ -113,7 +113,6 @@ public void Step(){
   public void ShowSplineDirection(Spline s)
   {
 
-      //this is bugging out if you reset on the same spline, and it doesnt work in reverse yet
      lineDirectionRoutine.Add(StartCoroutine(DrawSplineDirection(s)));
    
   }
@@ -124,10 +123,17 @@ public void Step(){
         if(lineDirectionRoutine.Count == 0)yield break;
         
         bool forward = Services.PlayerBehaviour.goingForward;
-        int sign = (forward ? 1 : -1);
         float start = forward ? 0.1f : 0.9f;
         int pointIndex = s.selectedIndex;
-        Vector3 offset = s.GetVelocity(start);
+        Point p = s.Selected;
+
+        if(!forward){
+            pointIndex -= 1;
+            if(s.closed) pointIndex = s.CheckForLoop(pointIndex);
+            p = s.SplinePoints[pointIndex];
+        }
+
+        Vector3 offset = s.GetCachedVelocity(pointIndex, start, forward);
 
         //doesnt work in 3d bro, gotta get cross product
         offset = new Vector3(-offset.y, offset.x, 0) / 10f;
@@ -151,16 +157,15 @@ public void Step(){
         newLine.textureScale = length;
         newLine.lineWidth = height * 2;
 
-        Vector3 endpoint = s.GetPointForPlayer(0.5f);
-        Vector3 endDir = s.GetDirection(0.5f) * sign;
+        Vector3 endpoint = s.GetCachedPoint(pointIndex, 0.5f);
+        Vector3 endDir = s.GetCachedVelocity(pointIndex, 0.5f, !forward);
 
-    
       for (int i = 0; i < Spline.curveFidelity; i++)
       {
             float step = (0.5f * i)/Spline.curveFidelity;
             float oneMinus = forward ? step: 1-step;
 
-          newLine.points3.Add(s.GetPointAtIndex(pointIndex, oneMinus) + offset);
+          newLine.points3.Add(s.GetCachedPoint(pointIndex, oneMinus) + offset);
           newLine.Draw3D();
           yield return new WaitForSeconds(0.02f);
       }
