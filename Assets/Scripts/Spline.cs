@@ -541,10 +541,10 @@ public class Spline : MonoBehaviour
 					if(upperDrawIndex == upperPointIndex * curveFidelity + curveFidelity){
 						upperPointIndex ++;
 
-						hitEnd = upperPointIndex >= SplinePoints.Count - (closed ? 0 : 1);
-
 						if(upperPointIndex < SplinePoints.Count){
 							SplinePoints[upperPointIndex].SwitchState(Point.PointState.on);
+						}else{
+							hitEnd = true;
 						}
 						
 					}
@@ -622,8 +622,14 @@ public class Spline : MonoBehaviour
 			upperDrawIndex = upperPointIndex * curveFidelity + 1;
 			lowerDrawIndex = upperPointIndex * curveFidelity - 2;
 
-			if(lowerDrawIndex < 0) hitStart = true;
-			if(upperDrawIndex > totalLineSegments) hitEnd = true;
+			if(lowerDrawIndex < 0) {
+				hitStart = true;
+				
+			}
+			
+			if(upperDrawIndex > totalLineSegments) {
+				hitEnd = true;
+			}
 		}
 	}
 
@@ -1207,6 +1213,9 @@ public class Spline : MonoBehaviour
 		}
 
 		populatedPointPositions = false;
+		hitEnd = false;
+		hitStart = false;
+		drawing = true;
 	}
 
 	public void DrawVelocity (Vector3 pos, float t, Vector3 direction)
