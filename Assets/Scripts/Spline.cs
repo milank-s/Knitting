@@ -52,8 +52,12 @@ public class Spline : MonoBehaviour
 	[HideInInspector]
 	public System.Collections.Generic.List<Point> SplinePoints;
 
-	List<Vector3> pointPositions;
-	List<Vector3> pointVelocities;
+	[SerializeField]
+	public List<Vector3> pointPositions;
+
+	
+	[SerializeField]
+	public List<Vector3> pointVelocities;
 
 	[HideInInspector]
 	public Point Selected;
