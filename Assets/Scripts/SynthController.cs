@@ -6,14 +6,17 @@ using UnityEngine.Audio;
 
 public class SynthController : MonoBehaviour
 {
-    public HelmController movementKeys;
+	
+	//need a boost sound 
+	public HelmController pointKeys;
 
+	//some kind of arp repeating a motif while the player moves
+    public HelmController movementKeys;
 	public HelmSequencer movementSequencer;
     public HelmController movementPad;
     public HelmController noisePad;
     public HelmController flyingSynth;
 	
-	public HelmController keys;
 
 	public static int[] major = {0, 2, 4, 5, 7, 9, 11, 12};
 	public static int[] minor = {0, 2, 3, 5, 7, 8, 10, 12};
@@ -75,10 +78,10 @@ public class SynthController : MonoBehaviour
 		movementSequencer.length = triad.Length;
 	}
 	public void UpdateFlyingSynth(){
-		flyingSynth.SetParameterPercent(Param.kVolume, 0.5f);
+		// flyingSynth.SetParameterPercent(Param.kVolume, 0.5f); 
 	}
 	public void PlayFlyingSynth(){
-		flyingSynth.NoteOn(60, 0f);
+		flyingSynth.NoteOn(60);
 	}
 
 	public void StopFlying(){
@@ -87,13 +90,10 @@ public class SynthController : MonoBehaviour
 
 	public void PlayNoteOnPoint(Point p){
 		// int note = GetNote(p);
-		// keys.NoteOn(note + 12, 1f, 1f);
+		// pointKeys.NoteOn(note + 12, 1f, 1f);
 		
 		int note = GetNote(p);
-		
-		keys.SetParameterPercent(Param.kVolume, 0.25f);
-		keys.NoteOn(note + triads[0][Random.Range(0, triads[0].Length)], 0.05f, 0.1f);
-		
+		pointKeys.NoteOn(note + triads[0][Random.Range(0, triads[0].Length)], 1f, 2f);
 	}
 
 	int GetNote(Point p){
@@ -115,39 +115,39 @@ public class SynthController : MonoBehaviour
 		
 		return note;
 	}
-	public void PlayMovementSynth(){
+	public void PlaySplineChord(){
 		//set up the arp
 		//ChooseRandomTriad();
-
-		noisePad.NoteOn(60, 1);
-		noisePad.NoteOn(55, 1);
 
 		curNote = GetNote(Services.PlayerBehaviour.curPoint); 
 		targetNote = GetNote(Services.PlayerBehaviour.pointDest)-12;
 
 		movementPad.NoteOn(curNote);
-		movementKeys.NoteOn(curNote);
+		//movementKeys.NoteOn(curNote, 1, 3);
 		
 		int note = GetNote(Services.PlayerBehaviour.curPoint);
 		
-		//keys.NoteOn(note + triads[0][Random.Range(0, triads[0].Length)], 0.15f, 1f);
+		//pointKeys.NoteOn(note + triads[0][Random.Range(0, triads[0].Length)], 0.15f, 1f);
 		
-		//keys.NoteOn(note + major[triads[0][Random.Range(0, triads[0].Length)]], 1f, 1f);
+		//pointKeys.NoteOn(note + major[triads[0][Random.Range(0, triads[0].Length)]], 1f, 1f);
 		
 
 	}
 
-	public void UpdateMovementSynth(){
-		
-		// movementPad.AllNotesOff();
-
-		//curNote = GetNote(Services.PlayerBehaviour.curPoint); 
-		//targetNote = GetNote(Services.PlayerBehaviour.pointDest);
-
-		//movementPad.NoteOn(curNote);
+	public void StopSplineChord(){
+		movementPad.AllNotesOff();
 	}
 	
-	
+	public void StartTraversing(){
+		
+		noisePad.NoteOn(60, 1);
+		noisePad.NoteOn(55, 1);
+	}
+
+	public void StopTraversing(){
+		noisePad.AllNotesOff();
+	}
+
 	public void MovementSynth(){
 		
 			float accuracy = Services.PlayerBehaviour.easedAccuracy;
@@ -157,10 +157,10 @@ public class SynthController : MonoBehaviour
 			
 			
 			//distortion isn't really working
-			float distortion = Mathf.Pow((1 - Services.PlayerBehaviour.easedAccuracy), 2) + Spline.shake;
+			float distortion = Services.PlayerBehaviour.curSpline.distortion + Spline.shake;
 			
 			// movementPad.SetParameterPercent(Param.kDistortionMix, distortion);
-			movementPad.SetParameterPercent(Param.kVolume, Mathf.Clamp(accuracy, 0.1f, 0.75f));
+			//movementPad.SetParameterPercent(Param.kVolume, Mathf.Clamp(accuracy, 0.1f, 0.75f));
 
 			//divide bounds into 12 pitches
 			//based on the note's assigned pitch, move the wheel a portion of that amount to the target pitch
@@ -191,11 +191,6 @@ public class SynthController : MonoBehaviour
 			// AudioManager.instance.pianoSampler
 	}
 
-	public void StopMovementSynth(){
-		movementPad.AllNotesOff();
-		movementKeys.AllNotesOff();
-		noisePad.AllNotesOff();
-	}
 
 
     void PlayRandomChord(int[] n, int amount, HelmController c,  float velocity = 1, float length = 0)
@@ -229,7 +224,7 @@ public class SynthController : MonoBehaviour
 	    movementKeys.AllNotesOff();
 	    movementPad.AllNotesOff();
 		noisePad.AllNotesOff();
-		keys.AllNotesOff();
+		pointKeys.AllNotesOff();
     }
 
     void TestNotes()

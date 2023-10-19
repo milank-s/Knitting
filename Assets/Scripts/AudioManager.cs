@@ -29,7 +29,8 @@ public class AudioManager : MonoBehaviour
         Services.main.OnLoadLevel += SoundSetup;
         Services.PlayerBehaviour.OnStartFlying += EnterFlying;
         Services.PlayerBehaviour.OnStartTraversing += EnterTraversing;
-        
+        Services.PlayerBehaviour.OnEnterSpline += EnterSpline;
+        Services.PlayerBehaviour.OnExitSpline += ExitSpline;
         Services.PlayerBehaviour.OnStoppedFlying += ExitFlying;
         Services.PlayerBehaviour.OnTraversing += OnTraversing;
         Services.PlayerBehaviour.OnFlying += OnFlying;
@@ -55,19 +56,29 @@ public class AudioManager : MonoBehaviour
         //quantize it or whatever
     }
     public void EnterPoint(Point p){
-        //clarinetSampler.NoteOn(64);
+        
         clock.pause = true;
         SynthController.instance.PlayNoteOnPoint(p);
     }
 
+    public void EnterSpline(){    
+        SynthController.instance.PlaySplineChord();
+    }
+
+    
+    public void ExitSpline(){
+        
+        SynthController.instance.StopSplineChord();
+    }
+
     public void EnterFlying(){
-        SynthController.instance.StopMovementSynth();
+        
         SynthController.instance.PlayFlyingSynth();
     }
 
     public void EnterTraversing(){  
+        SynthController.instance.StartTraversing();
         clock.pause = false;
-        SynthController.instance.PlayMovementSynth();
     }
 
     public void ExitFlying(){
@@ -75,7 +86,7 @@ public class AudioManager : MonoBehaviour
     }
 
     public void ExitTraversing(){
-        SynthController.instance.StopMovementSynth();
+        SynthController.instance.StopTraversing();
         clock.pause = true;
     }
 
@@ -84,7 +95,7 @@ public class AudioManager : MonoBehaviour
     }
 
     public void LeaveAnyPoint(){
-        SynthController.instance.UpdateMovementSynth();
+        
     }
 
     public void OnTraversing(){

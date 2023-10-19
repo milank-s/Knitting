@@ -621,7 +621,7 @@ public class MapEditor : MonoBehaviour
                 {
                     
                     Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, activePoint.transform);
-                    SynthController.instance.keys.NoteOn(40, 0.5f, 0.5f);
+                    SynthController.instance.pointKeys.NoteOn(40, 0.5f, 0.5f);
                     
                     selectedSpline.RemovePoint((selectedSpline.SplinePoints.IndexOf(activePoint)));
                     selectedSpline.ResetLineLength();
@@ -636,7 +636,7 @@ public class MapEditor : MonoBehaviour
 
                 if (Input.GetKeyDown(KeyCode.Equals))
                 {
-                    SynthController.instance.keys.NoteOn(70, 0.5f, 0.5f);
+                    SynthController.instance.pointKeys.NoteOn(70, 0.5f, 0.5f);
                     Point p = selectedSpline.AddNewPoint(selectedSpline.SplinePoints.IndexOf(activePoint));
                     p.transform.parent = pointsParent;
                 }
@@ -958,7 +958,7 @@ public class MapEditor : MonoBehaviour
          }
          
          //play effects
-         SynthController.instance.keys.NoteOn((int)t * 4 + 60, 0.5f, 0.1f);
+         SynthController.instance.pointKeys.NoteOn((int)t * 4 + 60, 0.5f, 0.1f);
          Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, activePoint.transform);
      }
 
@@ -1076,7 +1076,7 @@ public class MapEditor : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Backspace) && curTool != Tool.text)
             {
                 Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, activePoint.transform);
-                SynthController.instance.keys.NoteOn(40, 0.5f, 0.5f);
+                SynthController.instance.pointKeys.NoteOn(40, 0.5f, 0.5f);
                 
                 DeletePoint(activePoint);
             }
@@ -2077,7 +2077,7 @@ void DragCamera()
                         if (Input.GetMouseButtonDown(0))
                         {
                             
-                            SynthController.instance.keys.NoteOn((int)hitPoint.pointType * 4 + 60, 0.5f, 0.5f);
+                            SynthController.instance.pointKeys.NoteOn((int)hitPoint.pointType * 4 + 60, 0.5f, 0.5f);
                             AddSelectedPoint(hitPoint);
                         }
                     }
@@ -2135,7 +2135,7 @@ void DragCamera()
                     {
                         newPoint.SetPointType(PointTypes.start);
                     }
-                    SynthController.instance.keys.NoteOn(60, 0.5f, 0.1f);
+                    SynthController.instance.pointKeys.NoteOn(60, 0.5f, 0.1f);
                 }
 
                 break;

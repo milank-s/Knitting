@@ -226,7 +226,6 @@ public class Spline : MonoBehaviour
 	{
 	
 		isPlayerOn = true;
-		CalculateDistance();
 		
 		/*								Old sound stuff
 		if (enter) {

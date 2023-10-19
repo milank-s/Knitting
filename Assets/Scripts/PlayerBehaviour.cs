@@ -76,6 +76,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	public delegate void StateChange();
 	public StateChange OnStartFlying;
 	public StateChange OnStartTraversing;
+	public StateChange OnEnterSpline;
+	public StateChange OnExitSpline;
 	public StateChange OnLeaveAnyPoint;
 	public StateChange OnEnterAnyPoint;
 	public StateChange OnTraversing;
@@ -511,8 +513,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				Vector3 dest = Vector3.Lerp(dest1, dest2, diff);
 				//theres really no reason for this to affect logic but it seems to
 				Vector3 to = dest - transform.position;
-				Vector3 cross = Vector3.Cross(to, Vector3.up);
-        		visualRoot.localPosition = new Vector3(cross.magnitude * Mathf.Sign(cross.z), 0,0);
+				Vector3 cross = Vector3.Cross(curDirection, Services.mainCam.transform.forward);
+        		
+				visualRoot.localPosition = visualRoot.TransformDirection(cross).normalized * Mathf.Lerp(0, to.magnitude, curSpline.distortion);
 
 				if(OnTraversing != null){
 					OnTraversing.Invoke();
@@ -1988,7 +1991,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 
-		if (cursorDir2.magnitude <= 0.25f){
+		if (cursorDir2.magnitude < 0.9f){
 			joystickLocked = true;
 			//cursorDir2 = Vector3.zero;
 		}else{
@@ -2219,14 +2222,31 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				Services.fx.playerTrail.emitting = true;
 
+				bool enteredNewSpline = false;
+
 				if(curSpline != null){
 					if (curSpline != splineDest){
 						curSpline.OnSplineExit();
+
+						if(OnExitSpline != null){
+							OnExitSpline.Invoke();
+						}
+
+						enteredNewSpline = true;
 					}
+				}else{
+					enteredNewSpline = true;
 				}
 				
+				if(enteredNewSpline) {
+					splineDest.OnSplineEnter();
+					if(OnEnterSpline != null){
+						OnEnterSpline.Invoke();
+					}
+				}
+
 				curSpline = splineDest;
-				curSpline.OnSplineEnter();
+				curSpline.CalculateDistance();
 
 				//I dont think you fully understand if selected should always = curpoint
 				//or just the point index floor on the players current segment
