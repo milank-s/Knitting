@@ -515,7 +515,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				transform.position = curSpline.GetPointForPlayer(progress);
 
 				Vector3 dest = Vector3.Lerp(dest1, dest2, diff);
-				visualRoot.position = Vector3.Lerp(transform.position, easedDistortion);
+				visualRoot.position = Vector3.Lerp(transform.position, dest, easedDistortion * 2);
 
 
 				//theres really no reason for this to affect logic but it seems to
@@ -2244,15 +2244,16 @@ public class PlayerBehaviour: MonoBehaviour {
 					enteredNewSpline = true;
 				}
 				
+				
+				curSpline = splineDest;
+				curSpline.CalculateDistance();
+				
 				if(enteredNewSpline) {
 					splineDest.OnSplineEnter();
 					if(OnEnterSpline != null){
 						OnEnterSpline.Invoke();
 					}
 				}
-
-				curSpline = splineDest;
-				curSpline.CalculateDistance();
 
 				//I dont think you fully understand if selected should always = curpoint
 				//or just the point index floor on the players current segment

@@ -7,13 +7,16 @@ using UnityEngine.Audio;
 public class SynthController : MonoBehaviour
 {
 	
-	//need a boost sound 
-	public HelmController pointKeys;
+	[Header("Keys")]
+	public HelmController hitPointSFX;
+	public HelmController boostSFX;
+	public HelmController flySFX;
+	public HelmSequencer sequencer;
+	
+	[Header("Pads")]
 
 	//some kind of arp repeating a motif while the player moves
-    public HelmController movementKeys;
-	public HelmSequencer movementSequencer;
-    public HelmController movementPad;
+    public HelmController[] movementPad;
     public HelmController noisePad;
     public HelmController flyingSynth;
 	
@@ -28,7 +31,7 @@ public class SynthController : MonoBehaviour
 	public string[] triadKeys;
 	private int[][] triads;
     private int[] lowNotes = {30, 32, 36};
-
+	int lineType => Services.PlayerBehaviour.curSpline.lineMaterial;
     private int curNote = 42;
 	private int targetNote = 30;
 
@@ -71,11 +74,11 @@ public class SynthController : MonoBehaviour
 
 	public void ChooseRandomTriad(){
 		int[] triad = triads[Random.Range(0, triads.Length)];
-		movementSequencer.Clear();
+		sequencer.Clear();
 		for(int i = 0; i < triad.Length; i++){
-			movementSequencer.AddNote(triad[i], i, i + 1, 1);
+			sequencer.AddNote(triad[i], i, i + 1, 1);
 		}
-		movementSequencer.length = triad.Length;
+		sequencer.length = triad.Length;
 	}
 	public void UpdateFlyingSynth(){
 		// flyingSynth.SetParameterPercent(Param.kVolume, 0.5f); 
@@ -90,10 +93,10 @@ public class SynthController : MonoBehaviour
 
 	public void PlayNoteOnPoint(Point p){
 		// int note = GetNote(p);
-		// pointKeys.NoteOn(note + 12, 1f, 1f);
+		// hitPointSFX.NoteOn(note + 12, 1f, 1f);
 		
 		int note = GetNote(p);
-		pointKeys.NoteOn(note + triads[0][Random.Range(0, triads[0].Length)], 1f, 2f);
+		hitPointSFX.NoteOn(note + triads[0][Random.Range(0, triads[0].Length)], 1f, 2f);
 	}
 
 	int GetNote(Point p){
@@ -122,20 +125,20 @@ public class SynthController : MonoBehaviour
 		curNote = GetNote(Services.PlayerBehaviour.curPoint); 
 		targetNote = GetNote(Services.PlayerBehaviour.pointDest)-12;
 
-		movementPad.NoteOn(curNote);
-		//movementKeys.NoteOn(curNote, 1, 3);
+		movementPad[lineType].NoteOn(curNote);
+		//boostSFX.NoteOn(curNote, 1, 3);
 		
 		int note = GetNote(Services.PlayerBehaviour.curPoint);
 		
-		//pointKeys.NoteOn(note + triads[0][Random.Range(0, triads[0].Length)], 0.15f, 1f);
+		//hitPointSFX.NoteOn(note + triads[0][Random.Range(0, triads[0].Length)], 0.15f, 1f);
 		
-		//pointKeys.NoteOn(note + major[triads[0][Random.Range(0, triads[0].Length)]], 1f, 1f);
+		//hitPointSFX.NoteOn(note + major[triads[0][Random.Range(0, triads[0].Length)]], 1f, 1f);
 		
 
 	}
 
 	public void StopSplineChord(){
-		movementPad.AllNotesOff();
+		movementPad[lineType].AllNotesOff();
 	}
 	
 	public void StartTraversing(){
@@ -151,13 +154,13 @@ public class SynthController : MonoBehaviour
 	public void MovementSynth(){
 		
 		//old code for using arp on the synth instead of using a sequencer
-		//movementKeys.SetParameterPercent(Param.kArpFrequency, normalizedAccuracy);
+		//boostSFX.SetParameterPercent(Param.kArpFrequency, normalizedAccuracy);
 		
 		
 		//distortion isn't really working
 		
-		// movementPad.SetParameterPercent(Param.kDistortionMix, distortion);
-		//movementPad.SetParameterPercent(Param.kVolume, Mathf.Clamp(accuracy, 0.1f, 0.75f));
+		// movementPad[lineType].SetParameterPercent(Param.kDistortionMix, distortion);
+		//movementPad[lineType].SetParameterPercent(Param.kVolume, Mathf.Clamp(accuracy, 0.1f, 0.75f));
 
 		//divide bounds into 12 pitches
 		//based on the note's assigned pitch, move the wheel a portion of that amount to the target pitch
@@ -176,11 +179,11 @@ public class SynthController : MonoBehaviour
 		// float scaledPlayerY = (Services.Player.transform.position.y - floor) / diff.magnitude;
 		// scaledPlayerY = diff.y > 0 ? scaledPlayerY : scaledPlayerY -1;
 		// Debug.Log(scaledPlayerY);
-		// movementPad.SetParameterValue(Param.kPitchBendRange, Mathf.Abs(noteDiff));
+		// movementPad[lineType].SetParameterValue(Param.kPitchBendRange, Mathf.Abs(noteDiff));
 
 		// // linear for now
 		
-		// movementPad.SetPitchWheel(scaledPlayerY);
+		// movementPad[lineType].SetPitchWheel(scaledPlayerY);
 
 
 		//noise time
@@ -218,10 +221,13 @@ public class SynthController : MonoBehaviour
     public void ResetSynths()
     {
 	    flyingSynth.AllNotesOff(); 
-	    movementKeys.AllNotesOff();
-	    movementPad.AllNotesOff();
+	    boostSFX.AllNotesOff();
+	    foreach(HelmController s in movementPad){
+			s.AllNotesOff();
+		}
+		
 		noisePad.AllNotesOff();
-		pointKeys.AllNotesOff();
+		hitPointSFX.AllNotesOff();
     }
 
     void TestNotes()
@@ -229,25 +235,25 @@ public class SynthController : MonoBehaviour
 	    if (Input.GetKeyDown(KeyCode.Alpha1))
 	    {
 
-		    if (movementKeys.IsNoteOn(60))
+		    if (boostSFX.IsNoteOn(60))
 		    {
-			    movementKeys.AllNotesOff();
+			    boostSFX.AllNotesOff();
 		    }
 		    else
 		    {
-			    movementKeys.NoteOn(60);
+			    boostSFX.NoteOn(60);
 		    }
 	    }
 	    
 	    if (Input.GetKeyDown(KeyCode.Alpha2))
 	    {
-		    if (movementPad.IsNoteOn(60))
+		    if (movementPad[lineType].IsNoteOn(60))
 		    {
-			    movementPad.AllNotesOff();
+			    movementPad[lineType].AllNotesOff();
 		    }
 		    else
 		    {
-			    movementPad.NoteOn(60);
+			    movementPad[lineType].NoteOn(60);
 		    }
 	    }
 	    
@@ -270,9 +276,9 @@ public class SynthController : MonoBehaviour
     void Update()
     {
 		
-	
+
         //Sound of noise when player goes of accuracy
-        //movementPad.SetParameterValue(Param.kVolume,Mathf.Clamp01( 1 - (Services.PlayerBehaviour.accuracy + 0.2f)) * Mathf.Clamp01(Services.PlayerBehaviour.flow/5f));
+        //movementPad[lineType].SetParameterValue(Param.kVolume,Mathf.Clamp01( 1 - (Services.PlayerBehaviour.accuracy + 0.2f)) * Mathf.Clamp01(Services.PlayerBehaviour.flow/5f));
         
         //slight pitch bend on accuracy
         //pads[1].SetParameterPercent(Param.kOsc2Tune, accuracy);
@@ -280,69 +286,69 @@ public class SynthController : MonoBehaviour
         //pads[1].SetParameterPercent(Param.kVolume, Services.PlayerBehaviour.flow/5f);
         
         
-        //movementPad.SetParameterValue(Param.kVolume, Mathf.Lerp(0, Mathf.Clamp01( accuracy) * Mathf.Clamp01(Mathf.Pow(Services.PlayerBehaviour.flow,2)), Services.PlayerBehaviour.decelerationTimer));
+        //movementPad[lineType].SetParameterValue(Param.kVolume, Mathf.Lerp(0, Mathf.Clamp01( accuracy) * Mathf.Clamp01(Mathf.Pow(Services.PlayerBehaviour.flow,2)), Services.PlayerBehaviour.decelerationTimer));
         
 
-        //movementKeys.SetParameterPercent(Param.kArpTempo, (Services.PlayerBehaviour.flow/5f) * accuracy);
+        //boostSFX.SetParameterPercent(Param.kArpTempo, (Services.PlayerBehaviour.flow/5f) * accuracy);
         
-		//movementKeys.SetParameterPercent(Param.kStutterResampleFrequency,  accuracy/2f);
-		//movementKeys.SetParameterPercent(Param.kStutterFrequency, accuracy/2f);
-		//movementKeys.SetParameterPercent(Param.kArpTempo, accuracy/10f);
+		//boostSFX.SetParameterPercent(Param.kStutterResampleFrequency,  accuracy/2f);
+		//boostSFX.SetParameterPercent(Param.kStutterFrequency, accuracy/2f);
+		//boostSFX.SetParameterPercent(Param.kArpTempo, accuracy/10f);
 		
-		//movementKeys.SetParameterValue(Param.kVolume,  Mathf.Lerp(movementKeys.GetParameterValue(Param.kVolume), Mathf.Clamp01(Services.PlayerBehaviour.flow - 0.25f) / 2f, Time.deltaTime));
+		//boostSFX.SetParameterValue(Param.kVolume,  Mathf.Lerp(boostSFX.GetParameterValue(Param.kVolume), Mathf.Clamp01(Services.PlayerBehaviour.flow - 0.25f) / 2f, Time.deltaTime));
 //        if (!hasStartedNoise && Services.PlayerBehaviour.state == PlayerState.Traversing)
 //        {
 //            
-//            movementKeys.FrequencyOn( 261.6f * 5f);
+//            boostSFX.FrequencyOn( 261.6f * 5f);
 //            
 //            hasStartedNoise = true;
 //        }
 
 
-//            movementPad.SetParameterValue(Param.kDistortionMix, 1);
+//            movementPad[lineType].SetParameterValue(Param.kDistortionMix, 1);
 
 //        if (Services.PlayerBehaviour.curSpeed > 0.25f && !a)
 //        {
-//            movementKeys.FrequencyOn( 261.6f, 0.5f);
+//            boostSFX.FrequencyOn( 261.6f, 0.5f);
 //            a = true;
 //            
 //        }else if ((Services.PlayerBehaviour.curSpeed < 0.25f || Services.PlayerBehaviour.boostTimer > 0) && a)
 //        {
-//            movementKeys.FrequencyOff(261.6f);
+//            boostSFX.FrequencyOff(261.6f);
 //            a = false;
 //        }
 //        
 //        if (Services.PlayerBehaviour.curSpeed > 0.75f && !b)
 //        {
-//            movementKeys.FrequencyOn( 261.6f * 1.5f, 0.5f);
+//            boostSFX.FrequencyOn( 261.6f * 1.5f, 0.5f);
 //            b = true;
 //            
 //        }else if ((Services.PlayerBehaviour.curSpeed < 0.75f || Services.PlayerBehaviour.boostTimer > 0) && b)
 //        
 //        {
-//            movementKeys.FrequencyOff(261.6f * 1.5f);
+//            boostSFX.FrequencyOff(261.6f * 1.5f);
 //            b = false;
 //        }
 //        
 //        if (Services.PlayerBehaviour.curSpeed > 1.5f && !c)
 //        {
-//            movementKeys.FrequencyOn( 261.6f * 1.5f * 1.5f, 0.5f);
+//            boostSFX.FrequencyOn( 261.6f * 1.5f * 1.5f, 0.5f);
 //            c = true;
 //            
 //        }else if ((Services.PlayerBehaviour.curSpeed < 1.5f || Services.PlayerBehaviour.boostTimer > 0) && c)
 //        {
-//            movementKeys.FrequencyOff(261.6f * 1.5f * 1.5f);
+//            boostSFX.FrequencyOff(261.6f * 1.5f * 1.5f);
 //            c = false;
 //        }
 //        
 //        if (Services.PlayerBehaviour.boostTimer > 0 && !d)
 //        {
-//            movementKeys.NoteOn(24, 1, 1);
+//            boostSFX.NoteOn(24, 1, 1);
 //            d = true;
 //            
 //        }else if (Services.PlayerBehaviour.boostTimer == 0 && d)
 //        {
-//            movementKeys.NoteOff(24);
+//            boostSFX.NoteOff(24);
 //            d = false;
 //        }
     }
