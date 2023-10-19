@@ -109,7 +109,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public float normalizedAccuracy => (1 + accuracy)/2f;
 	public float potentialSpeed => flow + speed + boost;
-	public float easedAccuracy => Mathf.Clamp01(Mathf.Pow(Mathf.Clamp01(accuracy), accuracyCoefficient));
+	public float easedAccuracy;
+	public float easedDistortion;
 
 	[Header("Flying tuning")]
 	public float flyingSpeedThreshold = 3;
@@ -386,7 +387,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(screenSpaceDir)/2f, Color.yellow);
 
 		//curspeed going to zero making movement asymptotes
-
+		
+		//set all your important floats bruh
+		easedAccuracy = Mathf.Clamp01(Mathf.Pow(Mathf.Clamp01(accuracy), accuracyCoefficient));
+		easedDistortion = Mathf.Lerp(easedDistortion, Mathf.Pow(1 - easedAccuracy, 2f) + Spline.shake, Time.time * 5);
 		curSpeed = GetSpeed();
 
 		if(state == PlayerState.Traversing){
@@ -511,11 +515,13 @@ public class PlayerBehaviour: MonoBehaviour {
 				transform.position = curSpline.GetPointForPlayer(progress);
 
 				Vector3 dest = Vector3.Lerp(dest1, dest2, diff);
+				visualRoot.position = Vector3.Lerp(transform.position, easedDistortion);
+
+
 				//theres really no reason for this to affect logic but it seems to
-				Vector3 to = dest - transform.position;
-				Vector3 cross = Vector3.Cross(curDirection, Services.mainCam.transform.forward);
-        		
-				visualRoot.localPosition = visualRoot.TransformDirection(cross).normalized * Mathf.Lerp(0, to.magnitude, curSpline.distortion);
+				//Vector3 to = dest - transform.position;
+				//Vector3 cross = Vector3.Cross(curDirection, Services.mainCam.transform.forward);
+        		//visualRoot.localPosition = visualRoot.TransformDirection(cross).normalized * Mathf.Lerp(0, to.magnitude, curSpline.distortion);
 
 				if(OnTraversing != null){
 					OnTraversing.Invoke();

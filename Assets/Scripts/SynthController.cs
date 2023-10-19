@@ -150,45 +150,42 @@ public class SynthController : MonoBehaviour
 
 	public void MovementSynth(){
 		
-			float accuracy = Services.PlayerBehaviour.easedAccuracy;
+		//old code for using arp on the synth instead of using a sequencer
+		//movementKeys.SetParameterPercent(Param.kArpFrequency, normalizedAccuracy);
+		
+		
+		//distortion isn't really working
+		
+		// movementPad.SetParameterPercent(Param.kDistortionMix, distortion);
+		//movementPad.SetParameterPercent(Param.kVolume, Mathf.Clamp(accuracy, 0.1f, 0.75f));
 
-			//old code for using arp on the synth instead of using a sequencer
-			//movementKeys.SetParameterPercent(Param.kArpFrequency, normalizedAccuracy);
-			
-			
-			//distortion isn't really working
-			float distortion = Services.PlayerBehaviour.curSpline.distortion + Spline.shake;
-			
-			// movementPad.SetParameterPercent(Param.kDistortionMix, distortion);
-			//movementPad.SetParameterPercent(Param.kVolume, Mathf.Clamp(accuracy, 0.1f, 0.75f));
+		//divide bounds into 12 pitches
+		//based on the note's assigned pitch, move the wheel a portion of that amount to the target pitch
 
-			//divide bounds into 12 pitches
-			//based on the note's assigned pitch, move the wheel a portion of that amount to the target pitch
+		//float playerY = Services.main.activeStellation.GetNormalizedHeight(Services.Player.transform.position);
 
-			//float playerY = Services.main.activeStellation.GetNormalizedHeight(Services.Player.transform.position);
+		// Vector3 curPointPos = Services.PlayerBehaviour.curPoint.Pos;
+		// Vector3 pointDestPos = Services.PlayerBehaviour	.pointDest.Pos;
+		// Vector3 diff = pointDestPos - curPointPos;
 
-			// Vector3 curPointPos = Services.PlayerBehaviour.curPoint.Pos;
-			// Vector3 pointDestPos = Services.PlayerBehaviour	.pointDest.Pos;
-			// Vector3 diff = pointDestPos - curPointPos;
+		// int noteDiff = targetNote - curNote;
 
-			// int noteDiff = targetNote - curNote;
+		// //float pitchBend = Utils.MidiChangeToRatio(diff);
+		
+		// float floor = diff.y > 0? curPointPos.y : pointDestPos.y;
+		// float scaledPlayerY = (Services.Player.transform.position.y - floor) / diff.magnitude;
+		// scaledPlayerY = diff.y > 0 ? scaledPlayerY : scaledPlayerY -1;
+		// Debug.Log(scaledPlayerY);
+		// movementPad.SetParameterValue(Param.kPitchBendRange, Mathf.Abs(noteDiff));
 
-			// //float pitchBend = Utils.MidiChangeToRatio(diff);
-			
-			// float floor = diff.y > 0? curPointPos.y : pointDestPos.y;
-			// float scaledPlayerY = (Services.Player.transform.position.y - floor) / diff.magnitude;
-			// scaledPlayerY = diff.y > 0 ? scaledPlayerY : scaledPlayerY -1;
-			// Debug.Log(scaledPlayerY);
-			// movementPad.SetParameterValue(Param.kPitchBendRange, Mathf.Abs(noteDiff));
-
-			// // linear for now
-			
-			// movementPad.SetPitchWheel(scaledPlayerY);
+		// // linear for now
+		
+		// movementPad.SetPitchWheel(scaledPlayerY);
 
 
-			//noise time
-			noisePad.SetParameterPercent(Param.kVolume, distortion);
-			// AudioManager.instance.pianoSampler
+		//noise time
+		noisePad.SetParameterPercent(Param.kVolume, Services.PlayerBehaviour.easedDistortion);
+		// AudioManager.instance.pianoSampler
 	}
 
 

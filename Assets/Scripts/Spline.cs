@@ -635,7 +635,7 @@ public class Spline : MonoBehaviour
 			line.textureOffset -= Time.deltaTime * speed * 5f;
 		}
 		
-		distortion = Mathf.Lerp(distortion, Mathf.Pow(1 - Services.PlayerBehaviour.easedAccuracy, 2f) - shake, Time.deltaTime * 5f);
+		distortion = Mathf.Lerp(distortion, Services.PlayerBehaviour.easedDistortion - shake, Time.deltaTime * 5f);
 		magnitude = Mathf.Clamp01(distortion) * amplitude * Mathf.Clamp01(segmentDistance);
 		// magnitude += distortion;
 
