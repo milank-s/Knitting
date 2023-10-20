@@ -376,7 +376,10 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void Step()
 	{
 		
-		visualRoot.rotation = Quaternion.LookRotation(curDirection, CameraFollow.forward);
+		if(curDirection.sqrMagnitude > 0){
+			visualRoot.rotation = Quaternion.LookRotation(curDirection, CameraFollow.forward);
+		}
+		
 		pos = transform.position;
 
 		Vector2 p1 = Services.mainCam.WorldToScreenPoint(pos);
@@ -2031,10 +2034,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			//cursorDir = Vector3.Lerp (cursorDir, cursorDir2, (cursorRotateSpeed + flow) * Time.deltaTime);
 			cursorDir = cursorDir2;
-		}
-
-		if(curDirection.sqrMagnitude > 0){
-			renderer.transform.forward = curDirection;
 		}
 		
 
