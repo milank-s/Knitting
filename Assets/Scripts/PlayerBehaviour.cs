@@ -2247,7 +2247,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				curSpline = splineDest;
 				curSpline.CalculateDistance();
-				
+
 				if(enteredNewSpline) {
 					splineDest.OnSplineEnter();
 					if(OnEnterSpline != null){
@@ -2306,6 +2306,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				state = PlayerState.Flying;
 				flyingTrail.emitting = true;
+				
+				if(OnExitSpline != null){
+					OnExitSpline.Invoke();
+				}
 				
 				if(curSpline != null){
 					curSpline.OnSplineExit();
