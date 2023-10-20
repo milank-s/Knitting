@@ -92,6 +92,9 @@ public class StellationManager : MonoBehaviour
 		Services.main.activeStellation = controllers[checkpoint];
 
 		Services.StartPoint = controllers[checkpoint].start;
+
+		//this is pretty fucking heavy duty 
+		//there should be a dedicated reset function
 		Services.main.InitializeLevel();
 
 		//each stellation set should also have its own checkpoint to place players at the appropriate spot
@@ -130,6 +133,7 @@ public class StellationManager : MonoBehaviour
 			}
 		}
 	}
+
 	public void Start()
 	{
 		

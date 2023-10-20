@@ -225,7 +225,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		cursorDistance = minCursorDistance;
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
-		cursorPos = transform.position;
+		cursorPos =pos;
 		traversedPoints.Add (curPoint);
 
 		curPoint.OnPlayerEnterPoint();
@@ -282,7 +282,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		cursorDir = Vector3.zero;
 		cursorDir2 = Vector3.zero;
-		cursorPos = transform.position;
+		cursorPos =pos;
 		cursorRenderer.enabled = true;
 		progress = 0;
 
@@ -327,7 +327,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		for (int i = positions.Length -1; i >= 0; i--)
 		{
 			float temp = 0;
-			Vector3 tempPos = transform.position;
+			Vector3 tempPos =pos;
 			distance = Vector3.Distance(tempPos, positions[i]);
 			while (temp < 1)
 			{
@@ -376,21 +376,22 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void Step()
 	{
 		
+		visualRoot.rotation = Quaternion.LookRotation(curDirection, CameraFollow.forward);
 		pos = transform.position;
 
-		Vector2 p1 = Services.mainCam.WorldToScreenPoint(transform.position);
-		Vector2 p2 = Services.mainCam.WorldToScreenPoint(transform.position + curDirection);
+		Vector2 p1 = Services.mainCam.WorldToScreenPoint(pos);
+		Vector2 p2 = Services.mainCam.WorldToScreenPoint(pos + curDirection);
 
 		screenSpaceDir = (p2 - p1).normalized;
 
-		Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(cursorDir)/5f, Color.cyan);
-		Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(screenSpaceDir)/2f, Color.yellow);
+		Debug.DrawLine(pos, pos + Services.mainCam.transform.TransformDirection(cursorDir)/5f, Color.cyan);
+		Debug.DrawLine(pos, pos + Services.mainCam.transform.TransformDirection(screenSpaceDir)/2f, Color.yellow);
 
 		//curspeed going to zero making movement asymptotes
 		
 		//set all your important floats bruh
 		easedAccuracy = Mathf.Clamp01(Mathf.Pow(Mathf.Clamp01(accuracy), accuracyCoefficient));
-		easedDistortion = Mathf.Lerp(easedDistortion, Mathf.Pow(1 - easedAccuracy, 2f) + Spline.shake, Time.time * 5);
+		easedDistortion = Mathf.Lerp(easedDistortion, Mathf.Pow(1 - easedAccuracy, 2f) + Spline.shake, Time.deltaTime * 5);
 		curSpeed = GetSpeed();
 
 		if(state == PlayerState.Traversing){
@@ -423,8 +424,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			boostIndicator.enabled = true;
 			// directionIndicator.enabled = true;
-			boostIndicator.transform.position = transform.position + (Vector3) cursorDir2 * ((Vector3)transform.position - cursorPos).magnitude;
-			boostIndicator.transform.up = cursorDir2;
+			boostIndicator.transform.position =pos + (Vector3) cursorDir2 * ((Vector3)transform.position - cursorPos).magnitude;
+			boostIndicator.transform.rotation = Quaternion.LookRotation(CameraFollow.forward, cursorDir2);
 
 			if(charging && state != PlayerState.Switching){
 				boostTimer += Time.deltaTime;
@@ -519,7 +520,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 				//theres really no reason for this to affect logic but it seems to
-				//Vector3 to = dest - transform.position;
+				//Vector3 to = dest -pos;
 				//Vector3 cross = Vector3.Cross(curDirection, Services.mainCam.transform.forward);
         		//visualRoot.localPosition = visualRoot.TransformDirection(cross).normalized * Mathf.Lerp(0, to.magnitude, curSpline.distortion);
 
@@ -540,7 +541,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			
 			//why do you need to do this at all?
 
-			visualRoot.position = Vector3.Lerp(visualRoot.position, transform.position,Time.deltaTime * 10f);
+			visualRoot.position = Vector3.Lerp(visualRoot.position,pos,Time.deltaTime * 10f);
 			
 			//gravity = 0;
 			//this could be fucking with
@@ -811,13 +812,13 @@ public class PlayerBehaviour: MonoBehaviour {
 		deltaDir = newDirection - curDirection;
 		curDirection = newDirection;
 		
-		//Debug.DrawLine(transform.position, transform.position + splineDir, Color.red);
+		//Debug.DrawLine(transform.position,pos + splineDir, Color.red);
 		
 		//might be best to remove the z
 		//splineDir.z = 0;
 
 		
-		//Debug.DrawLine(transform.position, transform.position + curDirection, Color.yellow);
+		//Debug.DrawLine(transform.position,pos + curDirection, Color.yellow);
 
 		//we have to find a way to flatten the cursor dir to screen space as well
 		float alignment = Vector2.Angle (cursorDir, screenSpaceDir);
@@ -893,7 +894,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			l.positionCount = 2;
 			l.SetPosition (0, cursorPos);
-			l.SetPosition (1, transform.position);
+			l.SetPosition (1,pos);
 			return true;
 		}
 		return false;
@@ -949,7 +950,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if(foundConnection){
 			l.positionCount = 2;
 			l.SetPosition(0, pointDest.Pos);
-			l.SetPosition (1, transform.position);
+			l.SetPosition (1,pos);
 		}else{
 			
 			l.positionCount = 0;
@@ -1014,14 +1015,14 @@ public class PlayerBehaviour: MonoBehaviour {
 //
 // 			speed += Time.deltaTime/10;
 // 			t += Time.deltaTime * ((index + 2)/2);
-// //			Vector3 lastPos = transform.position;
+// //			Vector3 lastPos =pos;
 // //			transform.position = Vector3.Lerp (newPointList[index].position, newPointList [index - 1].position, t);
 // 			Transform curJoint = newPointList[newPointList.Count - 1 - index];
 // 			curJoint.position = Vector3.Lerp(curJoint.position, curPoint.Pos, t);
-// //			float curDistance = Vector3.Distance (newPointList [index].position, transform.position);
+// //			float curDistance = Vector3.Distance (newPointList [index].position,pos);
 // 			transform.position = newPointList[0].transform.position;
-// //			sprite.transform.up = transform.position - lastPos;
-// 			l.SetPosition (0, transform.position);
+// //			sprite.transform.up =pos - lastPos;
+// 			l.SetPosition (0,pos);
 //
 // 			for(int i = 1; i <= newPointList.Count - index; i++){
 // 				l.SetPosition(i, newPointList[i-1].position);
@@ -1113,12 +1114,12 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		Vector3 pos = transform.position;
 
-		float distance = Vector3.Distance (transform.position, p.Pos);
+		float distance = Vector3.Distance (pos, p.Pos);
 
 		float speed = 0;
 
 		while (speed < 1) {
-			transform.position = Vector3.Lerp(transform.position, p.Pos, speed);
+			transform.position = Vector3.Lerp(pos, p.Pos, speed);
 			speed += flow  * Time.deltaTime;
 			speed += Time.deltaTime;
 
@@ -1208,7 +1209,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			pointDest.controller.AdjustCamera();
 
 			flyingSpeed += Time.deltaTime;
-			Vector3 toPoint = pointDest.transform.position - transform.position;
+			Vector3 toPoint = pointDest.transform.position -pos;
 			Vector3 flyToPoint = toPoint.normalized * Time.deltaTime * (flyingSpeed);
 			transform.position += Vector3.ClampMagnitude(flyToPoint, toPoint.magnitude);
 			curDirection = toPoint.normalized;
@@ -1314,8 +1315,8 @@ public class PlayerBehaviour: MonoBehaviour {
 			inertia = cursorDir * flow;
 			flow -= Time.deltaTime/10;
 			transform.position += inertia * Time.deltaTime;
-			curDrawDistance += Vector3.Distance (curPoint.Pos, transform.position);
-			curPoint.transform.position = transform.position;
+			curDrawDistance += Vector3.Distance (curPoint.Pos,pos);
+			curPoint.transform.position =pos;
 			creationInterval -= Time.deltaTime;
 			if (creationInterval < 0 && curDrawDistance > PointDrawDistance) {
 					creationInterval = creationCD;
@@ -1472,7 +1473,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		int curSegment = goingForward ? (int)Mathf.Ceil((float)Spline.curveFidelity * progress) : (int)Mathf.Floor((float)Spline.curveFidelity * progress);
 
-		Vector3 curPos = transform.position;
+		Vector3 curPos =pos;
 		float rollingDistance = 0;
 		float prevStep = progress;
 
@@ -1821,13 +1822,13 @@ public class PlayerBehaviour: MonoBehaviour {
 					screenDir = (screenDir - p1).normalized;
 
 					if(tangent){
-						Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection(toPoint)/3f, Color.blue);
+						Debug.DrawLine(transform.position,pos + Services.mainCam.transform.TransformDirection(toPoint)/3f, Color.blue);
 					}else{
 					//this is being used but is buggy
-						Debug.DrawLine(transform.position, transform.position + Services.mainCam.transform.TransformDirection((Vector3)screenDir)/3f, Color.magenta);
+						Debug.DrawLine(transform.position,pos + Services.mainCam.transform.TransformDirection((Vector3)screenDir)/3f, Color.magenta);
 					}
 					//this isn't being used, just for my own sanity
-					Debug.DrawLine(transform.position, transform.position + startdir.normalized, Color.black/5f);
+					Debug.DrawLine(transform.position,pos + startdir.normalized, Color.black/5f);
 					
 
 					if (adjustedAngle < minAngle) {
@@ -1845,7 +1846,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 			
 			if(actualAngle < 180){
-				accuracy = (90 - actualAngle) / 90;
+				// accuracy = (90 - actualAngle) / 90;
+				accuracy = 1;
 			}
 
 			if ((actualAngle <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) && maybeNextSpline != null)
@@ -1923,7 +1925,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			Vector3 originalPos = p.transform.position;
 
 			while (t <= 1) {
-				p.transform.position = Vector3.Lerp (originalPos, transform.position, t);
+				p.transform.position = Vector3.Lerp (originalPos,pos, t);
 				t += Time.deltaTime;
 				yield return null;
 			}
@@ -1982,12 +1984,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			screenPos += new Vector3(cursorDir.x / Services.mainCam.aspect, cursorDir.y, 0)/CameraFollow.instance.cam.aspect;
 			screenPos = new Vector3(Mathf.Clamp01(screenPos.x), Mathf.Clamp01(screenPos.y), Mathf.Abs(transform.position.z - Services.mainCam.transform.position.z));
 			cursorPos = Services.mainCam.ViewportToWorldPoint(screenPos);
-//			cursorDir2 = cursorPos - transform.position;
+//			cursorDir2 = cursorPos -pos;
 //			cursorDir2.Normalize();
 		}
 		else
 		{
-			//cursorPos = transform.position + (Vector3)cursorDir2 / (Services.mainCam.fieldOfView * 0.1f);
+			//cursorPos =pos + (Vector3)cursorDir2 / (Services.mainCam.fieldOfView * 0.1f);
 
 			Vector3 screenPos = Services.mainCam.WorldToViewportPoint(visualRoot.position);
 			screenPos += new Vector3(cursorDir.x / Services.mainCam.aspect, cursorDir.y, 0)/cursorDistance;
@@ -2013,12 +2015,12 @@ public class PlayerBehaviour: MonoBehaviour {
 		// Vector3 screenPos = ((cursorDir/4f) + (Vector3.one/2f));
 		// screenPos = new Vector3(screenPos.x, screenPos.y, Camera.main.nearClipPlane + 10f);
 		// cursorPos = Camera.main.ViewportToWorldPoint(screenPos);
-		// float screenWidth = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, Camera.main.nearClipPlane)).y - transform.position.y;
-		// cursorPos = transform.position + ((Vector3)cursorDir * screenWidth);
+		// float screenWidth = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, Camera.main.nearClipPlane)).y -pos.y;
+		// cursorPos =pos + ((Vector3)cursorDir * screenWidth);
 
 
 		cursor.transform.position = cursorPos;
-		cursor.transform.rotation = Quaternion.LookRotation(Services.mainCam.transform.forward, cursorDir);
+		cursor.transform.rotation = Quaternion.LookRotation(CameraFollow.forward, cursorDir);
 
 
 		if(buttonDown && state == PlayerState.Traversing)
@@ -2031,10 +2033,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			cursorDir = cursorDir2;
 		}
 
-		renderer.transform.forward = curDirection;
+		if(curDirection.sqrMagnitude > 0){
+			renderer.transform.forward = curDirection;
+		}
 		
 
-		// l.SetPosition(0, transform.position);
+		// l.SetPosition(0,pos);
 		// l.SetPosition(1, cursorPos);
 	}
 
@@ -2497,9 +2501,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 //			curSpline.DrawLineSegmentVelocity (progress, Mathf.Sign (accuracy), goingForward ? 0 : 1);\
 			// curSpline.l.material.mainTextureOffset -= Vector2.right * Mathf.Sign (accuracy) * flow * curSpline.l.material.mainTextureScale.x * 2 * Time.deltaTime;
-//			l.SetPosition(0, transform.position);
-//			l.SetPosition(1, transform.position + (curSpline.GetDirection(progress) * Mathf.Sign(accuracy))/2);
-//			l.SetPosition(1, transform.position + cursorDir/2);
+//			l.SetPosition(0,pos);
+//			l.SetPosition(1,pos + (curSpline.GetDirection(progress) * Mathf.Sign(accuracy))/2);
+//			l.SetPosition(1,pos + cursorDir/2);
 //			GetComponentInChildren<Camera>().farClipPlane = Mathf.Lerp(GetComponentInChildren<Camera>().farClipPlane,  flow + 12, Time.deltaTime * 10);
 		}
 
@@ -2545,6 +2549,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	public Vector3 GetCursorVelocity(){
-		return cursorPos - transform.position;
+		return cursorPos -pos;
 	}
 }

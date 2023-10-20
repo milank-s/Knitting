@@ -8,6 +8,8 @@ public class CameraFollow : MonoBehaviour {
 	private Vector3 velocity = Vector2.zero;
 	Vector3 nudge;
 	Vector3 offset;
+
+	public static Vector3 forward;
 	float rot;
 	public Camera cam;
 	public bool fixedCamera;
@@ -20,6 +22,7 @@ public class CameraFollow : MonoBehaviour {
 	// Use this for initialization
 	void Awake()
 	{
+		
 		instance = this;
 		CameraDolly.leftBound = float.PositiveInfinity;
 		CameraDolly.rightBound = float.NegativeInfinity;
@@ -50,8 +53,8 @@ public class CameraFollow : MonoBehaviour {
 		//get cur spline
 		//find its bounds
 		// get around them
-
-		Vector3 pos = Services.Player.transform.position;
+		
+		Vector3 pos = Services.PlayerBehaviour.pos;
 		Vector3 playerDir = Services.PlayerBehaviour.curDirection;
 		Vector3 toPlayer;
 
@@ -149,5 +152,6 @@ public class CameraFollow : MonoBehaviour {
 		xPos = Mathf.Lerp(CameraDolly.leftBound, CameraDolly.rightBound, 0.5f);
 
 		transform.position = pos + offset;
+		forward = transform.forward;
 	}
 }

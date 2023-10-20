@@ -322,10 +322,13 @@
 
 			foreach (Spline s in Spline.Splines)
 			{
-				if(s.state == Spline.SplineState.on) { //!s.drawingIn){
+				if(MapEditor.editing || s.state == Spline.SplineState.on) {
 					
 					s.UpdateSpline();
-					s.line.Draw3D();
+
+					//things seem to be going pretty well without having to call this
+					//what does it to? update normals? update when you change texture offset?
+					if(!s.drawn)s.line.Draw3D();
 				}
 				
 			}

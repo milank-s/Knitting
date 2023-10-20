@@ -254,6 +254,7 @@ public class MapEditor : MonoBehaviour
         
         
         text = new List<GameObject>();
+        
         foreach (Text t in canvas.GetComponentsInChildren<Text>())
         {
             text.Add(t.gameObject);

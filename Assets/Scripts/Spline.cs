@@ -245,6 +245,8 @@ public class Spline : MonoBehaviour
 	public void SetUpReferences()
 	{
 		
+		SetVectorLine();
+
 		distance = 0;
 		drawProgress = 0;
 		
@@ -300,27 +302,22 @@ public class Spline : MonoBehaviour
 
 	void Awake ()
 	{
+		//honestly why bother it's just destroyed with resetvectorline;
 		line = new VectorLine (name, new System.Collections.Generic.List<Vector3>(), 1, LineType.Continuous, Vectrosity.Joins.Weld);
+		
 		pointPositions = new List<Vector3>();
 		pointVelocities = new List<Vector3>();
 		stepSize = (1.0f / (float)curveFidelity);
 		Select = this;
 		Splines.Add (this);
-
-		// Material newMat;
-//		newMat = Services.Prefabs.lines[3];
-//		Texture tex = newMat.mainTexture;
-//		float length = newMat.mainTextureScale.x;
-//		float height = newMat.mainTextureScale.y;
-
-//		line.texture = tex;
-//		line.textureScale = newMat.mainTextureScale.x;
 	}
 
 	public void Initialize()
 	{	
 		SetUpReferences();
-		ResetVectorLine();
+
+		//surely these are values that should be called in reset?
+
 		completion = 0;
 		drawing = false;
 		drawn = false;
@@ -373,18 +370,11 @@ public class Spline : MonoBehaviour
 		lineWidth = i;
 		line.lineWidth = lineWidth * textureWidth;
 	}
-	public void ResetVectorLine()
+	public void SetVectorLine()
 	{
 		DestroyVectorLine();
 
 		drawnIn = false;
-		
-		// int pointCount = SplinePoints.Count * curveFidelity;
-		
-		// if (!closed)
-		// {
-		// 	pointCount -= curveFidelity;
-		// }
 
 		System.Collections.Generic.List<Vector3> linePoints =  new System.Collections.Generic.List<Vector3> (2);
 		
@@ -399,6 +389,9 @@ public class Spline : MonoBehaviour
 		{
 			line.color = Color.clear;
 		}
+
+		
+		line.continuousTexture = true;
 
 		line.smoothWidth = true;
 		line.smoothColor = true;
@@ -419,9 +412,7 @@ public class Spline : MonoBehaviour
 		upperPointIndex = 0;
 		lowerPointIndex = 0;
 
-		ResetVectorLine();
-		line.StopDrawing3DAuto();
-		
+		SetVectorLine();
 	}
 
 	public void DestroyVectorLine()
@@ -632,7 +623,7 @@ public class Spline : MonoBehaviour
 		prevPos = SplinePoints[0].Pos;
 		
 		if(speed > 0){
-			line.textureOffset -= Time.deltaTime * speed * 5f;
+			line.textureOffset -= Time.deltaTime * (speed / line.textureScale) * 50;
 		}
 		
 		distortion = Services.PlayerBehaviour.easedDistortion - shake;
@@ -766,7 +757,7 @@ public class Spline : MonoBehaviour
 				j = pointIndex + 1;
 			}
 
-			if (true)
+			if (!MapEditor.editing)
 			{
 
 
@@ -778,17 +769,8 @@ public class Spline : MonoBehaviour
 				c.a = 1;
 				line.SetColor(c, segmentIndex);
 				
-			}
-			else
-			{
-				if (!MapEditor.editing && shouldDraw)
-				{
-					Color c = Color.Lerp(curPoint._color, nextPoint._color, step);
-					//c = Color.Lerp(c, Color.white, invertedDistance);
-					//c += (Color.white * Mathf.Clamp01(_completion - 1));
-					c.a = 1;
-					line.SetColor(c, segmentIndex);
-				}
+			}else{
+				line.SetColor(Color.white, segmentIndex);
 			}
 	}
 
