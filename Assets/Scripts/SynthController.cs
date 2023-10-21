@@ -17,10 +17,15 @@ public class SynthController : MonoBehaviour
 
 	//some kind of arp repeating a motif while the player moves
     public HelmController[] movementPad;
+	public HelmController traversingPad;
     public HelmController noisePad;
     public HelmController flyingSynth;
 	
 
+	int homeNote;
+
+	public string homeKeys;
+	int[] homeNotes;
 	public static int[] major = {0, 2, 4, 5, 7, 9, 11, 12};
 	public static int[] minor = {0, 2, 3, 5, 7, 8, 10, 12};
 
@@ -30,7 +35,6 @@ public class SynthController : MonoBehaviour
 
 	public string[] triadKeys;
 	private int[][] triads;
-    private int[] lowNotes = {30, 32, 36};
 	int lineType => Services.PlayerBehaviour.curSpline.lineMaterial;
     private int curNote = 42;
 	private int targetNote = 30;
@@ -42,7 +46,20 @@ public class SynthController : MonoBehaviour
 
     public void Awake()
     {
+		
+		homeNote = Random.Range(48,59);
+
         instance = this;
+		
+		string[] homers = homeKeys.Split(new char[] {' '});
+		homeNotes = new int[homeKeys.Length];
+		for(int j = 0; j < homers.Length; j++){
+			int curNote;
+			if(int.TryParse(homers[j], out curNote)){
+				homeNotes[j] = curNote;
+			}
+		}
+
 		ConvertStringToTriad();
     }
 
@@ -83,8 +100,9 @@ public class SynthController : MonoBehaviour
 	public void UpdateFlyingSynth(){
 		// flyingSynth.SetParameterPercent(Param.kVolume, 0.5f); 
 	}
-	public void PlayFlyingSynth(){
+	public void StartFlying(){
 		flyingSynth.NoteOn(60);
+		flySFX.NoteOn(GetNote(Services.PlayerBehaviour.curPoint), 1, 2);
 	}
 
 	public void StopFlying(){
@@ -92,8 +110,6 @@ public class SynthController : MonoBehaviour
 	}
 
 	public void PlayNoteOnPoint(Point p){
-		// int note = GetNote(p);
-		// hitPointSFX.NoteOn(note + 12, 1f, 1f);
 		
 		int note = GetNote(p);
 		hitPointSFX.NoteOn(note + triads[0][Random.Range(0, triads[0].Length)], 1f, 2f);
@@ -103,19 +119,18 @@ public class SynthController : MonoBehaviour
 		StellationController s = p.controller;
 		//get bounds of stellation 
 
+
 		float depth  = p.controller.GetNormalizedDepth(p.Pos);
 		int octave = (int)Mathf.Floor((depth) * 4f)-2;
 
 		octave *= 12;
+		
+		//get note on scale based on x position relative to stellation bounds
 		float height = p.controller.GetNormalizedHeight(p.Pos);
+		float width = p.controller.GetNormalizedWidth(p.Pos);
 
-		// float magnitude = (s.upperRight.y - s.lowerLeft.y);
-		// float normalizedY = p.Pos.y - s.lowerLeft.y;
-		// normalizedY /= magnitude;
-		// normalizedY = Mathf.Clamp01(normalizedY);
-		
-		int note = p.controller.rootKey + major[(int)Mathf.Floor(height * 7f)];// + octave;
-		
+		int note = homeNote + major[(int)Mathf.Floor(width * (major.Length-1))]; // + octave;
+
 		return note;
 	}
 	public void PlaySplineChord(){
@@ -123,28 +138,30 @@ public class SynthController : MonoBehaviour
 		//ChooseRandomTriad();
 
 		curNote = GetNote(Services.PlayerBehaviour.curPoint); 
-		targetNote = GetNote(Services.PlayerBehaviour.pointDest)-12;
+		targetNote = GetNote(Services.PlayerBehaviour.pointDest);
+
+
+		//would like to create multiple voices
+		//each line has a distinct voice but theres a constant between them
 
 		movementPad[lineType].NoteOn(curNote);
-		//boostSFX.NoteOn(curNote, 1, 3);
+		traversingPad.NoteOn(targetNote);
+
+		//preferably this doesn't double up with flying
+		boostSFX.NoteOn(curNote, Services.PlayerBehaviour.boostTimer, 3);
 		
 		int note = GetNote(Services.PlayerBehaviour.curPoint);
-		
-		//hitPointSFX.NoteOn(note + triads[0][Random.Range(0, triads[0].Length)], 0.15f, 1f);
-		
-		//hitPointSFX.NoteOn(note + major[triads[0][Random.Range(0, triads[0].Length)]], 1f, 1f);
-		
-
 	}
 
 	public void StopSplineChord(){
 		movementPad[lineType].AllNotesOff();
+		traversingPad.AllNotesOff();
 	}
 	
 	public void StartTraversing(){
 		
 		noisePad.NoteOn(60, 1);
-		noisePad.NoteOn(55, 1);
+		noisePad.NoteOn(64, 1);
 	}
 
 	public void StopTraversing(){
@@ -220,8 +237,11 @@ public class SynthController : MonoBehaviour
 
     public void ResetSynths()
     {
+		homeNote = Random.Range(48,61);
 	    flyingSynth.AllNotesOff(); 
 	    boostSFX.AllNotesOff();
+		traversingPad.AllNotesOff();
+
 	    foreach(HelmController s in movementPad){
 			s.AllNotesOff();
 		}

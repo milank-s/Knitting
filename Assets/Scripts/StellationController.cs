@@ -274,7 +274,6 @@ public class StellationController : MonoBehaviour {
 	{
 		
 		crawlers = GetComponentsInChildren<CrawlerManager>().ToList();
-		rootKey = UnityEngine.Random.Range(36, 49);
 
 		_points = new List<Point>();
 		_splines = new List<Spline>();
@@ -744,6 +743,10 @@ public class StellationController : MonoBehaviour {
 
 	public float GetNormalizedHeight(Vector3 pos){
 		return Mathf.Clamp01(pos.y - lowerLeft.y / (upperRight.y - lowerLeft.y));
+	}
+
+	public float GetNormalizedWidth(Vector3 pos){
+		return Mathf.Clamp01(pos.x - lowerLeft.x / (upperRight.x - lowerLeft.x));
 	}
 
 	public float GetNormalizedDepth(Vector3 pos){
