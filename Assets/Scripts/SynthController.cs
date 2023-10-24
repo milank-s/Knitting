@@ -12,11 +12,13 @@ public class SynthController : MonoBehaviour
 	public HelmController boostSFX;
 	public HelmController flySFX;
 	public HelmSequencer sequencer;
+    public HelmController[] keys;
 	
 	[Header("Pads")]
 
 	//some kind of arp repeating a motif while the player moves
-    public HelmController[] movementPad;
+    public HelmController[] pads;
+    public HelmController[] flutters;
 	public HelmController traversingPad;
     public HelmController noisePad;
     public HelmController flyingSynth;
@@ -42,13 +44,16 @@ public class SynthController : MonoBehaviour
 	Point currentActivePoint;
 	Point currentTargetPoint;
 
+	HelmController[] instruments;
+	int curInstrument;
+	int curPatch;
     private int[] keyNote;
 
     public void Awake()
     {
 		
 		homeNote = Random.Range(48,59);
-
+		instruments = keys;
         instance = this;
 		
 		string[] homers = homeKeys.Split(new char[] {' '});
@@ -144,7 +149,7 @@ public class SynthController : MonoBehaviour
 		//would like to create multiple voices
 		//each line has a distinct voice but theres a constant between them
 
-		movementPad[lineType].NoteOn(curNote);
+		pads[lineType].NoteOn(curNote);
 		traversingPad.NoteOn(targetNote);
 
 		//preferably this doesn't double up with flying
@@ -154,7 +159,7 @@ public class SynthController : MonoBehaviour
 	}
 
 	public void StopSplineChord(){
-		movementPad[lineType].AllNotesOff();
+		pads[lineType].AllNotesOff();
 		traversingPad.AllNotesOff();
 	}
 	
@@ -176,8 +181,8 @@ public class SynthController : MonoBehaviour
 		
 		//distortion isn't really working
 		
-		// movementPad[lineType].SetParameterPercent(Param.kDistortionMix, distortion);
-		//movementPad[lineType].SetParameterPercent(Param.kVolume, Mathf.Clamp(accuracy, 0.1f, 0.75f));
+		// pads[lineType].SetParameterPercent(Param.kDistortionMix, distortion);
+		//pads[lineType].SetParameterPercent(Param.kVolume, Mathf.Clamp(accuracy, 0.1f, 0.75f));
 
 		//divide bounds into 12 pitches
 		//based on the note's assigned pitch, move the wheel a portion of that amount to the target pitch
@@ -196,11 +201,11 @@ public class SynthController : MonoBehaviour
 		// float scaledPlayerY = (Services.Player.transform.position.y - floor) / diff.magnitude;
 		// scaledPlayerY = diff.y > 0 ? scaledPlayerY : scaledPlayerY -1;
 		// Debug.Log(scaledPlayerY);
-		// movementPad[lineType].SetParameterValue(Param.kPitchBendRange, Mathf.Abs(noteDiff));
+		// pads[lineType].SetParameterValue(Param.kPitchBendRange, Mathf.Abs(noteDiff));
 
 		// // linear for now
 		
-		// movementPad[lineType].SetPitchWheel(scaledPlayerY);
+		// pads[lineType].SetPitchWheel(scaledPlayerY);
 
 
 		//noise time
@@ -242,7 +247,7 @@ public class SynthController : MonoBehaviour
 	    boostSFX.AllNotesOff();
 		traversingPad.AllNotesOff();
 
-	    foreach(HelmController s in movementPad){
+	    foreach(HelmController s in pads){
 			s.AllNotesOff();
 		}
 		
@@ -252,53 +257,103 @@ public class SynthController : MonoBehaviour
 
     void TestNotes()
     {
+		int note = 60 + Random.Range(0, major.Length);
+		
+		if(Input.GetKeyDown(KeyCode.LeftShift)){
+
+			curInstrument ++;
+
+			if(curInstrument == 1){
+				instruments = pads;
+			}
+			else if(curInstrument == 2){
+				instruments = flutters;
+			}else{
+				instruments = keys;
+				curInstrument = 0;
+			}
+
+
+		}
+
 	    if (Input.GetKeyDown(KeyCode.Alpha1))
 	    {
+			curPatch = 0;
+			instruments[curPatch].NoteOn(note);
+	    }
 
-		    if (boostSFX.IsNoteOn(60))
-		    {
-			    boostSFX.AllNotesOff();
-		    }
-		    else
-		    {
-			    boostSFX.NoteOn(60);
-		    }
+		 if (Input.GetKeyUp(KeyCode.Alpha1))
+	    {
+
+			instruments[curPatch].AllNotesOff();
 	    }
 	    
 	    if (Input.GetKeyDown(KeyCode.Alpha2))
 	    {
-		    if (movementPad[lineType].IsNoteOn(60))
-		    {
-			    movementPad[lineType].AllNotesOff();
-		    }
-		    else
-		    {
-			    movementPad[lineType].NoteOn(60);
-		    }
+			curPatch = 1;
+			instruments[curPatch].NoteOn(note);
+	    }
+
+		if (Input.GetKeyUp(KeyCode.Alpha2))
+	    {
+			instruments[curPatch].AllNotesOff();
 	    }
 	    
 	    if (Input.GetKeyDown(KeyCode.Alpha3))
 	    {
-		   
-			if (flyingSynth.IsNoteOn(60))
-		    {
-			    flyingSynth.AllNotesOff();
-		    }
-		    else
-		    {
-			    flyingSynth.NoteOn(60);
-		    }
+			curPatch = 2;
+			instruments[curPatch].NoteOn(note);
 	    }
-	    
+
+		 if (Input.GetKeyUp(KeyCode.Alpha3))
+	    {
+			instruments[curPatch].AllNotesOff();
+	    }
+
+
+		if (Input.GetKeyDown(KeyCode.Alpha4))
+	    {
+			curPatch = 3;
+			instruments[curPatch].NoteOn(note);
+	    }
+
+		 if (Input.GetKeyUp(KeyCode.Alpha4))
+	    {
+			
+			instruments[curPatch].AllNotesOff();
+	    }
+
+		if (Input.GetKeyDown(KeyCode.Alpha5))
+	    {
+			curPatch = 4;
+			instruments[curPatch].NoteOn(note);
+	    }
+
+		 if (Input.GetKeyUp(KeyCode.Alpha5))
+	    {
+			instruments[curPatch].AllNotesOff();
+	    }
+
+		if (Input.GetKeyDown(KeyCode.Alpha6))
+	    {
+			curPatch = 5;
+			instruments[curPatch].NoteOn(note);
+	    }
+
+		 if (Input.GetKeyUp(KeyCode.Alpha6))
+	    {
+			instruments[curPatch].AllNotesOff();
+	    }
+
     }
     
     
     void Update()
     {
-		
+		TestNotes();
 
         //Sound of noise when player goes of accuracy
-        //movementPad[lineType].SetParameterValue(Param.kVolume,Mathf.Clamp01( 1 - (Services.PlayerBehaviour.accuracy + 0.2f)) * Mathf.Clamp01(Services.PlayerBehaviour.flow/5f));
+        //pads[lineType].SetParameterValue(Param.kVolume,Mathf.Clamp01( 1 - (Services.PlayerBehaviour.accuracy + 0.2f)) * Mathf.Clamp01(Services.PlayerBehaviour.flow/5f));
         
         //slight pitch bend on accuracy
         //pads[1].SetParameterPercent(Param.kOsc2Tune, accuracy);
@@ -306,7 +361,7 @@ public class SynthController : MonoBehaviour
         //pads[1].SetParameterPercent(Param.kVolume, Services.PlayerBehaviour.flow/5f);
         
         
-        //movementPad[lineType].SetParameterValue(Param.kVolume, Mathf.Lerp(0, Mathf.Clamp01( accuracy) * Mathf.Clamp01(Mathf.Pow(Services.PlayerBehaviour.flow,2)), Services.PlayerBehaviour.decelerationTimer));
+        //pads[lineType].SetParameterValue(Param.kVolume, Mathf.Lerp(0, Mathf.Clamp01( accuracy) * Mathf.Clamp01(Mathf.Pow(Services.PlayerBehaviour.flow,2)), Services.PlayerBehaviour.decelerationTimer));
         
 
         //boostSFX.SetParameterPercent(Param.kArpTempo, (Services.PlayerBehaviour.flow/5f) * accuracy);
@@ -325,7 +380,7 @@ public class SynthController : MonoBehaviour
 //        }
 
 
-//            movementPad[lineType].SetParameterValue(Param.kDistortionMix, 1);
+//            pads[lineType].SetParameterValue(Param.kDistortionMix, 1);
 
 //        if (Services.PlayerBehaviour.curSpeed > 0.25f && !a)
 //        {

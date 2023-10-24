@@ -49,7 +49,6 @@ public class AudioManager : MonoBehaviour
     }
     public void SoundSetup(StellationController stellation){
 
-      
         //iterate through splines
         //iterate through points
         //use bounds to determine pitch
