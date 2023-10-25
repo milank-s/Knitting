@@ -8,21 +8,22 @@ public class SynthController : MonoBehaviour
 {
 	
 	[Header("Keys")]
-	public HelmController hitPointSFX;
-	public HelmController boostSFX;
-	public HelmController flySFX;
+	
+	public HelmSynth flySFX;
 	public HelmSequencer sequencer;
-    public HelmController[] keys;
+    public HelmSynth[] keys;
 	
 	[Header("Pads")]
 
 	//some kind of arp repeating a motif while the player moves
-    public HelmController[] pads;
-    public HelmController[] flutters;
-	public HelmController traversingPad;
-    public HelmController noisePad;
-    public HelmController flyingSynth;
+    public HelmSynth[] pads;
+    public HelmSynth[] flutters;
+    public HelmSynth noisePad;
+    public HelmSynth flyingSynth;
+
+	private HelmSynth currentPad;
 	
+	public static float frequency = 0.25f;
 
 	int homeNote;
 
@@ -33,18 +34,17 @@ public class SynthController : MonoBehaviour
 
     public bool hasStartedNoise;
     public static SynthController instance;
-    private int[] notes = {60, 64, 67, 71};
 
 	public string[] triadKeys;
 	private int[][] triads;
-	int lineType => Services.PlayerBehaviour.curSpline.lineMaterial;
+	int lineType = 0;
     private int curNote = 42;
 	private int targetNote = 30;
 
 	Point currentActivePoint;
 	Point currentTargetPoint;
 
-	HelmController[] instruments;
+	HelmSynth[] instruments;
 	int curInstrument;
 	int curPatch;
     private int[] keyNote;
@@ -94,7 +94,7 @@ public class SynthController : MonoBehaviour
 		}
 	}
 
-	public void ChooseRandomTriad(){
+	public void SetArpeggio(){
 		int[] triad = triads[Random.Range(0, triads.Length)];
 		sequencer.Clear();
 		for(int i = 0; i < triad.Length; i++){
@@ -102,22 +102,23 @@ public class SynthController : MonoBehaviour
 		}
 		sequencer.length = triad.Length;
 	}
+
 	public void UpdateFlyingSynth(){
-		// flyingSynth.SetParameterPercent(Param.kVolume, 0.5f); 
+		
 	}
 	public void StartFlying(){
-		flyingSynth.NoteOn(60);
-		flySFX.NoteOn(GetNote(Services.PlayerBehaviour.curPoint), 1, 2);
+		flyingSynth.PlayNote(60);
+		keys[2].PlayNote(GetNote(Services.PlayerBehaviour.curPoint), 2);
 	}
 
 	public void StopFlying(){
-		flyingSynth.AllNotesOff();
+		flyingSynth.Stop();
 	}
 
 	public void PlayNoteOnPoint(Point p){
 		
 		int note = GetNote(p);
-		hitPointSFX.NoteOn(note + triads[0][Random.Range(0, triads[0].Length)], 1f, 2f);
+		keys[0].PlayNote(note + triads[0][Random.Range(0, triads[0].Length)], 2f);
 	}
 
 	int GetNote(Point p){
@@ -149,48 +150,38 @@ public class SynthController : MonoBehaviour
 		//would like to create multiple voices
 		//each line has a distinct voice but theres a constant between them
 
-		pads[lineType].NoteOn(curNote);
-		traversingPad.NoteOn(targetNote);
+		pads[lineType].PlayNote(curNote);
 
 		//preferably this doesn't double up with flying
-		boostSFX.NoteOn(curNote, Services.PlayerBehaviour.boostTimer, 3);
+		keys[1].PlayNote(curNote, 3, Services.PlayerBehaviour.boostTimer);
 		
 		int note = GetNote(Services.PlayerBehaviour.curPoint);
 	}
 
 	public void StopSplineChord(){
-		pads[lineType].AllNotesOff();
-		traversingPad.AllNotesOff();
+		pads[lineType].Stop();
 	}
 	
 	public void StartTraversing(){
 		
-		noisePad.NoteOn(60, 1);
-		noisePad.NoteOn(64, 1);
+		noisePad.PlayNote(60, 1);
+		noisePad.PlayNote(64, 1);
 	}
 
 	public void StopTraversing(){
-		noisePad.AllNotesOff();
+		noisePad.Stop();
 	}
 
 	public void MovementSynth(){
 		
-		//old code for using arp on the synth instead of using a sequencer
-		//boostSFX.SetParameterPercent(Param.kArpFrequency, normalizedAccuracy);
 		
+		noisePad.patch.SetParameterPercent(Param.kVolume, Services.PlayerBehaviour.easedDistortion);
 		
-		//distortion isn't really working
-		
-		// pads[lineType].SetParameterPercent(Param.kDistortionMix, distortion);
-		//pads[lineType].SetParameterPercent(Param.kVolume, Mathf.Clamp(accuracy, 0.1f, 0.75f));
-
-		//divide bounds into 12 pitches
+		//pitch bending
 		//based on the note's assigned pitch, move the wheel a portion of that amount to the target pitch
 
-		//float playerY = Services.main.activeStellation.GetNormalizedHeight(Services.Player.transform.position);
-
 		// Vector3 curPointPos = Services.PlayerBehaviour.curPoint.Pos;
-		// Vector3 pointDestPos = Services.PlayerBehaviour	.pointDest.Pos;
+		// Vector3 pointDestPos = Services.PlayerBehaviour.pointDest.Pos;
 		// Vector3 diff = pointDestPos - curPointPos;
 
 		// int noteDiff = targetNote - curNote;
@@ -200,65 +191,64 @@ public class SynthController : MonoBehaviour
 		// float floor = diff.y > 0? curPointPos.y : pointDestPos.y;
 		// float scaledPlayerY = (Services.Player.transform.position.y - floor) / diff.magnitude;
 		// scaledPlayerY = diff.y > 0 ? scaledPlayerY : scaledPlayerY -1;
-		// Debug.Log(scaledPlayerY);
+
 		// pads[lineType].SetParameterValue(Param.kPitchBendRange, Mathf.Abs(noteDiff));
 
 		// // linear for now
-		
 		// pads[lineType].SetPitchWheel(scaledPlayerY);
 
 
-		//noise time
-		noisePad.SetParameterPercent(Param.kVolume, Services.PlayerBehaviour.easedDistortion);
-		// AudioManager.instance.pianoSampler
+		//old code for using arp on the synth instead of using a sequencer
+		//boostSFX.SetParameterPercent(Param.kArpFrequency, normalizedAccuracy);
+	
 	}
 
-
-
-    void PlayRandomChord(int[] n, int amount, HelmController c,  float velocity = 1, float length = 0)
+    void PlayRandomChord(int baseKey, int voices, HelmSynth c,  float velocity = 1, float length = 0)
     {
-	    n = new int[amount];
+	    int[] n = new int[voices];
 	    
-	    for (int i = 0; i < amount; i++)
+	    for (int i = 1; i < voices; i++)
 	    {
-		    n[i] = notes[Random.Range(0, notes.Length)];
+		    n[i] = baseKey + i * 2;
 
 			//hold indefinitely
 			if(length == 0){
-				c.NoteOn(n[i], velocity);
+				c.PlayNote(n[i]);
 			}else{
-		    	c.NoteOn(n[i], velocity, length);
+		    	c.PlayNote(n[i], length, velocity);
 			}
-	    }
-    }
-
-    void EndNotes(int[] notes, HelmController c)
-    {
-	    for (int i = 0; i < notes.Length; i++)
-	    {
-		    c.NoteOff(notes[i]);
 	    }
     }
 
     public void ResetSynths()
     {
 		homeNote = Random.Range(48,61);
-	    flyingSynth.AllNotesOff(); 
-	    boostSFX.AllNotesOff();
-		traversingPad.AllNotesOff();
+	    flyingSynth.Stop();
 
-	    foreach(HelmController s in pads){
-			s.AllNotesOff();
+	    foreach(HelmSynth s in pads){
+			s.Stop();
+		}
+
+		foreach(HelmSynth s in keys){
+			s.Stop();
+		}
+
+		foreach(HelmSynth s in flutters){
+			s.Stop();
 		}
 		
-		noisePad.AllNotesOff();
-		hitPointSFX.AllNotesOff();
+		noisePad.Stop();
+		
     }
 
     void TestNotes()
     {
 		int note = 60 + Random.Range(0, major.Length);
-		
+		instruments[curPatch].Modulate();
+
+		frequency += Input.mouseScrollDelta.y / 100f;
+		frequency = Mathf.Clamp(frequency, 0.1f, 1f);
+
 		if(Input.GetKeyDown(KeyCode.LeftShift)){
 
 			curInstrument ++;
@@ -272,77 +262,75 @@ public class SynthController : MonoBehaviour
 				instruments = keys;
 				curInstrument = 0;
 			}
-
-
 		}
 
 	    if (Input.GetKeyDown(KeyCode.Alpha1))
 	    {
 			curPatch = 0;
-			instruments[curPatch].NoteOn(note);
+			instruments[curPatch].PlayNote(note);
 	    }
 
 		 if (Input.GetKeyUp(KeyCode.Alpha1))
 	    {
 
-			instruments[curPatch].AllNotesOff();
+			instruments[curPatch].Stop();
 	    }
 	    
 	    if (Input.GetKeyDown(KeyCode.Alpha2))
 	    {
 			curPatch = 1;
-			instruments[curPatch].NoteOn(note);
+			instruments[curPatch].PlayNote(note);
 	    }
 
 		if (Input.GetKeyUp(KeyCode.Alpha2))
 	    {
-			instruments[curPatch].AllNotesOff();
+			instruments[curPatch].Stop();
 	    }
 	    
 	    if (Input.GetKeyDown(KeyCode.Alpha3))
 	    {
 			curPatch = 2;
-			instruments[curPatch].NoteOn(note);
+			instruments[curPatch].PlayNote(note);
 	    }
 
 		 if (Input.GetKeyUp(KeyCode.Alpha3))
 	    {
-			instruments[curPatch].AllNotesOff();
+			instruments[curPatch].Stop();
 	    }
 
 
 		if (Input.GetKeyDown(KeyCode.Alpha4))
 	    {
 			curPatch = 3;
-			instruments[curPatch].NoteOn(note);
+			instruments[curPatch].PlayNote(note);
 	    }
 
 		 if (Input.GetKeyUp(KeyCode.Alpha4))
 	    {
 			
-			instruments[curPatch].AllNotesOff();
+			instruments[curPatch].Stop();
 	    }
 
 		if (Input.GetKeyDown(KeyCode.Alpha5))
 	    {
 			curPatch = 4;
-			instruments[curPatch].NoteOn(note);
+			instruments[curPatch].PlayNote(note);
 	    }
 
 		 if (Input.GetKeyUp(KeyCode.Alpha5))
 	    {
-			instruments[curPatch].AllNotesOff();
+			instruments[curPatch].Stop();
 	    }
 
 		if (Input.GetKeyDown(KeyCode.Alpha6))
 	    {
 			curPatch = 5;
-			instruments[curPatch].NoteOn(note);
+			instruments[curPatch].PlayNote(note);
 	    }
 
 		 if (Input.GetKeyUp(KeyCode.Alpha6))
 	    {
-			instruments[curPatch].AllNotesOff();
+			instruments[curPatch].Stop();
 	    }
 
     }
@@ -351,7 +339,7 @@ public class SynthController : MonoBehaviour
     void Update()
     {
 		TestNotes();
-
+		
         //Sound of noise when player goes of accuracy
         //pads[lineType].SetParameterValue(Param.kVolume,Mathf.Clamp01( 1 - (Services.PlayerBehaviour.accuracy + 0.2f)) * Mathf.Clamp01(Services.PlayerBehaviour.flow/5f));
         
@@ -418,7 +406,7 @@ public class SynthController : MonoBehaviour
 //        
 //        if (Services.PlayerBehaviour.boostTimer > 0 && !d)
 //        {
-//            boostSFX.NoteOn(24, 1, 1);
+//            boostSFX.PlayNote(24, 1, 1);
 //            d = true;
 //            
 //        }else if (Services.PlayerBehaviour.boostTimer == 0 && d)
