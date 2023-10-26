@@ -125,7 +125,7 @@ public void Step(){
         bool forward = Services.PlayerBehaviour.goingForward;
         float start = forward ? 0.1f : 0.9f;
         int pointIndex = s.selectedIndex;
-        Point p = s.Selected;
+        Point p = s.SplinePoints[pointIndex];
 
         if(!forward){
             pointIndex -= 1;

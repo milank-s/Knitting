@@ -1243,6 +1243,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		float minAngle = Mathf.Infinity;
 		float adjustedAngle = Mathf.Infinity;
 		float actualAngle = Mathf.Infinity;
+		
+		bool isGhostPoint = curPoint.pointType == PointTypes.ghost;
+		bool forward = true;
 
 		if (curPoint.HasSplines ()) {
 
@@ -1262,7 +1265,6 @@ public class PlayerBehaviour: MonoBehaviour {
 					
 				
 				int curIndex = s.SplinePoints.IndexOf(curPoint);
-				bool forward = true;
 
 				for(int i = -1; i < 2; i+=2){
 
@@ -1283,8 +1285,6 @@ public class PlayerBehaviour: MonoBehaviour {
 					Point p = s.SplinePoints[nextIndex];
 
 					int indexDifference = nextIndex - curIndex;
-						
-					bool isGhostPoint = curPoint.pointType == PointTypes.ghost;
 					
 					//need to check that we're not actually at the start of a new spline thats just facing the other direction
 
@@ -1318,8 +1318,9 @@ public class PlayerBehaviour: MonoBehaviour {
 						curAngle = s.CompareAngleAtPoint (cursorDir, curPoint, out startdir);
 
 					}else{
+
 						//ghost point intersections dont let you change direction
-						//leave cur angle infinite
+						//leave and continue
 						continue;
 					}
 					
@@ -1363,7 +1364,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				accuracy = 1;
 			}
 
-			if ((actualAngle <= StopAngleDiff || curPoint.pointType == PointTypes.ghost))// && maybeNextSpline != null) //why the fuck does it matter if it is null
+			if ((actualAngle <= StopAngleDiff || isGhostPoint))// && maybeNextSpline != null) //why the fuck does it matter if it is null
 			{
 				
 				splineDest = maybeNextSpline;
@@ -1609,7 +1610,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			case PlayerState.Traversing:
 
-
 				state = PlayerState.Traversing;
 				
 				Services.fx.playerTrail.emitting = true;
@@ -1650,12 +1650,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				//or just the point index floor on the players current segment
 
 				// Debug.Log("curspline dist is " + curSpline.segmentDistance);
-
-				//I guess I just enter splines while I'm stopped now
-				//it pisses me off but I'm sure there's some reason				
-				//curSpline.OnSplineEnter (true, curPoint, pointDest, false);
-
-				//PlayerMovement ();
 
 				if (curPoint.pointType != PointTypes.ghost)
 				{

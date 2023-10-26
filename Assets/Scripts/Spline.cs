@@ -226,6 +226,7 @@ public class Spline : MonoBehaviour
 	
 		isPlayerOn = true;
 		
+		
 		/*								Old sound stuff
 		if (enter) {
 			if (curSound != null && sound != null) {
