@@ -25,15 +25,46 @@ public class HelmSynth : MonoBehaviour
    public void Modulate(){
 
     //vibrate note based on speed;
-
+    
+    //none of this worked, just change bpm
+    
     if(hasStutter){
-       patch.SetParameterValue(Param.kStutterFrequency, SynthController.frequency); 
-       Debug.Log("stutter frequency is " + patch.GetParameterValue(Param.kStutterFrequency));
+        
+        // float val = patch.GetParameterValue(Param.kStutterResampleFrequency);
+        // val += Input.mouseScrollDelta.y/10f;
+        // patch.SetParameterValue(Param.kStutterResampleFrequency, val);
+        
+    //    Debug.Log("stutter tempo: " 
+    //                     + patch.GetParameterValue(Param.kStutterResampleTempo)
+    //                     + " percent: "
+    //                     + patch.GetParameterPercent(Param.kStutterResampleTempo)
+    //                     );
+
+    //     Debug.Log("stutter frequency: " 
+    //                     + patch.GetParameterValue(Param.kStutterResampleFrequency)
+    //                     + " percent: "
+    //                     + patch.GetParameterPercent(Param.kStutterResampleFrequency)
+    //                     );
+        
     }
     if(hasTremelo){
         
-       patch.SetParameterValue(Param.kPolyLfoFrequency, SynthController.frequency); 
-       Debug.Log("LFO frequency is " + patch.GetParameterValue(Param.kPolyLfoFrequency));
+    // float val = patch.GetParameterPercent(Param.kPolyLfoFrequency);
+    //    val += Input.mouseScrollDelta.y/10f;
+
+    //   // patch.SetParameterPercent(Param.kPolyLfoFrequency, val); 
+
+    //     Debug.Log("LFO tempo: " 
+    //                     + patch.GetParameterValue(Param.kPolyLfoTempo)
+    //                     + " percent: "
+    //                     + patch.GetParameterPercent(Param.kPolyLfoTempo)
+    //                     );
+
+    //     Debug.Log("LFO frequency: " 
+    //                     + patch.GetParameterValue(Param.kPolyLfoFrequency)
+    //                     + " percent: "
+    //                     + patch.GetParameterPercent(Param.kPolyLfoFrequency)
+    //                     );
        
     }
    }

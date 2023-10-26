@@ -945,7 +945,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		boostTimer = Mathf.Clamp01(boostTimer);
 
-		progress = 0;
 		curPoint.PlayerOnPoint(cursorDir, flow);
 
 		//l.SetPosition (0, Vector3.Lerp(transform.position, cursorPos, Easing.QuadEaseOut(boostTimer)));
@@ -1509,7 +1508,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 			}
 
-			// progress = 1.1f; ????????????
 			progress = 1;
 			adjustedProgress = 1;
 			return;
@@ -2249,6 +2247,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				
 				curSpline = splineDest;
+				SetPlayerAtStart (curSpline, pointDest);
 				curSpline.CalculateDistance();
 
 				if(enteredNewSpline) {
@@ -2261,7 +2260,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				//I dont think you fully understand if selected should always = curpoint
 				//or just the point index floor on the players current segment
 
-				SetPlayerAtStart (curSpline, pointDest);
+				// Debug.Log("curspline dist is " + curSpline.segmentDistance);
 
 				//I guess I just enter splines while I'm stopped now
 				//it pisses me off but I'm sure there's some reason				
@@ -2386,9 +2385,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					if(OnEnterAnyPoint != null){
 						OnEnterAnyPoint.Invoke();
 					}
-				
-//TODO
-
+			
 				
 				curPoint.OnPlayerEnterPoint();
 
@@ -2405,8 +2402,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				{
 					curPoint.controller.ShowEscape();
 				}
-
-		
 
 				//checkpoint shit
 				if (curPoint.pointType == PointTypes.stop)

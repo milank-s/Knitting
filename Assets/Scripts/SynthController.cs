@@ -21,7 +21,7 @@ public class SynthController : MonoBehaviour
     public HelmSynth noisePad;
     public HelmSynth flyingSynth;
 
-	private HelmSynth currentPad;
+	private HelmSynth currentFlutter;
 	
 	public static float frequency = 0.25f;
 
@@ -146,10 +146,28 @@ public class SynthController : MonoBehaviour
 		curNote = GetNote(Services.PlayerBehaviour.curPoint); 
 		targetNote = GetNote(Services.PlayerBehaviour.pointDest);
 
-
 		//would like to create multiple voices
 		//each line has a distinct voice but theres a constant between them
 
+		int mod = curNote % 12;
+		if(SynthController.frequency > 0.75){
+			
+			currentFlutter = flutters[3];
+		}
+
+		else if(SynthController.frequency > 0.5){
+			
+			currentFlutter = flutters[2];
+		}
+
+		else if(SynthController.frequency > 0.33){
+			
+			currentFlutter = flutters[1];
+		}else{
+			currentFlutter = flutters[0];
+		}
+
+		currentFlutter.PlayNote(curNote + 2);
 		pads[lineType].PlayNote(curNote);
 
 		//preferably this doesn't double up with flying
@@ -159,13 +177,14 @@ public class SynthController : MonoBehaviour
 	}
 
 	public void StopSplineChord(){
+		currentFlutter.Stop();
 		pads[lineType].Stop();
 	}
 	
 	public void StartTraversing(){
 		
-		noisePad.PlayNote(60, 1);
-		noisePad.PlayNote(64, 1);
+		noisePad.PlayNote(62, 1);
+		noisePad.PlayNote(66, 1);
 	}
 
 	public void StopTraversing(){
@@ -244,13 +263,10 @@ public class SynthController : MonoBehaviour
     void TestNotes()
     {
 		int note = 60 + Random.Range(0, major.Length);
-		instruments[curPatch].Modulate();
-
-		frequency += Input.mouseScrollDelta.y / 100f;
-		frequency = Mathf.Clamp(frequency, 0.1f, 1f);
+		//instruments[curPatch].Modulate();
 
 		if(Input.GetKeyDown(KeyCode.LeftShift)){
-
+			curPatch = 0;
 			curInstrument ++;
 
 			if(curInstrument == 1){
@@ -338,7 +354,7 @@ public class SynthController : MonoBehaviour
     
     void Update()
     {
-		TestNotes();
+		//TestNotes();
 		
         //Sound of noise when player goes of accuracy
         //pads[lineType].SetParameterValue(Param.kVolume,Mathf.Clamp01( 1 - (Services.PlayerBehaviour.accuracy + 0.2f)) * Mathf.Clamp01(Services.PlayerBehaviour.flow/5f));
