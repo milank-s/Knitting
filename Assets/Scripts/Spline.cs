@@ -60,7 +60,7 @@ public class Spline : MonoBehaviour
 	public List<Vector3> pointVelocities;
 
 	[HideInInspector]
-	public Point Selected;
+	private Point Selected;
 
 	[HideInInspector]
 	public VectorLine line;
@@ -245,7 +245,7 @@ public class Spline : MonoBehaviour
 	{
 		
 		SetVectorLine();
-
+		Selected = StartPoint;
 		distance = 0;
 		drawProgress = 0;
 		
@@ -621,7 +621,9 @@ public class Spline : MonoBehaviour
 		rollingDistance = 0;
 		prevPos = SplinePoints[0].Pos;
 		
+		//should this match player speed?
 		if(speed > 0){
+
 			line.textureOffset -= Time.deltaTime * (speed / line.textureScale) * 50;
 		}
 		
@@ -637,6 +639,13 @@ public class Spline : MonoBehaviour
 
 	public void  DrawGizmos(){	
 		int numSegments = 4;
+		
+		if(Selected != null){
+			Gizmos.color = Color.red;
+			Gizmos.DrawSphere(Selected.Pos, 0.1f);
+		}
+		
+		Gizmos.color = Color.white;
 
 		Vector3 lastPos = SplinePoints[0].transform.position;
 		for(int i = 0; i < SplinePoints.Count - (closed ? 0 : 1); i ++){

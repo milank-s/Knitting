@@ -97,6 +97,7 @@ public class Point : MonoBehaviour
 	public float timeOffset;
 	[HideInInspector]
 	public float proximity = 0;
+	public int note;
 	
 
 	[HideInInspector]
@@ -364,6 +365,7 @@ public class Point : MonoBehaviour
 		timesHit = 0;
 		c = 0;
 		cooldown = 0;
+		note = SynthController.instance.GetNote(this);
 	}
 
 	public void CleanText()

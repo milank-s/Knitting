@@ -56,17 +56,16 @@ public class AudioManager : MonoBehaviour
         
         clock.pause = true;
         helmAudio.PlayNoteOnPoint(p);
-        helmAudio.StopTraversing();
+        helmAudio.EnterPoint();
     }
 
      public void ExitPoint(){  
-        helmAudio.StartTraversing();
+        helmAudio.ExitPoint();
         clock.pause = false;
     }
 
     //only happens if player switches splines
     public void EnterSpline(){    
-        helmAudio.PlaySplineChord();
     }
 
     //happens if player switches splines or flies away

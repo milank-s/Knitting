@@ -15,11 +15,4 @@ public class PlayerSounds : MonoBehaviour {
 	public AudioSource pointDestSound;
 	public AudioSource brakingSound;
 	public AudioSource moveSound;
-
-	void Start()
-	{
-		brakingSound.clip = braking;
-		moveSound.clip = moving;
-		//moveSound.Play();
-	}
 }

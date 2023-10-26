@@ -52,7 +52,7 @@ public class SynthController : MonoBehaviour
     public void Awake()
     {
 		
-		homeNote = Random.Range(48,59);
+		homeNote = 60;
 		instruments = keys;
         instance = this;
 		
@@ -67,11 +67,6 @@ public class SynthController : MonoBehaviour
 
 		ConvertStringToTriad();
     }
-
-	// TODO
-	// Create different patches (or pitches?) for different point types
-	// big ole switch statement for PlayNoteOnPoint
-	// Choose arpeggio based on some factor. Player speed, line length?
 	
 	// try looping through the stellation and playing notes from a sequencer.
 			// for each spline, set up a sequencer. 
@@ -106,9 +101,9 @@ public class SynthController : MonoBehaviour
 	public void UpdateFlyingSynth(){
 		
 	}
+
 	public void StartFlying(){
-		flyingSynth.PlayNote(60);
-		keys[4].PlayNote(GetNote(Services.PlayerBehaviour.curPoint), 1);
+		flyingSynth.PlayNote(60, 3);
 	}
 
 	public void StopFlying(){
@@ -117,14 +112,26 @@ public class SynthController : MonoBehaviour
 
 	public void PlayNoteOnPoint(Point p){
 		
-		int note = GetNote(p);
-		keys[0].PlayNote(note + triads[0][Random.Range(0, triads[0].Length)], 0.25f);
+		float length = 1;
+		HelmSynth s;
+		if(p.pointType == PointTypes.fly){
+			 length = 2;
+			 s = keys[4];
+		}else if(p.pointType == PointTypes.stop){
+			 s = keys[2];
+		}else if(p.pointType == PointTypes.start){
+			s = keys[5];
+		}else{
+			s = keys[0];
+			length = 0.1f;
+		}
+
+		s.PlayNote(p.note, length);
 	}
 
-	int GetNote(Point p){
+	public int GetNote(Point p){
 		StellationController s = p.controller;
 		//get bounds of stellation 
-
 
 		float depth  = p.controller.GetNormalizedDepth(p.Pos);
 		int octave = (int)Mathf.Floor((depth) * 4f)-2;
@@ -143,36 +150,34 @@ public class SynthController : MonoBehaviour
 		//set up the arp
 		//ChooseRandomTriad();
 		
-		curNote = GetNote(Services.PlayerBehaviour.curPoint); 
-		targetNote = GetNote(Services.PlayerBehaviour.pointDest);
+		curNote = Services.PlayerBehaviour.curPoint.note; 
+		targetNote = Services.PlayerBehaviour.pointDest.note;
 
 		//would like to create multiple voices
 		//each line has a distinct voice but theres a constant between them
 
-		int mod = curNote % 12;
-		if(SynthController.frequency > 0.75){
+		// if(SynthController.frequency > 0.75){
 			
-			currentFlutter = flutters[2];
-			currentFlutter.PlayNote(curNote + 2);
-		}
+		// 	currentFlutter = flutters[2];
+		// 	currentFlutter.PlayNote(curNote + 2);
+		// }
 
-		else if(SynthController.frequency > 0.5){
+		// else if(SynthController.frequency > 0.5){
 			
-			currentFlutter = flutters[1];
-			currentFlutter.PlayNote(curNote + 2);
-		}
+		// 	currentFlutter = flutters[1];
+		// 	currentFlutter.PlayNote(curNote + 2);
+		// }
 
-		else if(SynthController.frequency > 0.33){
+		// else if(SynthController.frequency > 0.33){
 			
-			currentFlutter = flutters[0];
-			currentFlutter.PlayNote(curNote + 2);
-		}
+		// 	currentFlutter = flutters[0];
+		// 	currentFlutter.PlayNote(curNote + 2);
+		// }
 		
+		//do we want to add another voice per x steps between notes?
+		//to create triads quads etc
 		pads[lineType].PlayNote(curNote);
-
-		//preferably this doesn't double up with flying
-		//keys[1].PlayNote(curNote, 3, Services.PlayerBehaviour.boostTimer);
-		
+		pads[lineType].PlayNote(targetNote);
 	}
 
 	public void StopSplineChord(){
@@ -182,20 +187,24 @@ public class SynthController : MonoBehaviour
 		pads[lineType].Stop();
 	}
 	
-	public void StartTraversing(){
+	public void ExitPoint(){
 		
 		noisePad.PlayNote(62);
 		noisePad.PlayNote(66);
+		
+		PlaySplineChord();
+		
 		pads[lineType].Mute(false);
 		
-		if(currentFlutter != null){
+        if(currentFlutter != null){
 			currentFlutter.Mute(false);
 		}
 	}
 
-	public void StopTraversing(){
+	public void EnterPoint(){
+        
 		noisePad.Stop();
-		pads[lineType].Mute(true);
+		// pads[lineType].Mute(true);
 
         if(currentFlutter != null){
 			currentFlutter.Mute(true);
@@ -205,9 +214,11 @@ public class SynthController : MonoBehaviour
 	public void MovementSynth(){
 		
 		if(currentFlutter != null){
-			currentFlutter.SetVolume(Services.PlayerBehaviour.normalizedAccuracy);
+			//this isn't good because synths have different loudnesses from each other
+			//need to set gain on the mixer side not on the patch side
+			// currentFlutter.SetVolume(Services.PlayerBehaviour.normalizedAccuracy);
 		}
-		noisePad.patch.SetParameterPercent(Param.kVolume, Services.PlayerBehaviour.easedDistortion);
+		noisePad.SetVolume(Services.PlayerBehaviour.easedDistortion);
 		
 		//pitch bending
 		//based on the note's assigned pitch, move the wheel a portion of that amount to the target pitch
@@ -254,7 +265,7 @@ public class SynthController : MonoBehaviour
 
     public void ResetSynths()
     {
-		homeNote = Random.Range(48,61);
+		
 	    flyingSynth.Stop();
 
 	    foreach(HelmSynth s in pads){
@@ -367,6 +378,7 @@ public class SynthController : MonoBehaviour
     
     void Update()
     {
+		
 		//TestNotes();
 		
         //Sound of noise when player goes of accuracy
