@@ -3953,7 +3953,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd3348fae78fbb945862225ae0073bbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  octave: 0
+  octave: 2
   hasStutter: 0
   hasTremelo: 1
   hasDistortion: 0
@@ -4341,7 +4341,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd3348fae78fbb945862225ae0073bbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  octave: 1
+  octave: -1
   hasStutter: 0
   hasTremelo: 1
   hasDistortion: 0
@@ -4359,7 +4359,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   channel: 12
-  synthParamValue0: 6.27
+  synthParamValue0: 3.7
   synthParamValue1: 0
   synthParamValue2: 0
   synthParamValue3: 0
@@ -4375,7 +4375,13 @@ MonoBehaviour:
   synthParamValue13: 0
   synthParamValue14: 0
   synthParamValue15: 0
-  synthParameters: []
+  synthParameters:
+  - parameter_: 80
+    scaleType: 0
+    parent: {fileID: 8664491120832777922}
+    minimumRange: 0
+    maximumRange: 11
+    paramValue_: 3.7
 --- !u!82 &8882576335858217081
 AudioSource:
   m_ObjectHideFlags: 0
@@ -4388,7 +4394,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: -113017329534045876, guid: 0cab711111eb799428695508edcc7b21,
     type: 2}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 0
+  m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
   Loop: 1

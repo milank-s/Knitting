@@ -64,7 +64,6 @@ public class AudioManager : MonoBehaviour
         SynthController.instance.PlaySplineChord();
     }
 
-    
     public void ExitSpline(){
         
         SynthController.instance.StopSplineChord();

@@ -108,7 +108,7 @@ public class SynthController : MonoBehaviour
 	}
 	public void StartFlying(){
 		flyingSynth.PlayNote(60);
-		keys[2].PlayNote(GetNote(Services.PlayerBehaviour.curPoint), 2);
+		keys[4].PlayNote(GetNote(Services.PlayerBehaviour.curPoint), 1);
 	}
 
 	public void StopFlying(){
@@ -118,7 +118,7 @@ public class SynthController : MonoBehaviour
 	public void PlayNoteOnPoint(Point p){
 		
 		int note = GetNote(p);
-		keys[0].PlayNote(note + triads[0][Random.Range(0, triads[0].Length)], 2f);
+		keys[0].PlayNote(note + triads[0][Random.Range(0, triads[0].Length)], 0.25f);
 	}
 
 	int GetNote(Point p){
@@ -142,7 +142,7 @@ public class SynthController : MonoBehaviour
 	public void PlaySplineChord(){
 		//set up the arp
 		//ChooseRandomTriad();
-
+		
 		curNote = GetNote(Services.PlayerBehaviour.curPoint); 
 		targetNote = GetNote(Services.PlayerBehaviour.pointDest);
 
@@ -152,43 +152,50 @@ public class SynthController : MonoBehaviour
 		int mod = curNote % 12;
 		if(SynthController.frequency > 0.75){
 			
-			currentFlutter = flutters[3];
+			currentFlutter = flutters[2];
+			currentFlutter.PlayNote(curNote + 2);
 		}
 
 		else if(SynthController.frequency > 0.5){
 			
-			currentFlutter = flutters[2];
+			currentFlutter = flutters[1];
+			currentFlutter.PlayNote(curNote + 2);
 		}
 
 		else if(SynthController.frequency > 0.33){
 			
-			currentFlutter = flutters[1];
-		}else{
 			currentFlutter = flutters[0];
+			currentFlutter.PlayNote(curNote + 2);
 		}
-
-		currentFlutter.PlayNote(curNote + 2);
+		
 		pads[lineType].PlayNote(curNote);
 
 		//preferably this doesn't double up with flying
-		keys[1].PlayNote(curNote, 3, Services.PlayerBehaviour.boostTimer);
+		//keys[1].PlayNote(curNote, 3, Services.PlayerBehaviour.boostTimer);
 		
-		int note = GetNote(Services.PlayerBehaviour.curPoint);
 	}
 
 	public void StopSplineChord(){
-		currentFlutter.Stop();
+		if(currentFlutter != null){
+			currentFlutter.Stop();
+		}
 		pads[lineType].Stop();
 	}
 	
 	public void StartTraversing(){
 		
-		noisePad.PlayNote(62, 1);
-		noisePad.PlayNote(66, 1);
+		noisePad.PlayNote(62);
+		noisePad.PlayNote(66);
+		if(currentFlutter != null){
+			currentFlutter.Mute(false);
+		}
 	}
 
 	public void StopTraversing(){
 		noisePad.Stop();
+        if(currentFlutter != null){
+			currentFlutter.Mute(true);
+		}
 	}
 
 	public void MovementSynth(){

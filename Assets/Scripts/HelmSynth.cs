@@ -11,11 +11,18 @@ public class HelmSynth : MonoBehaviour
     public HelmController patch;
 
    public void PlayNote(int note, float duration = 102, float velocity = 1){
+        note += octave * 12;
         if(duration > 100){
             patch.NoteOn(note, velocity);
         }else{
             patch.NoteOn(note, velocity, duration);
         }
+   }
+
+   public void Mute(bool b){
+
+       float val = b ? 0 : 1;
+       patch.SetParameterValue(Param.kVolume, val);
    }
 
    public void Stop(){
