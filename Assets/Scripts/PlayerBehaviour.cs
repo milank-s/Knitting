@@ -75,15 +75,13 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public delegate void StateChange();
 	public StateChange OnStartFlying;
-	public StateChange OnStartTraversing;
+	public StateChange OnExitPoint;
+	public StateChange OnEnterPoint;
 	public StateChange OnEnterSpline;
 	public StateChange OnExitSpline;
-	public StateChange OnLeaveAnyPoint;
-	public StateChange OnEnterAnyPoint;
 	public StateChange OnTraversing;
 	public StateChange OnFlying;
 	public StateChange OnStoppedFlying;
-	public StateChange OnStoppedTraversing;
 	[HideInInspector] public float progress, adjustedProgress,
 		accuracy,
 		flow = 0,
@@ -149,7 +147,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public TrailRenderer shortTrail;
 	public ParticleSystem sparks;
 	private LineRenderer l;
-	public MeshRenderer cursorRenderer;
+	public SpriteRenderer cursorRenderer;
 	public MeshRenderer renderer;
 	public Transform visualRoot;
 	public SpriteRenderer boostIndicator;
@@ -504,6 +502,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				//Code for placing player sprite on the line instead of the spline
 				//hiccups are being caused by double indices on points
 
+				//holy fuck you actually use this value for their position?
 				int curStep = curSpline.playerIndex;
 				int nextStep = curStep + (goingForward ? 1 : -1);
 				int upperBound = curSpline.line.points3.Count-1;
@@ -646,7 +645,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (TryLeavePoint()) // && !foundConnection)
 		{
-			//cursorRenderer.sprite = traverseSprite;
+			cursorRenderer.sprite = traverseSprite;
 			hasPath = true;
 
 			//I think this is bugging if the player enters a ghost point when their angle is > 
@@ -716,7 +715,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				{		
 					
 			 		foundConnection = true;
-					// cursorRenderer.sprite = traverseSprite;
+					cursorRenderer.sprite = traverseSprite;
 					Services.fx.ShowNextPoint(pointDest);
 
 					if(buttonUp){
@@ -739,7 +738,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 			else if (TryToFly())
 				{
-					// cursorRenderer.sprite = canFlySprite;
+					cursorRenderer.sprite = canFlySprite;
 					if (buttonWasPressed)
 					{
 						SwitchState(PlayerState.Flying);
@@ -1425,14 +1424,13 @@ public class PlayerBehaviour: MonoBehaviour {
 			Debug.Log("reversing player dir");
 		}
 
-		if (!joystickLocked)
-		{
-			CalculateMovementDistance(curSpeed * Time.deltaTime);
+		
+		CalculateMovementDistance(curSpeed * Time.deltaTime);
 			
 			//progress += goingForward ? finalSpeed : -finalSpeed;
 
-			curSpline.completion += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
-		}
+		curSpline.completion += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
+		
 		//set player position to a point along the curve
 
 		if (curPoint == curSpline.Selected) {
@@ -1693,15 +1691,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			progress = 1 - Mathf.Epsilon;
 
 		} else {
-			// if (timeOnPoint == 0)
-			// {
-			// 	progress = progressRemainder;
-			// }
-			// else
-			// {
-				// progress = 0 + Mathf.Epsilon;
-			// }
-
 			progress = 0 + Mathf.Epsilon;
 			goingForward = true;
 			s.SetSelectedPoint(curPoint);
@@ -1768,6 +1757,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 
 					forward = i == 1;
+
 					Point p = s.SplinePoints[nextIndex];
 
 					int indexDifference = nextIndex - curIndex;
@@ -1781,7 +1771,6 @@ public class PlayerBehaviour: MonoBehaviour {
 					bool canMoveBackward = (!goingForward && isGhostPoint) || !isGhostPoint || intersection; // || s.SplinePoints.IndexOf (curPoint) == s.SplinePoints.Count -1;
 					bool canMoveForward = (isGhostPoint && goingForward) || !isGhostPoint || intersection; // | s.SplinePoints.IndexOf (curPoint) == 0;
 					
-					
 					// indexDifference > 1 means we looped backwards
 					// indexDifference == -1 means we went backward one point
 
@@ -1794,7 +1783,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 					Vector3 startdir = Vector3.zero;
 
-					if (canMoveBackward && !forward && s.bidirectional) {
+					if (canMoveBackward && !forward) {
 						
 						//don't enter conveyor belts that will instantly push you back
 						//it's a little janky but better than re-entering the same point every frame
@@ -1848,10 +1837,11 @@ public class PlayerBehaviour: MonoBehaviour {
 			
 			if(actualAngle < 180){
 				// accuracy = (90 - actualAngle) / 90;
+				//what the fuck is all this shit
 				accuracy = 1;
 			}
 
-			if ((actualAngle <= StopAngleDiff || curPoint.pointType == PointTypes.ghost) && maybeNextSpline != null)
+			if ((actualAngle <= StopAngleDiff || curPoint.pointType == PointTypes.ghost))// && maybeNextSpline != null) //why the fuck does it matter if it is null
 			{
 				
 				splineDest = maybeNextSpline;
@@ -1874,13 +1864,14 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				// curSpline = splineDest;
 
-				goingForward = facingForward;
+				//why the hell would you want to change any of this here
+				// goingForward = facingForward;
 
 				if(facingForward){
-					progress = 0;
+					//progress = 0;
 					curDirection = splineDest.GetInitVelocity ();
 				}else{
-					progress = 1;
+					//progress = 1;
 					curDirection = splineDest.GetInitVelocity (pointDest, true);
 				}
 				
@@ -1888,7 +1879,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 
-			//cursorRenderer.sprite = brakeSprite;
+			cursorRenderer.sprite = brakeSprite;
 
 			return false;
 
@@ -2245,6 +2236,10 @@ public class PlayerBehaviour: MonoBehaviour {
 					enteredNewSpline = true;
 				}
 				
+				foreach (Spline s in pointDest._connectedSplines)
+				{
+					s.reactToPlayer = true;
+				}
 				
 				curSpline = splineDest;
 				SetPlayerAtStart (curSpline, pointDest);
@@ -2270,15 +2265,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if (curPoint.pointType != PointTypes.ghost)
 				{
-					if(OnStartTraversing != null){
-						OnStartTraversing.Invoke();
+					if(OnExitPoint != null){
+						OnExitPoint.Invoke();
 					}
 				}
-				
-				if(OnLeaveAnyPoint != null){
-					OnLeaveAnyPoint.Invoke();
-				}
-				
 				
 				break;
 
@@ -2346,24 +2336,24 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if (curPoint == null)
 				{
+					//this should never happen 
 
 				}
-				else if (curPoint != pointDest)
+
+				// foreach (Spline s in curPoint._connectedSplines)
+				// {
+				// 	s.reactToPlayer = false;
+				// }
+
+				lastPoint = curPoint;
+
+				foreach (Spline s in pointDest._connectedSplines)
 				{
+					s.SetSelectedPoint(pointDest);
+				}
+
+				if (curPoint != pointDest){
 					traversedPoints.Add(pointDest);
-
-					foreach (Spline s in curPoint._connectedSplines)
-					{
-						s.reactToPlayer = false;
-					}
-
-					lastPoint = curPoint;
-
-					foreach (Spline s in pointDest._connectedSplines)
-					{
-						s.reactToPlayer = true;
-						s.SetSelectedPoint(pointDest);
-					}
 				}
 
 				
@@ -2371,8 +2361,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				if(curPoint.pointType != PointTypes.ghost){
 					
-					if(OnStoppedTraversing != null){
-						OnStoppedTraversing.Invoke();
+					if(OnEnterPoint != null){
+						OnEnterPoint.Invoke();
 					}
 				
 					if (Services.main.hasGamepad)
@@ -2381,10 +2371,6 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 				
 				}
-					
-					if(OnEnterAnyPoint != null){
-						OnEnterAnyPoint.Invoke();
-					}
 			
 				
 				curPoint.OnPlayerEnterPoint();

@@ -4812,8 +4812,7 @@ GameObject:
   - component: {fileID: 355773163}
   - component: {fileID: 355773165}
   - component: {fileID: 9196452818753867255}
-  - component: {fileID: 1098564057083676151}
-  - component: {fileID: 355773166}
+  - component: {fileID: 5910087086619115845}
   m_Layer: 5
   m_Name: Cursor
   m_TagString: Untagged
@@ -4830,7 +4829,7 @@ Transform:
   m_GameObject: {fileID: 355773162}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -1}
-  m_LocalScale: {x: 0.1, y: 3, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 4000011164714548}
   m_RootOrder: 2
@@ -5042,16 +5041,8 @@ TrailRenderer:
   m_MinVertexDistance: 0.001
   m_Autodestruct: 0
   m_Emitting: 0
---- !u!33 &1098564057083676151
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 355773162}
-  m_Mesh: {fileID: 3252224991405807402, guid: ff3d8411f4f6ddc408fdc7a1121d992a, type: 3}
---- !u!23 &355773166
-MeshRenderer:
+--- !u!212 &5910087086619115845
+SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -5065,12 +5056,12 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
+  m_RayTracingMode: 0
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 59df02a78512d4336ab361732d8d46f4, type: 2}
+  - {fileID: 2100000, guid: cda45aa16959447cdb49c885489ead2e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5083,7 +5074,7 @@ MeshRenderer:
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
   m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
+  m_SelectedEditorRenderState: 0
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
@@ -5091,7 +5082,17 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
+  m_Sprite: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 0
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
 --- !u!1 &626871352
 GameObject:
   m_ObjectHideFlags: 0
@@ -10726,6 +10727,8 @@ MonoBehaviour:
   screenSpaceDir: {x: 0, y: 0}
   deltaDir: {x: 0, y: 0, z: 0}
   deltaAngle: 0
+  easedAccuracy: 0
+  easedDistortion: 0
   flyingSpeedThreshold: 2
   PointDrawDistance: 0.5
   creationCD: 3
@@ -10742,7 +10745,7 @@ MonoBehaviour:
   flyingTrail: {fileID: 1157106030}
   shortTrail: {fileID: 978176024}
   sparks: {fileID: 120499424}
-  cursorRenderer: {fileID: 355773166}
+  cursorRenderer: {fileID: 5910087086619115845}
   renderer: {fileID: 4982781735466340811}
   visualRoot: {fileID: 5922195835356299635}
   boostIndicator: {fileID: 869662897}
@@ -11214,13 +11217,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2431035487774752505}
-  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5922195835356299635}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1432903455039754218
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -11249,7 +11252,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 59df02a78512d4336ab361732d8d46f4, type: 2}
+  - {fileID: 2100000, guid: b141055d9a3574a46b34df73712f874f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -11296,13 +11299,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3857060059797673554}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_Children: []
   m_Father: {fileID: 5922195835356299635}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!212 &5899344833463273073
 SpriteRenderer:
   m_ObjectHideFlags: 0

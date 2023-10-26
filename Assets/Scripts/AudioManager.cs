@@ -7,6 +7,7 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
         
+    public SynthController helmAudio;
     public AudioSource audioRecordings;
     public AudioHelmClock clock;
     public AudioMixer SynthMaster;
@@ -28,15 +29,12 @@ public class AudioManager : MonoBehaviour
         Services.main.OnPlayerEnterPoint += EnterPoint;
         Services.main.OnLoadLevel += SoundSetup;
         Services.PlayerBehaviour.OnStartFlying += EnterFlying;
-        Services.PlayerBehaviour.OnStartTraversing += EnterTraversing;
+        Services.PlayerBehaviour.OnExitPoint += ExitPoint;
         Services.PlayerBehaviour.OnEnterSpline += EnterSpline;
         Services.PlayerBehaviour.OnExitSpline += ExitSpline;
         Services.PlayerBehaviour.OnStoppedFlying += ExitFlying;
         Services.PlayerBehaviour.OnTraversing += OnTraversing;
         Services.PlayerBehaviour.OnFlying += OnFlying;
-        Services.PlayerBehaviour.OnStoppedTraversing += ExitTraversing;
-        Services.PlayerBehaviour.OnEnterAnyPoint += EnterAnyPoint;
-        Services.PlayerBehaviour.OnLeaveAnyPoint += LeaveAnyPoint;
         Services.main.OnReset += Reset;
     }
     
@@ -57,43 +55,33 @@ public class AudioManager : MonoBehaviour
     public void EnterPoint(Point p){
         
         clock.pause = true;
-        SynthController.instance.PlayNoteOnPoint(p);
+        helmAudio.PlayNoteOnPoint(p);
+        helmAudio.StopTraversing();
     }
 
+     public void ExitPoint(){  
+        helmAudio.StartTraversing();
+        clock.pause = false;
+    }
+
+    //only happens if player switches splines
     public void EnterSpline(){    
-        SynthController.instance.PlaySplineChord();
+        helmAudio.PlaySplineChord();
     }
 
+    //happens if player switches splines or flies away
     public void ExitSpline(){
         
-        SynthController.instance.StopSplineChord();
+        helmAudio.StopSplineChord();
     }
 
     public void EnterFlying(){
         
-        SynthController.instance.StartFlying();
-    }
-
-    public void EnterTraversing(){  
-        SynthController.instance.StartTraversing();
-        clock.pause = false;
+        helmAudio.StartFlying();
     }
 
     public void ExitFlying(){
-        SynthController.instance.StopFlying();
-    }
-
-    public void ExitTraversing(){
-        SynthController.instance.StopTraversing();
-        clock.pause = true;
-    }
-
-    public void EnterAnyPoint(){
-
-    }
-
-    public void LeaveAnyPoint(){
-        
+        helmAudio.StopFlying();
     }
 
     public void OnTraversing(){

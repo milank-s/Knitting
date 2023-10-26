@@ -195,7 +195,6 @@ public class Spline : MonoBehaviour
 		isPlayerOn = false;
 		drawTimer = 0;
 		
-		
 		// if (curSound != null) {
 		// 	StopCoroutine (curSound);
 		// 	StartCoroutine (FadeNote (sound));
@@ -328,7 +327,7 @@ public class Spline : MonoBehaviour
 	public void SetSelectedPoint(Point p){
 		
 		Selected = p;
-		playerIndex = selectedIndex * curveFidelity;
+		playerIndex = selectedIndex * curveFidelity + (Services.PlayerBehaviour.goingForward ? 0 : curveFidelity);
 		selectedIndex = SplinePoints.IndexOf(p);
 	}
 
@@ -630,7 +629,7 @@ public class Spline : MonoBehaviour
 		magnitude = Mathf.Clamp01(distortion) * amplitude * Mathf.Clamp01(segmentDistance);
 		// magnitude += distortion;
 
-		if (isPlayerOn || reactToPlayer)
+		if (isPlayerOn)
 		{
 			playerIndex = GetPlayerLineSegment();
 		}
@@ -666,8 +665,9 @@ public class Spline : MonoBehaviour
 		}
 		
 		//Add movement Effects of player is on the spline
+		int indexDiff = 0;
 
-		int indexDiff;
+		if(isPlayerOn){
 
 		//Find the shortest distance to the player in case of loop
 		if (closed)
@@ -697,17 +697,14 @@ public class Spline : MonoBehaviour
 
 		//closeness to the player. 0 = one curve away
 		invertedDistance = 1f - Mathf.Clamp01(Mathf.Abs(distanceFromPlayer));
-
-		//float newFrequency = 1 + Mathf.Abs(Services.PlayerBehaviour.curSpeed);
+		}
 		
-		//no no no no non on o no nono ILLEGAL
 		Vector3 direction = pointVelocities[segmentIndex].normalized;
 
 		//this isn't going to fly in 3d.... cross product?
 		Vector3 distortionVector = new Vector3(-direction.y, direction.x, direction.z);
 	
 		//I want to lerp to 0 at the 0 and 1 values of the spline if it is not closed
-
 		float smooth = 1;
 
 		if(!closed){
@@ -722,14 +719,15 @@ public class Spline : MonoBehaviour
 
 		float noise = (Mathf.PerlinNoise((-Time.time * noiseSpeed) + (rollingDistance * frequency), 1.321738f) * 2f - 1f);
 		
-		
 		if (isPlayerOn)
 		{
 			v += distortionVector * noise * magnitude * Mathf.Clamp01(invertedDistance) * smooth;
 		}
 		else if(reactToPlayer)
 		{
-			v += distortionVector * noise * magnitude * Mathf.Clamp01(-indexDiff + 10);
+			//this smells like shit and I hate it
+			// v += distortionVector * noise * magnitude * Mathf.Clamp01(-indexDiff + 10);
+			v += distortionVector * noise * magnitude * Mathf.Lerp(curPoint.proximity, nextPoint.proximity, step);
 		}
 
 		float pointDistortion = Mathf.Lerp(curPoint.distortion, nextPoint.distortion, step);

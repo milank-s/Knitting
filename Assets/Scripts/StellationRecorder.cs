@@ -28,8 +28,8 @@ public class StellationRecorder : MonoBehaviour
         line.smoothColor = true;
 
         positions = new List<Vector3>();
-        Services.PlayerBehaviour.OnStartTraversing += StartRecording;
-        Services.PlayerBehaviour.OnStoppedTraversing += EnterPoint;
+        Services.PlayerBehaviour.OnExitPoint += StartRecording;
+        Services.PlayerBehaviour.OnEnterPoint += EnterPoint;
         Services.PlayerBehaviour.OnTraversing += RecordLine;
     }
 

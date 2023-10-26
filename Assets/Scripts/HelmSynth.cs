@@ -29,6 +29,10 @@ public class HelmSynth : MonoBehaviour
         patch.AllNotesOff();
    }
 
+    public void SetVolume(float f){
+        patch.SetParameterPercent(Param.kVolume, f);
+    }
+
    public void Modulate(){
 
     //vibrate note based on speed;

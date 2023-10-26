@@ -186,6 +186,8 @@ public class SynthController : MonoBehaviour
 		
 		noisePad.PlayNote(62);
 		noisePad.PlayNote(66);
+		pads[lineType].Mute(false);
+		
 		if(currentFlutter != null){
 			currentFlutter.Mute(false);
 		}
@@ -193,6 +195,8 @@ public class SynthController : MonoBehaviour
 
 	public void StopTraversing(){
 		noisePad.Stop();
+		pads[lineType].Mute(true);
+
         if(currentFlutter != null){
 			currentFlutter.Mute(true);
 		}
@@ -200,7 +204,9 @@ public class SynthController : MonoBehaviour
 
 	public void MovementSynth(){
 		
-		
+		if(currentFlutter != null){
+			currentFlutter.SetVolume(Services.PlayerBehaviour.normalizedAccuracy);
+		}
 		noisePad.patch.SetParameterPercent(Param.kVolume, Services.PlayerBehaviour.easedDistortion);
 		
 		//pitch bending

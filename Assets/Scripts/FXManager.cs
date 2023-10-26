@@ -77,7 +77,7 @@ public class FXManager : MonoBehaviour
       Services.PlayerBehaviour.OnStoppedFlying += BakeFlyingTrail;
       
 
-      Services.PlayerBehaviour.OnStartTraversing += Services.PlayerBehaviour.sparks.Play;
+      Services.PlayerBehaviour.OnExitPoint += Services.PlayerBehaviour.sparks.Play;
 
       //Services.PlayerBehaviour.OnStoppedTraversing += BakeTraversingParticles;
       Services.main.OnReset += Reset;
