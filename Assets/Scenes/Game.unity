@@ -209,6 +209,7 @@ MonoBehaviour:
   hasController: 0
   timeOffset: 0
   proximity: 0
+  note: 0
   color: {r: 0, g: 0, b: 0, a: 1}
   c: 0
   accretion: 0
@@ -540,13 +541,16 @@ MonoBehaviour:
   bidirectional: 1
   drawing: 0
   drawn: 0
+  hitEnd: 0
+  hitStart: 0
   distortion: 0
   SplinePoints:
   - {fileID: 1401403052}
   - {fileID: 1932829446}
   - {fileID: 374687426}
   - {fileID: 112475255}
-  Selected: {fileID: 0}
+  pointPositions: []
+  pointVelocities: []
   line:
     m_lineVertices: []
     m_lineUVs: []
@@ -641,7 +645,13 @@ MonoBehaviour:
   distance: 0
   segmentDistance: 0
   linearDirection: {x: 0, y: 0}
+  playerIndex: 0
   selectedIndex: 0
+  upperDrawIndex: 0
+  lowerDrawIndex: 0
+  upperPointIndex: 0
+  lowerPointIndex: 0
+  populatedPointPositions: 0
   lineMaterial: 0
   lineWidth: 1
 --- !u!4 &315089623
@@ -754,6 +764,7 @@ MonoBehaviour:
   hasController: 0
   timeOffset: 0
   proximity: 0
+  note: 0
   color: {r: 0, g: 0, b: 0, a: 1}
   c: 0
   accretion: 0
@@ -1098,7 +1109,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   state: 1
-  pointType: 0
+  pointType: 6
   _neighbours:
   - {fileID: 1932829446}
   _connectedSplines:
@@ -1117,6 +1128,7 @@ MonoBehaviour:
   hasController: 0
   timeOffset: 0
   proximity: 0
+  note: 0
   color: {r: 0, g: 0, b: 0, a: 1}
   c: 0
   accretion: 0
@@ -1409,6 +1421,7 @@ MonoBehaviour:
   hasController: 0
   timeOffset: 0
   proximity: 0
+  note: 0
   color: {r: 0, g: 0, b: 0, a: 1}
   c: 0
   accretion: 0

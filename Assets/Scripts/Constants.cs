@@ -70,7 +70,7 @@ public class Constants : MonoBehaviour {
 		}
 
 		//AXIS
-		// playerAxis.transform.eulerAngles = Vector3.Lerp(new Vector3(0, 0, 90), new Vector3(0, 0, 270), (playerVals.accuracy + 1f)/2f);
+		// playerAxis.transform.eulerAngles = Vector3.Lerp(new Vector3(0, 0, 90), new Vector3(0, 0, 270), (playerVals.signedAccuracy + 1f)/2f);
 		//ACCURACY METER
 		if(playerVals.state == PlayerState.Animating){
 			reset.enabled = true;
@@ -83,17 +83,17 @@ public class Constants : MonoBehaviour {
 			//cursorImage.color = Color.Lerp(cursorImage.color, Color.white, Time.deltaTime);
 			reset.enabled = false;
 
-			// accuracyReadout.text = Mathf.Abs (playerVals.accuracy).ToString("F1");
+			// accuracyReadout.text = Mathf.Abs (playerVals.signedAccuracy).ToString("F1");
 
-			// if ((playerVals.accuracy < 0.5f && playerVals.accuracy > -0.5f)) {
+			// if ((playerVals.signedAccuracy < 0.5f && playerVals.signedAccuracy > -0.5f)) {
 			// 	accuracyChar.text = "≠";
 			// 	flowChar.text = "-";
 			// } else if (playerVals.state == PlayerState.Switching) {
 			// 	flowChar.text = "-";
-			if ((playerVals.accuracy > 0 && playerVals.flow > 0) || (playerVals.accuracy < 0 && playerVals.flow < 0)) {
+			if ((playerVals.signedAccuracy > 0 && playerVals.flow > 0) || (playerVals.signedAccuracy < 0 && playerVals.flow < 0)) {
 				// accuracyChar.text = "≈";
 				// flowChar.text = "+";
-			}else if((playerVals.accuracy < 0 && playerVals.flow > 0) || (playerVals.accuracy > 0 && playerVals.flow < 0)){
+			}else if((playerVals.signedAccuracy < 0 && playerVals.flow > 0) || (playerVals.signedAccuracy > 0 && playerVals.flow < 0)){
 				// accuracyChar.text = "≠";
 				// flowChar.text = "-";
 			}

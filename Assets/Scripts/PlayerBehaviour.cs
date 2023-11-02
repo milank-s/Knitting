@@ -83,7 +83,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public StateChange OnFlying;
 	public StateChange OnStoppedFlying;
 	[HideInInspector] public float progress, adjustedProgress,
-		accuracy,
+		signedAccuracy,
 		flow = 0,
 		boost,
 		boostTimer,
@@ -105,7 +105,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	[HideInInspector]
 	public float deltaAngle;
 
-	public float normalizedAccuracy => (1 + accuracy)/2f;
 	public float potentialSpeed => flow + speed + boost;
 	public float easedAccuracy;
 	public float easedDistortion;
@@ -180,7 +179,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Awake(){
 		joystickLocked = true;
-		accuracy = 0;
 		pointDest = null;
 		traversedPoints = new List<Point> ();
 
@@ -331,7 +329,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 	public void Step()
 	{
-		
+		Debug.Log("Curspeed = " + curSpeed);
+
 		if(curDirection.sqrMagnitude > 0){
 			visualRoot.rotation = Quaternion.LookRotation(curDirection, CameraFollow.forward);
 		}
@@ -349,13 +348,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		//curspeed going to zero making movement asymptotes
 		
 		//set all your important floats bruh
-		easedAccuracy = Mathf.Clamp01(Mathf.Pow(Mathf.Clamp01(accuracy), accuracyCoefficient));
+		easedAccuracy = Mathf.Clamp01(Mathf.Pow(Mathf.Clamp01(signedAccuracy), accuracyCoefficient));
 		easedDistortion = Mathf.Lerp(easedDistortion, Mathf.Pow(1 - easedAccuracy, 2f) + Spline.shake, Time.deltaTime * 5);
-		
-		curSpeed = GetSpeed();
 
 		if(state == PlayerState.Traversing){
-			glitching = accuracy < 0 || joystickLocked;
+			glitching = signedAccuracy < 0 || joystickLocked;
 		}else if(state == PlayerState.Switching){
 			glitching = !canTraverse;
 		}else{
@@ -379,7 +376,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		Point.hitColorLerp = connectTime;
 
-
+		//UI boost visuals and button input
 		if (buttonDown)
 		{
 			boostIndicator.enabled = true;
@@ -402,29 +399,22 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		boostIndicator.transform.localScale = Vector3.Lerp(Vector3.one * 0.2f, Vector3.one , boostTimer);
-		buttonDownTimer -= Time.deltaTime;
 
-		float speedCoefficient;
+		//player sprite stretching
+
+		float speedScale;
 		if(state == PlayerState.Switching || state == PlayerState.Animating){
-			speedCoefficient = 0;
+			speedScale = 0;
 		}else if (state == PlayerState.Flying){
-			speedCoefficient = flyingSpeed;
+			speedScale = flyingSpeed;
 		}else{
 			//this math looks all kinds of fucked up
-			speedCoefficient = Mathf.Clamp01(Mathf.Pow(accuracy, 5) * curSpeed + 0.25f);
+			speedScale = Mathf.Clamp01(Mathf.Pow(signedAccuracy, 5) * curSpeed + 0.25f);
 		}
 
-		if (joystickLocked)
-		{
-			speedCoefficient = 0;
-		}
+		if (joystickLocked)	speedScale = 0;
 
-		renderer.transform.localScale = Vector3.Lerp(renderer.transform.localScale, new Vector3(Mathf.Clamp(1 - (speedCoefficient * 2),1, 2), 1, Mathf.Clamp(speedCoefficient, 1, 2)), Time.deltaTime * 10);
-
-//		if (connectTime <= 0 && PointManager._pointsHit.Count > 0) {
-//			PointManager.ResetPoints ();
-//			connectTime = 1;
-//		}
+		renderer.transform.localScale = Vector3.Lerp(renderer.transform.localScale, new Vector3(Mathf.Clamp(1 - (speedScale * 2),1, 2), 1, Mathf.Clamp(speedScale, 1, 2)), Time.deltaTime * 10);
 
 		Effects ();
 
@@ -437,75 +427,45 @@ public class PlayerBehaviour: MonoBehaviour {
 			return;
 		}
 
+		buttonDownTimer -= Time.deltaTime;
+		connectTime -= Time.deltaTime * connectTimeCoefficient;
 		boost = Mathf.Lerp(boost, 0, Time.deltaTime * 2f);
 		
-		if (boost < 0)
-		{
-			boost = 0;
-		}
+		if (boost < 0)boost = 0;
 
 		if (state == PlayerState.Traversing) {
-			if(curSpline != null){
-				//accuracy = GetAccuracy(progress);
-				float maxAcc = -100;
-				// for(int i = 0; i < 1; i++){
-				// 	float sign = goingForward ? 1 : -1;
-				// 	float curAcc = GetAccuracy(progress + (float)i * sign * 0.05f);
-				// 	if(curAcc > maxAcc){
-				// 		maxAcc = curAcc;
-				// 	}
-				// }
+			//accuracy = GetAccuracy(progress);
+			float maxAcc = -100;
+			// for(int i = 0; i < 1; i++){
+			// 	float sign = goingForward ? 1 : -1;
+			// 	float curAcc = GetAccuracy(progress + (float)i * sign * 0.05f);
+			// 	if(curAcc > maxAcc){
+			// 		maxAcc = curAcc;
+			// 	}
+			// }
+	
+			signedAccuracy = GetAccuracy(progress);
 
-				maxAcc = GetAccuracy(progress);
-
-				//Code for placing player sprite on the line instead of the spline
-				//hiccups are being caused by double indices on points
-
-				//holy fuck you actually use this value for their position?
-				int curStep = curSpline.playerIndex;
-				int nextStep = curStep + (goingForward ? 1 : -1);
-				int upperBound = curSpline.line.points3.Count-1;
-        		Vector3 dest1 = curSpline.line.points3[Mathf.Clamp(curStep, 0, upperBound)];
-        		Vector3 dest2 = curSpline.line.points3[Mathf.Clamp(nextStep, 0, upperBound)];
-
-       		 	float p = Spline.curveFidelity * progress;
-        		float step = Mathf.Floor(p);
-        		float diff = goingForward ?  Mathf.Abs(p - step) : 1-Mathf.Abs(p - step);
-
-				accuracy = maxAcc;
-
-				transform.position = curSpline.GetPointForPlayer(progress);
-
-				Vector3 dest = Vector3.Lerp(dest1, dest2, diff);
-				visualRoot.position = Vector3.Lerp(transform.position, dest, easedDistortion * 2);
-
-
-				//theres really no reason for this to affect logic but it seems to
-				//Vector3 to = dest -pos;
-				//Vector3 cross = Vector3.Cross(curDirection, Services.mainCam.transform.forward);
-        		//visualRoot.localPosition = visualRoot.TransformDirection(cross).normalized * Mathf.Lerp(0, to.magnitude, curSpline.distortion);
-
-				if(OnTraversing != null){
-					OnTraversing.Invoke();
-				}
-				
+			if(OnTraversing != null){
+				OnTraversing.Invoke();
 			}
 			
-			PlayerMovement ();
+			CalculateMoveSpeed ();
+			curSpeed = GetSpeed();
+
+			UpdateProgress(curSpeed * Time.deltaTime);
+			UpdatePositionOnSpline();
 			CheckProgress ();
 
 		}
 		//else if? should happen all on same frame?
-		if(state == PlayerState.Switching && curPoint != null)
+		if(state == PlayerState.Switching)
 		{
 			transform.position = curPoint.Pos;
-			
-			//why do you need to do this at all?
-
 			visualRoot.position = Vector3.Lerp(visualRoot.position,pos,Time.deltaTime * 10f);
 			
 			//gravity = 0;
-			//this could be fucking with
+			
 			PlayerOnPoint();
 		}
 
@@ -525,6 +485,39 @@ public class PlayerBehaviour: MonoBehaviour {
 		buttonUp = false;
 	}
 
+	void UpdatePositionOnSpline(){
+		
+		curSpline.SetPlayerLineSegment();
+
+		//Code for placing player sprite on the line instead of the spline
+		//hiccups are being caused by double indices on points
+
+		//holy fuck you actually use this value for their position?
+		int curStep = curSpline.playerIndex;
+		int nextStep = curStep + (goingForward ? 1 : -1);
+		int upperBound = curSpline.line.points3.Count-1;
+		Vector3 dest1 = curSpline.line.points3[Mathf.Clamp(curStep, 0, upperBound)];
+		Vector3 dest2 = curSpline.line.points3[Mathf.Clamp(nextStep, 0, upperBound)];
+
+		float p = Spline.curveFidelity * progress;
+		float step = Mathf.Floor(p);
+		float diff = goingForward ?  Mathf.Abs(p - step) : 1-Mathf.Abs(p - step);
+
+		transform.position = curSpline.GetPointForPlayer(progress);
+		Vector3 dest = Vector3.Lerp(dest1, dest2, diff);
+		visualRoot.position = Vector3.Lerp(transform.position, dest, easedDistortion * 2);
+
+		curSpline.completion += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
+
+		if (goingForward) {
+			curPoint.proximity = 1 - progress;
+			pointDest.proximity = progress;
+
+		} else {
+			curPoint.proximity = progress;
+			pointDest.proximity = 1 - progress;
+		}
+	}
 	public float GetSpeed()
 	{
 		
@@ -536,7 +529,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(curSpline.speed > 0 && goingForward){
 				return Mathf.Clamp(flow + boost, 0, maxSpeed);
 			}else{
-				return flow * cursorDir.magnitude * easedAccuracy + boost;
+				return flow * easedAccuracy + boost; //* cursorDir.magnitude;
 			}
 		}
 		if(state == PlayerState.Switching){
@@ -1022,18 +1015,12 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	}
 
-	void PlayerMovement(){
-
-		connectTime -= Time.deltaTime * connectTimeCoefficient;
-
-		if (curSpeed < flyingSpeedThreshold && Services.fx.flyingParticles.isPlaying)
-		{
-			Services.fx.flyingParticles.Pause();
-		}
+	void CalculateMoveSpeed(){
 
 		float splineSpeed = curSpline.speed;
-		float speedGain = (easedAccuracy - 0.66f) * 3f;
+		float speedGain = easedAccuracy * 2 - 1;
 		
+
 		// float gravityCoefficient = Mathf.Clamp01(-curDirection.y);
 		// float gravityPull = -curDirection.y - curDirection.z;
 		
@@ -1042,53 +1029,36 @@ public class PlayerBehaviour: MonoBehaviour {
 		if(onBelt){
 			if(goingForward){
 			
-			speedGain = Mathf.Clamp(speedGain, 0, maxSpeed);
-			if(flow < splineSpeed)flow = Mathf.Lerp(flow, splineSpeed, 10);
-			
+				speedGain = Mathf.Clamp(speedGain, 0, maxSpeed);
+
+				if(flow < splineSpeed){
+					flow = Mathf.Lerp(flow, splineSpeed, 10);
+				}
+				
 			}else{
-				flow -= splineSpeed * Time.deltaTime * 3;
+				speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
+				flow -= splineSpeed * Time.deltaTime * 3;		
 			}
 		}else{
-			speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);;
+			// speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
 		}
 		
 		flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);// * gravityCoefficient;
-		
-		
-
-		flow = Mathf.Clamp(flow, -maxSpeed, maxSpeed);
+		flow = Mathf.Clamp(flow, 0, maxSpeed);
 
 		//flow -= Mathf.Clamp01(-gravityPull) * Time.deltaTime;
 
-		if(flow + boost < 0 && onBelt){
+		if(onBelt && !goingForward && curSpeed <= Mathf.Epsilon){
 			//ok they're being pushed back
 			ReverseDirection();
 		}
+	}
 
-		
-		CalculateMovementDistance(curSpeed * Time.deltaTime);
-			
-			//progress += goingForward ? finalSpeed : -finalSpeed;
-
-		curSpline.completion += (curSpeed * Time.deltaTime) / curSpline.segmentDistance;
-		
-		//what the actual fuck is this?
-		//clearly you couldn't just write goingforward because the curpoint is not selected
-		//in case of looping?
-
-		if (goingForward) {
-			curPoint.proximity = 1 - progress;
-			pointDest.proximity = progress;
-
-		} else {
-			curPoint.proximity = progress;
-			pointDest.proximity = 1 - progress;
-		}
-
+	void SetGamepadRumble(){
 		if (Services.main.hasGamepad && state == PlayerState.Traversing)
 		{
-			float hi = Mathf.Pow(Mathf.Clamp01(-accuracy + 1), 3) * curSpeed;
-			float low = Mathf.Clamp01(-accuracy) * flow + Mathf.Clamp01(hi - 1);
+			float hi = Mathf.Pow(Mathf.Clamp01(-signedAccuracy + 1), 3) * curSpeed;
+			float low = Mathf.Clamp01(-signedAccuracy) * flow + Mathf.Clamp01(hi - 1);
 
 			if (Services.main.useVibration)
 			{
@@ -1103,10 +1073,11 @@ public class PlayerBehaviour: MonoBehaviour {
 	void ReverseDirection(){
 
 		goingForward = !goingForward;
-		flow = 0;
 		Point p = pointDest;
 		pointDest = curPoint;
 		curPoint = p;	
+
+		if(pointDest == curPoint) Debug.Log("illegal");
 			
 		// int indexdiff = curSpline.SplinePoints.IndexOf (pointDest) - curSpline.SplinePoints.IndexOf (curPoint);
 
@@ -1118,11 +1089,13 @@ public class PlayerBehaviour: MonoBehaviour {
 		// }
 	}
 
-	void CalculateMovementDistance(float distanceToTravel){
+	void UpdateProgress(float distanceToTravel){
 		
 		int curSegment = goingForward ? (int)Mathf.Ceil((float)Spline.curveFidelity * progress) : (int)Mathf.Floor((float)Spline.curveFidelity * progress);
+		
+		if(curSegment == 0 && goingForward) Debug.Log("trying to go 0 steps forward won't work");
 
-		Vector3 curPos =pos;
+		Vector3 curPos = pos;
 		float rollingDistance = 0;
 		float prevStep = progress;
 
@@ -1138,16 +1111,15 @@ public class PlayerBehaviour: MonoBehaviour {
 				curPos = pos;
 				
 				float spillover = rollingDistance - distanceToTravel;
-
+				
 				if(spillover > 0){
-					
 					//set progress to current position along the line, 
 					//minus the extra distance as a fraction of the distance travelled this iteration
 					//scaled to the difference of the positions
-					progress = step - (spillover/diff) * (step - prevStep);
-					adjustedProgress = progress;
 
-					if(progress > 1 || progress < 0) Debug.Log(progress);
+					float fraction = (spillover/diff) * (step - prevStep);
+					progress = step - fraction;
+					adjustedProgress = progress;
 
 					return;
 				}else{
@@ -1175,11 +1147,10 @@ public class PlayerBehaviour: MonoBehaviour {
 					//set progress to current position along the line, 
 					//plus the extra distance as a fraction of the distance travelled this iteration
 					//scaled to the difference of the positions
-					progress = step + (spillover/diff) * (prevStep - step);
+					float fraction = (spillover/diff) * (step - prevStep);
+					progress = step + fraction;
 					adjustedProgress = 1-progress;
 					
-					if(progress > 1 || progress < 0) Debug.Log(progress);
-
 					return;
 				}else{
 					prevStep = step;
@@ -1361,7 +1332,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(actualAngle < 180){
 				// accuracy = (90 - actualAngle) / 90;
 				//what the fuck is all this shit
-				accuracy = 1;
+				signedAccuracy = 1;
 			}
 
 			if ((actualAngle <= StopAngleDiff || isGhostPoint))// && maybeNextSpline != null) //why the fuck does it matter if it is null

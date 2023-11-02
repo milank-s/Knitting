@@ -631,11 +631,6 @@ public class Spline : MonoBehaviour
 		distortion = Services.PlayerBehaviour.easedDistortion - shake;
 		magnitude = Mathf.Clamp01(distortion) * amplitude * Mathf.Clamp01(segmentDistance);
 		// magnitude += distortion;
-
-		if (isPlayerOn)
-		{
-			playerIndex = GetPlayerLineSegment();
-		}
 	}
 
 	public void  DrawGizmos(){	
@@ -813,10 +808,9 @@ public class Spline : MonoBehaviour
 		return (pointIndex * curveFidelity) + (int)((float)curveFidelity * (float)progress);
 	}
 
-	public int GetPlayerLineSegment ()
+	public void SetPlayerLineSegment ()
 	{
-		
-		return (selectedIndex * curveFidelity) + (int)Mathf.Floor((float)curveFidelity * (float)Services.PlayerBehaviour.progress);
+		playerIndex = (selectedIndex * curveFidelity) + (int)Mathf.Floor((float)curveFidelity * (float)Services.PlayerBehaviour.progress);
 	}
 
 	public Vector3 GetPointAtIndex (int i, float t)
