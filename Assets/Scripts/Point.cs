@@ -399,6 +399,16 @@ public class Point : MonoBehaviour
 		return _connectedSplines.Count;
 	}
 
+	public int numActiveNeighbours(){
+		int i = 0;
+		foreach(Spline s in _connectedSplines){
+			if(s.state == Spline.SplineState.on){
+				i++;
+			}
+		}
+		return i;
+	}
+
 	public void RemoveSpline(Spline s){
 		_connectedSplines.Remove (s);
 	}

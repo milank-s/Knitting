@@ -1236,7 +1236,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				int curIndex = s.SplinePoints.IndexOf(curPoint);
 				bool endPoint = curIndex == 0 || curIndex == s.SplinePoints.Count-1;
-				bool intersection = curPoint.NeighbourCount() > 1;
+				bool intersection = curPoint.numActiveNeighbours() > 1;
 
 				for(int i = -1; i < 2; i+=2){
 
@@ -1258,13 +1258,11 @@ public class PlayerBehaviour: MonoBehaviour {
 					Point p = s.SplinePoints[nextIndex];
 
 					int indexDifference = nextIndex - curIndex;
-					bool looping = nextIndex > 1 || nextIndex < -1;
 					bool diffSpline = s != curSpline;
 					bool reversing = goingForward != forward;
-					bool canReverseOnSameSpline = !reversing || reversing && (endPoint && !s.closed && !intersection);
+					bool canReverse = (endPoint && !s.closed && !intersection); //only double back if its a leaf
 					
-					bool canMoveBackward = (!goingForward && isGhostPoint) || canReverseOnSameSpline || diffSpline; // || s.SplinePoints.IndexOf (curPoint) == s.SplinePoints.Count -1;
-					bool canMoveForward = (isGhostPoint && goingForward) || canReverseOnSameSpline || diffSpline; // | s.SplinePoints.IndexOf (curPoint) == 0;
+					bool canMove = !reversing || diffSpline || canReverse; // || s.SplinePoints.IndexOf (curPoint) == s.SplinePoints.Count -1;
 					
 					// indexDifference > 1 means we looped backwards
 					// indexDifference == -1 means we went backward one point
@@ -1278,24 +1276,26 @@ public class PlayerBehaviour: MonoBehaviour {
 
 					Vector3 startdir = Vector3.zero;
 
-					if (canMoveBackward && !forward) {
-						
-						//don't enter conveyor belts that will instantly push you back
-						//it's a little janky but better than re-entering the same point every frame
-						if(!isGhostPoint && curSpeed < s.speed) continue;
-						
-						curAngle = s.CompareAngleAtPoint (cursorDir, p, out startdir, true);	
-						
-					} else if(canMoveForward && forward){
+					if(canMove){
+						if (!forward) {
+							
+							//don't enter conveyor belts that will instantly push you back
+							//it's a little janky but better than re-entering the same point every frame
+							if(!isGhostPoint && curSpeed < s.speed) continue;
+							
+							curAngle = s.CompareAngleAtPoint (cursorDir, p, out startdir, true);	
+							
+						} else if(forward){
 
-						curAngle = s.CompareAngleAtPoint (cursorDir, curPoint, out startdir);
-
+							curAngle = s.CompareAngleAtPoint (cursorDir, curPoint, out startdir);
+						}
 					}else{
 
 						//ghost point intersections dont let you change direction
 						//leave and continue
 						continue;
 					}
+					
 					
 					if(Mathf.Abs(Vector3.Dot(startdir.normalized, Services.mainCam.transform.forward)) > 0.75f){
 						tangent = true;
