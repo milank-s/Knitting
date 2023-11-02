@@ -329,7 +329,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 	public void Step()
 	{
-		Debug.Log("Curspeed = " + curSpeed);
 
 		if(curDirection.sqrMagnitude > 0){
 			visualRoot.rotation = Quaternion.LookRotation(curDirection, CameraFollow.forward);
@@ -1030,14 +1029,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(goingForward){
 			
 				speedGain = Mathf.Clamp(speedGain, 0, maxSpeed);
-
-				if(flow < splineSpeed){
-					flow = Mathf.Lerp(flow, splineSpeed, 10);
-				}
+				boost = splineSpeed;	
 				
 			}else{
 				speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
 				flow -= splineSpeed * Time.deltaTime * 3;		
+				boost -= splineSpeed * Time.deltaTime * 3;
 			}
 		}else{
 			// speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
@@ -1147,7 +1144,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					//set progress to current position along the line, 
 					//plus the extra distance as a fraction of the distance travelled this iteration
 					//scaled to the difference of the positions
-					float fraction = (spillover/diff) * (step - prevStep);
+					float fraction = (spillover/diff) * (prevStep-step);
 					progress = step + fraction;
 					adjustedProgress = 1-progress;
 					
@@ -1179,11 +1176,13 @@ public class PlayerBehaviour: MonoBehaviour {
 		int indexdiff = s.SplinePoints.IndexOf (p2) - s.SplinePoints.IndexOf (curPoint);
 
 		if (indexdiff == -1 || indexdiff > 1) {
+			curDirection = s.GetInitVelocity(p2, true);
 			s.SetSelectedPoint(p2);
 			goingForward = false;
 			progress = 1 - Mathf.Epsilon;
 
 		} else {
+			curDirection = s.GetInitVelocity(p2);
 			progress = 0 + Mathf.Epsilon;
 			goingForward = true;
 			s.SetSelectedPoint(curPoint);
@@ -1236,10 +1235,13 @@ public class PlayerBehaviour: MonoBehaviour {
 					
 				
 				int curIndex = s.SplinePoints.IndexOf(curPoint);
+				bool endPoint = curIndex == 0 || curIndex == s.SplinePoints.Count-1;
+				bool intersection = curPoint.NeighbourCount() > 1;
 
 				for(int i = -1; i < 2; i+=2){
 
 					int nextIndex = curIndex + i;
+					
 					
 					if(nextIndex < 0){
 						if(!s.closed || s.SplinePoints.Count < 2) continue;
@@ -1256,13 +1258,13 @@ public class PlayerBehaviour: MonoBehaviour {
 					Point p = s.SplinePoints[nextIndex];
 
 					int indexDifference = nextIndex - curIndex;
+					bool looping = nextIndex > 1 || nextIndex < -1;
+					bool diffSpline = s != curSpline;
+					bool reversing = goingForward != forward;
+					bool canReverseOnSameSpline = !reversing || reversing && (endPoint && !s.closed && !intersection);
 					
-					//need to check that we're not actually at the start of a new spline thats just facing the other direction
-
-					bool intersection = s != curSpline;
-
-					bool canMoveBackward = (!goingForward && isGhostPoint) || !isGhostPoint || intersection; // || s.SplinePoints.IndexOf (curPoint) == s.SplinePoints.Count -1;
-					bool canMoveForward = (isGhostPoint && goingForward) || !isGhostPoint || intersection; // | s.SplinePoints.IndexOf (curPoint) == 0;
+					bool canMoveBackward = (!goingForward && isGhostPoint) || canReverseOnSameSpline || diffSpline; // || s.SplinePoints.IndexOf (curPoint) == s.SplinePoints.Count -1;
+					bool canMoveForward = (isGhostPoint && goingForward) || canReverseOnSameSpline || diffSpline; // | s.SplinePoints.IndexOf (curPoint) == 0;
 					
 					// indexDifference > 1 means we looped backwards
 					// indexDifference == -1 means we went backward one point
