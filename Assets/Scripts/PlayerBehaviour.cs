@@ -7,16 +7,6 @@ using UnityEngine.InputSystem;
 
 public enum PlayerState{Traversing, Switching, Flying, Animating};
 
-//###################################################
-//###################################################
-
-//						TO DO
-
-
-//###################################################
-//###################################################
-
-
 public class PlayerBehaviour: MonoBehaviour {
 
 	public PlayerState state;
@@ -36,7 +26,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float acceleration;
 	public AnimationCurve accelerationCurve;
 	public float decay;
-
 	public float maxSpeed = 10;
 	public float flyingSpeedDecay = 1;
 	public float accuracyCoefficient;
@@ -237,8 +226,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		//CameraFollow.instance.WarpToPosition(curPoint.Pos);
 
 		ResetFX();
-		
-
 	}
 
 	public void Reset()
@@ -312,19 +299,19 @@ public class PlayerBehaviour: MonoBehaviour {
 			Gizmos.color = Color.green;
 			Gizmos.DrawCube(pointDest.Pos, Vector3.one * 0.1f);
 			
-			if(curPoint == curSpline.SplinePoints[curSpline.selectedIndex]){
-				if(goingForward){
-					Debug.Log("going forward, curpoint = selected");
-				}else{
-					Debug.Log("going backward, curpoint = selected");
-				}
-			}else{
-				if(goingForward){
-					Debug.Log("going forward, curpoint X selected");
-				}else{
-					Debug.Log("going backward, curpoint X selected");
-				}
-			}
+			// if(curPoint == curSpline.SplinePoints[curSpline.selectedIndex]){
+			// 	if(goingForward){
+			// 		Debug.Log("going forward, curpoint = selected");
+			// 	}else{
+			// 		Debug.Log("going backward, curpoint = selected");
+			// 	}
+			// }else{
+			// 	if(goingForward){
+			// 		Debug.Log("going forward, curpoint X selected");
+			// 	}else{
+			// 		Debug.Log("going backward, curpoint X selected");
+			// 	}
+			// }
 		}
 	}
 	public void Step()
@@ -429,8 +416,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		buttonDownTimer -= Time.deltaTime;
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
 		boost = Mathf.Lerp(boost, 0, Time.deltaTime * 2f);
-		
-		if (boost < 0)boost = 0;
+		boost = Mathf.Clamp(boost, 0, maxSpeed);
 
 		if (state == PlayerState.Traversing) {
 			//accuracy = GetAccuracy(progress);
@@ -528,7 +514,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(curSpline.speed > 0 && goingForward){
 				return Mathf.Clamp(flow + boost, 0, maxSpeed);
 			}else{
-				return flow * easedAccuracy + boost; //* cursorDir.magnitude;
+				return flow + boost; //* easedAccuracy + boost; //* cursorDir.magnitude;
 			}
 		}
 		if(state == PlayerState.Switching){
@@ -602,6 +588,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			cursorRenderer.sprite = traverseSprite;
 			hasPath = true;
 
+		
 			//I think this is bugging if the player enters a ghost point when their angle is > 
 			//that necessary to progress
 			
@@ -889,7 +876,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		decelerationTimer = Mathf.Lerp(decelerationTimer, 0, Time.deltaTime * 2);
 		timeOnPoint += Time.deltaTime;
 
-		if(buttonDown && !freeCursor && (pointDest != null || curPoint.pointType == PointTypes.fly)){
+		if(buttonDown && !freeCursor && (pointDest != null || curPoint.pointType == PointTypes.fly && state != PlayerState.Flying)){
 			boostTimer += Time.deltaTime / stopTimer;
 			boostIndicator.enabled = true;
 		}else{
@@ -1019,7 +1006,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		float splineSpeed = curSpline.speed;
 		float speedGain = easedAccuracy * 2 - 1;
 		
-
 		// float gravityCoefficient = Mathf.Clamp01(-curDirection.y);
 		// float gravityPull = -curDirection.y - curDirection.z;
 		
@@ -1028,19 +1014,26 @@ public class PlayerBehaviour: MonoBehaviour {
 		if(onBelt){
 			if(goingForward){
 			
-				speedGain = Mathf.Clamp(speedGain, 0, maxSpeed);
-				boost = splineSpeed;	
+				speedGain = 0;
+				if(flow < splineSpeed){
+					flow = splineSpeed;
+				}	
 				
 			}else{
 				speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
-				flow -= splineSpeed * Time.deltaTime * 3;		
-				boost -= splineSpeed * Time.deltaTime * 3;
+				flow -= splineSpeed * Time.deltaTime;		
+				boost -= splineSpeed * Time.deltaTime;
 			}
 		}else{
 			// speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
 		}
 		
-		flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);// * gravityCoefficient;
+		if(speedGain >= 0){
+			flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);// * gravityCoefficient;
+		}else{
+			flow += speedGain * decay * Time.deltaTime;
+		}
+
 		flow = Mathf.Clamp(flow, 0, maxSpeed);
 
 		//flow -= Mathf.Clamp01(-gravityPull) * Time.deltaTime;
@@ -1162,7 +1155,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void CheckProgress(){
 
-		if (progress >= 1 || progress <= 0) {
+		if ((progress >= 1 && goingForward) || (progress <= 0 && !goingForward)) {
 
 			progressRemainder = progress;
 			curPoint.proximity = 0;
@@ -1346,7 +1339,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				// curSpline = splineDest;
 
 				//why the hell would you want to change any of this here
-				// goingForward = facingForward;
+				goingForward = facingForward;
 
 				if(facingForward){
 					//progress = 0;
@@ -1545,7 +1538,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					if (buttonWasPressed)
 					{
 						buttonDownTimer = 0;
-						boost += Point.boostAmount + Services.PlayerBehaviour.boostTimer;
+						boost += Point.boostAmount * Services.PlayerBehaviour.boostTimer;
 						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
 						Services.fx.SpawnCircle(curPoint.transform);
 						Services.fx.EmitRadialBurst(10,boostTimer + 1, curPoint.transform);
@@ -1611,6 +1604,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				curSpline = splineDest;
 				SetPlayerAtStart (curSpline, pointDest);
 				curSpline.CalculateDistance();
+				curSpline.isPlayerOn = true;
 
 				if(enteredNewSpline) {
 					splineDest.OnSplineEnter();
@@ -1618,11 +1612,6 @@ public class PlayerBehaviour: MonoBehaviour {
 						OnEnterSpline.Invoke();
 					}
 				}
-
-				//I dont think you fully understand if selected should always = curpoint
-				//or just the point index floor on the players current segment
-
-				// Debug.Log("curspline dist is " + curSpline.segmentDistance);
 
 				if (curPoint.pointType != PointTypes.ghost)
 				{

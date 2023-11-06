@@ -89,10 +89,9 @@ public class StellationController : MonoBehaviour {
 	[Header("Camera")]
 	
 	public bool setCameraPos = false;
-	public bool fixedCam = false;
-	public int desiredFOV = 30;
-    public bool lockX = false;
-	public bool lockY = false;
+	public int desiredFOV = 60;
+    public bool lockX = true;
+	public bool lockY = true;
 	public bool lockZ = false;
 	public Vector3 cameraPos = Vector3.zero;
 

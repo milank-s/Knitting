@@ -321,6 +321,10 @@ public class Spline : MonoBehaviour
 		completion = 0;
 		drawing = false;
 		drawn = false;
+		
+		hitEnd = false;
+		hitStart = false;
+
 		populatedPointPositions = false;
 		Selected = StartPoint;
 	}
@@ -1134,6 +1138,7 @@ public class Spline : MonoBehaviour
 		hitEnd = false;
 		hitStart = false;
 		drawn = false;
+		drawing = false;
 
 		line.points3 = new System.Collections.Generic.List<Vector3>(pointCount);	
 	}
