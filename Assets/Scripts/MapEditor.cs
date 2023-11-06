@@ -1752,8 +1752,8 @@ void DragCamera()
         }
 
             
-        biasSlider.value = activePoint.bias;
-        tensionSlider.value = activePoint.tension;
+        biasSlider.SetValueWithoutNotify(activePoint.bias);
+        tensionSlider.SetValueWithoutNotify(activePoint.tension);
         biasSliderVal.ChangeValue(activePoint.bias);
         continuitySliderVal.ChangeValue(activePoint.continuity);
         tensionSliderVal.ChangeValue(activePoint.tension);

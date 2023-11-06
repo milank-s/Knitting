@@ -1014,7 +1014,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		if(onBelt){
 			if(goingForward){
 			
+				easedDistortion = 0;
+				easedAccuracy = 1;
+
 				speedGain = 0;
+				
 				if(flow < splineSpeed){
 					flow = splineSpeed;
 				}	
