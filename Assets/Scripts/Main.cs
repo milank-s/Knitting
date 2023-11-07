@@ -426,6 +426,7 @@
 			Services.Player.SetActive(true);
 			Services.PlayerBehaviour.Initialize();
 			EnterPlayMode();
+			
 		}
 
 		
@@ -439,7 +440,7 @@
 		Services.fx.Fade(true , 1f);
 		SceneController.curLevel = 0;
 		
-		EnterPlayMode();
+		// EnterPlayMode();
 
 		Services.menu.Show(false);
 		SceneController.instance.LoadLevel();
@@ -447,6 +448,26 @@
 
 	public void EnterPlayMode()
 	{
+		//I guess this is called by all paths where a level is loaded?
+		//we can flash the stellation title here
+		//but I also want to flash it between levels
+
+		//we want to yield return until the title is done showing
+
+		StartCoroutine(EnterLevelRoutine());
+
+		// playerInput.SwitchCurrentActionMap("Player");
+		// Cursor.lockState = CursorLockMode.Locked;
+		// state = GameState.playing;
+	}
+
+	public IEnumerator EnterLevelRoutine(){
+		Services.fx.title.text = activeStellation.title;
+		
+		yield return new WaitForSeconds(1);
+
+		Services.fx.title.text = "";
+
 		playerInput.SwitchCurrentActionMap("Player");
 		Cursor.lockState = CursorLockMode.Locked;
 		state = GameState.playing;

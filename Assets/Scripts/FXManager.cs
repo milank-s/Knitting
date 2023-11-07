@@ -21,7 +21,8 @@ public class FXManager : MonoBehaviour
     public MeshFilter flyingParticleMesh, flyingParticleTrailMesh, flyingTrailMesh, playerTrailMesh, brakeParticleMesh;
     public GameObject MeshPrefab;
     public Text readout;
-    public Text word;
+    public Text title;
+    public Text subtitle;
     public ParticleSystem[] particlePrefabs;
     public GameObject[] spawnableSprites;
     public List<GameObject> spawnedSprites;
@@ -91,11 +92,11 @@ public class FXManager : MonoBehaviour
 		{
 			if (!fadeIn)
 			{
-				word.color = Color.Lerp(Color.white, Color.clear, t);
+				title.color = Color.Lerp(Color.white, Color.clear, t);
 			}
 			else
 			{
-				word.color = Color.Lerp(Color.white, Color.clear, 1-t);
+				title.color = Color.Lerp(Color.white, Color.clear, 1-t);
 			}
 
 			t += Time.deltaTime * 2;

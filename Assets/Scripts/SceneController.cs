@@ -240,7 +240,7 @@ public class SceneController : MonoBehaviour
 
         //stopgap stuff for when I want to test the level without going through the menu;
         if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
-            LoadLevel();
+           LoadLevel();
         }else{
            FinishLevelSet();
         }

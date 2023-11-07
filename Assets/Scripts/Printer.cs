@@ -13,6 +13,7 @@ public class Printer : MonoBehaviour
         Services.PlayerBehaviour.OnTraversing += TrySpawnWord;
         Services.main.OnReset += Reset;
     }
+    
     public void SpawnWord(){
         Point p = Services.PlayerBehaviour.pointDest;
         string word = p.controller.GetWord();

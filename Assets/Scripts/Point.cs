@@ -620,17 +620,6 @@ public class Point : MonoBehaviour
 			case PointTypes.end:
 				break;
 		}
-
-	
-		
-		/*
-			if(curPoint.IsOffCooldown()){
-			// flow += flowAmount;
-			}
-			if(Mathf.Abs(flow) < 1){
-				boost = boostAmount;
-			}
-		*/
 	}
 
 	public bool CanLeave()

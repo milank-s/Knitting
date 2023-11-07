@@ -12,7 +12,7 @@ public class StellationController : MonoBehaviour {
 
 	[Header("Progression")]
 	
-	public UnlockType unlockMethod = UnlockType.none;
+	public UnlockType unlockMethod = UnlockType.laps;
 	public StellationController unlock;
 	public bool isPlayerOn;
 	public bool lockSplines;
@@ -71,8 +71,8 @@ public class StellationController : MonoBehaviour {
 	[Space(10)]
 	[Header("Tuning")]
 	public float startSpeed = 1;
-	public float acceleration = 1;
-	public float maxSpeed = 10;
+	public float acceleration = 0.2f;
+	public float maxSpeed = 3;
 	//if a player loops through a stellation with multiple starts they will be placed on a new start each time
 
 	Vector3 center;
@@ -98,8 +98,6 @@ public class StellationController : MonoBehaviour {
 	[Space(10)]
 
 	[Header("Visuals")]
-	public TextMesh titleTextMesh;
-	public SpriteRenderer image;
 	public string text = "";
 	public string title = "";
 
@@ -171,11 +169,6 @@ public class StellationController : MonoBehaviour {
 
 						Gizmos.color = Color.white;
 
-						// if(i == s.SplinePoints.Count-1){
-						// 	Gizmos.DrawLine(s.SplinePoints[i].transform.position, s.SplinePoints[0].transform.position);
-						// }else{
-						// 	Gizmos.DrawLine(s.SplinePoints[i].transform.position, s.SplinePoints[i+1].transform.position);
-						// }
 					}
 				}
 			}
@@ -247,9 +240,10 @@ public class StellationController : MonoBehaviour {
 
 			if(hasUnlock){
 				unlock.Unlock();
-
-				//lets also draw in the splines off the starting point
+			}else{
+				SceneController.instance.LoadNextStellation();
 			}
+
 		}
 		else
 		{
@@ -282,7 +276,7 @@ public class StellationController : MonoBehaviour {
 		//stupid code for old maps that didnt have scoreCount idk. 
 		if (unlockMethod == UnlockType.laps && laps == 0)
 		{
-			//laps = 1;
+			
 		}
 		
 		foreach(Point p in GetComponentsInChildren<Point>()){
@@ -325,13 +319,6 @@ public class StellationController : MonoBehaviour {
 		{
 			activateOnCompletion.Add(a);
 
-		}
-		if(image != null){
-			image.color = new Color(0,0,0,0);
-		}
-
-		if(titleTextMesh != null){
-			titleTextMesh.color = new Color(0,0,0,0);
 		}
 		
 		wordIndex = 0;
@@ -676,23 +663,7 @@ public class StellationController : MonoBehaviour {
 				}
 
 			}
-			
-		
-			if(titleTextMesh != null){
-				titleTextMesh.color = Color.Lerp(titleTextMesh.color, new Color (1, 1, 1, 1), Time.deltaTime);
-			}
-			fade = Mathf.Clamp(fade + Time.deltaTime/20, 0, 0.1f);
-		} else {
-			if(titleTextMesh != null){
-				titleTextMesh.color = Color.Lerp(titleTextMesh.color, new Color (1, 1, 1, 0), Time.deltaTime);
-			}
-			fade = Mathf.Clamp01(fade - Time.deltaTime/10);
 		}
-		
-		if(image != null && isComplete){
-			image.color = new Color (1, 1, 1, fade);
-		}
-
 
 		if(isComplete){
 			Services.fx.readout.text = "";
@@ -704,6 +675,8 @@ public class StellationController : MonoBehaviour {
 	}
 	public void TryToUnlock()
 	{
+		Debug.Log("try unlock");
+		
 		if(won) return;
 
 		UpdateLapCount();
@@ -728,6 +701,7 @@ public class StellationController : MonoBehaviour {
 		}
 
 		if(!won && isComplete){
+			Debug.Log("won " + title);
 			Won();
 		}
 	}

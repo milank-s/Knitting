@@ -201,13 +201,6 @@ public class StellationManager : MonoBehaviour
 		}
 	}
 
-	
-	// //old old old
-	// public void FinishLevel(){
-	// 	SceneController.instance.LoadNextStellation();
-	// }
-
-
 	// //old method for sequential levels and unlockable unicursal stellations
 	// public void CompleteStellation()
 	// {

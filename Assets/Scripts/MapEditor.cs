@@ -350,6 +350,7 @@ public class MapEditor : MonoBehaviour
             }
         }
 
+        unlockTypes.options.Add(new Dropdown.OptionData("None"));
         unlockTypes.options.Add(new Dropdown.OptionData("Laps"));
         unlockTypes.options.Add(new Dropdown.OptionData("Speed"));
         unlockTypes.options.Add(new Dropdown.OptionData("Time"));
@@ -512,7 +513,7 @@ public class MapEditor : MonoBehaviour
             }
 
 
-            if (Input.GetKeyDown(KeyCode.X))
+            if (Input.GetKeyDown(KeyCode.I))
             {
                 selectedSpline.ReverseSpline();
             }
@@ -811,7 +812,22 @@ public class MapEditor : MonoBehaviour
                 {
                     ShuffleSplineOrder(1);
                 }
-                bool recenter = false;
+               
+
+                if (!Input.GetKey(KeyCode.LeftShift))
+                {
+                    cam.fieldOfView = Mathf.Clamp(cam.fieldOfView - Input.mouseScrollDelta.y * Time.deltaTime * 100f, 10, 160);
+                }
+                else if(!Input.GetMouseButton(0))
+                {
+                    //never move camera on the z, its annoying af
+
+                    //cam.transform.position += Vector3.forward * Input.mouseScrollDelta.y * Time.deltaTime * 10;
+                }
+
+                if (!typing)
+                {
+                     bool recenter = false;
                 
                 if(Input.GetKeyDown(KeyCode.X)){
                     if(viewDir == Vector3.right){
@@ -846,19 +862,6 @@ public class MapEditor : MonoBehaviour
                     CenterCamera();
                 }
 
-                if (!Input.GetKey(KeyCode.LeftShift))
-                {
-                    cam.fieldOfView = Mathf.Clamp(cam.fieldOfView - Input.mouseScrollDelta.y * Time.deltaTime * 100f, 10, 160);
-                }
-                else if(!Input.GetMouseButton(0))
-                {
-                    //never move camera on the z, its annoying af
-
-                    //cam.transform.position += Vector3.forward * Input.mouseScrollDelta.y * Time.deltaTime * 10;
-                }
-
-                if (!typing)
-                {
                     
                     HideUI();
 
@@ -965,7 +968,7 @@ public class MapEditor : MonoBehaviour
 
      void PlaySavedEffect()
     {
-        Services.fx.word.text = "SAVED";
+        Services.fx.title.text = "SAVED";
         StartCoroutine(Services.fx.FlashWord());
     }
 
@@ -1012,7 +1015,7 @@ public class MapEditor : MonoBehaviour
             selectedPointIndicator.SetActive(true);
             pointCoords.gameObject.SetActive(true);
 
-            if (Input.GetKeyDown(KeyCode.Z))
+            if (Input.GetKeyDown(KeyCode.U))
             {
 
                 foreach (Point p in selectedPoints)
@@ -1562,6 +1565,9 @@ public class MapEditor : MonoBehaviour
         int unlock = json["unlockType"];
         c.unlockMethod = (StellationController.UnlockType) unlock;
 
+        c.title = fileName;
+        // c.text = ???;
+
         //camera settings
         c.setCameraPos = json["camera"]["setPos"];
         c.cameraPos.x = json["camera"]["x"];
@@ -1573,7 +1579,6 @@ public class MapEditor : MonoBehaviour
         c.desiredFOV = json["camera"]["fov"];
 
         //title
-        c.title = json["title"];
         c.lockSplines = json["forceOrder"];
 
         if (c.desiredFOV == 0)
@@ -1617,7 +1622,17 @@ public class MapEditor : MonoBehaviour
     public void ChangeWinCondition(Int32 i)
     {
         controller.unlockMethod = (StellationController.UnlockType) i;
-        
+
+        if(i == 0){
+            scoreSlider.gameObject.SetActive(false);
+            scoreText.text = scoreSlider.value.ToString("");
+            scoreSlider.gameObject.SetActive(false);
+        }else{
+            scoreSlider.gameObject.SetActive(true);
+            scoreSlider.gameObject.SetActive(true);
+            scoreText.text = scoreSlider.value.ToString("F0");
+        }
+
         switch ((StellationController.UnlockType) i)
         {
             case StellationController.UnlockType.laps:
@@ -1645,7 +1660,6 @@ public class MapEditor : MonoBehaviour
         }
 
         unlockTypes.SetValueWithoutNotify(i);
-        scoreText.text = scoreSlider.value.ToString("F0");
         
     }
     

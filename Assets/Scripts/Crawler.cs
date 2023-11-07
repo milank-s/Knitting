@@ -7,6 +7,7 @@ public class
 
 Crawler : MonoBehaviour
 {
+    public bool useSpline = true;
     public bool forward = true;
     protected Spline spline;
     protected Point point;
