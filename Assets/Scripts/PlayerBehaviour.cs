@@ -1340,16 +1340,11 @@ public class PlayerBehaviour: MonoBehaviour {
 				splineDest = maybeNextSpline;
 				pointDest = maybeNextPoint;
 
-				// curSpline = splineDest;
-
-				//why the hell would you want to change any of this here
-				goingForward = facingForward;
-
 				if(facingForward){
-					//progress = 0;
+					
 					curDirection = splineDest.GetInitVelocity ();
 				}else{
-					//progress = 1;
+						
 					curDirection = splineDest.GetInitVelocity (pointDest, true);
 				}
 				
