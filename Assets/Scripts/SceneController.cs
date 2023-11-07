@@ -56,7 +56,7 @@ public class SceneController : MonoBehaviour
 			Services.menu.Show(false);
 		}
 
-        if (Input.GetKeyDown(KeyCode.Period))
+        if (Services.main.state == Main.GameState.playing && Input.GetKeyDown(KeyCode.Period))
         {
             SkipStellation();
         }
@@ -101,7 +101,7 @@ public class SceneController : MonoBehaviour
 	IEnumerator CompleteLevelSet(){
 		
         //typical level ending sequence
-		yield return StartCoroutine(FinishLevel());
+		yield return StartCoroutine(LevelTransitionRoutine());
 
         //queue up next level on menu
 		SceneController.instance.SelectNextLevel(true);
@@ -216,7 +216,7 @@ public class SceneController : MonoBehaviour
         //stopgap stuff for when I want to test the level without going through the menu;
         if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
             
-            LoadLevel(false);
+            LoadLevel(true);
             
         }
         else
@@ -240,7 +240,7 @@ public class SceneController : MonoBehaviour
 
         //stopgap stuff for when I want to test the level without going through the menu;
         if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
-           LoadLevel();
+           LoadLevel(true);
         }else{
            FinishLevelSet();
         }
@@ -292,17 +292,22 @@ public class SceneController : MonoBehaviour
 
     public IEnumerator LoadLevelRoutine(){
 
-		yield return StartCoroutine(FinishLevel());
+		yield return StartCoroutine(LevelTransitionRoutine());
 		LoadLevel(false);
 	}
 
     //transition between levels in the flow of play
-	public IEnumerator FinishLevel(){
+	public IEnumerator LevelTransitionRoutine(){
 
 		Services.main.state = Main.GameState.paused;
-		yield return null;
-		float t = 0;
-	}
+
+        //sound off cut to black
+        Services.fx.overlay.color = Color.black;
+
+		yield return new WaitForSeconds(1);
+
+        Services.fx.overlay.color = Color.clear;
+		}
 
     
 
