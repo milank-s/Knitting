@@ -6,6 +6,7 @@ public enum CrawlerType {blocker, follower, bird}
 public class CrawlerManager : MonoBehaviour
 {
     public int crawlerCount = 10;
+    public float speed = 3;
     public float spawnFrequency = 0.5f;
     public bool forward = true;
     public Spline spline;
@@ -13,14 +14,16 @@ public class CrawlerManager : MonoBehaviour
     private List<Crawler> crawlers;
     private int index;
     float spawnTimer;
-    void Awake()
+    public void Initialize(CrawlerType t)
     {
+        crawlerType = t;
         crawlers = new List<Crawler>();
         
         for (int i = 0; i < crawlerCount; i++)
         {
             Crawler newCrawler = Instantiate(Services.Prefabs.crawlers[(int)crawlerType], transform).GetComponent<Crawler>();
             newCrawler.Init();
+            newCrawler.baseSpeed = speed;
             crawlers.Add(newCrawler);
             
         }
@@ -29,14 +32,21 @@ public class CrawlerManager : MonoBehaviour
     }
 
     public void Step(){
-        spawnTimer += Time.deltaTime;
-        if(spawnTimer > spawnFrequency){
-            spawnTimer = 0;
-            AddCrawler();
-        }
+        // spawnTimer += Time.deltaTime;
+        // if(spawnTimer > spawnFrequency){
+        //     spawnTimer = 0;
+        //     AddCrawler();
+        // }
 
         foreach(Crawler c in crawlers){
             if(c.running) c.Step();
+        }
+    }
+
+    public void RestartCrawlers(){
+        for (int i = 0; i < crawlerCount; i++)
+        {
+            AddCrawler();
         }
     }
 

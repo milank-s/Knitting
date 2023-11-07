@@ -29,6 +29,7 @@ public class StellationController : MonoBehaviour {
 
 	public StellationEvent OnCompleteLap;
 	public StellationEvent OnCompleteStellation;
+	public StellationEvent OnHitStart;
 	public StellationEvent OnLeaveStart;
 	public StellationEvent OnNextStart;
 
@@ -280,8 +281,6 @@ public class StellationController : MonoBehaviour {
 		}
 		
 		foreach(Point p in GetComponentsInChildren<Point>()){
-
-	
 			//expensive but easy
 			AddPoint(p);
 
@@ -352,6 +351,22 @@ public class StellationController : MonoBehaviour {
 			
 			s.controller = this;
 			index++;
+		}
+
+		
+		//stopgap to test chasing crawler;
+		
+		if(unlockMethod == UnlockType.speed){
+			CrawlerManager newCrawler = gameObject.AddComponent<CrawlerManager>();
+			newCrawler.speed = speed;
+			newCrawler.crawlerCount = 1;
+			newCrawler.spawnFrequency = 0;
+			OnHitStart += newCrawler.Reset;
+			OnLeaveStart += newCrawler.RestartCrawlers;
+			newCrawler.spline = splines[0];
+			
+			newCrawler.Initialize(CrawlerType.follower);
+			crawlers.Add(newCrawler);
 		}
 
 
@@ -675,7 +690,6 @@ public class StellationController : MonoBehaviour {
 	}
 	public void TryToUnlock()
 	{
-		Debug.Log("try unlock");
 		
 		if(won) return;
 

@@ -554,6 +554,10 @@ public class Point : MonoBehaviour
 				
 				case PointTypes.start:
 					
+					if(controller.OnHitStart != null){
+						controller.OnHitStart.Invoke();
+					}
+					
 					if (StellationManager.instance != null &&
 					    Services.main.activeStellation != controller)
 					{

@@ -49,7 +49,7 @@ Crawler : MonoBehaviour
                 GetNextPoint();
             }
 
-            boost = Mathf.Lerp(boost, 0, Time.deltaTime);
+            boost = Mathf.Lerp(boost, 0, Time.deltaTime * 2);
             progress += Time.deltaTime * (speed + boost) * dir; // spline.distance;
                
             transform.position = spline.GetPointAtIndex(curIndex, progress);

@@ -20,7 +20,7 @@ public class BoidController : MonoBehaviour{
 		boids = new List<BoidFlocking>();
 	}
 
-	void Update (){
+	void Step (){
 	
 		Vector3 theCenter = Vector3.zero;
 		Vector3 theVelocity = Vector3.zero;
