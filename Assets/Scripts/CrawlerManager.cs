@@ -32,7 +32,7 @@ public class CrawlerManager : MonoBehaviour
             newCrawler.Init(this);
         }
 
-        Services.main.OnReset += Reset;
+        //Services.main.OnReset += Reset;
     }
 
     public int GetCrawlerIndex(Crawler c){

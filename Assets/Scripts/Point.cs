@@ -92,6 +92,7 @@ public class Point : MonoBehaviour
 	[Space(10)]
 
 	[Header("Interaction")]
+	public bool spawnCollectible;
 	private float cooldown;
 	[HideInInspector]
 	public float timeOffset;
@@ -183,7 +184,11 @@ public class Point : MonoBehaviour
 		}
 	}
 
-	void Awake()
+	public void Awake(){
+		Initialize();
+	}
+	
+	void Initialize()
 	{
 		mat = renderer.material;
 		initPos = transform.position;
@@ -230,8 +235,9 @@ public class Point : MonoBehaviour
 		_neighbours.Clear();
 		_connectedSplines.Clear();
 	}
-	public void Initialize()
+	public void Setup()
 	{
+		Initialize();
 		state = PointState.off;
 		
 		initPos = transform.position;
@@ -629,7 +635,7 @@ public class Point : MonoBehaviour
 		switch (pointType)
 		{
 			case PointTypes.start:
-				if (timesHit > 1)
+				if (timesHit > 0)
 				{
 					return true;
 				}else if (buttonUp)

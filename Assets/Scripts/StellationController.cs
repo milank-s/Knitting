@@ -361,6 +361,7 @@ public class StellationController : MonoBehaviour {
 			newCrawler.speed = speed;
 			newCrawler.crawlerCount = (int)Mathf.Floor(speed);
 			newCrawler.spawnFrequency = 0;
+			newCrawler.crawlerType = CrawlerType.follower;
 			// OnHitStart += newCrawler.Reset;
 			newCrawler.spline = splines[0];
 			crawlers.Add(newCrawler);
@@ -388,7 +389,7 @@ public class StellationController : MonoBehaviour {
 				_points.Add(p);
 				p.isKinematic = isKinematic;
 				
-				p.Initialize();
+				p.Setup();
 			}
 
 		if (p.pointType == PointTypes.start){

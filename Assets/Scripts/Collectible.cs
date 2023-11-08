@@ -17,7 +17,7 @@ public class Collectible : MonoBehaviour
     }
 
     public void OnTriggerEnter(Collider col){
-        if(Services.PlayerBehaviour.hasCollectible){
+        if(!Services.PlayerBehaviour.hasCollectible){
             Pickup();
         }
     }
@@ -37,6 +37,7 @@ public class Collectible : MonoBehaviour
         deposited = true;
         Services.PlayerBehaviour.hasCollectible = false;
         Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, transform);
+        Services.fx.EmitRadialBurst(20, 1, transform);
         gameObject.SetActive(false);
     }
 }
