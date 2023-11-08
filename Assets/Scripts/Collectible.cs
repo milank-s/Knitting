@@ -21,6 +21,12 @@ public class Collectible : MonoBehaviour
             Pickup();
         }
     }
+
+    public void Update(){
+        if(collected){
+            transform.position = Services.PlayerBehaviour.visualRoot.position;
+        }
+    }
     public void Pickup(){
         Services.PlayerBehaviour.hasCollectible = true;
         Services.PlayerBehaviour.collectible = this;

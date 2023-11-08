@@ -27,6 +27,15 @@ public class StellationManager : MonoBehaviour
 	void Awake()
 	{
 		instance = this;
+
+		foreach(StellationController c in stellationSets[level].controllers){
+			c.Initialize();
+		}
+	}
+
+	public void Start()
+	{		
+		Setup();
 	}
 
 	void CompleteLap(){
@@ -132,13 +141,6 @@ public class StellationManager : MonoBehaviour
 				controllers[i].DrawStellation();
 			}
 		}
-	}
-
-	public void Start()
-	{
-		
-		Setup();
-		
 	}
 
 	public void SaveStellation(StellationController c){

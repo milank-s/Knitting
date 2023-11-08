@@ -27,6 +27,7 @@ public class Blocker : Crawler
     base.OnTriggerEnter(col);
 
     float p = Services.PlayerBehaviour.progress;
+    if(Services.PlayerBehaviour.state != PlayerState.Traversing) return;
 
     if(forward == Services.PlayerBehaviour.goingForward){
         if((forward && progress > p) || (!forward && progress < p)){

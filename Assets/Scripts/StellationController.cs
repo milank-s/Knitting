@@ -208,12 +208,6 @@ public class StellationController : MonoBehaviour {
 	{
 		CameraFollow.instance.desiredFOV = desiredFOV;
 	}
-
-	public void Awake()
-	{
-		Initialize();
-		
-	}
 	
 	public void Unlock(){
 		
@@ -265,16 +259,20 @@ public class StellationController : MonoBehaviour {
 		
 	}
 
-
 	public void Initialize()
 	{
 		
+		collectibles = GetComponentsInChildren<Collectible>().ToList();
 		crawlers = GetComponentsInChildren<CrawlerManager>().ToList();
 
 		_points = new List<Point>();
 		_splines = new List<Spline>();
 		_escapeSplines = new List<Spline>();
 		_startPoints = new List<Point>();
+
+		foreach(CrawlerManager c in crawlers){
+			c.Initialize();
+		}
 
 		//stupid code for old maps that didnt have scoreCount idk. 
 		if (unlockMethod == UnlockType.laps && laps == 0)
@@ -285,7 +283,6 @@ public class StellationController : MonoBehaviour {
 		foreach(Point p in GetComponentsInChildren<Point>()){
 			//expensive but easy
 			AddPoint(p);
-
 		}
 
 		if (_points.Count == 0) return;
@@ -367,6 +364,7 @@ public class StellationController : MonoBehaviour {
 			// OnHitStart += newCrawler.Reset;
 			newCrawler.spline = splines[0];
 			crawlers.Add(newCrawler);
+			newCrawler.Initialize();
 		}
 
 
@@ -441,7 +439,7 @@ public class StellationController : MonoBehaviour {
 		}
 
 		foreach(CrawlerManager c in crawlers){
-			c.Initialize();
+			c.Reset();
 		}
 
 		//why arent we resetting splines?

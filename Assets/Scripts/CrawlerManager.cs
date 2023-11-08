@@ -20,7 +20,6 @@ public class CrawlerManager : MonoBehaviour
     public bool cleared = false;
     public void Initialize()
     {
-        
         crawlers = new List<Crawler>();
         emitting = true;
         cleared = false;
@@ -111,6 +110,10 @@ public class CrawlerManager : MonoBehaviour
     }
     public void Reset()
     {
+        emitting = true;
+        count = 0;
+        spawnTimer = 0;
+
         foreach (Crawler c in crawlers)
         {
             c.Stop();
