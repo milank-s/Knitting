@@ -5,14 +5,32 @@ using UnityEngine;
 public class Collectible : MonoBehaviour
 {
     bool collected = false; 
+    public bool deposited = false;
+    public SphereCollider collider;
     Vector3 startPos;
 
     public void Reset(){
         transform.position = startPos;
+        gameObject.SetActive(true);
         collected = false;
+        deposited = false;
     }
 
-    public void OnPickup(){
+    public void OnTriggerEnter(Collider col){
+        if(Services.PlayerBehaviour.hasCollectible){
+            Pickup();
+        }
+    }
+    public void Pickup(){
+        Services.PlayerBehaviour.hasCollectible = true;
+        Services.PlayerBehaviour.collectible = this;
         collected = true;
+        collider.enabled = false;
+    }
+    public void Deposit(){
+        deposited = true;
+        Services.PlayerBehaviour.hasCollectible = false;
+        Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, transform);
+        gameObject.SetActive(false);
     }
 }

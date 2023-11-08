@@ -46,7 +46,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	[HideInInspector]
 	public float flyingSpeed;
+	public bool hasCollectible;
 
+	public Collectible collectible;
 	public bool glitching;
 	bool canTraverse;
 	private bool hasFlown = false;
@@ -229,6 +231,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Reset()
 	{
+		
+		hasCollectible = false;
+		collectible = null;
 		
 		if (Services.main.hasGamepad)
 		{

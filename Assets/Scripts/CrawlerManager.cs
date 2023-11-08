@@ -18,9 +18,9 @@ public class CrawlerManager : MonoBehaviour
     int count = 0;
 
     public bool cleared = false;
-    public void Initialize(CrawlerType t)
+    public void Initialize()
     {
-        crawlerType = t;
+        
         crawlers = new List<Crawler>();
         emitting = true;
         cleared = false;

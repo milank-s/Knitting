@@ -30,7 +30,7 @@ public class Runner : Crawler
         Debug.Log("caught");
 
         controller.HasCrawlers();
-        Services.fx.EmitRadialBurst(100, 10, Services.Player.transform);
+        Services.fx.EmitRadialBurst(100, 2, Services.Player.transform);
         Stop();
 
     }
@@ -46,7 +46,7 @@ public class Runner : Crawler
     public override void OnTriggerEnter(Collider col){
         if(Services.PlayerBehaviour.state == PlayerState.Switching) return;
 
-        if(Services.PlayerBehaviour.curSpeed > speed && Services.PlayerBehaviour.curPoint == point && Services.PlayerBehaviour.progress < progress && forward == Services.PlayerBehaviour.goingForward){
+        if(Services.PlayerBehaviour.curSpeed > speed && Services.PlayerBehaviour.curPoint == point && forward == Services.PlayerBehaviour.goingForward){
             Caught();
         }
     }

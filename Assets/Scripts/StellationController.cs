@@ -18,6 +18,7 @@ public class StellationController : MonoBehaviour {
 	public bool lockSplines;
 
 	List<CrawlerManager> crawlers;
+	List<Collectible> collectibles;
 
 	[HideInInspector]
 	public bool isComplete;
@@ -365,8 +366,6 @@ public class StellationController : MonoBehaviour {
 			newCrawler.spawnFrequency = 0;
 			// OnHitStart += newCrawler.Reset;
 			newCrawler.spline = splines[0];
-
-			newCrawler.Initialize(CrawlerType.follower);
 			crawlers.Add(newCrawler);
 		}
 
@@ -432,9 +431,17 @@ public class StellationController : MonoBehaviour {
 		//do we need to go through all our points?
 		//I would hate to do that
 
+		foreach(Collectible c in collectibles){
+			c.Reset();
+		}
+
 		foreach (Point p in _points)
 		{
 			p.Reset();
+		}
+
+		foreach(CrawlerManager c in crawlers){
+			c.Initialize();
 		}
 
 		//why arent we resetting splines?
@@ -454,6 +461,24 @@ public class StellationController : MonoBehaviour {
 		//why is this here
 //		Services.main.state = Main.GameState.playing;
 }
+
+	public void EnterEndpoint(){
+		//deposit collectible
+		if(Services.PlayerBehaviour.hasCollectible){
+			Services.PlayerBehaviour.collectible.Deposit();
+		}
+
+		CheckCompletion();
+	}
+
+	void CheckCompletion(){
+
+		foreach(Collectible c in collectibles){
+			if(!c.deposited) return;
+		}
+
+		isComplete = true;
+	}
 
 	public void LeftStartPoint(){
 		if(startIndex%_startPoints.Count == 0 && !isComplete){
@@ -704,10 +729,9 @@ public class StellationController : MonoBehaviour {
 				break;
 			
 			case UnlockType.speed:
-				if(crawlers.Count > 0){
-					isComplete = crawlers[0].cleared;
-				}
+				
 				// isComplete = CheckSpeed();
+
 				break;
 			case UnlockType.time:
 				if(startIndex > 0 && startIndex % _startPoints.Count == 0 && (Services.PlayerBehaviour.curPoint.pointType == PointTypes.start || Services.PlayerBehaviour.curPoint.pointType == PointTypes.end)){

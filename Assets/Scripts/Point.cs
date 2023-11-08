@@ -569,26 +569,15 @@ public class Point : MonoBehaviour
 					break;
 				
 				case PointTypes.end:
+					
+						// controller.Won();
+					controller.EnterEndpoint();
 
-					if (controller.isComplete)
-					{
-						controller.Won();
-						// controller.isOn = false;
-
-						return;
-
-						//Services.fx.EmitRadialBurst(20,Services.PlayerBehaviour.curSpeed + 10, transform);
-						//Services.fx.PlayAnimationOnPlayer(FXManager.FXType.burst);
-
-					}
-					else
-					{
-						//DO WE RESET THE LEVEL OR LET IT PLAY
+					if(!controller.isComplete)	{
+						
 						if(_neighbours.Count < 2){
 							Services.main.WarpPlayerToNewPoint(controller.GetStartPoint());
 						}
-
-						//Services.fx.ShowUnfinished();
 					}
 					
 					break;
@@ -623,6 +612,7 @@ public class Point : MonoBehaviour
 				break;
 			
 			case PointTypes.end:
+
 				break;
 		}
 	}
