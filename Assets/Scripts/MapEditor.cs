@@ -1482,6 +1482,7 @@ public class MapEditor : MonoBehaviour
                 
             }
 
+            newPoint.spawnCollectible = json["p" + i]["collect"];
             newPoint.tension = json["p" + i]["tension"];
             newPoint.bias = json["p" + i]["bias"];
             newPoint.continuity = json["p" + i]["continuity"];

@@ -10348,7 +10348,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.1
+  m_Radius: 0.025
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1000013906513460
 GameObject:
@@ -10452,13 +10452,15 @@ MonoBehaviour:
   AutoLeaveDiff: 30
   StopAngleDiff: 60
   flyingSpeed: 0
+  hasCollectible: 0
+  collectible: {fileID: 0}
   glitching: 0
   pos: {x: 0, y: 0, z: 0}
   goingForward: 1
   facingForward: 0
   progress: 0
   adjustedProgress: 0
-  accuracy: 0
+  signedAccuracy: 0
   flow: 0
   boost: 0
   boostTimer: 0

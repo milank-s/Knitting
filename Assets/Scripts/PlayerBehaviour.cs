@@ -234,7 +234,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		hasCollectible = false;
 		collectible = null;
-		
+
 		if (Services.main.hasGamepad)
 		{
 			Services.main.gamepad.ResetHaptics();
@@ -1535,12 +1535,14 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if(curPoint.pointType != PointTypes.ghost){
 
+					boost += Point.boostAmount * (1 + Services.PlayerBehaviour.boostTimer);
+					Services.fx.SpawnCircle(curPoint.transform);
+					
 					if (buttonWasPressed)
 					{
 						buttonDownTimer = 0;
-						boost += Point.boostAmount * Services.PlayerBehaviour.boostTimer;
+						
 						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);
-						Services.fx.SpawnCircle(curPoint.transform);
 						Services.fx.EmitRadialBurst(10,boostTimer + 1, curPoint.transform);
 						Services.fx.EmitLinearBurst(5, boostTimer + 1, curPoint.transform, -cursorDir);
 					}

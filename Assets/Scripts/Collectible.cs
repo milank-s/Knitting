@@ -10,7 +10,7 @@ public class Collectible : MonoBehaviour
     Vector3 startPos;
 
     public void Reset(){
-        transform.position = startPos;
+        //transform.position = startPos;
         gameObject.SetActive(true);
         collected = false;
         deposited = false;
@@ -23,8 +23,12 @@ public class Collectible : MonoBehaviour
     }
 
     public void Update(){
-        if(collected){
+        if(!deposited && collected){
             transform.position = Services.PlayerBehaviour.visualRoot.position;
+        }
+
+        if(deposited){
+            transform.Rotate(0, 0, Time.deltaTime * 20);
         }
     }
     public void Pickup(){
@@ -38,6 +42,5 @@ public class Collectible : MonoBehaviour
         Services.PlayerBehaviour.hasCollectible = false;
         Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, transform);
         Services.fx.EmitRadialBurst(20, 1, transform);
-        gameObject.SetActive(false);
     }
 }

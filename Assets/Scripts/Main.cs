@@ -156,7 +156,6 @@
 			//reset scene
 			//just reload the scene I guess
 			StellationManager.instance.ResetToCheckpoint();
-			// StartCoroutine(LoadSceneRoutine());
 			
 		}else{
 			//this doesnt work for the editor
@@ -447,6 +446,9 @@
 	}
 
 	public IEnumerator EnterLevelRoutine(){
+
+		state = GameState.paused;
+
 		Services.fx.title.text = activeStellation.title;
 		Services.fx.overlay.color = Color.black;
 

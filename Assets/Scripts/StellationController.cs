@@ -259,9 +259,17 @@ public class StellationController : MonoBehaviour {
 		
 	}
 
+	//we need to distinguish when a controller is being set up for the editor
+	//or if the player is going to use it to play
+	public void InitializeForPlay(){
+		//spawn crawlers
+		//spawn collectibles on relevant points
+	}
 	public void Initialize()
 	{
-		
+
+		//list of positions for collectibles to spawn at?
+
 		collectibles = GetComponentsInChildren<Collectible>().ToList();
 		crawlers = GetComponentsInChildren<CrawlerManager>().ToList();
 
@@ -283,6 +291,9 @@ public class StellationController : MonoBehaviour {
 		foreach(Point p in GetComponentsInChildren<Point>()){
 			//expensive but easy
 			AddPoint(p);
+			if(p.spawnCollectible){
+
+			}
 		}
 
 		if (_points.Count == 0) return;

@@ -56,7 +56,7 @@ public class Point : MonoBehaviour
 
 	public static float hitColorLerp;
 	public static int pointCount = 0;
-	public static float boostAmount = 1f;
+	public static float boostAmount = 0.5f;
 	public float distortion;
 	float glow;
 	
@@ -149,6 +149,7 @@ public class Point : MonoBehaviour
 		data["index"].AsInt = i;
 		data["pointType"].AsInt = (int) pointType;
 		data["word"] = text;
+		data["collect"].AsBool = spawnCollectible;
 		
 		JSONObject pointText = new JSONObject();
 		
@@ -187,7 +188,7 @@ public class Point : MonoBehaviour
 	public void Awake(){
 		Initialize();
 	}
-	
+
 	void Initialize()
 	{
 		mat = renderer.material;
@@ -651,14 +652,9 @@ public class Point : MonoBehaviour
 				break;
 			
 			case PointTypes.end:
-				if (controller.isComplete)
-				{
-					return false;
-				}
-				else
-				{
-					return true;
-				}
+				
+				return true;
+				
 				break;
 			
 			case PointTypes.stop:
