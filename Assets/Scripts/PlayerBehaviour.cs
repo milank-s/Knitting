@@ -581,6 +581,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		canTraverse = false;
 		bool hasPath = false;
 		Point prevPointDest = pointDest;
+		Spline prevSplineDest = splineDest;
 
 		if (TryLeavePoint()) // && !foundConnection)
 		{
@@ -603,20 +604,16 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 			else
 			{
-				bool newPointSelected = prevPointDest == null || prevPointDest != pointDest;
+				
+				bool newSplineSelected = prevSplineDest == null || splineDest != prevSplineDest;
 
-				if (newPointSelected){
+				if (newSplineSelected){
 					Services.fx.ShowSplineDirection(splineDest);
 				}
 
 				if( pointDest.pointType != PointTypes.ghost)
 				{
 					Services.fx.ShowNextPoint(pointDest);
-
-					if (newPointSelected)
-					{
-						// Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, pointDest.transform);
-					}
 
 				}else{
 					

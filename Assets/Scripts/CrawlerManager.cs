@@ -13,16 +13,18 @@ public class CrawlerManager : MonoBehaviour
     public CrawlerType crawlerType = CrawlerType.blocker;
     private List<Crawler> crawlers;
     private int index;
+    public bool emitting;
     float spawnTimer;
     public void Initialize(CrawlerType t)
     {
         crawlerType = t;
         crawlers = new List<Crawler>();
+        emitting = true;
         
         for (int i = 0; i < crawlerCount; i++)
         {
             Crawler newCrawler = Instantiate(Services.Prefabs.crawlers[(int)crawlerType], transform).GetComponent<Crawler>();
-            newCrawler.Init();
+            newCrawler.Init(this);
             newCrawler.baseSpeed = speed;
             crawlers.Add(newCrawler);
             
@@ -32,11 +34,13 @@ public class CrawlerManager : MonoBehaviour
     }
 
     public void Step(){
-        // spawnTimer += Time.deltaTime;
-        // if(spawnTimer > spawnFrequency){
-        //     spawnTimer = 0;
-        //     AddCrawler();
-        // }
+        if(emitting){
+            spawnTimer += Time.deltaTime;
+            if(spawnTimer > spawnFrequency){
+                spawnTimer = 0;
+                AddCrawler();
+            }
+        }
 
         foreach(Crawler c in crawlers){
             if(c.running) c.Step();
@@ -44,6 +48,9 @@ public class CrawlerManager : MonoBehaviour
     }
 
     public void RestartCrawlers(){
+        //dumb but whatever
+        if(Services.main.activeStellation.isComplete) return;
+        
         for (int i = 0; i < crawlerCount; i++)
         {
             AddCrawler();
@@ -59,6 +66,7 @@ public class CrawlerManager : MonoBehaviour
     {
         
         bool available = false;
+
         Crawler toUse = null;
         foreach (Crawler c in crawlers)
         {

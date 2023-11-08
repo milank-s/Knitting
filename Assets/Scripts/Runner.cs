@@ -27,6 +27,7 @@ public class Runner : Crawler
         //particle effect
         //tell player something
 
+        controller.emitting = false;
         Services.fx.EmitRadialBurst(10, 10, Services.Player.transform);
         Stop();
 
@@ -34,16 +35,16 @@ public class Runner : Crawler
 
     public override void GetNextPoint()
     {
-        if(curIndex < spline.SplinePoints.Count - 1){
+        // if(curIndex < spline.SplinePoints.Count - 1){
             base.GetNextPoint();
-        }else{
-            Stop();
-        }
+        // }else{
+        //     Stop();
+        // }
     }
     public override void OnTriggerEnter(Collider col){
         if(Services.PlayerBehaviour.state == PlayerState.Switching) return;
 
-        if(Services.PlayerBehaviour.progress < progress && forward == Services.PlayerBehaviour.goingForward){
+        if(Services.PlayerBehaviour.progress < progress && forward == Services.PlayerBehaviour.goingForward && Services.PlayerBehaviour.curSpeed > speed){
             Caught();
         }
 

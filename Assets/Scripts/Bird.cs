@@ -17,9 +17,9 @@ public class Bird : Crawler
     
     [SerializeField] TrailRenderer trail;
 
-    public override void Init()
+    public override void Init(CrawlerManager c)
     {
-        base.Init();
+        base.Init(c);
         scale = transform.localScale;
     }
     public override void BreakOff()

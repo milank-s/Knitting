@@ -361,10 +361,10 @@ public class StellationController : MonoBehaviour {
 			newCrawler.speed = speed;
 			newCrawler.crawlerCount = 1;
 			newCrawler.spawnFrequency = 0;
-			OnHitStart += newCrawler.Reset;
-			OnLeaveStart += newCrawler.RestartCrawlers;
+			// OnHitStart += newCrawler.Reset;
+			// OnLeaveStart += newCrawler.RestartCrawlers;
 			newCrawler.spline = splines[0];
-			
+
 			newCrawler.Initialize(CrawlerType.follower);
 			crawlers.Add(newCrawler);
 		}
@@ -653,7 +653,7 @@ public class StellationController : MonoBehaviour {
 						}
 					}
  
-					Services.fx.readout.text = (Mathf.Clamp(speedAverage, 0, 100)/(speed) * 100).ToString("F0") + "%";
+					//Services.fx.readout.text = (Mathf.Clamp(speedAverage, 0, 100)/(speed) * 100).ToString("F0") + "%";
 				
 				}else if (unlockMethod == UnlockType.time)
 				{

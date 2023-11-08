@@ -525,7 +525,7 @@ public class Point : MonoBehaviour
 		SwitchState(PointState.on);
 		
 		controller.TryToUnlock();
-
+		
 		if(pointType != PointTypes.ghost)
 		{
 			if(Services.main.OnPlayerEnterPoint != null){
@@ -554,10 +554,11 @@ public class Point : MonoBehaviour
 				
 				case PointTypes.start:
 					
+
 					if(controller.OnHitStart != null){
 						controller.OnHitStart.Invoke();
 					}
-					
+
 					if (StellationManager.instance != null &&
 					    Services.main.activeStellation != controller)
 					{

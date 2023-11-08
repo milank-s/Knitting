@@ -21,10 +21,11 @@ Crawler : MonoBehaviour
     protected Vector3 lastPos;
     protected Vector3 delta;
     protected int dir;
+    protected CrawlerManager controller;
     
-        public virtual void Init(){
+    public virtual void Init(CrawlerManager c){
+        controller = c;
         running = false;
-
     }
 
     public virtual void Setup(Spline s, bool f)
