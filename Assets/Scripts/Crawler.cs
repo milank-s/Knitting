@@ -21,11 +21,13 @@ Crawler : MonoBehaviour
     protected Vector3 lastPos;
     protected Vector3 delta;
     protected int dir;
+    protected int index;
     protected CrawlerManager controller;
     
     public virtual void Init(CrawlerManager c){
         controller = c;
         running = false;
+        index = c.GetCrawlerIndex(this);
     }
 
     public virtual void Setup(Spline s, bool f)
@@ -56,7 +58,9 @@ Crawler : MonoBehaviour
             transform.position = spline.GetPointAtIndex(curIndex, progress);
             delta = (transform.position - lastPos);
             lastPos = transform.position;
-            transform.forward = delta.normalized;
+            if(delta.sqrMagnitude > 0){
+                transform.forward = delta.normalized;
+            }
         }
     }
 

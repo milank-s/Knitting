@@ -118,6 +118,7 @@ public class StellationController : MonoBehaviour {
 	[HideInInspector]
 	public int rootKey;
 
+	bool spawnedCrawler;
 
 	public string GetWord (){
 		if(words != null){
@@ -356,13 +357,13 @@ public class StellationController : MonoBehaviour {
 		
 		//stopgap to test chasing crawler;
 		
-		if(unlockMethod == UnlockType.speed){
+		if(!spawnedCrawler && unlockMethod == UnlockType.speed){
+			spawnedCrawler = true;
 			CrawlerManager newCrawler = gameObject.AddComponent<CrawlerManager>();
 			newCrawler.speed = speed;
-			newCrawler.crawlerCount = 1;
+			newCrawler.crawlerCount = (int)Mathf.Floor(speed);
 			newCrawler.spawnFrequency = 0;
 			// OnHitStart += newCrawler.Reset;
-			// OnLeaveStart += newCrawler.RestartCrawlers;
 			newCrawler.spline = splines[0];
 
 			newCrawler.Initialize(CrawlerType.follower);
@@ -703,7 +704,10 @@ public class StellationController : MonoBehaviour {
 				break;
 			
 			case UnlockType.speed:
-				isComplete = CheckSpeed();
+				if(crawlers.Count > 0){
+					isComplete = crawlers[0].cleared;
+				}
+				// isComplete = CheckSpeed();
 				break;
 			case UnlockType.time:
 				if(startIndex > 0 && startIndex % _startPoints.Count == 0 && (Services.PlayerBehaviour.curPoint.pointType == PointTypes.start || Services.PlayerBehaviour.curPoint.pointType == PointTypes.end)){
@@ -715,7 +719,7 @@ public class StellationController : MonoBehaviour {
 		}
 
 		if(!won && isComplete){
-			Debug.Log("won " + title);
+			// Debug.Log("won " + title);
 			Won();
 		}
 	}

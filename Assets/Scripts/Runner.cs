@@ -11,6 +11,7 @@ public class Runner : Crawler
         base.Setup(s, f);
         timer = 0;
         collider.enabled = false;
+        speed *= (float)(index + 1)/(float)controller.crawlerCount;
     }
 
     public override void Step()
@@ -26,9 +27,10 @@ public class Runner : Crawler
 
         //particle effect
         //tell player something
+        Debug.Log("caught");
 
-        controller.emitting = false;
-        Services.fx.EmitRadialBurst(10, 10, Services.Player.transform);
+        controller.HasCrawlers();
+        Services.fx.EmitRadialBurst(100, 10, Services.Player.transform);
         Stop();
 
     }
@@ -44,11 +46,9 @@ public class Runner : Crawler
     public override void OnTriggerEnter(Collider col){
         if(Services.PlayerBehaviour.state == PlayerState.Switching) return;
 
-        if(Services.PlayerBehaviour.progress < progress && forward == Services.PlayerBehaviour.goingForward && Services.PlayerBehaviour.curSpeed > speed){
+        if(Services.PlayerBehaviour.curSpeed > speed && Services.PlayerBehaviour.curPoint == point && Services.PlayerBehaviour.progress < progress && forward == Services.PlayerBehaviour.goingForward){
             Caught();
         }
-
-
     }
 
 }

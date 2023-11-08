@@ -15,28 +15,48 @@ public class CrawlerManager : MonoBehaviour
     private int index;
     public bool emitting;
     float spawnTimer;
+    int count = 0;
+
+    public bool cleared = false;
     public void Initialize(CrawlerType t)
     {
         crawlerType = t;
         crawlers = new List<Crawler>();
         emitting = true;
-        
+        cleared = false;
+
         for (int i = 0; i < crawlerCount; i++)
         {
             Crawler newCrawler = Instantiate(Services.Prefabs.crawlers[(int)crawlerType], transform).GetComponent<Crawler>();
-            newCrawler.Init(this);
             newCrawler.baseSpeed = speed;
             crawlers.Add(newCrawler);
-            
+            newCrawler.Init(this);
         }
 
         Services.main.OnReset += Reset;
     }
 
+    public int GetCrawlerIndex(Crawler c){
+        return crawlers.IndexOf(c);
+    }
+    public void HasCrawlers(){
+        if(crawlers.Count == 0) return;
+        foreach(Crawler c in crawlers){
+            if(c.running){
+                return;
+            }
+        }
+
+        cleared = true;
+    }
+
     public void Step(){
         if(emitting){
             spawnTimer += Time.deltaTime;
+            
             if(spawnTimer > spawnFrequency){
+                count ++;
+                emitting = count < crawlerCount;
                 spawnTimer = 0;
                 AddCrawler();
             }
@@ -64,7 +84,6 @@ public class CrawlerManager : MonoBehaviour
 
     public void AddCrawler()
     {
-        
         bool available = false;
 
         Crawler toUse = null;
@@ -88,6 +107,7 @@ public class CrawlerManager : MonoBehaviour
         
         toUse.gameObject.SetActive(true);
         toUse.Setup(spline, forward);
+        
     }
     public void Reset()
     {
