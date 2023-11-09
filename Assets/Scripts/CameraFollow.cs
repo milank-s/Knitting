@@ -76,8 +76,6 @@ public class CameraFollow : MonoBehaviour {
 			Quaternion r2 = Services.PlayerBehaviour.pointDest.transform.rotation;
 			
 			toPlayer = Quaternion.AngleAxis(rot, Vector3.up) * Vector3.forward;
-
-
 			
 			Vector3 pole = Vector3.up;
 

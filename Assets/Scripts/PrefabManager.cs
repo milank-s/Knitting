@@ -12,6 +12,7 @@ public class PrefabManager : MonoBehaviour {
 	public GameObject text;
 	public GameObject point;
 	public GameObject spline;
+	public GameObject collectible;
 	public GameObject splineTurtle;
 	public GameObject joint;
 	public Sprite[] symbols;

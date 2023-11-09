@@ -59,6 +59,8 @@ public class Point : MonoBehaviour
 	public static float boostAmount = 0.5f;
 	public float distortion;
 	float glow;
+
+	bool initialized = false;
 	
 	[Space(10)]
 	[Header("Curve")]
@@ -93,6 +95,7 @@ public class Point : MonoBehaviour
 
 	[Header("Interaction")]
 	public bool spawnCollectible;
+	Collectible collectible;
 	private float cooldown;
 	[HideInInspector]
 	public float timeOffset;
@@ -191,6 +194,13 @@ public class Point : MonoBehaviour
 
 	void Initialize()
 	{
+		if(initialized) return;
+		initialized = true;
+
+		// so when does this happen 
+		// map editor doesnt want you to keep spawning collectibles
+		// if you flip this variable after the point is made it will not be reflected in the editor
+
 		mat = renderer.material;
 		initPos = transform.position;
 		state = PointState.off;
@@ -223,6 +233,21 @@ public class Point : MonoBehaviour
 		Point.pointCount++;
 	}
 
+	public void AddCollectible(bool b){
+		if(!b){
+			if(collectible != null){
+				Destroy(collectible.gameObject);
+			}
+		}else{
+			if(collectible == null){
+				collectible = Instantiate(Services.Prefabs.collectible, transform).GetComponent<Collectible>();
+				collectible.SetPoint(this);
+			}else{
+				collectible.Reset();
+			}
+		}
+		spawnCollectible = b;
+	}
 	public void AddForce(Vector3 vel){
 		velocity += vel;
 	}
@@ -239,6 +264,12 @@ public class Point : MonoBehaviour
 	public void Setup()
 	{
 		Initialize();
+
+		if(spawnCollectible){
+			AddCollectible(true);
+		}
+
+
 		state = PointState.off;
 		
 		initPos = transform.position;
@@ -362,6 +393,7 @@ public class Point : MonoBehaviour
 
 	public void Reset()
 	{
+
 		usedToFly = false;
 		anchorPos = initPos;
 		transform.position = initPos;
@@ -578,7 +610,7 @@ public class Point : MonoBehaviour
 				case PointTypes.end:
 					
 						// controller.Won();
-					controller.EnterEndpoint();
+					controller.EnterEndpoint(this);
 
 					if(!controller.isComplete)	{
 						
@@ -636,7 +668,7 @@ public class Point : MonoBehaviour
 		switch (pointType)
 		{
 			case PointTypes.start:
-				if (timesHit > 0)
+				if (timesHit > 1)
 				{
 					return true;
 				}else if (buttonUp)

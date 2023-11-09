@@ -38,7 +38,7 @@ public class CrawlerManager : MonoBehaviour
     public int GetCrawlerIndex(Crawler c){
         return crawlers.IndexOf(c);
     }
-    public void HasCrawlers(){
+    public void CheckCrawlers(){
         if(crawlers.Count == 0) return;
         foreach(Crawler c in crawlers){
             if(c.running){

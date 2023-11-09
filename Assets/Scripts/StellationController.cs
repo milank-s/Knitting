@@ -33,6 +33,8 @@ public class StellationController : MonoBehaviour {
 	public StellationEvent OnHitStart;
 	public StellationEvent OnLeaveStart;
 	public StellationEvent OnNextStart;
+	public StellationEvent OnPickup;
+	public StellationEvent OnDeposit;
 
 	List<ActivatedBehaviour>  activateOnCompletion = new List<ActivatedBehaviour>();
 
@@ -120,6 +122,11 @@ public class StellationController : MonoBehaviour {
 	public int rootKey;
 
 	bool spawnedCrawler;
+
+	public void Awake(){
+		collectibles = new List<Collectible>();
+		crawlers = new List<CrawlerManager>();
+	}
 
 	public string GetWord (){
 		if(words != null){
@@ -270,13 +277,13 @@ public class StellationController : MonoBehaviour {
 
 		//list of positions for collectibles to spawn at?
 
-		collectibles = GetComponentsInChildren<Collectible>().ToList();
-		crawlers = GetComponentsInChildren<CrawlerManager>().ToList();
-
 		_points = new List<Point>();
 		_splines = new List<Spline>();
 		_escapeSplines = new List<Spline>();
 		_startPoints = new List<Point>();
+
+	
+		crawlers = GetComponentsInChildren<CrawlerManager>().ToList();
 
 		foreach(CrawlerManager c in crawlers){
 			c.Initialize();
@@ -379,6 +386,7 @@ public class StellationController : MonoBehaviour {
 			newCrawler.Initialize();
 		}
 
+		collectibles = GetComponentsInChildren<Collectible>().ToList();
 
 		Setup();
 	}
@@ -467,15 +475,15 @@ public class StellationController : MonoBehaviour {
 					s.SwitchState(Spline.SplineState.off);
 				}
 		}
-
-		//why is this here
-//		Services.main.state = Main.GameState.playing;
 }
 
-	public void EnterEndpoint(){
+	public void EnterEndpoint(Point p){
 		//deposit collectible
 		if(Services.PlayerBehaviour.hasCollectible){
-			Services.PlayerBehaviour.collectible.Deposit();
+			if(OnDeposit != null){
+				OnDeposit.Invoke();
+			}
+			Services.PlayerBehaviour.collectible.Deposit(p);
 		}
 
 		CheckCompletion();

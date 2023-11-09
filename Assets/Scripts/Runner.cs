@@ -5,49 +5,50 @@ using UnityEngine;
 public class Runner : Crawler
 {
     [SerializeField] SphereCollider collider;
+    [SerializeField] Collectible collectible;
     float timer = 0;
+    bool caught = false;
     public override void Setup(Spline s, bool f)
     {
         base.Setup(s, f);
+        caught = false;
         timer = 0;
         collider.enabled = false;
+        collectible.collider.enabled = false;
         speed *= (float)(index + 1)/(float)controller.crawlerCount;
     }
 
     public override void Step()
     {
-        base.Step();
-        timer += Time.deltaTime;
-        if(timer > 0.1f){
-            collider.enabled = true;
+        if(!caught){
+            base.Step();
+            timer += Time.deltaTime;
+            if(timer > 0.1f){
+                collider.enabled = true;
+            }
+        }else{
+            transform.position = Services.PlayerBehaviour.visualRoot.position;
         }
     }
 
     public void Caught(){
 
-        //particle effect
-        //tell player something
+        controller.CheckCrawlers();
+        collectible.Pickup();
+        caught = true;
         Debug.Log("caught");
-
-        controller.HasCrawlers();
-        Services.fx.EmitRadialBurst(100, 2, Services.Player.transform);
-        Stop();
 
     }
 
     public override void GetNextPoint()
     {
-        // if(curIndex < spline.SplinePoints.Count - 1){
             base.GetNextPoint();
-        // }else{
-        //     Stop();
-        // }
     }
     public override void OnTriggerEnter(Collider col){
         if(Services.PlayerBehaviour.state != PlayerState.Traversing) return;
 
-        if(Services.PlayerBehaviour.curSpeed > speed && Services.PlayerBehaviour.curPoint == point && forward == Services.PlayerBehaviour.goingForward){
-            Caught();
+        if(!Services.PlayerBehaviour.hasCollectible && Services.PlayerBehaviour.curSpeed > speed && Services.PlayerBehaviour.curPoint == point && forward == Services.PlayerBehaviour.goingForward){
+           Caught();
         }
     }
 

@@ -422,10 +422,7 @@
 
 		if (!MapEditor.editing)
 		{
-			Services.Player.SetActive(true);
-			Services.PlayerBehaviour.Initialize();
 			StartCoroutine(EnterLevelRoutine());
-			
 		}
 
 		
@@ -460,6 +457,9 @@
 		playerInput.SwitchCurrentActionMap("Player");
 		Cursor.lockState = CursorLockMode.Locked;
 		state = GameState.playing;
+		
+		Services.Player.SetActive(true);
+		Services.PlayerBehaviour.Initialize();
 	}
 
 	public void EnterUIMode()

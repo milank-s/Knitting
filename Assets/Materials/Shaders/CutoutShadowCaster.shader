@@ -7,6 +7,7 @@ Shader "Custom/SimpleAlpha" {
         LOD 300
 
         ZWrite On
+        Cull Off
 
         CGPROGRAM
         #pragma surface surf NoLighting alpha 

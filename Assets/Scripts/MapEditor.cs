@@ -518,7 +518,7 @@ public class MapEditor : MonoBehaviour
                 selectedSpline.ReverseSpline();
             }
             
-            if (Input.GetKeyDown(KeyCode.U))
+            if (Input.GetKeyDown(KeyCode.O))
             {
                 selectedSpline.bidirectional = !selectedSpline.bidirectional;
             }
@@ -1031,12 +1031,16 @@ public class MapEditor : MonoBehaviour
             yPos.text = "y  " + activePoint.Pos.y.ToString("F2");
             zPos.text = "z  " + activePoint.Pos.z.ToString("F2");
 
+            if(Input.GetKeyDown(KeyCode.P)){
+                activePoint.AddCollectible(!activePoint.spawnCollectible);
+            }
+
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
 
-                 SetPointType(PointTypes.normal);
-                 curPointType = PointTypes.normal;
+                SetPointType(PointTypes.normal);
+                curPointType = PointTypes.normal;
 
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
