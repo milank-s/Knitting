@@ -206,9 +206,11 @@ public class SceneController : MonoBehaviour
 
          curLevel++;
         
-        if (curSetIndex == -1 &&  curLevelName == "")
+        if (curSetIndex == -1 && curLevelName == "")
         {
-            //we're in the editor, dont do anything
+            //we're in the editor, pop them out into it
+
+            Services.main.ResetLevel();
             return;
 
         }
@@ -233,7 +235,9 @@ public class SceneController : MonoBehaviour
         
         if (curSetIndex == -1 && curLevelName == "")
         {
-            //we're in the editor, dont do anything
+            //we're in the editor, pop player out
+            
+            Services.main.ResetLevel();
             return;
 
         }

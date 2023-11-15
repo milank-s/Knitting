@@ -66,7 +66,8 @@ public class Spline : MonoBehaviour
 	public VectorLine line;
 
 	[HideInInspector]
-	public float completion;		
+	public float completion;	
+	public float alpha = 0.33f;
 
 	public int numPoints => SplinePoints.Count;
 
@@ -140,7 +141,7 @@ public class Spline : MonoBehaviour
 	[Header("Visuals")]
 
 	public int lineMaterial = 0;
-	public int lineWidth = 1;
+	public int lineWidth = 3;
 	private float textureWidth = 1;
 	private float playerProgress{
 		get{return Services.PlayerBehaviour.progress;}
@@ -427,7 +428,7 @@ public class Spline : MonoBehaviour
 		}
 	}
 	
-	public void Lock()
+	private void Lock()
 	{	
 
 		foreach (Point p in SplinePoints)
@@ -773,7 +774,7 @@ public class Spline : MonoBehaviour
 				
 
 				//c += (Color.white * Mathf.Clamp01(_completion - 1));
-				c.a = 1;
+				c.a = alpha;
 				line.SetColor(c, segmentIndex);
 				
 			}else{

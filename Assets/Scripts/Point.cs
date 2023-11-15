@@ -133,7 +133,6 @@ public class Point : MonoBehaviour
 	{
 		get
 		{
-
 			return new Color(c, c, c, 1) + color;
 		}
 	}
@@ -212,7 +211,7 @@ public class Point : MonoBehaviour
 		}
 		else
 		{
-			mat.color = Color.black;
+			mat.color = color;
 		}
 //		stiffness = 1600;
 //		damping = 1000;
@@ -268,9 +267,6 @@ public class Point : MonoBehaviour
 		if(spawnCollectible){
 			AddCollectible(true);
 		}
-
-
-		state = PointState.off;
 		
 		initPos = transform.position;
 		anchorPos = initPos;
@@ -597,6 +593,8 @@ public class Point : MonoBehaviour
 					if(controller.OnHitStart != null){
 						controller.OnHitStart.Invoke();
 					}
+					
+					controller.DepositCollectible(this);
 
 					if (StellationManager.instance != null &&
 					    Services.main.activeStellation != controller)
@@ -609,8 +607,7 @@ public class Point : MonoBehaviour
 				
 				case PointTypes.end:
 					
-						// controller.Won();
-					controller.EnterEndpoint(this);
+					controller.DepositCollectible(this);
 
 					if(!controller.isComplete)	{
 						
@@ -779,7 +776,7 @@ public class Point : MonoBehaviour
 		// c = (Mathf.Sin (3 * (Time.time + timeOffset))/4 + 0.3f) + proximity;
 //		c = proximity + Mathf.Sin(Time.time + timeOffset)/10 + 0.11f;
 		// ACCRETION IS SHOWING POINTS THAT IT SHOULDNT?????
-		c = glow + proximity + (state == PointState.on ? Mathf.Sin(Time.time * 2 + timeOffset)/20 : 0.0f); // + timesHit/5f;
+		c = glow + proximity + (state == PointState.on ? Mathf.Sin(Time.time * 2 + timeOffset)/20 : 0.5f); // + timesHit/5f;
 		
 		// accretion
 		

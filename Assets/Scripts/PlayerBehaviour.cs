@@ -210,12 +210,12 @@ public class PlayerBehaviour: MonoBehaviour {
 		cursorDistance = minCursorDistance;
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
-		cursorPos =pos;
+		cursorPos = pos;
 		traversedPoints.Add (curPoint);
 
 		curPoint.OnPlayerEnterPoint();
 
-		flow = 0;
+		flow = Services.main.activeStellation.startSpeed;
 		speed = Services.main.activeStellation.startSpeed;
 		acceleration = Services.main.activeStellation.acceleration;
 		maxSpeed = Services.main.activeStellation.maxSpeed;
@@ -1025,8 +1025,10 @@ public class PlayerBehaviour: MonoBehaviour {
 				}	
 				
 			}else{
+				speedGain = -speedGain;
 				speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
-				flow -= splineSpeed * Time.deltaTime;		
+
+				// flow -= splineSpeed * Time.deltaTime;		
 				boost -= splineSpeed * Time.deltaTime;
 			}
 		}else{

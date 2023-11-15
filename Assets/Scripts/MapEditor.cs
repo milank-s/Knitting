@@ -329,7 +329,6 @@ public class MapEditor : MonoBehaviour
     {
         cam = Services.mainCam;
         l.enabled = false;
-        //Services.main.EnterEditMode(editing);
         mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
         worldPos = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y,
             cameraDistance));
@@ -350,10 +349,9 @@ public class MapEditor : MonoBehaviour
             }
         }
 
-        unlockTypes.options.Add(new Dropdown.OptionData("None"));
         unlockTypes.options.Add(new Dropdown.OptionData("Laps"));
         unlockTypes.options.Add(new Dropdown.OptionData("Speed"));
-        unlockTypes.options.Add(new Dropdown.OptionData("Time"));
+        unlockTypes.options.Add(new Dropdown.OptionData("Pickups"));
         
         _curTool = Tool.draw;
 
@@ -1616,11 +1614,6 @@ public class MapEditor : MonoBehaviour
                 scoreText.text = scoreSlider.value.ToString("F1");
 
                 break;
-            
-            case StellationController.UnlockType.time:
-                scoreText.text = scoreSlider.value.ToString("F1");
-                controller.time = i;
-                break;
         }
     }
     
@@ -1628,13 +1621,14 @@ public class MapEditor : MonoBehaviour
     {
         controller.unlockMethod = (StellationController.UnlockType) i;
 
-        if(i == 0){
+        if(controller.unlockMethod == StellationController.UnlockType.pickups){
             scoreSlider.gameObject.SetActive(false);
-            scoreText.text = scoreSlider.value.ToString("");
+            scoreText.gameObject.SetActive(false);
             scoreSlider.gameObject.SetActive(false);
         }else{
             scoreSlider.gameObject.SetActive(true);
             scoreSlider.gameObject.SetActive(true);
+            scoreText.gameObject.SetActive(true);
             scoreText.text = scoreSlider.value.ToString("F0");
         }
 
@@ -1655,13 +1649,7 @@ public class MapEditor : MonoBehaviour
                 scoreSlider.wholeNumbers = false;
                 scoreSlider.maxValue = 10;
                 break;
-            
-            case StellationController.UnlockType.time:
-                scoreSlider.value = controller.time;
-                scoreSlider.minValue = 0;
-                scoreSlider.wholeNumbers = false;
-                scoreSlider.maxValue = 10;
-                break;
+
         }
 
         unlockTypes.SetValueWithoutNotify(i);

@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class StellationController : MonoBehaviour {
 
-	public enum UnlockType{none, laps, speed, time}
+	public enum UnlockType{laps, speed, pickups}
 	
 	public delegate void StellationEvent();
 
@@ -232,7 +232,7 @@ public class StellationController : MonoBehaviour {
 	public void Won()
 	{
 		won = true;
-		
+
 		//We are in a scene that supports multiple controllers
 		if (StellationManager.instance != null)
 		{
@@ -475,9 +475,14 @@ public class StellationController : MonoBehaviour {
 					s.SwitchState(Spline.SplineState.off);
 				}
 		}
+
+		foreach(Spline s in _escapeSplines){
+			s.SwitchState(Spline.SplineState.off);
+		}
+
 }
 
-	public void EnterEndpoint(Point p){
+	public void DepositCollectible(Point p){
 		//deposit collectible
 		if(Services.PlayerBehaviour.hasCollectible){
 			if(OnDeposit != null){
@@ -490,6 +495,10 @@ public class StellationController : MonoBehaviour {
 	}
 
 	void CheckCompletion(){
+
+		if(unlockMethod != UnlockType.pickups || unlockMethod == UnlockType.speed) return;
+		//need to make a collectible win condition so players arent auto winning
+		//on stellations that arent set up for it
 
 		foreach(Collectible c in collectibles){
 			if(!c.deposited) return;
@@ -699,21 +708,6 @@ public class StellationController : MonoBehaviour {
  
 					//Services.fx.readout.text = (Mathf.Clamp(speedAverage, 0, 100)/(speed) * 100).ToString("F0") + "%";
 				
-				}else if (unlockMethod == UnlockType.time)
-				{
-					
-					if(startIndex > 0){
-						timer += Time.deltaTime;
-						Services.fx.readout.text = Mathf.Clamp((time - timer), 0, 1000).ToString("F1");
-
-						if (time - timer <= 0)
-						{
-							//ResetLevel();
-							Services.fx.readout.text = "-.--";
-						}
-
-					}
-				
 				}else if (unlockMethod == UnlockType.laps){
 				
 					if(laps > 1){
@@ -738,6 +732,7 @@ public class StellationController : MonoBehaviour {
 		if(won) return;
 
 		UpdateLapCount();
+
 		if (!isComplete)
 		{
 			switch (unlockMethod)
@@ -751,13 +746,8 @@ public class StellationController : MonoBehaviour {
 				// isComplete = CheckSpeed();
 
 				break;
-			case UnlockType.time:
-				if(startIndex > 0 && startIndex % _startPoints.Count == 0 && (Services.PlayerBehaviour.curPoint.pointType == PointTypes.start || Services.PlayerBehaviour.curPoint.pointType == PointTypes.end)){
-					isComplete = time - timer > 0;
-				}
-				break;
-			}
 	
+			}
 		}
 
 		if(!won && isComplete){

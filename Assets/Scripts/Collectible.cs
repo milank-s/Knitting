@@ -42,7 +42,7 @@ public class Collectible : MonoBehaviour
             }
         }else{
             if(deposited){
-                transform.Rotate(0, 0, Time.deltaTime * 20);
+                transform.Rotate(0, 0, Time.deltaTime * 60);
                 transform.position = targetPoint.Pos;
             }else{
                 transform.position = Services.PlayerBehaviour.visualRoot.position;
