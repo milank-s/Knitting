@@ -43,12 +43,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157a06c1609e6354b94cb9c220a2c5bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  state: 1
   type: 0
-  controller: {fileID: 0}
+  closed: 0
+  bidirectional: 1
+  drawing: 0
+  drawn: 0
+  hitEnd: 0
+  hitStart: 0
   distortion: 0
   SplinePoints: []
-  Selected: {fileID: 0}
+  pointPositions: []
+  pointVelocities: []
   line:
     m_lineVertices: []
     m_lineUVs: []
@@ -134,17 +139,22 @@ MonoBehaviour:
     m_physicsMaterial: {fileID: 0}
     m_alignOddWidthToPixels: 0
   completion: 0
-  maxSpeed: 0
-  boost: 0
-  acceleration: 0
-  closed: 0
+  alpha: 0.66
+  speed: 0
+  controller: {fileID: 0}
+  state: 1
   order: 0
-  curveFidelity: 10
   isPlayerOn: 0
   reactToPlayer: 0
-  draw: 0
   distance: 0
   segmentDistance: 0
   linearDirection: {x: 0, y: 0}
+  playerIndex: 0
+  selectedIndex: 0
+  upperDrawIndex: 0
+  lowerDrawIndex: 0
+  upperPointIndex: 0
+  lowerPointIndex: 0
+  populatedPointPositions: 0
   lineMaterial: 0
   lineWidth: 1

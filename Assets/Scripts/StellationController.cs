@@ -496,7 +496,7 @@ public class StellationController : MonoBehaviour {
 
 	void CheckCompletion(){
 
-		if(unlockMethod != UnlockType.pickups || unlockMethod == UnlockType.speed) return;
+		if(unlockMethod != UnlockType.pickups || unlockMethod != UnlockType.speed) return;
 		//need to make a collectible win condition so players arent auto winning
 		//on stellations that arent set up for it
 

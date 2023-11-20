@@ -415,8 +415,12 @@ public class MapEditor : MonoBehaviour
     public void ToggleTurtleMode()
     {
         bool on =  turtleUI.activeSelf;
-            turtleUI.SetActive(!on);
-            tooltipParent.gameObject.SetActive(on);
+        turtleUI.SetActive(!on);
+        tooltipParent.gameObject.SetActive(on);
+    }
+
+    public void ToggleCrawlerMode(){
+        
     }
     
     public  void TogglePlayMode()

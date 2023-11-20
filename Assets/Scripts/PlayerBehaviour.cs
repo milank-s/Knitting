@@ -215,7 +215,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		curPoint.OnPlayerEnterPoint();
 
-		flow = Services.main.activeStellation.startSpeed;
 		speed = Services.main.activeStellation.startSpeed;
 		acceleration = Services.main.activeStellation.acceleration;
 		maxSpeed = Services.main.activeStellation.maxSpeed;
@@ -516,9 +515,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if(state == PlayerState.Traversing){
 			if(curSpline.speed > 0 && goingForward){
-				return Mathf.Clamp(flow + boost, 0, maxSpeed);
+				return Mathf.Clamp(flow + boost + speed, 0, maxSpeed);
 			}else{
-				return flow + boost; //* easedAccuracy + boost; //* cursorDir.magnitude;
+				return flow + boost + speed; //* easedAccuracy + boost; //* cursorDir.magnitude;
 			}
 		}
 		if(state == PlayerState.Switching){

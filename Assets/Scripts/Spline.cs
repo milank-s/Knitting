@@ -67,7 +67,7 @@ public class Spline : MonoBehaviour
 
 	[HideInInspector]
 	public float completion;	
-	public float alpha = 0.33f;
+	public float alpha = 0.66f;
 
 	public int numPoints => SplinePoints.Count;
 
