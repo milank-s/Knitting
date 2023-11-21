@@ -162,7 +162,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	public Vector3 cursorPos;
 	[HideInInspector]
 	public Vector2 cursorDir;
-
 	public Vector2 cursorDir2;
 	public Vector3 cursorPos2;
 
@@ -747,7 +746,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	public float GetAccuracy(float prog){
-		prog = Mathf.Clamp01(prog);
+		
+		prog = Mathf.Clamp(prog, 0.01f, 0.99f);
 		
 		Vector3 newDirection = curSpline.GetDirection (prog);
 		if(!goingForward){newDirection = -newDirection;}
@@ -1175,16 +1175,15 @@ public class PlayerBehaviour: MonoBehaviour {
 		int indexdiff = s.SplinePoints.IndexOf (p2) - s.SplinePoints.IndexOf (curPoint);
 
 		if (indexdiff == -1 || indexdiff > 1) {
-			curDirection = s.GetInitVelocity(p2, true);
 			s.SetSelectedPoint(p2);
 			goingForward = false;
-			progress = 1 - Mathf.Epsilon;
-
+			progress = 1;
+			//curDirection = s.GetInitVelocity(p2, true);
 		} else {
-			curDirection = s.GetInitVelocity(p2);
-			progress = 0 + Mathf.Epsilon;
+			progress = 0;
 			goingForward = true;
 			s.SetSelectedPoint(curPoint);
+			//curDirection = s.GetInitVelocity(p2);
 		}
 	}
 
@@ -1342,13 +1341,16 @@ public class PlayerBehaviour: MonoBehaviour {
 				splineDest = maybeNextSpline;
 				pointDest = maybeNextPoint;
 
+
 				if(facingForward){
 					
-					curDirection = splineDest.GetInitVelocity ();
+					curDirection = splineDest.GetInitVelocity (curPoint, false);
 				}else{
 						
 					curDirection = splineDest.GetInitVelocity (pointDest, true);
 				}
+
+				curDirection.Normalize();
 				
 				return true;
 			}

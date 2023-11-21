@@ -646,18 +646,26 @@ public class Spline : MonoBehaviour
 			Gizmos.DrawSphere(Selected.Pos, 0.1f);
 		}
 		
-		Gizmos.color = Color.white;
 
 		Vector3 lastPos = SplinePoints[0].transform.position;
+
+		
+		Gizmos.color = Color.yellow;
+
+		Gizmos.color = Color.white;
 		for(int i = 0; i < SplinePoints.Count - (closed ? 0 : 1); i ++){
 			if(SplinePoints.Count == 2){
 				Gizmos.DrawLine(SplinePoints[0].Pos, SplinePoints[1].Pos);
 			}else{
+			
 			for(int j = 0; j < numSegments; j++){
 				float lerp = (float)(j+1)/(numSegments);
 
 				Vector3 v = GetPointAtIndex(i, lerp);
 				Gizmos.DrawLine(lastPos, v);
+				
+				Gizmos.DrawLine(lastPos, lastPos + GetVelocityAtIndex(i,lerp)/5f);
+				
 				lastPos = v;
 				}
 			}
@@ -975,7 +983,11 @@ public class Spline : MonoBehaviour
 	public Vector3 GetVelocityAtIndex (int i, float t)
 	{
 
+		if(t == 1){t = 0.99f;}else if(t == 0) t = 0.01f;
+		
 		int Count = SplinePoints.Count;
+
+		Vector3 p  = SplinePoints[i].Pos;
 
 		int j = i - 1;
 
@@ -1016,21 +1028,20 @@ public class Spline : MonoBehaviour
 		float continuity = SplinePoints [i].continuity;
 		float bias = SplinePoints [i].bias;
 
-		Vector3 r1 = 0.5f * (1 - tension) * ((1 + bias) * (1 - continuity) * (SplinePoints [i].Pos - Point1.Pos) + (1 - bias) * (1 + continuity) * (Point2.Pos - SplinePoints [i].Pos));
+		Vector3 r1 = 0.5f * (1 - tension) * ((1 + bias) * (1 - continuity) * (p - Point1.Pos) + (1 - bias) * (1 + continuity) * (Point2.Pos - p));
 
 		tension = Point2.tension;
 		continuity = Point2.continuity;
 		bias = Point2.bias;
 
-		Vector3 r2 = 0.5f * (1 - tension) * ((1 + bias) * (1 + continuity) * (Point2.Pos - SplinePoints [i].Pos) + (1 - bias) * (1 - continuity) * (Point3.Pos - Point2.Pos));
+		Vector3 r2 = 0.5f * (1 - tension) * ((1 + bias) * (1 + continuity) * (Point2.Pos - p) + (1 - bias) * (1 - continuity) * (Point3.Pos - Point2.Pos));
+		
+		Vector3 v = GetFirstDerivative (p, Point2.Pos, r1, r2, t);
 
 		
-		Vector3 v = GetFirstDerivative (SplinePoints [i].Pos, Point2.Pos, r1, r2, t);
-
-		// why did I need this
-		// if (v == Vector3.zero && t == 1) {
-		// 	v = GetVelocityAtIndex (i, 0.99f);
-		// }
+		if (v == Vector3.zero) {
+			Debug.Log("bugged velocity at " + t);
+		}
 		return v;
 	}
 

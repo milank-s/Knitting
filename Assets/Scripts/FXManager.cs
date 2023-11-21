@@ -448,7 +448,7 @@ public void Step(){
   {
     graffitiTimer += Time.deltaTime;
     
-    if(graffitiTimer > graffitiInterval && Services.PlayerBehaviour.state == PlayerState.Traversing){
+    if(Services.PlayerBehaviour.easedAccuracy < 0.85f && graffitiTimer > graffitiInterval && Services.PlayerBehaviour.state == PlayerState.Traversing){
         
         line.rectTransform.gameObject.SetActive(true);
         graffitiTimer = 0;
@@ -470,7 +470,7 @@ public void Step(){
         }
 
         line.points3 = positions;
-        line.rectTransform.position = Random.insideUnitSphere * 0.1f;
+        line.rectTransform.position = Random.insideUnitSphere * Mathf.Lerp(0.25f, 0.025f, Services.PlayerBehaviour.easedAccuracy);
 
     // if (playerTrail.positionCount > 0 && playerTrail.positionCount != line.points3.Count)
     // {
