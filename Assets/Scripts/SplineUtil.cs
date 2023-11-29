@@ -25,6 +25,12 @@ public class SplineUtil : MonoBehaviour {
 		Vector2 end = Services.mainCam.WorldToViewportPoint(pos + dir);
 		return (end - start).normalized;
 	}
+
+	public static Vector3 GetScreenSpaceDelta(Vector3 p1, Vector3 p2){
+		Vector2 start = Services.mainCam.WorldToViewportPoint(p1);
+		Vector2 end = Services.mainCam.WorldToViewportPoint(p2);
+		return (end - start).normalized;
+	}
 	static public SplinePointPair ConnectPoints(Spline s, Point p1, Point p2){
 
 		SplinePointPair result = new SplinePointPair();

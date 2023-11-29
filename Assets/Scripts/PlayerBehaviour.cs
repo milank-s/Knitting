@@ -1281,11 +1281,11 @@ public class PlayerBehaviour: MonoBehaviour {
 							//it's a little janky but better than re-entering the same point every frame
 							if(!isGhostPoint && curSpeed < s.speed) continue;
 							
-							curAngle = s.CompareAngleAtPoint (cursorDir, p, out startdir, true);	
+							p2 = s.GetPointAtIndex(nextIndex, 0.8f);	
 							
-						} else if(forward){
-
-							curAngle = s.CompareAngleAtPoint (cursorDir, curPoint, out startdir);
+						} else {
+							
+							p2 = s.GetPointAtIndex(curIndex, 0.2f);
 						}
 					}else{
 
@@ -1293,7 +1293,11 @@ public class PlayerBehaviour: MonoBehaviour {
 						//leave and continue
 						continue;
 					}
-					
+					Debug.DrawLine(transform.position, p2, Color.green);
+
+					p2 = Services.mainCam.WorldToScreenPoint(p2);
+					startdir = (p2 - p1).normalized;
+					curAngle = Vector2.Angle(cursorDir, startdir);
 					
 					if(Mathf.Abs(Vector3.Dot(startdir.normalized, Services.mainCam.transform.forward)) > 0.75f){
 						tangent = true;
@@ -1302,14 +1306,11 @@ public class PlayerBehaviour: MonoBehaviour {
 					//adjustedAngle = screenAngle < curAngle ? screenAngle : curAngle;
 					adjustedAngle = tangent ? directAngle : curAngle;
 					
-					Vector2 screenDir = Services.mainCam.WorldToScreenPoint(curPoint.Pos + startdir);
-					screenDir = (screenDir - p1).normalized;
-
 					if(tangent){
-						Debug.DrawLine(transform.position,pos + Services.mainCam.transform.TransformDirection(toPoint)/3f, Color.blue);
+						Debug.DrawLine(transform.position, pos + Services.mainCam.transform.TransformDirection(toPoint)/3f, Color.blue);
 					}else{
 					//this is being used but is buggy
-						Debug.DrawLine(transform.position,pos + Services.mainCam.transform.TransformDirection((Vector3)screenDir)/3f, Color.magenta);
+						Debug.DrawLine(transform.position, pos + Services.mainCam.transform.TransformDirection((Vector3)startdir)/3f, Color.magenta);
 					}
 					//this isn't being used, just for my own sanity
 					Debug.DrawLine(transform.position,pos + startdir.normalized, Color.black/5f);

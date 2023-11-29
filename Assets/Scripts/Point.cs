@@ -777,7 +777,7 @@ public class Point : MonoBehaviour
 		// c = (Mathf.Sin (3 * (Time.time + timeOffset))/4 + 0.3f) + proximity;
 //		c = proximity + Mathf.Sin(Time.time + timeOffset)/10 + 0.11f;
 		// ACCRETION IS SHOWING POINTS THAT IT SHOULDNT?????
-		c = glow + proximity + (state == PointState.on ? (Mathf.Sin(-Time.time * 2 + timeOffset)/4f + 0.25f) : 0.5f); // + timesHit/5f;
+		c = glow + proximity + (state == PointState.on ? (Mathf.Sin(-Time.time * 2 + timeOffset)/4f + 0.25f) : 0f); // + timesHit/5f;
 		
 		// accretion
 		

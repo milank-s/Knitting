@@ -436,7 +436,7 @@ public class Spline : MonoBehaviour
 
 			if (p != null)
 			{
-				if( p._connectedSplines.Count <= 1){
+				if(p._connectedSplines.Count <= 1){
 					p.SwitchState(Point.PointState.locked);
 				}else{
 
@@ -589,12 +589,17 @@ public class Spline : MonoBehaviour
 
 		if(!drawing && !drawn){
 			
+			SplinePoints[0].SwitchState(Point.PointState.on);
+
 			drawing = true;
 			upperPointIndex = 0;
 			lowerPointIndex = 0;
 			upperDrawIndex = upperPointIndex * curveFidelity + 1;
 			lowerDrawIndex = upperPointIndex * curveFidelity - 2;
 		}
+
+		//I think I need to unlock the first point by hand here
+		//because it's not happening in the flow of drawing
 
 	}
 
@@ -664,7 +669,7 @@ public class Spline : MonoBehaviour
 				Vector3 v = GetPointAtIndex(i, lerp);
 				Gizmos.DrawLine(lastPos, v);
 				
-				Gizmos.DrawLine(lastPos, lastPos + GetVelocityAtIndex(i,lerp)/5f);
+				// Gizmos.DrawLine(lastPos, lastPos + GetVelocityAtIndex(i,lerp)/5f);
 				
 				lastPos = v;
 				}
@@ -1072,14 +1077,26 @@ public class Spline : MonoBehaviour
 
 	public float CompareAngleAtPoint (Vector2 direction, Point p, out Vector3 dir, bool reversed = false)
 	{
-		dir = Vector3.zero;
-		if (reversed) {
-			dir = GetInitVelocity (p, true);
-		} else {
-			dir = GetInitVelocity (p);
-		}
+		// old
+		// dir = Vector3.zero;
+		// if (reversed) {
+		// 	dir = GetInitVelocity (p, true);
+		// } else {
+		// 	dir = GetInitVelocity (p);
+		// }
 
-		return Vector2.Angle(direction, SplineUtil.GetScreenSpaceDirection(p.Pos, dir));
+		// return Vector2.Angle(direction, SplineUtil.GetScreenSpaceDirection(p.Pos, dir));
+
+		//new
+		Vector3 p2 = Vector3.zero;
+
+		if (reversed) {
+			p2 = GetPointAtIndex(GetPointIndex(p), 0.9f);
+		} else {
+			p2 = GetPointAtIndex(GetPointIndex(p), 0.1f);
+		}
+		dir = SplineUtil.GetScreenSpaceDelta(p.Pos, p2);
+		return Vector2.Angle(direction, dir);
 	}
 
 

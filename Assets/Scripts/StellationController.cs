@@ -571,17 +571,23 @@ public class StellationController : MonoBehaviour {
 			
 		}
 
-		if(b && lockSplines){
-			//dont turn everything on, just the start;
-			_splines[0].SwitchState(Spline.SplineState.on);
-		
-		}else{
-			foreach(Spline s in _splines){
-				
+		int i = 0;
+
+		foreach(Spline s in _splines){
+			
+			if(lockSplines){
+				if(b && i == 0){
+					s.SwitchState(Spline.SplineState.on);
+				}else{
+					s.SwitchState(Spline.SplineState.off);
+				}
+			}else{
 				s.SwitchState(b ? Spline.SplineState.on : Spline.SplineState.off);
-				
 			}
+
+			i++;
 		}
+		
 	}
 
 	public bool CheckLapCount(){
