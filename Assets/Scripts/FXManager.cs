@@ -82,6 +82,7 @@ public class FXManager : MonoBehaviour
 
       //Services.PlayerBehaviour.OnStoppedTraversing += BakeTraversingParticles;
       Services.main.OnReset += Reset;
+      
   }
 
     public IEnumerator FlashWord(bool fadeIn = false)
@@ -235,6 +236,7 @@ public void Step(){
 
       showPointsRoutine = null;
   }
+
   public void Reset()
   {
 

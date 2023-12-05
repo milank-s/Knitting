@@ -941,13 +941,14 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (raycastPoint != null && CanFlyToPoint(raycastPoint))	{
 
-			//& !raycastPoint.used
+			if(pointDest != null && raycastPoint != pointDest){
+			pointDest.proximity = 0;
+			}
+
 			Services.fx.ShowNextPoint(raycastPoint);
 
-			//if(buttonDown){
-				pointDest = raycastPoint;
-				stopFlying = true;
-			//}
+			pointDest = raycastPoint;
+			stopFlying = true;
 		}
 		
 		if(pointDest == null && raycastPoint == null){	
@@ -963,10 +964,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			Vector3 flyToPoint = toPoint.normalized * Time.deltaTime * (flyingSpeed);
 			transform.position += Vector3.ClampMagnitude(flyToPoint, toPoint.magnitude);
 			curDirection = toPoint.normalized;
-			// foreach (Spline p in pointDest._connectedSplines)
-			// {
-			// 	p.DrawSpline(p.SplinePoints.IndexOf(pointDest));
-			// }
+			pointDest.proximity = 1;
 
 			if (Vector3.Distance(transform.position, pointDest.Pos) < 0.025f)
 			{
@@ -1088,8 +1086,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	void UpdateProgress(float distanceToTravel){
 		
 		int curSegment = goingForward ? (int)Mathf.Ceil((float)Spline.curveFidelity * progress) : (int)Mathf.Floor((float)Spline.curveFidelity * progress);
-		
-		if(curSegment == 0 && goingForward) Debug.Log("trying to go 0 steps forward won't work");
 
 		Vector3 curPos = pos;
 		float rollingDistance = 0;
@@ -1230,7 +1226,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				if(s.state == Spline.SplineState.off){
 					continue;
 				}else{
-					
 				
 				int curIndex = s.SplinePoints.IndexOf(curPoint);
 				bool endPoint = curIndex == 0 || curIndex == s.SplinePoints.Count-1;
@@ -1239,7 +1234,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				for(int i = -1; i < 2; i+=2){
 
 					int nextIndex = curIndex + i;
-					
 					
 					if(nextIndex < 0){
 						if(!s.closed || s.SplinePoints.Count < 2) continue;
@@ -1307,13 +1301,13 @@ public class PlayerBehaviour: MonoBehaviour {
 					adjustedAngle = tangent ? directAngle : curAngle;
 					
 					if(tangent){
-						Debug.DrawLine(transform.position, pos + Services.mainCam.transform.TransformDirection(toPoint)/3f, Color.blue);
+						Debug.DrawLine(pos, pos + Services.mainCam.transform.TransformDirection(toPoint)/3f, Color.blue);
 					}else{
 					//this is being used but is buggy
-						Debug.DrawLine(transform.position, pos + Services.mainCam.transform.TransformDirection((Vector3)startdir)/3f, Color.magenta);
+						Debug.DrawLine(pos, pos + Services.mainCam.transform.TransformDirection((Vector3)startdir)/3f, Color.magenta);
 					}
 					//this isn't being used, just for my own sanity
-					Debug.DrawLine(transform.position,pos + startdir.normalized, Color.black/5f);
+					Debug.DrawLine(pos ,pos + startdir.normalized, Color.black/5f);
 					
 
 					if (adjustedAngle < minAngle) {

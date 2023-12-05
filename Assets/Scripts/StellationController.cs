@@ -673,6 +673,7 @@ public class StellationController : MonoBehaviour {
 	{
 		if (isPlayerOn)
 		{
+			BoidController.instance.Step();
 			foreach(CrawlerManager c in crawlers){
 				c.Step();
 			}

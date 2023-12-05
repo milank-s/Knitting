@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2827706644148589616}
   - component: {fileID: 7989910785556215261}
   - component: {fileID: 4685415134540697342}
+  - component: {fileID: 3802655628808172680}
   m_Layer: 11
   m_Name: Collectible
   m_TagString: Untagged
@@ -46,10 +47,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71ef1b1717fe8fb49be3fa4d0589878e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  boidBehaviour: {fileID: 3802655628808172680}
   deposited: 0
   hasSpawnpoint: 0
   spawnPoint: {fileID: 0}
-  targetPoint: {fileID: 0}
   collider: {fileID: 4685415134540697342}
 --- !u!54 &7989910785556215261
 Rigidbody:
@@ -80,6 +81,24 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.033
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3802655628808172680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2827706644148591566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c1c3a53f5bfe4f669e843d602570d30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minVelocity: 0
+  maxVelocity: 0
+  randomness: 0
+  target: {fileID: 0}
+  velocity: {x: 0, y: 0, z: 0}
+  controller: {fileID: 0}
 --- !u!1 &5976511618283846539
 GameObject:
   m_ObjectHideFlags: 0
@@ -152,7 +171,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 2d7834e8d51fcd74fbad9ade34866d0b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8e8f5e6da7e863647bd2746e36f27d17, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

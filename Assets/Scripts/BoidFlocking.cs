@@ -7,7 +7,7 @@ public class BoidFlocking : MonoBehaviour
 	public float maxVelocity;
 	public float randomness;
 
-	public Vector3 pointTarget;
+	public Transform target;
 	public Vector3 velocity;
 	public BoidController controller;
 
@@ -49,7 +49,7 @@ public class BoidFlocking : MonoBehaviour
 		
 		Vector3 flockCenter = controller.flockCenter - transform.position;
 		Vector3 flockVelocity = controller.flockVelocity - velocity;
-		Vector3 follow = pointTarget - transform.position;
+		Vector3 follow = target.position - transform.position;
 		Vector3 avoid = transform.position - Services.PlayerBehaviour.pos;
 		
 		return (flockCenter + flockVelocity + (follow * 100) + avoid + randomize * randomness);

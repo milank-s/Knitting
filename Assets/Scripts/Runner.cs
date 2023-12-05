@@ -8,6 +8,7 @@ public class Runner : Crawler
     [SerializeField] Collectible collectible;
     float timer = 0;
     bool caught = false;
+
     public override void Setup(Spline s, bool f)
     {
         base.Setup(s, f);
@@ -27,7 +28,7 @@ public class Runner : Crawler
                 collider.enabled = true;
             }
         }else{
-            transform.position = Services.PlayerBehaviour.visualRoot.position;
+            //transform.position = Services.PlayerBehaviour.visualRoot.position;
         }
     }
 
@@ -35,8 +36,9 @@ public class Runner : Crawler
 
         controller.CheckCrawlers();
         collectible.Pickup();
+        running = false;
+        collider.enabled = false;
         caught = true;
-        Debug.Log("caught");
 
     }
 

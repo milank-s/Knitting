@@ -18,9 +18,13 @@ public class BoidController : MonoBehaviour{
 	void Awake(){
 		instance = this;
 		boids = new List<BoidFlocking>();
+		Services.main.OnReset += OnReset;
 	}
 
-	void Step (){
+	public void OnReset(){
+		boids = new List<BoidFlocking>();
+	}
+	public void Step (){
 	
 		Vector3 theCenter = Vector3.zero;
 		Vector3 theVelocity = Vector3.zero;
