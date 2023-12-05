@@ -49,15 +49,17 @@ public class Collectible : MonoBehaviour
 
         if(!collected){
             if(hasSpawnpoint){
-                //transform.position = spawnPoint.Pos;
+                transform.position = spawnPoint.Pos;
             }
         }else{
             
             if(deposited && !done){
                 
                 transform.position = Vector3.MoveTowards(transform.position, depositPoint.Pos, boidBehaviour.speed * Time.deltaTime);
+                if(Vector3.Distance(transform.position, depositPoint.Pos) < 0.025f) HitPoint();
+
             }else{
-                //transform.position = Services.PlayerBehaviour.visualRoot.position;
+                transform.position = depositPoint.Pos;
             }
         }
     }
@@ -73,13 +75,14 @@ public class Collectible : MonoBehaviour
     }
     
     void HitPoint(){
+        
         Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, depositPoint.transform);
         Services.fx.EmitRadialBurst(20, 1, depositPoint.transform);
-        flocking = false;
-        transform.position = depositPoint.Pos;
         done = true;
-        
+
+        depositPoint.controller.TryToUnlock();
     }
+
     public void Pickup(){
         
         Debug.Log("caught");

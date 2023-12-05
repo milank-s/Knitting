@@ -18,7 +18,8 @@ public class StellationController : MonoBehaviour {
 	public bool lockSplines;
 
 	List<CrawlerManager> crawlers;
-	[HideInInspector]
+	
+	
 	public List<Collectible> collectibles;
 
 	[HideInInspector]
@@ -492,11 +493,9 @@ public class StellationController : MonoBehaviour {
 			Collectible c = Services.PlayerBehaviour.collectibles[0];
 			c.Deposit(p);
 		}
-
-		CheckCompletion();
 	}
 
-	void CheckCompletion(){
+	public void CheckCompletion(){
 
 		if(unlockMethod != UnlockType.pickups || unlockMethod != UnlockType.speed) return;
 		//need to make a collectible win condition so players arent auto winning
@@ -737,7 +736,6 @@ public class StellationController : MonoBehaviour {
 	}
 	public void TryToUnlock()
 	{
-		
 		if(won) return;
 
 		UpdateLapCount();
@@ -755,7 +753,10 @@ public class StellationController : MonoBehaviour {
 				// isComplete = CheckSpeed();
 
 				break;
-	
+
+			case UnlockType.pickups:
+				CheckCompletion();
+				break;
 			}
 		}
 
