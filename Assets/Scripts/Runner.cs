@@ -18,6 +18,7 @@ public class Runner : Crawler
         collectible.collider.enabled = false;
         collectible.SetTarget(transform);
         speed *= (float)(index + 1)/(float)controller.crawlerCount;
+        collectible.flocking = false;
     }
 
     public override void Step()

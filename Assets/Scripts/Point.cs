@@ -645,7 +645,9 @@ public class Point : MonoBehaviour
 			break;
 
 			case PointTypes.normal:
-
+				if(spawnCollectible && collectible.collected){
+					SetPointType(PointTypes.ghost);
+				}
 
 			break;
 			

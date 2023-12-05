@@ -3,8 +3,8 @@ using System.Collections;
 
 public class BoidFlocking : MonoBehaviour
 {
-	public float minVelocity;
-	public float maxVelocity;
+	float minVelocity;
+	float maxVelocity;
 	public float randomness;
  	float noiseOffset;
 	public Transform target;
@@ -14,6 +14,9 @@ public class BoidFlocking : MonoBehaviour
 	public void Start(){
 		noiseOffset = Random.value * 10.0f;
 		BoidController.instance.AddBoid(this);
+		minVelocity = controller.minVelocity;
+		maxVelocity = controller.maxVelocity;
+		transform.forward = Random.onUnitSphere;
 		//this.enabled = false;
 	}
 	public void SetVelocity(Vector3 v){
@@ -27,12 +30,11 @@ public class BoidFlocking : MonoBehaviour
 
         // Current velocity randomized with noise.
         var noise = Mathf.PerlinNoise(Time.time, noiseOffset) * 2.0f - 1.0f;
-        var velocity = controller.minVelocity * (1.0f + noise * controller.velocityVariation);
 
         // Initializes the vectors.
         var separation = Vector3.zero;
-        var alignment = controller.transform.forward;
-        var cohesion = controller.transform.position;
+        var alignment = transform.forward;
+        var cohesion = Vector3.zero;
 
         // Looks up nearby boids.
         var nearbyBoids = Physics.OverlapSphere(currentPosition, controller.neighborDist, controller.searchLayer);
@@ -48,17 +50,24 @@ public class BoidFlocking : MonoBehaviour
         }
 
 		if(nearbyBoids.Length != 0){
+			cohesion = currentPosition;
 			var avg = 1.0f / nearbyBoids.Length;
 			alignment *= avg;
 			cohesion *= avg;
 			cohesion = (cohesion - currentPosition).normalized;
 		}
 
+		Vector3 randomize = new Vector3 ((Random.value *2) -1, (Random.value * 2) -1, (Random.value * 2) -1);
+		randomize = randomize.normalized / 2f;
+
 		Vector3 follow = (target.position - transform.position);
+		if(follow.sqrMagnitude < 1) follow.Normalize();
 		//Vector3 avoid = (transform.position - Services.PlayerBehaviour.pos);
 
         // Calculates a rotation from the vectors.
-        var direction = separation + alignment + cohesion + follow; //+ avoid;
+        var direction = separation + alignment + cohesion + follow + randomize * controller.velocityVariation; //+ avoid;
+
+		float mag = direction.magnitude;
         var rotation = Quaternion.FromToRotation(Vector3.forward, direction.normalized);
 
         // Applys the rotation with interpolation.
@@ -68,6 +77,8 @@ public class BoidFlocking : MonoBehaviour
             transform.rotation = Quaternion.Slerp(rotation, currentRotation, ip);
         }
 
+
+		float velocity = Mathf.Clamp(mag * (1.0f + noise * controller.velocityVariation), controller.minVelocity, controller.maxVelocity);
         // Moves forawrd.
         transform.position = currentPosition + transform.forward * (velocity * Time.deltaTime);
     }

@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class Collectible : MonoBehaviour
 {
-    
-    [SerializeField] BoidFlocking boidBehaviour;
+    public BoidFlocking boidBehaviour;
 
     public bool collected = false; 
     public bool deposited = false;
+    public bool done = false;
+    public bool flocking;
     public bool hasSpawnpoint;
     public Point spawnPoint;
+    Point depositPoint;
     public SphereCollider collider;
     Vector3 startPos;
 
@@ -23,6 +25,7 @@ public class Collectible : MonoBehaviour
         gameObject.SetActive(true);
         collected = false;
         deposited = false;
+        done = false;
 
         if(!hasSpawnpoint){
             transform.position = startPos;
@@ -39,7 +42,9 @@ public class Collectible : MonoBehaviour
 
     public void Update(){
         
-        boidBehaviour.SteerWithNeighbours();
+        if(flocking){
+            boidBehaviour.SteerWithNeighbours();
+        }
 
         if(!collected){
             if(hasSpawnpoint){
@@ -47,9 +52,11 @@ public class Collectible : MonoBehaviour
             }
         }else{
             
-            if(deposited){
-                //transform.Rotate(0, 0, Time.deltaTime * 60);
-                //transform.position = target.position;
+            if(deposited && !done){
+                
+                if(Vector3.Distance(transform.position, depositPoint.Pos) < 0.05f){
+                    HitPoint(); 
+                }
             }else{
                 //transform.position = Services.PlayerBehaviour.visualRoot.position;
             }
@@ -66,6 +73,14 @@ public class Collectible : MonoBehaviour
         boidBehaviour.target = t;
     }
     
+    void HitPoint(){
+        Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, depositPoint.transform);
+        Services.fx.EmitRadialBurst(20, 1, depositPoint.transform);
+        flocking = false;
+        transform.position = depositPoint.Pos;
+        done = true;
+        
+    }
     public void Pickup(){
         
         Debug.Log("caught");
@@ -79,19 +94,16 @@ public class Collectible : MonoBehaviour
         collected = true;
         collider.enabled = false;
 
-        //boidBehaviour.enabled = true;
+        flocking = true;
         boidBehaviour.SetVelocity(transform.forward * Services.PlayerBehaviour.curSpeed);
         boidBehaviour.target = Services.Player.transform;
 
     }
-    
+
     public void Deposit(Point p){
         boidBehaviour.target = p.transform;
+        depositPoint = p;
         deposited = true;
         Services.PlayerBehaviour.hasCollectible = false;
-        Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, transform);
-        Services.fx.EmitRadialBurst(20, 1, transform);
-
-        //boidBehaviour.enabled = false;
     }
 }

@@ -18,7 +18,8 @@ public class StellationController : MonoBehaviour {
 	public bool lockSplines;
 
 	List<CrawlerManager> crawlers;
-	List<Collectible> collectibles;
+	[HideInInspector]
+	public List<Collectible> collectibles;
 
 	[HideInInspector]
 	public bool isComplete;

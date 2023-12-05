@@ -54,8 +54,6 @@ public class BoidController : MonoBehaviour{
 
 	public void AddBoid(BoidFlocking b){
 		boids.Add(b);
-		b.minVelocity = minVelocity;
-		b.maxVelocity = maxVelocity;
 		b.randomness = randomness;
 		b.controller = this;
 		flockSize = boids.Count;

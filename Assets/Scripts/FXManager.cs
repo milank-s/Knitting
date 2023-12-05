@@ -28,13 +28,18 @@ public class FXManager : MonoBehaviour
     public List<GameObject> spawnedSprites;
     private int lineIndex;
     private List<Vector3> linePositions;
-    private VectorLine line;
+    private VectorLine graffiti;
+    private VectorLine collectibles;
     private List<VectorLine> splineDir;
 
     public Image overlay;
 
     public float graffitiInterval = 0.1f;
     float graffitiTimer;
+
+    public float collectLineInterval = 0.1f;
+    float collectLineTimer;
+
     public bool drawGraffiti;
     [SerializeField] private GameObject fxPrefab;
   private int index;
@@ -57,8 +62,12 @@ public class FXManager : MonoBehaviour
           fxInstances.Add(newFX.GetComponent<Animator>());
       }
       
-      line = new VectorLine (name, new List<Vector3> (20), 2, LineType.Continuous, Vectrosity.Joins.Weld);
-      line.color = new Color(0.33f, 0.33f, 0.33f);
+      graffiti = new VectorLine (name, new List<Vector3> (20), 2, LineType.Continuous, Vectrosity.Joins.Weld);
+      graffiti.color = new Color(0.33f, 0.33f, 0.33f);
+
+      collectibles = new VectorLine (name, new List<Vector3> (0), 2, LineType.Discrete, Vectrosity.Joins.Weld);
+      collectibles.color = new Color(0.33f, 0.33f, 0.33f);
+
 
       linesDrawn = new List<VectorLine>();
       lineDirectionRoutine = new List<Coroutine>();
@@ -106,6 +115,7 @@ public class FXManager : MonoBehaviour
 	}
 public void Step(){
     DrawGraffiti();
+    DrawCollectibleConnections();
 }
   public void ShowUnfinished()
   {
@@ -247,8 +257,6 @@ public void Step(){
           graffitiRoutine = null;
       }
 
-      
-
       if(showPointsRoutine != null){
           StopCoroutine(showPointsRoutine);
           showPointsRoutine = null;
@@ -288,7 +296,8 @@ public void Step(){
       
       spawnedSprites.Clear();
       
-      VectorLine.Destroy(ref line);
+      VectorLine.Destroy(ref graffiti);
+      VectorLine.Destroy(ref collectibles);
       
       for(int i = splineDir.Count -1 ; i >= 0; i--)
       {
@@ -296,8 +305,11 @@ public void Step(){
           VectorLine.Destroy(ref v);
       }
       
-      line = new VectorLine (name, new List<Vector3> (0), 1, LineType.Continuous);
-      line.color = new Color(1,1,1);
+      graffiti = new VectorLine (name, new List<Vector3> (0), 1, LineType.Continuous);
+      graffiti.color = new Color(1,1,1);
+
+      collectibles = new VectorLine (name, new List<Vector3> (0), 1, LineType.Discrete);
+      collectibles.color = new Color(1,1,1);
       
       drawGraffiti = false;
   }
@@ -446,13 +458,37 @@ public void Step(){
       linearParticles.Emit(i);
   }
 
+  public void DrawCollectibleConnections(){
+
+    collectLineTimer -= Time.deltaTime;
+
+    if(collectLineTimer < 0){
+        
+        collectibles.rectTransform.gameObject.SetActive(true);
+        collectLineTimer = collectLineInterval;
+
+        List<Vector3> points = new List<Vector3>();
+        foreach(Collectible c in Services.main.activeStellation.collectibles){
+            if(c.boidBehaviour.target != null){
+                //draw line to target
+                points.Add(c.transform.position);
+                points.Add(c.boidBehaviour.target.position);
+            }
+        }
+
+        collectibles.points3 = points;
+        collectibles.Draw3D();
+    }else{
+        collectibles.rectTransform.gameObject.SetActive(false);
+    }
+  }
   public void DrawGraffiti()
   {
     graffitiTimer += Time.deltaTime;
     
     if(Services.PlayerBehaviour.easedAccuracy < 0.85f && graffitiTimer > graffitiInterval && Services.PlayerBehaviour.state == PlayerState.Traversing){
         
-        line.rectTransform.gameObject.SetActive(true);
+        graffiti.rectTransform.gameObject.SetActive(true);
         graffitiTimer = 0;
 
         List<Vector3> pos = new List<Vector3>();
@@ -471,8 +507,8 @@ public void Step(){
             }
         }
 
-        line.points3 = positions;
-        line.rectTransform.position = Random.insideUnitSphere * Mathf.Lerp(0.25f, 0.025f, Services.PlayerBehaviour.easedAccuracy);
+        graffiti.points3 = positions;
+        graffiti.rectTransform.position = Random.insideUnitSphere * Mathf.Lerp(0.25f, 0.025f, Services.PlayerBehaviour.easedAccuracy);
 
     // if (playerTrail.positionCount > 0 && playerTrail.positionCount != line.points3.Count)
     // {
@@ -483,19 +519,19 @@ public void Step(){
         
     // }
 
-        if(line.points3.Count > 0 && Random.Range(0, 100) > 50){
-            int l1 = Random.Range(0, line.points3.Count);
-            int l2 = Random.Range(0, line.points3.Count);
-            Vector3 v1 = line.points3[l1]; 
-            Vector3 v2 = line.points3[l2]; 
-            line.points3[l1] = v2;
-            line.points3[l2] = v1;
+        if(graffiti.points3.Count > 0 && Random.Range(0, 100) > 50){
+            int l1 = Random.Range(0, graffiti.points3.Count);
+            int l2 = Random.Range(0, graffiti.points3.Count);
+            Vector3 v1 = graffiti.points3[l1]; 
+            Vector3 v2 = graffiti.points3[l2]; 
+            graffiti.points3[l1] = v2;
+            graffiti.points3[l2] = v1;
         }
 
-        line.Draw3D();
+        graffiti.Draw3D();
 
         }else{
-            if(line.rectTransform.gameObject.activeSelf)line.rectTransform.gameObject.SetActive(false);
+            if(graffiti.rectTransform.gameObject.activeSelf)graffiti.rectTransform.gameObject.SetActive(false);
         }
     }
   
