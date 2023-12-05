@@ -53,13 +53,15 @@ public class Collectible : MonoBehaviour
             }
         }else{
             
-            if(deposited && !done){
+            if(deposited){
                 
-                transform.position = Vector3.MoveTowards(transform.position, depositPoint.Pos, boidBehaviour.speed * Time.deltaTime);
-                if(Vector3.Distance(transform.position, depositPoint.Pos) < 0.025f) HitPoint();
+                if(done){
+                     transform.position = depositPoint.Pos;
+                }else{
+                    transform.position = Vector3.MoveTowards(transform.position, depositPoint.Pos, boidBehaviour.speed * Time.deltaTime);
+                    if(Vector3.Distance(transform.position, depositPoint.Pos) < 0.025f) HitPoint();
+                }
 
-            }else{
-                transform.position = depositPoint.Pos;
             }
         }
     }
@@ -84,8 +86,6 @@ public class Collectible : MonoBehaviour
     }
 
     public void Pickup(){
-        
-        Debug.Log("caught");
 
         if(Services.main.activeStellation.OnPickup != null){
             Services.main.activeStellation.OnPickup.Invoke();

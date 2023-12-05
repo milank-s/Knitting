@@ -497,10 +497,6 @@ public class StellationController : MonoBehaviour {
 
 	public void CheckCompletion(){
 
-		if(unlockMethod != UnlockType.pickups || unlockMethod != UnlockType.speed) return;
-		//need to make a collectible win condition so players arent auto winning
-		//on stellations that arent set up for it
-
 		foreach(Collectible c in collectibles){
 			if(!c.done) return;
 		}
@@ -750,11 +746,12 @@ public class StellationController : MonoBehaviour {
 			
 			case UnlockType.speed:
 				
-				// isComplete = CheckSpeed();
+				CheckCompletion();
 
 				break;
 
 			case UnlockType.pickups:
+			
 				CheckCompletion();
 				break;
 			}
