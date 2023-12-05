@@ -961,7 +961,10 @@ public class MapEditor : MonoBehaviour
          
          foreach(Point p in selectedPoints){
              p.SetPointType(t);
+             p.AddCollectible(false);
          }
+
+
          
          //play effects
          SynthController.instance.keys[0].PlayNote((int)t * 4 + 60, 0.5f, 0.1f);
@@ -1033,14 +1036,8 @@ public class MapEditor : MonoBehaviour
             yPos.text = "y  " + activePoint.Pos.y.ToString("F2");
             zPos.text = "z  " + activePoint.Pos.z.ToString("F2");
 
-            if(Input.GetKeyDown(KeyCode.P)){
-                activePoint.AddCollectible(!activePoint.spawnCollectible);
-            }
-
-
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-
                 SetPointType(PointTypes.normal);
                 curPointType = PointTypes.normal;
 
@@ -1488,7 +1485,7 @@ public class MapEditor : MonoBehaviour
                 
             }
 
-            newPoint.spawnCollectible = json["p" + i]["collect"];
+            //newPoint.spawnCollectible = json["p" + i]["collect"];
             newPoint.tension = json["p" + i]["tension"];
             newPoint.bias = json["p" + i]["bias"];
             newPoint.continuity = json["p" + i]["continuity"];

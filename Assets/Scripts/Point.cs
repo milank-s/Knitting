@@ -95,7 +95,9 @@ public class Point : MonoBehaviour
 
 	[Header("Interaction")]
 	public bool spawnCollectible;
-	Collectible collectible;
+	public bool recieveCollectible;
+
+	public Collectible collectible;
 	private float cooldown;
 	[HideInInspector]
 	public float timeOffset;
@@ -151,7 +153,7 @@ public class Point : MonoBehaviour
 		data["index"].AsInt = i;
 		data["pointType"].AsInt = (int) pointType;
 		data["word"] = text;
-		data["collect"].AsBool = spawnCollectible;
+		data["collect"].AsBool = false;
 		
 		JSONObject pointText = new JSONObject();
 		
@@ -245,8 +247,8 @@ public class Point : MonoBehaviour
 				collectible.Reset();
 			}
 		}
-		spawnCollectible = b;
 	}
+
 	public void AddForce(Vector3 vel){
 		velocity += vel;
 	}
@@ -263,10 +265,6 @@ public class Point : MonoBehaviour
 	public void Setup()
 	{
 		Initialize();
-
-		if(spawnCollectible){
-			AddCollectible(true);
-		}
 		
 		initPos = transform.position;
 		anchorPos = initPos;
@@ -280,6 +278,14 @@ public class Point : MonoBehaviour
 		
 		SetPointType(pointType);
 
+		if(pointType == PointTypes.normal){
+			spawnCollectible = true;
+			AddCollectible(true);
+		}
+
+		if(pointType == PointTypes.stop || pointType == PointTypes.end || pointType == PointTypes.start){
+			recieveCollectible = true;
+		}
 		
 		if (MapEditor.editing)
 		{
@@ -567,7 +573,10 @@ public class Point : MonoBehaviour
 		SwitchState(PointState.on);
 		
 		controller.TryToUnlock();
-		
+		if(recieveCollectible && collectible == null){			
+			controller.DepositCollectible(this);
+		}
+
 		if(pointType != PointTypes.ghost)
 		{
 			if(Services.main.OnPlayerEnterPoint != null){
@@ -600,8 +609,6 @@ public class Point : MonoBehaviour
 					if(controller.OnHitStart != null){
 						controller.OnHitStart.Invoke();
 					}
-					
-					controller.DepositCollectible(this);
 
 					if (StellationManager.instance != null &&
 					    Services.main.activeStellation != controller)

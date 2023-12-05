@@ -26,6 +26,7 @@ public class Collectible : MonoBehaviour
         collected = false;
         deposited = false;
         done = false;
+        flocking = false;
 
         if(!hasSpawnpoint){
             transform.position = startPos;
@@ -54,9 +55,7 @@ public class Collectible : MonoBehaviour
             
             if(deposited && !done){
                 
-                if(Vector3.Distance(transform.position, depositPoint.Pos) < 0.05f){
-                    HitPoint(); 
-                }
+                transform.position = Vector3.MoveTowards(transform.position, depositPoint.Pos, boidBehaviour.speed * Time.deltaTime);
             }else{
                 //transform.position = Services.PlayerBehaviour.visualRoot.position;
             }
@@ -101,9 +100,11 @@ public class Collectible : MonoBehaviour
     }
 
     public void Deposit(Point p){
+        p.collectible = this;
+        flocking = false;
         boidBehaviour.target = p.transform;
         depositPoint = p;
         deposited = true;
-        Services.PlayerBehaviour.hasCollectible = false;
+        Services.PlayerBehaviour.RemoveCollectible(this);
     }
 }

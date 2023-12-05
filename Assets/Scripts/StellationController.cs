@@ -484,15 +484,13 @@ public class StellationController : MonoBehaviour {
 }
 
 	public void DepositCollectible(Point p){
-		//deposit collectible
 		if(Services.PlayerBehaviour.hasCollectible){
 			if(OnDeposit != null){
 				OnDeposit.Invoke();
 			}
 			
-			foreach(Collectible c in Services.PlayerBehaviour.collectibles){
-				c.Deposit(p);
-			}
+			Collectible c = Services.PlayerBehaviour.collectibles[0];
+			c.Deposit(p);
 		}
 
 		CheckCompletion();
@@ -505,7 +503,7 @@ public class StellationController : MonoBehaviour {
 		//on stellations that arent set up for it
 
 		foreach(Collectible c in collectibles){
-			if(!c.deposited) return;
+			if(!c.done) return;
 		}
 
 		isComplete = true;

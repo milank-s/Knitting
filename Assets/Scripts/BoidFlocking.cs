@@ -9,6 +9,7 @@ public class BoidFlocking : MonoBehaviour
  	float noiseOffset;
 	public Transform target;
 	public Vector3 velocity;
+	public float speed;
 	public BoidController controller;
 
 	public void Start(){
@@ -78,9 +79,9 @@ public class BoidFlocking : MonoBehaviour
         }
 
 
-		float velocity = Mathf.Clamp(mag * (1.0f + noise * controller.velocityVariation), controller.minVelocity, controller.maxVelocity);
+		speed = Mathf.Clamp(mag * (1.0f + noise * controller.velocityVariation), controller.minVelocity, controller.maxVelocity);
         // Moves forawrd.
-        transform.position = currentPosition + transform.forward * (velocity * Time.deltaTime);
+        transform.position = currentPosition + transform.forward * (speed * Time.deltaTime);
     }
 
 	Vector3 GetSeparationVector(Transform t)
