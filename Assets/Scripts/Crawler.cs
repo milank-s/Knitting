@@ -58,9 +58,10 @@ Crawler : MonoBehaviour
             transform.position = spline.GetPointAtIndex(curIndex, progress);
             delta = (transform.position - lastPos);
             lastPos = transform.position;
-            if(delta.sqrMagnitude > 0){
-                transform.forward = delta.normalized;
-            }
+            
+            // if(delta.sqrMagnitude > 0){
+            //     transform.forward = delta.normalized;
+            // }
         }
     }
 

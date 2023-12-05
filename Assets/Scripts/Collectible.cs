@@ -7,7 +7,7 @@ public class Collectible : MonoBehaviour
     
     [SerializeField] BoidFlocking boidBehaviour;
 
-    bool collected = false; 
+    public bool collected = false; 
     public bool deposited = false;
     public bool hasSpawnpoint;
     public Point spawnPoint;
@@ -25,7 +25,7 @@ public class Collectible : MonoBehaviour
         deposited = false;
 
         if(!hasSpawnpoint){
-            //transform.position = startPos;
+            transform.position = startPos;
         }else{
             transform.position = spawnPoint.Pos;
         }
@@ -38,12 +38,14 @@ public class Collectible : MonoBehaviour
     }
 
     public void Update(){
+        
+        boidBehaviour.SteerWithNeighbours();
+
         if(!collected){
             if(hasSpawnpoint){
-                transform.position = spawnPoint.Pos;
+                //transform.position = spawnPoint.Pos;
             }
         }else{
-            boidBehaviour.Steer();
             
             if(deposited){
                 //transform.Rotate(0, 0, Time.deltaTime * 60);
@@ -57,24 +59,32 @@ public class Collectible : MonoBehaviour
     public void SetPoint(Point p){
         spawnPoint = p;
         hasSpawnpoint = true;
+        boidBehaviour.target = p.transform;
+    }
+
+    public void SetTarget(Transform t){
+        boidBehaviour.target = t;
     }
     
     public void Pickup(){
+        
+        Debug.Log("caught");
+
         if(Services.main.activeStellation.OnPickup != null){
             Services.main.activeStellation.OnPickup.Invoke();
         }
 
-        Services.PlayerBehaviour.hasCollectible = true;
-        Services.PlayerBehaviour.collectible = this;
+        Services.PlayerBehaviour.AddCollectible(this);
 
         collected = true;
         collider.enabled = false;
 
-        boidBehaviour.enabled = true;
+        //boidBehaviour.enabled = true;
         boidBehaviour.SetVelocity(transform.forward * Services.PlayerBehaviour.curSpeed);
         boidBehaviour.target = Services.Player.transform;
 
     }
+    
     public void Deposit(Point p){
         boidBehaviour.target = p.transform;
         deposited = true;
@@ -82,6 +92,6 @@ public class Collectible : MonoBehaviour
         Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, transform);
         Services.fx.EmitRadialBurst(20, 1, transform);
 
-        boidBehaviour.enabled = false;
+        //boidBehaviour.enabled = false;
     }
 }

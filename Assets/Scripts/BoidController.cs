@@ -2,6 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 public class BoidController : MonoBehaviour{
+
+	[Range(0.0f, 0.9f)]
+    public float velocityVariation = 0.5f;
+
+    [Range(0.1f, 20.0f)]
+    public float rotationCoeff = 4.0f;
+
+    [Range(0.1f, 10.0f)]
+    public float neighborDist = 2.0f;
+
+    public LayerMask searchLayer;
 	public float minVelocity = 5;
 	public float maxVelocity = 20;
 	public float randomness = 1;

@@ -546,6 +546,12 @@ public class Point : MonoBehaviour
 		timeOnPoint = 0;
 		timesHit++;
 		
+		if(spawnCollectible){
+			if(!collectible.collected){
+				collectible.Pickup();
+			}
+		}
+		
 		OnPointEnter();
 		
 		// if (controller.CheckSpeed())

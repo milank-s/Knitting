@@ -48,7 +48,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float flyingSpeed;
 	public bool hasCollectible;
 
-	public Collectible collectible;
+	public List<Collectible> collectibles;
 	public bool glitching;
 	bool canTraverse;
 	private bool hasFlown = false;
@@ -231,7 +231,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		
 		hasCollectible = false;
-		collectible = null;
+		collectibles = new List<Collectible>();
 
 		if (Services.main.hasGamepad)
 		{
@@ -290,6 +290,18 @@ public class PlayerBehaviour: MonoBehaviour {
 			buttonDownTimer = buttonDownBuffer;
 		}
 
+	}
+
+	public void AddCollectible(Collectible c){
+		collectibles.Add(c);
+		hasCollectible = true;
+	}
+
+	public void RemoveCollectible(Collectible c){
+		collectibles.Remove(c);
+		if(collectibles.Count == 0){
+			hasCollectible = false;
+		}
 	}
 
 	public void OnDrawGizmos(){

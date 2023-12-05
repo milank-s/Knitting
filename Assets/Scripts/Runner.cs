@@ -16,6 +16,7 @@ public class Runner : Crawler
         timer = 0;
         collider.enabled = false;
         collectible.collider.enabled = false;
+        collectible.SetTarget(transform);
         speed *= (float)(index + 1)/(float)controller.crawlerCount;
     }
 

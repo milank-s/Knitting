@@ -488,7 +488,10 @@ public class StellationController : MonoBehaviour {
 			if(OnDeposit != null){
 				OnDeposit.Invoke();
 			}
-			Services.PlayerBehaviour.collectible.Deposit(p);
+			
+			foreach(Collectible c in Services.PlayerBehaviour.collectibles){
+				c.Deposit(p);
+			}
 		}
 
 		CheckCompletion();
