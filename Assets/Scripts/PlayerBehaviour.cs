@@ -1266,7 +1266,8 @@ public class PlayerBehaviour: MonoBehaviour {
 					bool reversing = goingForward != forward;
 					bool canReverse = (endPoint && !s.closed && !intersection); //only double back if its a leaf
 					
-					bool canMove = !reversing || diffSpline || canReverse; // || s.SplinePoints.IndexOf (curPoint) == s.SplinePoints.Count -1;
+					//bool canMove = !reversing || diffSpline || canReverse; // || s.SplinePoints.IndexOf (curPoint) == s.SplinePoints.Count -1;
+					bool canMove = !reversing || !isGhostPoint;
 					
 					// indexDifference > 1 means we looped backwards
 					// indexDifference == -1 means we went backward one point
