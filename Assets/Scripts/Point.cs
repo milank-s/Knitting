@@ -37,14 +37,7 @@ public class Point : MonoBehaviour
 	{
 		get
 		{
-			if (pointType == PointTypes.fly) //|| pointType == PointTypes.end && controller.isComplete
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			return pointType == PointTypes.fly || NeighbourCount() == 0;
 		}
 	}
 
@@ -96,7 +89,6 @@ public class Point : MonoBehaviour
 	[Header("Interaction")]
 	public bool spawnCollectible;
 	public bool recieveCollectible;
-
 	public Collectible collectible;
 	private float cooldown;
 	[HideInInspector]
@@ -295,6 +287,8 @@ public class Point : MonoBehaviour
 
 		if(pointType == PointTypes.normal){
 			spawnCollectible = true;
+			renderer.enabled = false;
+
 			AddCollectible(true);
 		}else{
 			spawnCollectible = false;
@@ -558,11 +552,6 @@ public class Point : MonoBehaviour
 		timeOnPoint = 0;
 		timesHit++;
 		
-		if(spawnCollectible){
-			if(!collectible.collected){
-				collectible.Pickup();
-			}
-		}
 		
 		OnPointEnter();
 		
@@ -578,17 +567,28 @@ public class Point : MonoBehaviour
 		
 		SwitchState(PointState.on);
 		
-		if(recieveCollectible && collectible == null){			
-			controller.DepositCollectible(this);
-		}
-		
-		controller.TryToUnlock();
 
 		if(pointType != PointTypes.ghost)
 		{
 			if(Services.main.OnPlayerEnterPoint != null){
 				Services.main.OnPlayerEnterPoint(this);
 			}
+
+			if(spawnCollectible){
+				if(!collectible.collected){
+					collectible.Pickup();
+				}
+			}
+		
+			if(recieveCollectible && collectible == null){	
+				if(pointType == PointTypes.start){
+					controller.DepositPlayer();
+				}else{
+					controller.DepositCollectible(this);
+				}
+			}
+		
+			controller.TryToUnlock();
 			
 			if(pointType != PointTypes.start || (pointType != PointTypes.start && controller.startIndex != 0)){
 				controller.NextWord();
@@ -627,8 +627,6 @@ public class Point : MonoBehaviour
 					break;
 				
 				case PointTypes.end:
-					
-					controller.DepositCollectible(this);
 
 					if(!controller.isComplete)	{
 						

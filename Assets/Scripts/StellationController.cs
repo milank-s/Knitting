@@ -495,20 +495,39 @@ public class StellationController : MonoBehaviour {
 			
 			Collectible c = Services.PlayerBehaviour.collectibles[0];
 			c.Deposit(p);
-		}else{
-			if(collected){
-				isComplete = true;
-			}
+		}
+	}
+
+	public void DepositPlayer(){
+		if(collected){
+			Debug.Log("player entering deposit point");
+			isComplete = true;
 		}
 	}
 
 	public void CheckCompletion(){
 
+		//doing it on the collectible side
 		foreach(Collectible c in collectibles){
 			if(!c.deposited) return;
 		}
 
+		//doing it on the point side
+		// foreach(Point p in _points){
+		// 	if(p.recieveCollectible && p.collectible == null){
+		// 		return;
+		// 	}
+		// }
+
+		Debug.Log("all collectibles delivered");
+
+		if(!collected) ShowStartPoint();
 		collected = true;
+	}
+
+	void ShowStartPoint(){
+		if(_startPoints.Count == 0) return;
+		Services.fx.PlayAnimationAtPosition(FXManager.FXType.rotate, _startPoints[0].transform);
 	}
 
 	public void LeftStartPoint(){

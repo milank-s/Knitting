@@ -660,7 +660,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			foundConnection = false;
 
-			if (CanConnectFromPoint(curPoint))
+			if (curPoint.pointType == PointTypes.connect)
 			{
 				//freeCursor = true;
 				
@@ -692,7 +692,10 @@ public class PlayerBehaviour: MonoBehaviour {
 			else if (TryToFly())
 				{
 					cursorRenderer.sprite = canFlySprite;
-					if (buttonWasPressed)
+
+					//force flight off neighbourless points
+					
+					if (buttonWasPressed || curPoint.NeighbourCount() == 0)
 					{
 						SwitchState(PlayerState.Flying);
 
@@ -742,19 +745,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				StayOnPoint();
 			}
 		}
-	}
-
-	public bool CanConnectFromPoint(Point p){
-		
-		if(p.pointType == PointTypes.connect){
-			return true;
-		}else{
-			if(p.NeighbourCount() == 0 && p.pointType != PointTypes.reset && p.pointType != PointTypes.fly && p.pointType != PointTypes.ghost){
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	public float GetAccuracy(float prog){
