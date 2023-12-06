@@ -10,12 +10,14 @@ public class Collectible : MonoBehaviour
     public bool deposited = false;
     public bool done = false;
     public bool flocking;
+
     public bool hasSpawnpoint;
     public Point spawnPoint;
     Point depositPoint;
     public SphereCollider collider;
     Vector3 startPos;
-
+    float speed;
+    
     public void Awake(){
         startPos = transform.position;
     }
@@ -58,7 +60,8 @@ public class Collectible : MonoBehaviour
                 if(done){
                      transform.position = depositPoint.Pos;
                 }else{
-                    transform.position = Vector3.MoveTowards(transform.position, depositPoint.Pos, boidBehaviour.speed * Time.deltaTime);
+                    speed += Time.deltaTime;
+                    transform.position = Vector3.MoveTowards(transform.position, depositPoint.Pos, speed * Time.deltaTime);
                     if(Vector3.Distance(transform.position, depositPoint.Pos) < 0.025f) HitPoint();
                 }
 
@@ -81,8 +84,6 @@ public class Collectible : MonoBehaviour
         Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, depositPoint.transform);
         Services.fx.EmitRadialBurst(20, 1, depositPoint.transform);
         done = true;
-
-        depositPoint.controller.TryToUnlock();
     }
 
     public void Pickup(){
@@ -106,6 +107,7 @@ public class Collectible : MonoBehaviour
         p.collectible = this;
         flocking = false;
         boidBehaviour.target = p.transform;
+        speed = boidBehaviour.speed;
         depositPoint = p;
         deposited = true;
         Services.PlayerBehaviour.RemoveCollectible(this);

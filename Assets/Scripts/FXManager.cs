@@ -470,7 +470,7 @@ public void Step(){
         List<Vector3> points = new List<Vector3>();
         foreach(Collectible c in Services.main.activeStellation.collectibles){
             if(c.boidBehaviour.target != null){
-                //draw line to target
+                
                 points.Add(c.transform.position);
                 points.Add(c.boidBehaviour.target.position);
             }

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using AudioHelm;
@@ -277,15 +277,6 @@ public class Point : MonoBehaviour
 		timesHit = 0;
 		
 		SetPointType(pointType);
-
-		if(pointType == PointTypes.normal){
-			spawnCollectible = true;
-			AddCollectible(true);
-		}
-
-		if(pointType == PointTypes.stop || pointType == PointTypes.end || pointType == PointTypes.start){
-			recieveCollectible = true;
-		}
 		
 		if (MapEditor.editing)
 		{
@@ -301,6 +292,21 @@ public class Point : MonoBehaviour
 		{
 			textMesh.color = Color.black;
 		}
+
+		if(pointType == PointTypes.normal){
+			spawnCollectible = true;
+			AddCollectible(true);
+		}else{
+			spawnCollectible = false;
+			AddCollectible(false);
+		}
+
+		recieveCollectible = false;
+		
+		if(pointType == PointTypes.stop || pointType == PointTypes.end || pointType == PointTypes.start){
+			recieveCollectible = true;
+		}
+
 	}
 
 	public void SetPointType(PointTypes t)
@@ -572,10 +578,11 @@ public class Point : MonoBehaviour
 		
 		SwitchState(PointState.on);
 		
-		controller.TryToUnlock();
 		if(recieveCollectible && collectible == null){			
 			controller.DepositCollectible(this);
 		}
+		
+		controller.TryToUnlock();
 
 		if(pointType != PointTypes.ghost)
 		{

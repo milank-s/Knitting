@@ -26,6 +26,7 @@ public class StellationController : MonoBehaviour {
 	public bool isComplete;
 	[HideInInspector]
 	public bool won = false;
+	bool collected = false;
 
 	
 	[Header("Events")]
@@ -443,6 +444,7 @@ public class StellationController : MonoBehaviour {
 		timer = 0;
 		lapCount = 0;
 		isComplete = false;
+		collected = false;
 		won = false;
 		isPlayerOn = false;
 
@@ -485,6 +487,7 @@ public class StellationController : MonoBehaviour {
 }
 
 	public void DepositCollectible(Point p){
+		//use a collectible if we have it
 		if(Services.PlayerBehaviour.hasCollectible){
 			if(OnDeposit != null){
 				OnDeposit.Invoke();
@@ -492,16 +495,20 @@ public class StellationController : MonoBehaviour {
 			
 			Collectible c = Services.PlayerBehaviour.collectibles[0];
 			c.Deposit(p);
+		}else{
+			if(collected){
+				isComplete = true;
+			}
 		}
 	}
 
 	public void CheckCompletion(){
 
 		foreach(Collectible c in collectibles){
-			if(!c.done) return;
+			if(!c.deposited) return;
 		}
 
-		isComplete = true;
+		collected = true;
 	}
 
 	public void LeftStartPoint(){
@@ -730,6 +737,8 @@ public class StellationController : MonoBehaviour {
 	public void NextWord(){
 		//Services.main.text.text += GetNextWord();
 	}
+
+
 	public void TryToUnlock()
 	{
 		if(won) return;

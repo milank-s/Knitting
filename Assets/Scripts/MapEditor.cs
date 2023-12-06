@@ -961,11 +961,8 @@ public class MapEditor : MonoBehaviour
          
          foreach(Point p in selectedPoints){
              p.SetPointType(t);
-             p.AddCollectible(false);
          }
 
-
-         
          //play effects
          SynthController.instance.keys[0].PlayNote((int)t * 4 + 60, 0.5f, 0.1f);
          Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, activePoint.transform);
