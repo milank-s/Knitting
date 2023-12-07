@@ -37,12 +37,6 @@ public class Collectible : MonoBehaviour
         }
     }
 
-    public void OnTriggerEnter(Collider col){
-        if(!Services.PlayerBehaviour.hasCollectible){
-            Pickup();
-        }
-    }
-
     public void Update(){
         
         if(flocking){

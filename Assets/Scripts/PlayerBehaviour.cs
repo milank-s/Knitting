@@ -1022,16 +1022,15 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				speedGain = 0;
 				
-				if(flow < splineSpeed){
-					flow = splineSpeed;
+				if(boost < splineSpeed){
+					boost = splineSpeed;
 				}	
 				
 			}else{
-				speedGain = -speedGain;
+				
 				speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
 
-				// flow -= splineSpeed * Time.deltaTime;		
-				boost -= splineSpeed * Time.deltaTime;
+				flow -= splineSpeed/2f  * Time.deltaTime;		
 			}
 		}else{
 			// speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
@@ -1043,7 +1042,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			flow += speedGain * decay * Time.deltaTime;
 		}
 
-		flow = Mathf.Clamp(flow, 0, maxSpeed);
+		//flow = Mathf.Clamp(flow, 0, maxSpeed);
 
 		//flow -= Mathf.Clamp01(-gravityPull) * Time.deltaTime;
 
@@ -1259,8 +1258,11 @@ public class PlayerBehaviour: MonoBehaviour {
 					bool reversing = goingForward != forward && !diffSpline;
 					bool canReverse = (endPoint && !s.closed && !intersection); //only double back if its a leaf
 					
-					//bool canMove = !reversing || diffSpline || canReverse; // || s.SplinePoints.IndexOf (curPoint) == s.SplinePoints.Count -1;
-					bool canMove = !reversing || diffSpline || !isGhostPoint;
+					//if we're not reversing, go on
+					//if we're going in a diff direction on a diff spline, fine
+					//if we're not a ghost point, sure
+					//if we're a ghostpoint on a leaf, no way out
+					bool canMove = !reversing || diffSpline || !isGhostPoint || canReverse;
 					
 					// indexDifference > 1 means we looped backwards
 					// indexDifference == -1 means we went backward one point
@@ -1279,7 +1281,7 @@ public class PlayerBehaviour: MonoBehaviour {
 							
 							//don't enter conveyor belts that will instantly push you back
 							//it's a little janky but better than re-entering the same point every frame
-							if(!isGhostPoint && curSpeed < s.speed) continue;
+							if(!isGhostPoint && curSpeed < s.speed/2f) continue;
 							
 							p2 = s.GetPointAtIndex(nextIndex, 0.8f);	
 							
