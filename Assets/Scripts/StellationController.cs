@@ -26,7 +26,7 @@ public class StellationController : MonoBehaviour {
 	public bool isComplete;
 	[HideInInspector]
 	public bool won = false;
-	bool collected = false;
+	public bool collected = false;
 
 	
 	[Header("Events")]

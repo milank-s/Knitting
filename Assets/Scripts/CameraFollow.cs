@@ -5,6 +5,7 @@ public class CameraFollow : MonoBehaviour {
 	public float speed;
 	public Camera uiCam;
 	public Transform target;
+	public Vector3 pos;
 	private Vector3 velocity = Vector2.zero;
 	Vector3 nudge;
 	Vector3 offset;
@@ -54,7 +55,7 @@ public class CameraFollow : MonoBehaviour {
 		//find its bounds
 		// get around them
 		
-		Vector3 pos = Services.PlayerBehaviour.pos;
+		pos = Services.PlayerBehaviour.pos;
 		Vector3 playerDir = Services.PlayerBehaviour.curDirection;
 		Vector3 toPlayer;
 
@@ -149,7 +150,8 @@ public class CameraFollow : MonoBehaviour {
 		yPos = Mathf.Lerp(CameraDolly.bottomBound, CameraDolly.topBound, 0.5f);
 		xPos = Mathf.Lerp(CameraDolly.leftBound, CameraDolly.rightBound, 0.5f);
 
-		transform.position = pos + offset;
+		pos = pos + offset;
+		transform.position = pos;
 		forward = transform.forward;
 	}
 }

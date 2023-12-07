@@ -98,7 +98,6 @@ public class Point : MonoBehaviour
 	public int note;
 	
 
-	[HideInInspector]
 	public Color color;
 	[HideInInspector]
 	public float c = 0;
@@ -205,7 +204,7 @@ public class Point : MonoBehaviour
 		}
 		else
 		{
-			mat.color = color;
+			mat.color = Color.black;
 		}
 //		stiffness = 1600;
 //		damping = 1000;
@@ -274,10 +273,6 @@ public class Point : MonoBehaviour
 		{
 			color = Color.white;
 			c = 1;
-		}
-		else
-		{
-			color = Color.clear;
 		}
 
 		if (text != "" && textMesh != null)
@@ -355,6 +350,15 @@ public class Point : MonoBehaviour
 			
 			distortion = Mathf.Lerp(distortion, 0, Time.deltaTime * 2);
 			glow = Mathf.Lerp(glow, 0, Time.deltaTime * 2);
+
+			//this is probably not optimized
+			renderer.transform.rotation = Quaternion.LookRotation((CameraFollow.instance.pos - Pos).normalized, renderer.transform.up);
+			
+			if(pointType == PointTypes.start){
+				if(controller.collected){
+					renderer.transform.Rotate(0, 0, 200 * Time.deltaTime, Space.Self);
+				}
+			}
 
 			if (!isKinematic)
 			{

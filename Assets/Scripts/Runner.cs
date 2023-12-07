@@ -48,10 +48,11 @@ public class Runner : Crawler
     {
             base.GetNextPoint();
     }
+    
     public override void OnTriggerEnter(Collider col){
         if(Services.PlayerBehaviour.state != PlayerState.Traversing) return;
 
-        if(!Services.PlayerBehaviour.hasCollectible && Services.PlayerBehaviour.curSpeed > speed && Services.PlayerBehaviour.curPoint == point && forward == Services.PlayerBehaviour.goingForward){
+        if(Services.PlayerBehaviour.curSpeed > speed && Services.PlayerBehaviour.curPoint == point && forward == Services.PlayerBehaviour.goingForward){
            Caught();
         }
     }

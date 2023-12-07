@@ -331,6 +331,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void Step()
 	{
 
+		//make everything look at the camera
+		glitchFX.transform.LookAt(CameraFollow.instance.pos);
+
 		if(curDirection.sqrMagnitude > 0){
 			visualRoot.rotation = Quaternion.LookRotation(curDirection, CameraFollow.forward);
 		}
@@ -695,7 +698,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 					//force flight off neighbourless points
 					
-					if (buttonWasPressed || curPoint.NeighbourCount() == 0)
+					if (curPoint.CanLeave())
 					{
 						SwitchState(PlayerState.Flying);
 
@@ -1253,11 +1256,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 					int indexDifference = nextIndex - curIndex;
 					bool diffSpline = s != curSpline;
-					bool reversing = goingForward != forward;
+					bool reversing = goingForward != forward && !diffSpline;
 					bool canReverse = (endPoint && !s.closed && !intersection); //only double back if its a leaf
 					
 					//bool canMove = !reversing || diffSpline || canReverse; // || s.SplinePoints.IndexOf (curPoint) == s.SplinePoints.Count -1;
-					bool canMove = !reversing || !isGhostPoint;
+					bool canMove = !reversing || diffSpline || !isGhostPoint;
 					
 					// indexDifference > 1 means we looped backwards
 					// indexDifference == -1 means we went backward one point
