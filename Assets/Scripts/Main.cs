@@ -403,7 +403,7 @@
 		
 		//why the fuck am I not initializing the stellation here
 		//and why on gods green earth would the controller not init the spline
-		
+
 		// if (Spline.Splines.Count > 0){
 		// 	for (int i = Spline.Splines.Count - 1; i >= 0; i--)
 		// 	{
@@ -420,9 +420,8 @@
 		// }
 
 		//activeStellation.Setup();
-
+		// ..when are we deciding what the active stellation is?
 		activeStellation.Initialize();
-		activeStellation.OnPlayerEnter();
 
 		if (Services.StartPoint == null && Point.Points.Count > 0)
 		{
@@ -473,6 +472,8 @@
 		Cursor.lockState = CursorLockMode.Locked;
 		state = GameState.playing;
 		
+		activeStellation.OnPlayerEnter();
+
 		Services.Player.SetActive(true);
 		Services.PlayerBehaviour.Initialize();
 	}

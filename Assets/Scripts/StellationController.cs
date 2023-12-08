@@ -277,27 +277,29 @@ public class StellationController : MonoBehaviour {
 		_startPoints = new List<Point>();
 
 		Spline[] splines = GetComponentsInChildren<Spline>();
-		Array.Sort(splines, delegate(Spline x, Spline y) { return x.order.CompareTo(y.order); });
+		if(splines.Length > 0){
+			Array.Sort(splines, delegate(Spline x, Spline y) { return x.order.CompareTo(y.order); });
 
-		int index = 0;
+			int index = 0;
 
-		if (splines.Length == 0)
-		{
-			return;
-		}
-	
-		for (int i = 0; i < splines.Length; i++)
-		{
-			Spline s = splines[i];
-			s.Initialize();
-			
-			s.order = i;
-			
-			_splines.Add(s);
-			s.SetSplineType(s.type);
-			
-			s.controller = this;
-			index++;
+			if (splines.Length == 0)
+			{
+				return;
+			}
+		
+			for (int i = 0; i < splines.Length; i++)
+			{
+				Spline s = splines[i];
+				s.Initialize();
+
+				s.order = i;
+				
+				_splines.Add(s);
+				s.SetSplineType(s.type);
+				
+				s.controller = this;
+				index++;
+			}
 		}
 
 		crawlers = GetComponentsInChildren<CrawlerManager>().ToList();
