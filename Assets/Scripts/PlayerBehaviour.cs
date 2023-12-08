@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Vectrosity;
 using UnityEngine.InputSystem;
+using UnityEditor;
 
 public enum PlayerState{Traversing, Switching, Flying, Animating};
 
@@ -28,7 +29,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float maxSpeed = 10;
 	public float flyingSpeedDecay = 1;
 	public float accuracyCoefficient;
-	public float flowAmount = 0.1f;
 	public float stopTimer = 2f;
 	[Space(10)] [Header("Cursor Control")]
 	public float cursorMoveSpeed = 1;
@@ -88,6 +88,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	[HideInInspector]
 	public Vector3 curDirection;
+
+	[HideInInspector]
+	public Vector2 screenSpacePos;
 
 	[HideInInspector]
 	public Vector2 screenSpaceDir;
@@ -309,9 +312,25 @@ public class PlayerBehaviour: MonoBehaviour {
 			hasCollectible = false;
 		}
 	}
+	void OnGUI()
+	{
+		if (Application.isEditor)  // or check the app debug flag
+		{
+			Rect r = new Rect(Screen.width - 200, Screen.height - 100, 200, 100);
+			
+			GUI.Label(r, "curSpeed: " + curSpeed.ToString("F1"));
+			r.y -=20;
+			GUI.Label(r, "flow: " + flow.ToString("F1"));
+			r.y -=20;
+			GUI.Label(r, "boost: " + boost.ToString("F1"));
 
+		}
+	}
 	public void OnDrawGizmos(){
 		if(state == PlayerState.Traversing){
+			
+			Handles.Label(transform.position, "Text");
+
 
 			Gizmos.color = Color.blue;
 			Gizmos.DrawCube(curPoint.Pos, Vector3.one * 0.1f);
@@ -349,6 +368,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		Vector2 p1 = Services.mainCam.WorldToScreenPoint(pos);
 		Vector2 p2 = Services.mainCam.WorldToScreenPoint(pos + curDirection);
 
+		screenSpacePos = p1;
 		screenSpaceDir = (p2 - p1).normalized;
 
 		Debug.DrawLine(pos, pos + Services.mainCam.transform.TransformDirection(cursorDir)/5f, Color.cyan);
@@ -1010,7 +1030,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		// float gravityPull = -curDirection.y - curDirection.z;
 		
 		boost -= Time.deltaTime * decay;
-
 		onBelt = splineSpeed > 0;
 		
 		if(onBelt){
