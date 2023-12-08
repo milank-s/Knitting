@@ -35,6 +35,7 @@ Crawler : MonoBehaviour
     {
         speed = baseSpeed;
         curIndex = f? 0 : s.SplinePoints.Count - 1;
+        point = s.SplinePoints[curIndex];
         forward = f;
         progress = forward ? 0 : 1;
         spline = s;
@@ -50,13 +51,15 @@ Crawler : MonoBehaviour
         if (running)
         {
             if(progress < 0 || progress > 1){
-                OnPoint();
+                if(point.pointType != PointTypes.ghost){
+                    OnPoint();
+                }
                 GetNextPoint();
             }
 
             boost = Mathf.Lerp(boost, 0, Time.deltaTime * 2);
             //why arent we dividing by distance?
-            progress += (Time.deltaTime * (speed + boost) * dir)/distance;
+            progress += (((speed + boost) * dir)/(distance)) * Time.deltaTime;
                
             //hacky fix to spline distances not being populated at first
 
@@ -94,6 +97,7 @@ Crawler : MonoBehaviour
     }
 
     public virtual void OnPoint(){
+        
         boost += Point.boostAmount;
     }
     public virtual void GetNextPoint()

@@ -99,7 +99,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	[HideInInspector]
 	public float deltaAngle;
 
-	public float potentialSpeed => flow + speed + boost;
+	public float potentialSpeed => flow + boost;
 	public float easedAccuracy;
 	public float easedDistortion;
 
@@ -479,13 +479,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			CalculateMoveSpeed ();
 			curSpeed = GetSpeed();
 
-			if(!onBelt && curSpeed <= 0){
+			if(!onBelt && potentialSpeed <= 0){
 				Lose();
 				return;
 			}
 			
 			UpdateProgress(curSpeed * Time.deltaTime);
-			
 			UpdatePositionOnSpline();
 			CheckProgress ();
 
@@ -548,7 +547,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(curSpline.speed > 0 && goingForward){
 				return Mathf.Clamp(boost + flow, 0, maxSpeed);
 			}else{
-				return boost + (flow * easedAccuracy); //* easedAccuracy + boost; //* cursorDir.magnitude;
+				return boost + flow; // (flow * easedAccuracy); //* easedAccuracy + boost; //* cursorDir.magnitude;
 			}
 		}
 		if(state == PlayerState.Switching){
@@ -1745,7 +1744,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				if(curPoint.pointType != PointTypes.ghost){
 					
 					//store current speed
-					// flow = curSpeed;
+					flow = curSpeed;
+					boost = 0;
 					
 					if(OnEnterPoint != null){
 						OnEnterPoint.Invoke();
