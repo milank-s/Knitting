@@ -210,7 +210,7 @@ public class SceneController : MonoBehaviour
         {
             //we're in the editor, pop them out into it
 
-            Services.main.ResetLevel();
+            Services.main.ToggleEditMode();
             return;
 
         }
@@ -235,9 +235,9 @@ public class SceneController : MonoBehaviour
         
         if (curSetIndex == -1 && curLevelName == "")
         {
-            //we're in the editor, pop player out
-            
-            Services.main.ResetLevel();
+            //we're in the editor, pop player out            
+            Services.main.ToggleEditMode();
+
             return;
 
         }
@@ -251,22 +251,22 @@ public class SceneController : MonoBehaviour
     }
 
     //when loading a stellation file
-	public void LoadFile()
+	public void LoadFile(string fileName)
 	{
-
-		curLevelName = GetCurLevel();
 
 		if (SceneController.instance.activeScenes.Count > 0)
 		{
 			SceneController.instance.UnloadStellation(SceneController.instance.activeScenes[0]);
 		}
 		
-		StellationController c = MapEditor.instance.Load(curLevelName);
-		Services.main.activeStellation = c;
+		Services.main.activeStellation = MapEditor.instance.Load(fileName);
 		
-		if (!MapEditor.editing)
+		
+        //I think a better way to check this is whether curlevelIndex is -1?
+        // if (!MapEditor.editing)
+		if (curSetIndex == -1)
 		{
-			SceneController.instance.activeScenes.Add(c);
+			SceneController.instance.activeScenes.Add(Services.main.activeStellation);
 		}
 
 		Services.main.InitializeLevel();
@@ -323,7 +323,8 @@ public class SceneController : MonoBehaviour
 			if(curLevelSet.isScene){
 				LoadScene();
 			}else{
-				LoadFile();
+                curLevelName = GetCurLevel();
+				LoadFile(curLevelName);
 			}
 		}
 	}

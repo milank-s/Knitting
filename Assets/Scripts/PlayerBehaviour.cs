@@ -61,6 +61,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	
 	[HideInInspector]
 	public bool goingForward = true;
+	bool onBelt = false;
 	public bool facingForward;
 
 	public delegate void StateChange();
@@ -458,13 +459,13 @@ public class PlayerBehaviour: MonoBehaviour {
 			CalculateMoveSpeed ();
 			curSpeed = GetSpeed();
 
-		
-			if (curSpeed <= 0.01f && state == PlayerState.Traversing) {
+			if(!onBelt && curSpeed <= 0){
 				Lose();
 				return;
 			}
 			
 			UpdateProgress(curSpeed * Time.deltaTime);
+			
 			UpdatePositionOnSpline();
 			CheckProgress ();
 
@@ -527,7 +528,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(curSpline.speed > 0 && goingForward){
 				return Mathf.Clamp(boost + flow, 0, maxSpeed);
 			}else{
-				return boost + flow; //* easedAccuracy + boost; //* cursorDir.magnitude;
+				return boost + (flow * easedAccuracy); //* easedAccuracy + boost; //* cursorDir.magnitude;
 			}
 		}
 		if(state == PlayerState.Switching){
@@ -1008,9 +1009,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		// float gravityCoefficient = Mathf.Clamp01(-curDirection.y);
 		// float gravityPull = -curDirection.y - curDirection.z;
 		
-		//boost -= Time.deltaTime * decay;
+		boost -= Time.deltaTime * decay;
 
-		bool onBelt = splineSpeed > 0;
+		onBelt = splineSpeed > 0;
 		
 		if(onBelt){
 			if(goingForward){
@@ -1028,11 +1029,11 @@ public class PlayerBehaviour: MonoBehaviour {
 				}	
 				
 			}else{
-				
 				speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
 				boost -= splineSpeed  * Time.deltaTime;		
 			}
 		}else{
+			
 			
 			flow = Mathf.Clamp(flow, 0, maxSpeed);
 			boost = Mathf.Clamp(boost, 0, maxSpeed);
@@ -1051,7 +1052,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if(onBelt && !goingForward && curSpeed <= Mathf.Epsilon){
 			//ok they're being pushed back
-			//ReverseDirection();
+			ReverseDirection();
 		}
 	}
 
@@ -1284,7 +1285,8 @@ public class PlayerBehaviour: MonoBehaviour {
 							
 							//don't enter conveyor belts that will instantly push you back
 							//it's a little janky but better than re-entering the same point every frame
-							if(!isGhostPoint && curSpeed < s.speed/2f) continue;
+							
+							//if(!isGhostPoint && curSpeed < s.speed) continue;
 							
 							p2 = s.GetPointAtIndex(nextIndex, 0.8f);	
 							
@@ -1540,11 +1542,10 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 				}
 
-				curPoint.OnPointExit();
-
 				if(curPoint.pointType != PointTypes.ghost){
 
-					boost += Point.boostAmount * (1 + Services.PlayerBehaviour.boostTimer);
+					boost += Point.boostAmount; // * (1 + Services.PlayerBehaviour.boostTimer);
+					
 					Services.fx.SpawnCircle(curPoint.transform);
 					
 					if (buttonWasPressed)
@@ -1562,6 +1563,8 @@ public class PlayerBehaviour: MonoBehaviour {
 					Services.fx.EmitLinearBurst((int)(boostTimer * 5), boostTimer * 2,transform, cursorDir2);
 					boostTimer = 0;
 				}
+				
+				curPoint.OnPointExit();
 
 				connectTime = 1;
 
@@ -1649,7 +1652,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				pointDest = null;
 				l.positionCount = 0;
 
-				flyingSpeed = flow + speed;
+				flyingSpeed = curSpeed;
 
 				//THIS MAY NOT BE NECESSARY UNLESS WE CAN FLY OFF OF SPLINES, NOT JUST POINTS
 				//curPoint.OnPointExit();
@@ -1693,7 +1696,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				state = PlayerState.Switching;
 
 				timeOnPoint = 0;
-				
 
 				if (curPoint == null)
 				{
@@ -1722,6 +1724,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				curPoint = pointDest;
 				
 				if(curPoint.pointType != PointTypes.ghost){
+					
+					//store current speed
+					// flow = curSpeed;
 					
 					if(OnEnterPoint != null){
 						OnEnterPoint.Invoke();

@@ -269,41 +269,46 @@ public class StellationController : MonoBehaviour {
 		
 	}
 
-	//we need to distinguish when a controller is being set up for the editor
-	//or if the player is going to use it to play
-	public void InitializeForPlay(){
-		//spawn crawlers
-		//spawn collectibles on relevant points
-	}
 	public void Initialize()
 	{
-
-		//list of positions for collectibles to spawn at?
-
 		_points = new List<Point>();
 		_splines = new List<Spline>();
 		_escapeSplines = new List<Spline>();
 		_startPoints = new List<Point>();
 
+		Spline[] splines = GetComponentsInChildren<Spline>();
+		Array.Sort(splines, delegate(Spline x, Spline y) { return x.order.CompareTo(y.order); });
+
+		int index = 0;
+
+		if (splines.Length == 0)
+		{
+			return;
+		}
 	
+		for (int i = 0; i < splines.Length; i++)
+		{
+			Spline s = splines[i];
+			s.Initialize();
+			
+			s.order = i;
+			
+			_splines.Add(s);
+			s.SetSplineType(s.type);
+			
+			s.controller = this;
+			index++;
+		}
+
 		crawlers = GetComponentsInChildren<CrawlerManager>().ToList();
 
 		foreach(CrawlerManager c in crawlers){
 			c.Initialize();
 		}
-
-		//stupid code for old maps that didnt have scoreCount idk. 
-		if (unlockMethod == UnlockType.laps && laps == 0)
-		{
-			
-		}
 		
 		foreach(Point p in GetComponentsInChildren<Point>()){
 			//expensive but easy
 			AddPoint(p);
-			if(p.spawnCollectible){
-
-			}
 		}
 
 		if (_points.Count == 0) return;
@@ -349,31 +354,7 @@ public class StellationController : MonoBehaviour {
 			}
 		}
 
-		
-		Spline[] splines = GetComponentsInChildren<Spline>();
-		Array.Sort(splines, delegate(Spline x, Spline y) { return x.order.CompareTo(y.order); });
-
-		int index = 0;
-
-		if (splines.Length == 0)
-		{
-			return;
-		}
-	
-		for (int i = 0; i < splines.Length; i++)
-		{
-			Spline s = splines[i];
 			
-			s.order = i;
-			
-			_splines.Add(s);
-			s.SetSplineType(s.type);
-			
-			s.controller = this;
-			index++;
-		}
-
-		
 		//stopgap to test chasing crawler;
 		
 		if(!spawnedCrawler && unlockMethod == UnlockType.speed){

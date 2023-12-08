@@ -49,7 +49,7 @@ public class Point : MonoBehaviour
 
 	public static float hitColorLerp;
 	public static int pointCount = 0;
-	public static float boostAmount = 0.5f;
+	public static float boostAmount = 1f;
 	public float distortion;
 	float glow;
 
@@ -89,6 +89,7 @@ public class Point : MonoBehaviour
 	[Header("Interaction")]
 	public bool spawnCollectible;
 	public bool recieveCollectible;
+	public bool hasCollectible;
 	public Collectible collectible;
 	private float cooldown;
 	[HideInInspector]
@@ -400,7 +401,7 @@ public class Point : MonoBehaviour
 
 	public void Reset()
 	{
-
+		hasCollectible = false;
 		usedToFly = false;
 		anchorPos = initPos;
 		transform.position = initPos;
@@ -584,7 +585,7 @@ public class Point : MonoBehaviour
 				}
 			}
 		
-			if(recieveCollectible && collectible == null){	
+			if(recieveCollectible && !hasCollectible){	
 				if(pointType == PointTypes.start){
 					controller.DepositPlayer();
 				}else{
@@ -651,7 +652,6 @@ public class Point : MonoBehaviour
 
 		switch(pointType){
 			case PointTypes.stop:
-//				Services.PlayerBehaviour.flow += 0.1f;
 
 			break;
 

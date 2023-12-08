@@ -160,9 +160,20 @@
 		}else{
 			//this doesnt work for the editor
 			if(SceneController.instance.curSetIndex != -1){
-				SceneController.instance.LoadFile();
+				
+				//did this shit ever fucking work?
+				SceneController.instance.LoadFile(activeStellation.title);
 			}else{
-				ToggleEditMode();
+				//this is fucking up because when collectibles are picked up
+				//you change the point types
+				//need a full reset not just a reinit
+
+				// editor.TogglePlayMode();
+
+				//this is fucking up because you're not resetting and level is never initialized
+				FullReset();
+				SceneController.instance.LoadFile(activeStellation.title);
+
 			}
 		}	
 
@@ -389,28 +400,28 @@
 	}
 
 	public void InitializeLevel(){
-		//this is doubling up the initialization done by the manager?
 		
-		//the stellation initializes its points on start...
-		//we may be forgiven for only initializing splines?
-		if (Spline.Splines.Count > 0){
-			for (int i = Spline.Splines.Count - 1; i >= 0; i--)
-			{
+		//why the fuck am I not initializing the stellation here
+		//and why on gods green earth would the controller not init the spline
+		
+		// if (Spline.Splines.Count > 0){
+		// 	for (int i = Spline.Splines.Count - 1; i >= 0; i--)
+		// 	{
 
-				if (Spline.Splines[i] == null)
-				{
-					Spline.Splines.RemoveAt(i);
-				}
-				else
-				{
-					Spline.Splines[i].Initialize();
-				}
-			}
-		}
+		// 		if (Spline.Splines[i] == null)
+		// 		{
+		// 			Spline.Splines.RemoveAt(i);
+		// 		}
+		// 		else
+		// 		{
+		// 			Spline.Splines[i].Initialize();
+		// 		}
+		// 	}
+		// }
 
-		//this needs to work for the editor to work
-		//but I dont like it
-		activeStellation.Setup();
+		//activeStellation.Setup();
+
+		activeStellation.Initialize();
 		activeStellation.OnPlayerEnter();
 
 		if (Services.StartPoint == null && Point.Points.Count > 0)
@@ -420,6 +431,9 @@
 
 
 		OnReset.Invoke();
+
+		//we need a way of knowing if we are already in the leve
+		//so we don't flash the title every time
 
 		if (!MapEditor.editing)
 		{
@@ -450,7 +464,7 @@
 		Services.fx.title.text = activeStellation.title;
 		Services.fx.overlay.color = Color.black;
 
-		yield return new WaitForSeconds(1);
+		yield return new WaitForSeconds(0.25f);
 
 		Services.fx.overlay.color = Color.clear;
 		Services.fx.title.text = "";

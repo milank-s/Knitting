@@ -51,73 +51,73 @@ public class StellationRecorder : MonoBehaviour
             line.points3 = positions;
         }
     }
-    public void GenerateStellation(){
-        //use cursortrail
+    // public void GenerateStellation(){
+    //     //use cursortrail
 
-        Services.main.state = Main.GameState.paused;
+    //     Services.main.state = Main.GameState.paused;
 
-        Point.Points.Clear();
-        Spline.Splines.Clear();
-        StellationController curStellation = Services.main.activeStellation;
+    //     Point.Points.Clear();
+    //     Spline.Splines.Clear();
+    //     StellationController curStellation = Services.main.activeStellation;
         
-        int children = curStellation.transform.childCount;
-        for(int i = 0; i < children; i++){
-            if( curStellation.transform.GetChild(i) != curStellation.transform){
-                Destroy(curStellation.transform.GetChild(i).gameObject);
-            }
-        }
+    //     int children = curStellation.transform.childCount;
+    //     for(int i = 0; i < children; i++){
+    //         if( curStellation.transform.GetChild(i) != curStellation.transform){
+    //             Destroy(curStellation.transform.GetChild(i).gameObject);
+    //         }
+    //     }
 
-        //Vector3[] positions = new Vector3[Services.fx.cursorTrail.numPositions];
-       // Services.fx.cursorTrail.GetPositions(positions);
+    //     //Vector3[] positions = new Vector3[Services.fx.cursorTrail.numPositions];
+    //    // Services.fx.cursorTrail.GetPositions(positions);
         
-        //we need to reset a bunch of other bollocks. I guess you can call the Reset delegate
+    //     //we need to reset a bunch of other bollocks. I guess you can call the Reset delegate
 
-        Transform pointParent = new GameObject().transform;
-        pointParent.parent = curStellation.transform;
+    //     Transform pointParent = new GameObject().transform;
+    //     pointParent.parent = curStellation.transform;
 
-        //put point on start points;
-        Point curPoint = SplineUtil.CreatePoint(positions[0]);
-        curPoint.transform.parent = pointParent;
-        curPoint.SetPointType(PointTypes.start);
-        curStellation.start = curPoint;
-        Spline curSpline = null;
-        Point lastPoint= curPoint;
-        Vector3 lastDir = positions[1] - positions[0];
-        Vector3 curTangent;
-        int splineCount = 0;
-        for(int i = 1; i < positions.Count; i++){
-            Vector3 dir = positions[i] - curPoint.Pos;
-            float angle = Vector3.Angle(lastDir, dir);
+    //     //put point on start points;
+    //     Point curPoint = SplineUtil.CreatePoint(positions[0]);
+    //     curPoint.transform.parent = pointParent;
+    //     curPoint.SetPointType(PointTypes.start);
+    //     curStellation.start = curPoint;
+    //     Spline curSpline = null;
+    //     Point lastPoint= curPoint;
+    //     Vector3 lastDir = positions[1] - positions[0];
+    //     Vector3 curTangent;
+    //     int splineCount = 0;
+    //     for(int i = 1; i < positions.Count; i++){
+    //         Vector3 dir = positions[i] - curPoint.Pos;
+    //         float angle = Vector3.Angle(lastDir, dir);
 
-            if((angle > minAngleDiff && angle < maxAngleDiff && dir.magnitude > minDistance) || dir.magnitude > maxDistance){
+    //         if((angle > minAngleDiff && angle < maxAngleDiff && dir.magnitude > minDistance) || dir.magnitude > maxDistance){
 
-                lastDir = dir;
-                lastPoint = curPoint;
-                curPoint = SplineUtil.CreatePoint(positions[i]);
-                curPoint.pointType = PointTypes.ghost;
-                Spline newSpline = SplineUtil.ConnectPoints(curSpline, lastPoint, curPoint).s;
+    //             lastDir = dir;
+    //             lastPoint = curPoint;
+    //             curPoint = SplineUtil.CreatePoint(positions[i]);
+    //             curPoint.pointType = PointTypes.ghost;
+    //             Spline newSpline = SplineUtil.ConnectPoints(curSpline, lastPoint, curPoint).s;
 
-                if(newSpline != curSpline || curSpline == null){
-                    newSpline.order = splineCount;
-                    newSpline.gameObject.name = splineCount.ToString();
-                    splineCount ++;
-                }
+    //             if(newSpline != curSpline || curSpline == null){
+    //                 newSpline.order = splineCount;
+    //                 newSpline.gameObject.name = splineCount.ToString();
+    //                 splineCount ++;
+    //             }
 
-                curSpline = newSpline;
-                curSpline.transform.parent = curStellation.transform;
-                curPoint.transform.parent = pointParent;
-            }
-        }
+    //             curSpline = newSpline;
+    //             curSpline.transform.parent = curStellation.transform;
+    //             curPoint.transform.parent = pointParent;
+    //         }
+    //     }
 
-        curPoint.pointType = PointTypes.end;
+    //     curPoint.pointType = PointTypes.end;
 
-        Services.main.InitializeLevel();
+    //     Services.main.InitializeLevel();
 
-        positions.Clear();
-        line.points3 = positions;
+    //     positions.Clear();
+    //     line.points3 = positions;
         
-        Services.main.state = Main.GameState.playing;
+    //     Services.main.state = Main.GameState.playing;
 
         //now we're ready for the normal level start logic
-    }
+    // }
 }

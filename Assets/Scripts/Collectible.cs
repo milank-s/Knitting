@@ -29,6 +29,8 @@ public class Collectible : MonoBehaviour
         deposited = false;
         done = false;
         flocking = false;
+        depositPoint = null;
+        
 
         if(!hasSpawnpoint){
             transform.position = startPos;
@@ -99,6 +101,7 @@ public class Collectible : MonoBehaviour
 
     public void Deposit(Point p){
         p.collectible = this;
+        p.hasCollectible = true;
         flocking = false;
         boidBehaviour.target = p.transform;
         speed = boidBehaviour.speed;
