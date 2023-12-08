@@ -21,8 +21,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	public Point lastPoint;
 
 	[Space(10)] [Header("Movement Tuning")]
-	public float speed;
-	public float acceleration;
+	public float speed = 0;
+	public float acceleration = 0;
 	public AnimationCurve accelerationCurve;
 	public float decay;
 	public float maxSpeed = 10;
@@ -199,7 +199,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			Services.main.WarpPlayerToNewPoint(Services.main.activeStellation.start);
 			Reset();
-			speed = Services.main.activeStellation.startSpeed;
+			flow = Services.main.activeStellation.startSpeed;
 			flyingSpeed = 0;
 		}
 	}
@@ -214,7 +214,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		curPoint.OnPlayerEnterPoint();
 
-		speed = Services.main.activeStellation.startSpeed;
+		flow = Services.main.activeStellation.startSpeed;
 		acceleration = Services.main.activeStellation.acceleration;
 		maxSpeed = Services.main.activeStellation.maxSpeed;
 
@@ -225,6 +225,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		//CameraFollow.instance.WarpToPosition(curPoint.Pos);
 
 		ResetFX();
+	}
+
+	void Lose(){
+		//some fx;
+		Services.main.ResetLevel();
 	}
 
 	public void Reset()
@@ -432,8 +437,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		buttonDownTimer -= Time.deltaTime;
 		connectTime -= Time.deltaTime * connectTimeCoefficient;
-		boost = Mathf.Lerp(boost, 0, Time.deltaTime * 2f);
-		boost = Mathf.Clamp(boost, 0, maxSpeed);
 
 		if (state == PlayerState.Traversing) {
 			//accuracy = GetAccuracy(progress);
@@ -455,6 +458,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			CalculateMoveSpeed ();
 			curSpeed = GetSpeed();
 
+		
+			if (curSpeed <= 0.01f && state == PlayerState.Traversing) {
+				Lose();
+				return;
+			}
+			
 			UpdateProgress(curSpeed * Time.deltaTime);
 			UpdatePositionOnSpline();
 			CheckProgress ();
@@ -469,19 +478,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			//gravity = 0;
 			
 			PlayerOnPoint();
-		}
-
-		//we arent even using this anymore
-		if (state != PlayerState.Animating && state != PlayerState.Flying && curPoint.HasSplines () && curSpline != null) {
-
-			//curSpline.UpdateSpline();
-//			ManageSound();
-
-			//old reset button
-			if (flow <= 0.01f && state == PlayerState.Traversing) {
-				// && Mathf.Abs (flow) <= 0)
-				//SwitchState(PlayerState.Animating);
-			}
 		}
 
 		buttonUp = false;
@@ -529,9 +525,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if(state == PlayerState.Traversing){
 			if(curSpline.speed > 0 && goingForward){
-				return Mathf.Clamp(flow + boost + speed, 0, maxSpeed);
+				return Mathf.Clamp(boost + flow, 0, maxSpeed);
 			}else{
-				return flow + boost + speed; //* easedAccuracy + boost; //* cursorDir.magnitude;
+				return boost + flow; //* easedAccuracy + boost; //* cursorDir.magnitude;
 			}
 		}
 		if(state == PlayerState.Switching){
@@ -936,7 +932,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		Vector3 viewportPoint = Services.mainCam.WorldToViewportPoint(transform.position);
 		if(viewportPoint.x < 0 || viewportPoint.x > 1 || viewportPoint.y > 1 || viewportPoint.y < 0){
-			Services.main.ResetLevel();
+			Lose();
 		}
 		//RESET IF PLAYER IS OFF SCREEN
 		if (!stopFlying)
@@ -990,7 +986,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				curDirection = cursorDir;
 				
 				if(flyingSpeed == 0){
-					Services.main.ResetLevel();
+					Lose();
 				}
 			// }
 			// else
@@ -1012,6 +1008,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		// float gravityCoefficient = Mathf.Clamp01(-curDirection.y);
 		// float gravityPull = -curDirection.y - curDirection.z;
 		
+		//boost -= Time.deltaTime * decay;
+
 		bool onBelt = splineSpeed > 0;
 		
 		if(onBelt){
@@ -1022,6 +1020,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				speedGain = 0;
 				
+				// if(flow < splineSpeed){
+				// 	flow = Mathf.Lerp(flow, splineSpeed, Time.deltaTime * 2);
+				// }	
 				if(boost < splineSpeed){
 					boost = splineSpeed;
 				}	
@@ -1029,11 +1030,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			}else{
 				
 				speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
-				flow -= splineSpeed/2f  * Time.deltaTime;		
+				boost -= splineSpeed  * Time.deltaTime;		
 			}
 		}else{
 			
 			flow = Mathf.Clamp(flow, 0, maxSpeed);
+			boost = Mathf.Clamp(boost, 0, maxSpeed);
 			// speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
 		}
 		
@@ -1041,6 +1043,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);// * gravityCoefficient;
 		}else{
 			flow += speedGain * decay * Time.deltaTime;
+			boost += speedGain * decay * Time.deltaTime;
 		}
 
 		
@@ -1048,7 +1051,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if(onBelt && !goingForward && curSpeed <= Mathf.Epsilon){
 			//ok they're being pushed back
-			ReverseDirection();
+			//ReverseDirection();
 		}
 	}
 
@@ -1611,7 +1614,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				curSpline = splineDest;
 				SetPlayerAtStart (curSpline, pointDest);
-				curSpline.CalculateDistance();
+				curSpline.CalculateSegmentDistance();
 				curSpline.isPlayerOn = true;
 
 				if(enteredNewSpline) {

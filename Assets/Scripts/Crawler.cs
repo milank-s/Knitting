@@ -17,6 +17,7 @@ Crawler : MonoBehaviour
     protected float speed;
     public bool running;
     protected float progress;
+    float distance;
 
     protected Vector3 lastPos;
     protected Vector3 delta;
@@ -41,6 +42,7 @@ Crawler : MonoBehaviour
         dir = forward ? 1 : -1;
         transform.position = s.SplinePoints[curIndex].Pos;
         lastPos = transform.position;
+
     }
 
     public virtual void Step()
@@ -53,8 +55,13 @@ Crawler : MonoBehaviour
             }
 
             boost = Mathf.Lerp(boost, 0, Time.deltaTime * 2);
-            progress += Time.deltaTime * (speed + boost) * dir; // spline.distance;
+            //why arent we dividing by distance?
+            progress += (Time.deltaTime * (speed + boost) * dir)/distance;
                
+            //hacky fix to spline distances not being populated at first
+
+            if(distance == 0) return;
+            
             transform.position = spline.GetPointAtIndex(curIndex, progress);
             delta = (transform.position - lastPos);
             lastPos = transform.position;
@@ -115,6 +122,7 @@ Crawler : MonoBehaviour
         }
         
         point = spline.SplinePoints[curIndex];
+        distance = spline.GetSegmentDistance(curIndex);
         EnterPoint(point);
         
     }

@@ -101,6 +101,9 @@ public class Spline : MonoBehaviour
 	[Space(20)] [HideInInspector] public bool isPlayerOn, reactToPlayer;
 	
 	[HideInInspector]
+	public List<float> distances;
+
+	[HideInInspector]
 	public float distance = 0;
 	[HideInInspector]
 	public float segmentDistance = 0;
@@ -468,13 +471,15 @@ public class Spline : MonoBehaviour
 		
 		distortion = Mathf.Lerp(distortion, 0, Time.deltaTime * 2);
 
-		bool shouldDraw = MapEditor.editing || drawing || (reactToPlayer || isPlayerOn);
-		if(!shouldDraw) return;
+		bool updatingPositions = MapEditor.editing || !populatedPointPositions || (isPlayerOn || reactToPlayer);
+		
+		if(!drawing && !updatingPositions) return;
 
 		UpdateDrawRange();
 		
 		float distanceDelta = 0;
-		
+		float segDist = 0;
+
 		for (int i = 0; i < SplinePoints.Count - (closed ? 0 : 1); i++)
 		{
 			curPoint = SplinePoints[i];
@@ -483,25 +488,41 @@ public class Spline : MonoBehaviour
 			}else{
 				nextPoint = SplinePoints[i+1];
 			}
+			
+			segDist = 0;
 
 			for (int k = 0; k < curveFidelity; k++)
 			{
 				int index = (i * curveFidelity) + k;
 				float step = (float) k / (float) (curveFidelity-1);
 				
-				distanceDelta = rollingDistance;
 
 				//trying to save meager amounts of compute
 				
 				//I do this once to populate, and then only when player is on
-				if(MapEditor.editing || !populatedPointPositions || (isPlayerOn || reactToPlayer)) UpdateSplineSegment(i, index, step);
+				if(updatingPositions){
+					
+					distanceDelta = rollingDistance;
+
+					UpdateSplineSegment(i, index, step);
+
+					distanceDelta = rollingDistance - distanceDelta;
+					segDist += distanceDelta;
+				}
 				
-				distanceDelta = rollingDistance - distanceDelta;
 
 				if(populatedPointPositions){
 					DrawSplineSegment(i, index, step);
 				}
 				
+			}
+
+			if(updatingPositions){
+				if(i < distances.Count){
+					distances[i] = segDist;
+				}else{
+					distances.Add(segDist);
+				}
 			}
 		}
 
@@ -1104,7 +1125,12 @@ public class Spline : MonoBehaviour
 		Destroy (this);
 	}
 
-	public void CalculateDistance ()
+	public float GetSegmentDistance(int i){
+		//need to know direction and closed?
+
+		return distances[i];
+	}
+	public void CalculateSegmentDistance ()
 	{
 		//IDK IF THIS WORKS FORWARD/BACKWARDS
 
@@ -1256,6 +1282,7 @@ public class Spline : MonoBehaviour
 			SplinePoints [newIndex - 1].AddPoint (p);
 		}
 
+		
 		populatedPointPositions = false;
 		hitEnd = false;
 		hitStart = false;
