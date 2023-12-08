@@ -1048,10 +1048,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 			}else{
 				speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
-				boost -= splineSpeed  * Time.deltaTime;		
+				flow -= splineSpeed * Time.deltaTime;
 			}
 		}else{
-			
 			
 			flow = Mathf.Clamp(flow, 0, maxSpeed);
 			boost = Mathf.Clamp(boost, 0, maxSpeed);
@@ -1091,7 +1090,8 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	void ReverseDirection(){
-
+		
+		flow = 0;
 		goingForward = !goingForward;
 		Point p = pointDest;
 		pointDest = curPoint;
@@ -1522,11 +1522,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				}
 
 				//I dont really want the player to gain speed by flying
+				//this is causing them to convert boost into flow by jumping between points
 
-				if(flow > flyingSpeed - speed){			
-					flow = Mathf.Clamp(flyingSpeed - speed, 0, 1000);
-				}
-		
+				flow = Mathf.Clamp(flyingSpeed - boost, 0, 1000);
 
 				Services.fx.flyingParticles.Pause();
 
@@ -1562,9 +1560,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				if(curPoint.pointType != PointTypes.ghost){
 
-					boost += Point.boostAmount; // * (1 + Services.PlayerBehaviour.boostTimer);
+					 // * (1 + Services.PlayerBehaviour.boostTimer);
 					
-					Services.fx.SpawnCircle(curPoint.transform);
+						boost += Point.boostAmount;
+						Services.fx.SpawnCircle(curPoint.transform);
 					
 					if (buttonWasPressed)
 					{
@@ -1744,8 +1743,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				if(curPoint.pointType != PointTypes.ghost){
 					
 					//store current speed
-					flow = curSpeed;
-					boost = 0;
+					// flow = curSpeed;
+					// boost = 0;
 					
 					if(OnEnterPoint != null){
 						OnEnterPoint.Invoke();
