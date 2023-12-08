@@ -31,6 +31,7 @@ public class SplineUtil : MonoBehaviour {
 		Vector2 end = Services.mainCam.WorldToViewportPoint(p2);
 		return (end - start).normalized;
 	}
+	
 	static public SplinePointPair ConnectPoints(Spline s, Point p1, Point p2){
 
 		SplinePointPair result = new SplinePointPair();

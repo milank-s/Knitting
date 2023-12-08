@@ -574,7 +574,6 @@ public class Spline : MonoBehaviour
 				}
 			}
 			}
-
 			
 			if(hitEnd && hitStart){
 				drawn = true; 

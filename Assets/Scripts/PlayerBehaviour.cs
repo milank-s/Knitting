@@ -823,7 +823,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		// pointDest.tension = 1;
 
-		if(curSpline != null && spp.s != curSpline){
+		if(curSpline == null || curSpline != null && spp.s != curSpline){
 			Services.main.activeStellation.AddSpline(spp.s);
 			spp.s.StartDrawRoutine(curPoint);
 		}
@@ -1029,10 +1029,11 @@ public class PlayerBehaviour: MonoBehaviour {
 			}else{
 				
 				speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
-
 				flow -= splineSpeed/2f  * Time.deltaTime;		
 			}
 		}else{
+			
+			flow = Mathf.Clamp(flow, 0, maxSpeed);
 			// speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
 		}
 		
@@ -1042,8 +1043,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			flow += speedGain * decay * Time.deltaTime;
 		}
 
-		//flow = Mathf.Clamp(flow, 0, maxSpeed);
-
+		
 		//flow -= Mathf.Clamp01(-gravityPull) * Time.deltaTime;
 
 		if(onBelt && !goingForward && curSpeed <= Mathf.Epsilon){
