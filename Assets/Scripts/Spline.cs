@@ -665,17 +665,8 @@ public class Spline : MonoBehaviour
 
 	public void  DrawGizmos(){	
 		int numSegments = 4;
-		
-		if(Selected != null){
-			Gizmos.color = Color.red;
-			Gizmos.DrawSphere(Selected.Pos, 0.1f);
-		}
-		
-
+	
 		Vector3 lastPos = SplinePoints[0].transform.position;
-
-		
-		Gizmos.color = Color.yellow;
 
 		Gizmos.color = Color.white;
 		for(int i = 0; i < SplinePoints.Count - (closed ? 0 : 1); i ++){
@@ -849,6 +840,48 @@ public class Spline : MonoBehaviour
 	public void SetPlayerLineSegment ()
 	{
 		playerIndex = (selectedIndex * curveFidelity) + (int)Mathf.Floor((float)curveFidelity * (float)Services.PlayerBehaviour.progress);
+	}
+
+	public Vector3 GetPointAlongLine(int i, float t, float dist, bool forward = true){
+		
+		int curSegment = (int)(t * curveFidelity);
+		Vector3 curPos = GetPointAtIndex(i,t);
+		float d = 0;
+
+		if(forward){
+			for (int k = curSegment; k <= Spline.curveFidelity; k++)
+			{
+				float step = (float)k/Spline.curveFidelity;
+
+				Vector3 pos = GetPointAtIndex(i,step);
+				float diff = (pos - curPos).magnitude;
+				
+				d += diff;
+				curPos = pos;
+
+				if(d > dist){
+					return pos;
+				}
+			}
+
+		}else{
+			for (int k = curSegment; k >= 0; k--)
+			{
+				float step = (float)k/Spline.curveFidelity;
+
+				Vector3 pos = GetPointAtIndex(i,step);
+				float diff = (pos - curPos).magnitude;
+				
+				d += diff;
+				curPos = pos;
+
+				
+				if(d > dist){
+					return pos;
+				}
+			}
+		}
+		return curPos;
 	}
 
 	public Vector3 GetPointAtIndex (int i, float t)

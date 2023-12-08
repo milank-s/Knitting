@@ -25,9 +25,10 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float speed = 0;
 	public float acceleration = 0;
 	public AnimationCurve accelerationCurve;
-	public float decay;
-	public float maxSpeed = 10;
+	public float flowDecay;
+	public float boostDecay = 0.2f;
 	public float flyingSpeedDecay = 1;
+	public float maxSpeed = 10;
 	public float accuracyCoefficient;
 	public float stopTimer = 2f;
 	[Space(10)] [Header("Cursor Control")]
@@ -1028,7 +1029,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		// float gravityCoefficient = Mathf.Clamp01(-curDirection.y);
 		// float gravityPull = -curDirection.y - curDirection.z;
 		
-		boost -= Time.deltaTime * decay;
+		boost -= Time.deltaTime * boostDecay;
 		onBelt = splineSpeed > 0;
 		
 		if(onBelt){
@@ -1055,13 +1056,17 @@ public class PlayerBehaviour: MonoBehaviour {
 			flow = Mathf.Clamp(flow, 0, maxSpeed);
 			boost = Mathf.Clamp(boost, 0, maxSpeed);
 			// speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
-		}
-		
-		if(speedGain >= 0){
-			flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);// * gravityCoefficient;
-		}else{
-			flow += speedGain * decay * Time.deltaTime;
-			boost += speedGain * decay * Time.deltaTime;
+
+			if(speedGain >= 0){
+				flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);// * gravityCoefficient;
+			}else{
+				if(flow == 0){
+					boost -= flowDecay * Time.deltaTime;
+				}else{
+					flow += speedGain * flowDecay * Time.deltaTime;
+				}
+			}
+
 		}
 
 		
@@ -1298,19 +1303,21 @@ public class PlayerBehaviour: MonoBehaviour {
 
 					Vector3 startdir = Vector3.zero;
 
+					//how can I rewrite this to get a point some distance along the line?
+					//this is screwing up when I use circles
+
 					if(canMove){
 						if (!forward) {
 							
 							//don't enter conveyor belts that will instantly push you back
-							//it's a little janky but better than re-entering the same point every frame
-							
 							//if(!isGhostPoint && curSpeed < s.speed) continue;
-							
-							p2 = s.GetPointAtIndex(nextIndex, 0.8f);	
+							// p2 = s.GetPointAtIndex(nextIndex, 0.8f);
+							p2 = s.GetPointAlongLine(nextIndex, 0.8f, 0.2f, forward);	
 							
 						} else {
 							
-							p2 = s.GetPointAtIndex(curIndex, 0.2f);
+							// p2 = s.GetPointAtIndex(curIndex, 0.2f);
+							p2 = s.GetPointAlongLine(curIndex, 0.2f, 0.2f, forward);
 						}
 					}else{
 
@@ -1318,6 +1325,7 @@ public class PlayerBehaviour: MonoBehaviour {
 						//leave and continue
 						continue;
 					}
+
 					Debug.DrawLine(transform.position, p2, Color.green);
 
 					p2 = Services.mainCam.WorldToScreenPoint(p2);
@@ -1524,11 +1532,18 @@ public class PlayerBehaviour: MonoBehaviour {
 				//I dont really want the player to gain speed by flying
 				//this is causing them to convert boost into flow by jumping between points
 
-				flow = Mathf.Clamp(flyingSpeed - boost, 0, 1000);
+				//refund lost speed as boost
+				if(flyingSpeed < flow){
+					flow = flyingSpeed;
+					boost = 0;
+				}else{
+					float leftoverSpeed = flyingSpeed;
+					leftoverSpeed -= flow;
+					boost = Mathf.Clamp(leftoverSpeed, 0, maxSpeed);
+				}
 
 				Services.fx.flyingParticles.Pause();
 
-				boost = 0;
 				//Services.fx.BakeParticleTrail(Services.fx.flyingParticles, Services.fx.flyingParticleTrailMesh);
 
 				//Services.fx.BakeParticles(Services.fx.flyingParticles, Services.fx.flyingParticleMesh);
@@ -1562,7 +1577,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 					 // * (1 + Services.PlayerBehaviour.boostTimer);
 					
-						boost += Point.boostAmount;
+						if(boost < Point.boostAmount) boost = Point.boostAmount;
 						Services.fx.SpawnCircle(curPoint.transform);
 					
 					if (buttonWasPressed)
@@ -1669,7 +1684,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				pointDest = null;
 				l.positionCount = 0;
 
-				flyingSpeed = flow + boost;
+				flyingSpeed = Mathf.Clamp(flow + boost, 0, maxSpeed);
 
 				//THIS MAY NOT BE NECESSARY UNLESS WE CAN FLY OFF OF SPLINES, NOT JUST POINTS
 				//curPoint.OnPointExit();
