@@ -82,6 +82,9 @@ public class MeshToSpline : MonoBehaviour {
 
 			bool dupe = false;
 
+			//surely the whole point of using a dictionary was to check position as a key?
+			//instead of a massive 2D loop
+
 			foreach(Point p in points){
 
 				//need to make a new list of pointers for vertices
@@ -161,7 +164,6 @@ public class MeshToSpline : MonoBehaviour {
 			pointsOfPoints.Remove(points[i]);
 		}
 
-		
 		controller._splines = splines;
 	}
 
@@ -169,6 +171,8 @@ public class MeshToSpline : MonoBehaviour {
 		//reinterpret mesh as a series of lines, assuming its quads?
 		int submeshCount = m.subMeshCount;
 		for(int i = 0; i < submeshCount; i++){
+			
+			Spline curSpline = null;
 
 			UnityEngine.Rendering.SubMeshDescriptor sub = m.GetSubMesh(i);
 			MeshTopology topo = sub.topology;			
@@ -178,6 +182,7 @@ public class MeshToSpline : MonoBehaviour {
 			int stepSize = 3;
 			if(topo == MeshTopology.Points) return;
 			if(topo == MeshTopology.Lines) stepSize = 2;
+			if(topo == MeshTopology.Triangles) stepSize = 3;
 			if(topo == MeshTopology.Quads) stepSize = 4;
 			
 			for(int index = 0; index < numIndices; index+=stepSize){
@@ -192,25 +197,34 @@ public class MeshToSpline : MonoBehaviour {
 					indicePointMap.TryGetValue(indices[index + curIndex + 1], out nextPoint);
 
 					if(!curPoint._neighbours.Contains(nextPoint)){
-						SplinePointPair spp = SplineUtil.ConnectPoints(null, curPoint, nextPoint);
-						spp.s.transform.parent = controller.transform;
-						splines.Add(spp.s);
+
+						SplinePointPair spp = SplineUtil.ConnectPoints(curSpline, curPoint, nextPoint);
+						
+						if(spp.s != curSpline){
+							curSpline = spp.s;
+							curSpline.transform.parent = controller.transform;
+							splines.Add(curSpline);
+						}
+						
 					}
 				}
 
-				//close faces 
+				// close faces 
 
 				if(stepSize > 2){
 					Point p1 = null;
 					Point p2 = null;
 					
 					indicePointMap.TryGetValue(indices[index], out p1);
-					indicePointMap.TryGetValue(indices[index + 3], out p2);
+					indicePointMap.TryGetValue(indices[index + stepSize-1], out p2);
 
 					if(!p1._neighbours.Contains(p2)){
-						SplinePointPair spp = SplineUtil.ConnectPoints(null, p1, p2);
-						spp.s.transform.parent = controller.transform;
-						splines.Add(spp.s);
+						SplinePointPair spp = SplineUtil.ConnectPoints(curSpline, p1, p2);
+						if(spp.s != curSpline){
+							
+							spp.s.transform.parent = controller.transform;
+							splines.Add(spp.s);
+						}
 					}
 				}
 			}
