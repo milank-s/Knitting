@@ -1627,7 +1627,7 @@ public class MapEditor : MonoBehaviour
             scoreSlider.gameObject.SetActive(true);
             scoreSlider.gameObject.SetActive(true);
             scoreText.gameObject.SetActive(true);
-            scoreText.text = scoreSlider.value.ToString("F0");
+            
         }
 
         switch ((StellationController.UnlockType) i)
@@ -1643,9 +1643,9 @@ public class MapEditor : MonoBehaviour
             case StellationController.UnlockType.speed:
                 
                 scoreSlider.wholeNumbers = false;
-                scoreSlider.value = controller.speed;
                 scoreSlider.minValue = 0;
                 scoreSlider.maxValue = 10;
+                scoreSlider.value = controller.speed;
                 break;
 
         }
