@@ -1634,17 +1634,17 @@ public class MapEditor : MonoBehaviour
         {
             case StellationController.UnlockType.laps:
             
+                scoreSlider.wholeNumbers = true;
                 scoreSlider.value = controller.laps;
                 scoreSlider.minValue = 0;
-                scoreSlider.wholeNumbers = true;
                 scoreSlider.maxValue = 10;
                 break;
             
             case StellationController.UnlockType.speed:
                 
+                scoreSlider.wholeNumbers = false;
                 scoreSlider.value = controller.speed;
                 scoreSlider.minValue = 0;
-                scoreSlider.wholeNumbers = false;
                 scoreSlider.maxValue = 10;
                 break;
 

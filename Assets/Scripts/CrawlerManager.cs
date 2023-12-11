@@ -103,11 +103,10 @@ public class CrawlerManager : MonoBehaviour
             // index++;
         }
         
-        
         toUse.gameObject.SetActive(true);
         toUse.Setup(spline, forward);
-        
     }
+    
     public void Reset()
     {
         emitting = true;

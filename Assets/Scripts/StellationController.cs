@@ -363,7 +363,7 @@ public class StellationController : MonoBehaviour {
 			spawnedCrawler = true;
 			CrawlerManager newCrawler = gameObject.AddComponent<CrawlerManager>();
 			newCrawler.speed = speed;
-			newCrawler.crawlerCount = (int)Mathf.Floor(speed);
+			newCrawler.crawlerCount = 1;
 			newCrawler.spawnFrequency = 0;
 			newCrawler.crawlerType = CrawlerType.follower;
 			// OnHitStart += newCrawler.Reset;
