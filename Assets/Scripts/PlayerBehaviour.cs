@@ -947,6 +947,24 @@ public class PlayerBehaviour: MonoBehaviour {
 		return false;
 	}
 
+	public void OnTriggerEnter(Collider c){
+		//if free movement
+		//just enter the point
+		//if its not a ghost obviously
+
+
+		//I think the player's trigger is quite large so this could suck?
+		
+		if(state == PlayerState.Flying && c.tag == "Point"){
+			Point p = c.GetComponent<Point>();
+			if(p.pointType != PointTypes.ghost){
+				
+
+				pointDest = p;
+				stopFlying = true;
+			}
+		}
+	}
 	void FreeMovement()
 	{
 		Point raycastPoint = SplineUtil.RaycastFromCamera(cursorPos, 5f);
@@ -964,7 +982,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		if (raycastPoint != null && CanFlyToPoint(raycastPoint))	{
 
 			if(pointDest != null && raycastPoint != pointDest){
-			pointDest.proximity = 0;
+				pointDest.proximity = 0;
 			}
 
 			Services.fx.ShowNextPoint(raycastPoint);
@@ -990,9 +1008,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			if (Vector3.Distance(transform.position, pointDest.Pos) < 0.025f)
 			{
-				hasFlown = true;
-				Services.fx.BakeTrail(Services.fx.flyingTrail, Services.fx.flyingTrailMesh);
-				buttonDownTimer = 0;
+				
 				SwitchState(PlayerState.Switching);
 			}
 		}
@@ -1524,6 +1540,9 @@ public class PlayerBehaviour: MonoBehaviour {
 				break;
 
 			case PlayerState.Flying:
+
+				hasFlown = true;
+				Services.fx.BakeTrail(Services.fx.flyingTrail, Services.fx.flyingTrailMesh);
 
 				if(OnStoppedFlying != null){
 					OnStoppedFlying.Invoke();
