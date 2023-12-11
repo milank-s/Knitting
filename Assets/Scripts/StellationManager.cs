@@ -106,6 +106,10 @@ public class StellationManager : MonoBehaviour
 		//there should be a dedicated reset function
 		Services.main.InitializeLevel();
 
+		//for now, fuck stellation managers
+		// ????????????????????????????????
+		//Services.main.EnterLevelRoutine()
+
 		//each stellation set should also have its own checkpoint to place players at the appropriate spot
 		//and draw in all previous stellations based on this when resetting
 		
@@ -172,8 +176,7 @@ public class StellationManager : MonoBehaviour
 	}
 
 	void EnableStellationGroup(){
-		
-		
+
 
 	}
 

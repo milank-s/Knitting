@@ -423,7 +423,7 @@ public class MapEditor : MonoBehaviour
         
     }
     
-    public  void TogglePlayMode()
+    public void TogglePlayMode()
     {
         Services.main.OnReset.Invoke();
         Services.main.activeStellation = controller;
@@ -438,6 +438,7 @@ public class MapEditor : MonoBehaviour
         if (Point.Points.Count > 0)
         {
             Services.main.InitializeLevel();
+            Services.main.EnterLevel();
         }
 
         canvas.gameObject.SetActive(!editing);
@@ -1627,7 +1628,6 @@ public class MapEditor : MonoBehaviour
             scoreSlider.gameObject.SetActive(true);
             scoreSlider.gameObject.SetActive(true);
             scoreText.gameObject.SetActive(true);
-            
         }
 
         switch ((StellationController.UnlockType) i)
@@ -1647,11 +1647,9 @@ public class MapEditor : MonoBehaviour
                 scoreSlider.maxValue = 10;
                 scoreSlider.value = controller.speed;
                 break;
-
         }
 
         unlockTypes.SetValueWithoutNotify(i);
-        
     }
     
 void DragCamera()
@@ -1735,7 +1733,6 @@ void DragCamera()
                         pointCoords.gameObject.SetActive(true);
                     }else if (curTool == Tool.move)
                     {
-
                         pointCoords.gameObject.SetActive(true);
                     }
                 }

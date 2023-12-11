@@ -15,7 +15,7 @@ public class SceneController : MonoBehaviour
     
     
     [Header("Level progression data")]
-    public List<StellationController> activeScenes;
+    public List<StellationController> stellationsLoaded;
 
     public int curSetIndex;
     public int unlockedIndex;
@@ -34,7 +34,7 @@ public class SceneController : MonoBehaviour
         //read from json file to set unlocked index; 
         curLevelName = "";
         unlockedIndex = levelSets.Count;
-        activeScenes = new List<StellationController>();
+        stellationsLoaded = new List<StellationController>();
         instance = this;
         curLevel = 0;
 
@@ -253,20 +253,16 @@ public class SceneController : MonoBehaviour
     //when loading a stellation file
 	public void LoadFile(string fileName)
 	{
-
-		if (SceneController.instance.activeScenes.Count > 0)
-		{
-			SceneController.instance.UnloadStellation(SceneController.instance.activeScenes[0]);
-		}
-		
+        //the load file function shouldn't be responsible for unloading
+        //find where this happens and add the relevant functions
+	
 		Services.main.activeStellation = MapEditor.instance.Load(fileName);
-		
 		
         //I think a better way to check this is whether curlevelIndex is -1?
         // if (!MapEditor.editing)
 		if (curSetIndex == -1)
 		{
-			SceneController.instance.activeScenes.Add(Services.main.activeStellation);
+			SceneController.instance.stellationsLoaded.Add(Services.main.activeStellation);
 		}
 
 		Services.main.InitializeLevel();
@@ -295,9 +291,19 @@ public class SceneController : MonoBehaviour
 	}
 
     public IEnumerator LoadLevelRoutine(){
+        
+        if(curLevelSet.isScene){
+            LoadScene();
+        }else{
+            curLevelName = GetCurLevel();
+            LoadFile(curLevelName);
+        }
 
+        //play the animation for the camera and title
 		yield return StartCoroutine(LevelTransitionRoutine());
-		LoadLevel(false);
+		
+        //call player init function
+        Services.main.EnterLevel();
 	}
 
     //transition between levels in the flow of play
@@ -306,32 +312,28 @@ public class SceneController : MonoBehaviour
 		Services.main.state = Main.GameState.paused;
 
         //sound off cut to black
-        Services.fx.overlay.color = Color.black;
+        // Services.fx.overlay.color = Color.black;
+        
+        //move camera on z to new stellation position
+		yield return StartCoroutine(CameraFollow.instance.MoveRoutine());
 
-		yield return new WaitForSeconds(1);
+        // Services.fx.overlay.color = Color.clear;
+	}
 
-        Services.fx.overlay.color = Color.clear;
-		}
 
-    
+    //if we have a delay that means what?
+    //that we're going between levels or entering a level from the menu
 
-    public void LoadLevel(bool delay = true){
+    //if delay is false the player never enters the level.............
+    public void LoadLevel(){
 
-		if(delay){
-			StartCoroutine(LoadLevelRoutine());
-		}else{
-			if(curLevelSet.isScene){
-				LoadScene();
-			}else{
-                curLevelName = GetCurLevel();
-				LoadFile(curLevelName);
-			}
-		}
+		StartCoroutine(LoadLevelRoutine());
+
 	}
 
     public void UnloadStellation(StellationController s)
     {
-        activeScenes.Remove(s);
+        stellationsLoaded.Remove(s);
         Destroy(s.gameObject);
     }
     

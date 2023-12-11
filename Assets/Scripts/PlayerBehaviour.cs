@@ -210,7 +210,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 	public void Initialize()
 	{
-		
 		cursorDistance = minCursorDistance;
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
@@ -226,9 +225,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		foreach(Spline s in curPoint._connectedSplines){
 			s.SetSelectedPoint(curPoint);
 		}
-
-		//CameraFollow.instance.WarpToPosition(curPoint.Pos);
-
+		
 		ResetFX();
 	}
 

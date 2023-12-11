@@ -162,7 +162,11 @@
 			if(SceneController.instance.curSetIndex != -1){
 				
 				//did this shit ever fucking work?
-				SceneController.instance.LoadFile(activeStellation.title);
+				string activeLevel = activeStellation.title;
+				
+				SceneController.instance.UnloadStellation(activeStellation);
+		
+				SceneController.instance.LoadFile(activeLevel);
 			}else{
 				//this is fucking up because when collectibles are picked up
 				//you change the point types
@@ -195,7 +199,7 @@
         Services.main.pointParent = null;
         Services.main.splineParent = null;
         
-        SceneController.instance.activeScenes.Clear();
+        SceneController.instance.stellationsLoaded.Clear();
         SceneController.curLevel = 0;   
 		
 		Spline.frequency = 5.324f;
@@ -399,52 +403,8 @@
 		// Services.PlayerBehaviour.SwitchState(PlayerState.Switching);
 	}
 
-	public void InitializeLevel(){
-		
-		//why the fuck am I not initializing the stellation here
-		//and why on gods green earth would the controller not init the spline
 
-		// if (Spline.Splines.Count > 0){
-		// 	for (int i = Spline.Splines.Count - 1; i >= 0; i--)
-		// 	{
-
-		// 		if (Spline.Splines[i] == null)
-		// 		{
-		// 			Spline.Splines.RemoveAt(i);
-		// 		}
-		// 		else
-		// 		{
-		// 			Spline.Splines[i].Initialize();
-		// 		}
-		// 	}
-		// }
-
-		//activeStellation.Setup();
-		// ..when are we deciding what the active stellation is?
-		activeStellation.Initialize();
-
-		if (Services.StartPoint == null && Point.Points.Count > 0)
-		{
-			Services.StartPoint = Point.Points[0];
-		}
-
-
-		OnReset.Invoke();
-
-		//we need a way of knowing if we are already in the leve
-		//so we don't flash the title every time
-
-		if (!MapEditor.editing)
-		{
-			StartCoroutine(EnterLevelRoutine());
-		}
-
-		
-		if(OnLoadLevel != null){
-			OnLoadLevel(activeStellation);
-		}
-	}
-
+	//this happens when levels are entered from the menu
 	public void EnterLevelSet()
 	{
 		Services.fx.Fade(true , 1f);
@@ -455,6 +415,40 @@
 		Services.menu.Show(false);
 		SceneController.instance.LoadLevel();
 	}
+
+
+	//This happens every time a level is loaded and reloaded
+	//I want it to function separately from the animations we play between levels
+	//so that when we enter levels or change levels or reset levels we can do diff things
+
+	public void InitializeLevel(){
+		
+		activeStellation.Initialize();
+
+		if (Services.StartPoint == null && Point.Points.Count > 0)
+		{
+			Services.StartPoint = Point.Points[0];
+		}
+		
+		//once again, this is the wrong place for this shit
+		//is this for sound? fx? crawlers? player?
+		//
+
+		OnReset.Invoke();
+
+	
+		if(OnLoadLevel != null){
+			OnLoadLevel(activeStellation);
+		}
+	}
+
+	//this happens when levels are loaded and reset
+	//but there is a lot of redundancy that suggests it only needs to come from the main menu and level editor
+	//it is the only function that calls player.initialize
+	
+	public void EnterLevel(){
+        StartCoroutine(Services.main.EnterLevelRoutine());
+    }
 
 	public IEnumerator EnterLevelRoutine(){
 

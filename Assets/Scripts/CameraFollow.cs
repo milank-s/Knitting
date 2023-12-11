@@ -47,7 +47,16 @@ public class CameraFollow : MonoBehaviour {
 		cam.fieldOfView = desiredFOV;
 	}
 
-	
+	public IEnumerator MoveRoutine(){
+
+		//get active stellation position
+		//lerp to that position
+		
+		yield return null;
+
+	}
+
+
 	// Update is called once per frame
 	public void FollowPlayer()
 	{

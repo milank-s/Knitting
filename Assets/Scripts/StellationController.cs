@@ -263,10 +263,6 @@ public class StellationController : MonoBehaviour {
 			activateOnCompletion[i].DoBehaviour();
 		}
 		
-			//show some type of image
-			//lock instantly
-			//turn off over time. 
-		
 	}
 
 	public void Initialize()
@@ -356,7 +352,6 @@ public class StellationController : MonoBehaviour {
 			}
 		}
 
-			
 		//stopgap to test chasing crawler;
 		
 		if(!spawnedCrawler && unlockMethod == UnlockType.speed){
@@ -466,8 +461,7 @@ public class StellationController : MonoBehaviour {
 		foreach(Spline s in _escapeSplines){
 			s.SwitchState(Spline.SplineState.off);
 		}
-
-}
+	}
 
 	public void DepositCollectible(Point p){
 		//use a collectible if we have it
@@ -621,7 +615,6 @@ public class StellationController : MonoBehaviour {
 			
 			if (p.timesHit < minLaps)
 			{
-
 				minLaps = p.timesHit;
 			}
 		}
@@ -845,8 +838,6 @@ public class StellationController : MonoBehaviour {
 		float height = Mathf.Abs(upperRight.y - lowerLeft.y);
 		float fov = CameraDolly.FOVForHeightAndDistance(height, Main.cameraDistance) + 10f;
 	
-		//CameraFollow.instance.desiredFOV = fov;
-		//CameraFollow.instance.cam.fieldOfView = fov;
 		CameraFollow.instance.lockX = lockX;
 		CameraFollow.instance.lockY = lockY;
 		CameraFollow.instance.lockZ = lockZ;
