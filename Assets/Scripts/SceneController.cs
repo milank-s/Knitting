@@ -218,6 +218,7 @@ public class SceneController : MonoBehaviour
         //stopgap stuff for when I want to test the level without going through the menu;
         if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
             
+            //we need to get rid of our collectibles 
             LoadWithTransition();
         }
         else
@@ -258,13 +259,20 @@ public class SceneController : MonoBehaviour
         if(Services.main.activeStellation != null){
             newStellation = fileName != Services.main.activeStellation.title;
             offset = Services.main.activeStellation.center;
-            offset.z -= Services.main.activeStellation.depth/2f;
+            if(newStellation){
+                offset.z -= Services.main.activeStellation.depth/2f;
+            }
+        }else{
+            Debug.Log("no active stellation");
+
         }
 
         //we need to make sure that bounds and center are set before we offset
 		Services.main.activeStellation = MapEditor.instance.Load(fileName);
 
+        
         Services.main.activeStellation.OffsetPosition(offset, newStellation);
+        
 
         //I think a better way to check this is whether curlevelIndex is -1?
         // if (!MapEditor.editing)

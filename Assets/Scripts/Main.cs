@@ -466,11 +466,11 @@
 		state = GameState.paused;
 
 		Services.fx.title.text = activeStellation.title;
-		Services.fx.overlay.color = Color.black;
+		// Services.fx.overlay.color = Color.black;
 
 		yield return new WaitForSeconds(0.25f);
 
-		Services.fx.overlay.color = Color.clear;
+		// Services.fx.overlay.color = Color.clear;
 		Services.fx.title.text = "";
 
 		playerInput.SwitchCurrentActionMap("Player");

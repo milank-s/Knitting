@@ -1459,8 +1459,6 @@ public class MapEditor : MonoBehaviour
             Vector3 spawnPos = new Vector3(json["p" + i]["x"],json["p" + i]["y"],json["p" + i]["z"]);
             
             Point newPoint = SplineUtil.CreatePoint(spawnPos);
-            c._points = new List<Point>();
-            c._points.Add(newPoint);
             
             if (json["p" + i]["word"] != "")
             {
@@ -1589,10 +1587,8 @@ public class MapEditor : MonoBehaviour
             c.desiredFOV = 40;
         }
         
-        //no longer doing this here
-        //c.Initialize();   
-        
         c._splines = newSplines;
+        c._points = newPoints;
         c.GetBounds();
 
         controller =  c;

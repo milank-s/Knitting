@@ -150,6 +150,9 @@ public class StellationController : MonoBehaviour {
 		Gizmos.color = Color.yellow;
 		Gizmos.DrawWireSphere(pos, 0.1f);
 
+		Gizmos.color = Color.blue;
+		Gizmos.DrawLine(upperRight, lowerLeft);
+
 		//foreach(StellationController c in controllers){
 			if(_splines.Count == 0) return;
 
@@ -728,34 +731,36 @@ public class StellationController : MonoBehaviour {
 
 	public void OffsetPosition(Vector3 v, bool newStellation){
 		
-		//you need to find the delta between the depth
-		//and the position 
+		//this is always zero anyway
+		Vector3 targetPos = Vector3.zero;
 
+		Debug.Log(v);
+
+		//cache z depth of previous stellation
 		float zOffset = v.z;
-		zOffset += pos.z - lowerLeft.z;
 
-		//move v back on z
+		//push us back in space by the delta between our position and the deepest point
 		if(newStellation){
-			zOffset -= 2;
+		
+			zOffset = (v.z - upperRight.z);
+
+			//add spacing
+			zOffset -= 3;
 		}
 
-		Vector3 delta = v - center;
-		delta.z = zOffset;
+		//translate to the center of the previous stellation
+		targetPos = v - center;
 
-		//right now v is the center of the last stellation
-		pos = delta;
+		//set depth to the offset
+		targetPos.z = zOffset;
 
-		//at this point the center of the stellation is not offset
-		// so we can use it to recenter it
 
-		//offset the pos by my center... why do I want to do this?
-		//pos += center;
+		//set cached position and move transform
+		pos = targetPos;
+		transform.position = pos;
 
 		//update the camera pos to match
-		cameraPos += pos;
-		
-		//this will move everything for you
-		transform.position += pos;
+		cameraPos += targetPos;
 		
 		//there should be no need to do this if the points are setup after they're moved
 		// foreach(Point p in _points){
@@ -864,6 +869,7 @@ public class StellationController : MonoBehaviour {
 		
 		depth = (upperRight.z - lowerLeft.z);
 		center = Vector3.Lerp(lowerLeft, upperRight, 0.5f);
+		Debug.Log(depth);
 	}
 
 	public void SetCameraInfo(bool teleport = false)

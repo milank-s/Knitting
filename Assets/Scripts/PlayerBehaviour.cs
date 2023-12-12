@@ -214,6 +214,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
 		cursorPos = pos;
+		cursor.transform.position = cursorPos;
 		traversedPoints.Add (curPoint);
 
 		curPoint.OnPlayerEnterPoint();
@@ -391,7 +392,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (joystickLocked)
 		{
-			cursorRenderer.enabled = false;
+			//cursorRenderer.enabled = false;
 			//show glitch effect if we're not on a point 
 
 		}
@@ -1483,6 +1484,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		cursor.transform.position = cursorPos;
 		cursor.transform.rotation = Quaternion.LookRotation(CameraFollow.forward, cursorDir);
 
+		cursorDir = cursorDir2;
 
 		if(buttonDown && state == PlayerState.Traversing)
 		{
@@ -1491,10 +1493,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		else
 		{
 			//cursorDir = Vector3.Lerp (cursorDir, cursorDir2, (cursorRotateSpeed + flow) * Time.deltaTime);
-			cursorDir = cursorDir2;
+			//cursorDir = cursorDir2;
 		}
 		
-
 		// l.SetPosition(0,pos);
 		// l.SetPosition(1, cursorPos);
 	}
