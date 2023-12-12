@@ -174,7 +174,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void Awake(){
 		
 		pos = transform.position;
-		
+
 		joystickLocked = true;
 		pointDest = null;
 		traversedPoints = new List<Point> ();
@@ -318,21 +318,18 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 		if (Application.isEditor)  // or check the app debug flag
 		{
-			Rect r = new Rect(Screen.width - 200, Screen.height - 100, 200, 100);
+			// Rect r = new Rect(Screen.width - 200, Screen.height - 100, 200, 100);
 			
-			GUI.Label(r, "curSpeed: " + curSpeed.ToString("F1"));
-			r.y -=20;
-			GUI.Label(r, "flow: " + flow.ToString("F1"));
-			r.y -=20;
-			GUI.Label(r, "boost: " + boost.ToString("F1"));
+			// GUI.Label(r, "curSpeed: " + curSpeed.ToString("F1"));
+			// r.y -=20;
+			// GUI.Label(r, "flow: " + flow.ToString("F1"));
+			// r.y -=20;
+			// GUI.Label(r, "boost: " + boost.ToString("F1"));
 
 		}
 	}
 	public void OnDrawGizmos(){
 		if(state == PlayerState.Traversing){
-			
-			Handles.Label(transform.position, "Text");
-
 
 			Gizmos.color = Color.blue;
 			Gizmos.DrawCube(curPoint.Pos, Vector3.one * 0.1f);

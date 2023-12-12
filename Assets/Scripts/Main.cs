@@ -65,7 +65,7 @@
 	public SplineAction OnSplineExit;
 	private bool pressedPause;
 	
-	public static float cameraDistance = 2;
+	public static float cameraDistance = 5;
 
 	public Gamepad gamepad
 	{

@@ -219,6 +219,10 @@ public class SceneController : MonoBehaviour
         if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
             
             //we need to get rid of our collectibles 
+            //Stellation controller function to deal with them?
+            if(Services.main.activeStellation != null){
+                Services.main.activeStellation.Cleanup();
+            }
             LoadWithTransition();
         }
         else

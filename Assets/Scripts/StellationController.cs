@@ -490,6 +490,12 @@ public class StellationController : MonoBehaviour {
 		}
 	}
 
+	public void Cleanup(){
+		foreach(Collectible c in collectibles){
+			c.Reset();
+		}
+	}
+
 	public void CheckCompletion(){
 
 		//doing it on the collectible side
