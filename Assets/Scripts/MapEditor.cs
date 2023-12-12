@@ -1441,6 +1441,15 @@ public class MapEditor : MonoBehaviour
         pointsParent = pointParent.transform;
         splinesParent = parent.transform;
         
+        StellationController c;
+
+        if(stellationController == null){
+            c = parent.AddComponent<StellationController>();
+        }else{
+            c = stellationController;
+        }
+        
+
         List<Point> newPoints = new List<Point>();
         List<Spline> newSplines = new List<Spline>();
         
@@ -1450,7 +1459,8 @@ public class MapEditor : MonoBehaviour
             Vector3 spawnPos = new Vector3(json["p" + i]["x"],json["p" + i]["y"],json["p" + i]["z"]);
             
             Point newPoint = SplineUtil.CreatePoint(spawnPos);
-            
+            c._points = new List<Point>();
+            c._points.Add(newPoint);
             
             if (json["p" + i]["word"] != "")
             {
@@ -1537,15 +1547,6 @@ public class MapEditor : MonoBehaviour
             newSplines.Add(newSpline);
         }
 
-        StellationController c;
-
-        if(stellationController == null){
-            c = parent.AddComponent<StellationController>();
-        }else{
-            c = stellationController;
-        }
-        
-
         c.name = parent.name;
 
         //tuning
@@ -1592,6 +1593,8 @@ public class MapEditor : MonoBehaviour
         //c.Initialize();   
         
         c._splines = newSplines;
+        c.GetBounds();
+
         controller =  c;
         return c;
     }

@@ -718,23 +718,30 @@ public class StellationController : MonoBehaviour {
 		}
 	}
 
-	public void MoveToCenter(){
+	public void OffsetPosition(Vector3 v){
 		//we need to add our z bounds
 		//and offset back to align with x and y?
 		//your points don't like this shit
 	
 		//what other positions do we need updated
 		
+
 		Vector3 diff = Vector3.zero;
-		diff.z -= 1;
-		diff -= center;
+		diff.z += 3;
+		diff += center;
+
+		pos = v;
 		pos -= diff;
 		cameraPos -= diff;
+
+		//this will move everything for you
 		transform.position = pos;
 		
-		foreach(Point p in _points){
-			p.MoveInitPosition(diff);
-		}
+		//this will fix the point's anchor
+		//there should be no need to do this if the points are setup after they're moved
+		// foreach(Point p in _points){
+		// 	p.MoveInitPosition(diff);
+		// }
 	}
 
 	public void NextWord(){
@@ -798,7 +805,7 @@ public class StellationController : MonoBehaviour {
 		return Mathf.Clamp01(pos.z - lowerLeft.z / (upperRight.z - lowerLeft.z));
 	}
 
-	void GetBounds(){
+	public void GetBounds(){
 
 	lowerLeft = new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
 	upperRight = new Vector3(-Mathf.Infinity, -Mathf.Infinity, -Mathf.Infinity);
@@ -838,6 +845,7 @@ public class StellationController : MonoBehaviour {
 		
 		center = Vector3.Lerp(lowerLeft, upperRight, 0.5f);
 	}
+
 	public void SetCameraInfo(bool teleport = false)
 	{
 		CameraFollow.instance.desiredFOV = desiredFOV;
