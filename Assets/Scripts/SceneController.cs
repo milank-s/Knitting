@@ -218,8 +218,7 @@ public class SceneController : MonoBehaviour
         //stopgap stuff for when I want to test the level without going through the menu;
         if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
             
-            LoadLevel(true);
-            
+            LoadWithTransition();
         }
         else
         {
@@ -239,12 +238,11 @@ public class SceneController : MonoBehaviour
             Services.main.ToggleEditMode();
 
             return;
-
         }
 
         //stopgap stuff for when I want to test the level without going through the menu;
         if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
-           LoadLevel(true);
+           LoadWithTransition();
         }else{
            FinishLevelSet();
         }
@@ -253,11 +251,16 @@ public class SceneController : MonoBehaviour
     //when loading a stellation file
 	public void LoadFile(string fileName)
 	{
-        //the load file function shouldn't be responsible for unloading
-        //find where this happens and add the relevant functions
-	
+        //if there is already an active stellation get its position
+        //cache it and add an offset 
+        Vector3 pos = Vector3.zero;
+        if(Services.main.activeStellation != null){
+            pos = Services.main.activeStellation.pos;
+        }
+
 		Services.main.activeStellation = MapEditor.instance.Load(fileName);
-		
+		Services.main.activeStellation.MoveToPos(pos);
+
         //I think a better way to check this is whether curlevelIndex is -1?
         // if (!MapEditor.editing)
 		if (curSetIndex == -1)
@@ -290,6 +293,18 @@ public class SceneController : MonoBehaviour
 		}
 	}
 
+    //dollies camera to the new stellation
+    public void LoadWithTransition(){
+		StartCoroutine(LoadLevelRoutine());
+    }
+
+    //loads and starts player instantly
+    public void LoadDirect(string levelTitle){
+
+        LoadFile(levelTitle);
+        Services.main.EnterLevel();
+    }
+
     public IEnumerator LoadLevelRoutine(){
         
         if(curLevelSet.isScene){
@@ -321,15 +336,6 @@ public class SceneController : MonoBehaviour
 	}
 
 
-    //if we have a delay that means what?
-    //that we're going between levels or entering a level from the menu
-
-    //if delay is false the player never enters the level.............
-    public void LoadLevel(){
-
-		StartCoroutine(LoadLevelRoutine());
-
-	}
 
     public void UnloadStellation(StellationController s)
     {

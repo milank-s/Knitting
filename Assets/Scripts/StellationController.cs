@@ -676,23 +676,14 @@ public class StellationController : MonoBehaviour {
 			foreach(CrawlerManager c in crawlers){
 				c.Step();
 			}
-			//why the hell are you doing this
-			// transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime);
 
 			foreach (Point p in _points)
 				{
 					p.Step();
 				}
-			//Services.main.fx.readout.transform.position = Services.main.Player.transform.position;
 
 			if (!won)
 			{	
-
-				if(Services.PlayerBehaviour.state == PlayerState.Traversing && !Services.PlayerBehaviour.joystickLocked){
-
-					//pos -= Vector3.forward * Time.deltaTime / 60f;	
-				}
-
 
 				if (unlockMethod == UnlockType.speed)
 				{
@@ -729,6 +720,10 @@ public class StellationController : MonoBehaviour {
 		}
 	}
 
+	public void MoveToPos(Vector3 p){
+		pos = p;
+		transform.position = pos;
+	}
 	public void NextWord(){
 		//Services.main.text.text += GetNextWord();
 	}
@@ -844,9 +839,9 @@ public class StellationController : MonoBehaviour {
 
 		if(setCameraPos){
 			if(teleport){
-				CameraFollow.instance.WarpToPosition(cameraPos);
+				CameraFollow.instance.WarpToPosition(cameraPos + pos);
 			}else{
-				CameraFollow.targetPos = cameraPos;
+				CameraFollow.targetPos = cameraPos + pos;
 			}
 		}else{
 			if(teleport){

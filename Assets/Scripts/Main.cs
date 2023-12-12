@@ -166,7 +166,11 @@
 				
 				SceneController.instance.UnloadStellation(activeStellation);
 		
-				SceneController.instance.LoadFile(activeLevel);
+				//why are we using this shit
+				// SceneController.instance.LoadFile(activeLevel);
+
+				SceneController.instance.LoadDirect(activeLevel);
+
 			}else{
 				//this is fucking up because when collectibles are picked up
 				//you change the point types
@@ -175,8 +179,18 @@
 				// editor.TogglePlayMode();
 
 				//this is fucking up because you're not resetting and level is never initialized
-				FullReset();
-				SceneController.instance.LoadFile(activeStellation.title);
+				string levelName = activeStellation.title;
+				
+				//why does this need a full reset but the above condition doesnt?
+				//FullReset();
+				
+				SceneController.instance.UnloadStellation(activeStellation);
+
+				//SceneController.instance.LoadFile(activeStellation.title);
+				//this is fucking up because curlevelset is -1
+				//just do it by hand
+				// SceneController.instance.LoadLevel();
+				SceneController.instance.LoadDirect(levelName);
 
 			}
 		}	
@@ -413,7 +427,7 @@
 		// EnterPlayMode();
 
 		Services.menu.Show(false);
-		SceneController.instance.LoadLevel();
+		SceneController.instance.LoadDirect(SceneController.instance.GetCurLevel());
 	}
 
 
