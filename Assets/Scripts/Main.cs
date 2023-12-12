@@ -357,11 +357,9 @@
 
 					//things seem to be going pretty well without having to call this
 					//what does it to? update normals? update when you change texture offset?
-					
-					s.line.Draw3D();
-					
-				}
 				
+					s.line.Draw3D();
+				}
 			}
 		}
 
@@ -449,7 +447,6 @@
 		//
 
 		OnReset.Invoke();
-
 	
 		if(OnLoadLevel != null){
 			OnLoadLevel(activeStellation);

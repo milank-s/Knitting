@@ -1243,9 +1243,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	}
 
-	//MAKE SURE THAT YOU CAN STILL PLACE POINTS WHILE NOT FLYING OFF THE EDGE
-	//DONT CONFUSE FLYING WITH
-
 	public bool TryLeavePoint()
 	{
 		float minAngle = Mathf.Infinity;
@@ -1315,7 +1312,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					bool tangent = false;
 
 					Vector3 startdir = Vector3.zero;
-
+					Vector3 pointOnLine = Vector3.zero;
 					//how can I rewrite this to get a point some distance along the line?
 					//this is screwing up when I use circles
 
@@ -1325,12 +1322,12 @@ public class PlayerBehaviour: MonoBehaviour {
 							//don't enter conveyor belts that will instantly push you back
 							//if(!isGhostPoint && curSpeed < s.speed) continue;
 							// p2 = s.GetPointAtIndex(nextIndex, 0.8f);
-							p2 = s.GetPointAlongLine(nextIndex, 0.8f, 0.2f, forward);	
+							pointOnLine = s.GetPointAlongLine(nextIndex, 0.8f, 0.2f, forward);	
 							
 						} else {
 							
 							// p2 = s.GetPointAtIndex(curIndex, 0.2f);
-							p2 = s.GetPointAlongLine(curIndex, 0.2f, 0.2f, forward);
+							pointOnLine = s.GetPointAlongLine(curIndex, 0.2f, 0.2f, forward);
 						}
 					}else{
 
@@ -1339,9 +1336,9 @@ public class PlayerBehaviour: MonoBehaviour {
 						continue;
 					}
 
-					Debug.DrawLine(transform.position, p2, Color.green);
+					Debug.DrawLine(transform.position, pointOnLine, Color.green);
 
-					p2 = Services.mainCam.WorldToScreenPoint(p2);
+					p2 = Services.mainCam.WorldToScreenPoint(pointOnLine);
 					startdir = (p2 - p1).normalized;
 					curAngle = Vector2.Angle(cursorDir, startdir);
 					

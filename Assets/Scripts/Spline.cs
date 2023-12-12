@@ -20,7 +20,6 @@ using System.Collections.Generic;
 
 public class Spline : MonoBehaviour
 {
-	
 	public SplineType type = SplineType.normal;
 
 	public enum SplineType{normal, moving, locked}
@@ -32,9 +31,7 @@ public class Spline : MonoBehaviour
 	public bool bidirectional = true;
 	public bool drawing = false;
 	public bool drawn = false;
-
 	public bool hitEnd, hitStart;
-	
 	public static float shake;
 	public static float amplitude = 0.25f;
 	public static float noiseSpeed = 100;

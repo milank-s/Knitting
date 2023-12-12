@@ -252,13 +252,18 @@ public class SceneController : MonoBehaviour
 	public void LoadFile(string fileName)
 	{
         Vector3 offset = Vector3.zero;
+
+        bool newStellation = true;
+
         if(Services.main.activeStellation != null){
+            newStellation = fileName != Services.main.activeStellation.title;
             offset = Services.main.activeStellation.pos;
         }
 
         //we need to make sure that bounds and center are set before we offset
 		Services.main.activeStellation = MapEditor.instance.Load(fileName);
-        Services.main.activeStellation.OffsetPosition(offset);
+
+        Services.main.activeStellation.OffsetPosition(offset, newStellation);
 
         //I think a better way to check this is whether curlevelIndex is -1?
         // if (!MapEditor.editing)
@@ -268,7 +273,6 @@ public class SceneController : MonoBehaviour
 		}
         
 		Services.main.InitializeLevel();
-        
 	}
 
     void LoadScene(){

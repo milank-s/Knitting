@@ -23,7 +23,6 @@ public class CameraFollow : MonoBehaviour {
 	// Use this for initialization
 	void Awake()
 	{
-		
 		instance = this;
 		CameraDolly.leftBound = float.PositiveInfinity;
 		CameraDolly.rightBound = float.NegativeInfinity;
@@ -41,10 +40,8 @@ public class CameraFollow : MonoBehaviour {
 	public void WarpToPosition(Vector3 pos)
 	{
 		//this assumes view dir is forward
-
 		targetPos = pos;
-		transform.position = pos - Main.cameraDistance * Vector3.forward;	
-		cam.fieldOfView = desiredFOV;
+		transform.position = pos - Main.cameraDistance * Vector3.forward;
 	}
 
 	public IEnumerator MoveRoutine(){

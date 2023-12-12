@@ -528,7 +528,8 @@ public class StellationController : MonoBehaviour {
 		isPlayerOn = true;
 		Services.main.activeStellation = this;
 	
-		SetCameraInfo();
+		//I'd prefer to lerp camera position and fov
+		SetCameraInfo(false);
 
 		Show(true);
 
@@ -718,26 +719,23 @@ public class StellationController : MonoBehaviour {
 		}
 	}
 
-	public void OffsetPosition(Vector3 v){
-		//we need to add our z bounds
-		//and offset back to align with x and y?
-		//your points don't like this shit
-	
-		//what other positions do we need updated
+	public void OffsetPosition(Vector3 v, bool newStellation){
 		
-
-		Vector3 diff = Vector3.zero;
-		diff.z += 3;
-		diff += center;
-
+		Vector3 zOffset = Vector3.forward * 2;
+	
 		pos = v;
-		pos -= diff;
-		cameraPos -= diff;
+		
+		if(newStellation){
+			pos -= zOffset;
+		}
+
+		cameraPos -= pos;
+		center -= pos;
 
 		//this will move everything for you
-		transform.position = pos;
+		transform.position = pos - center;
 		
-		//this will fix the point's anchor
+		
 		//there should be no need to do this if the points are setup after they're moved
 		// foreach(Point p in _points){
 		// 	p.MoveInitPosition(diff);
