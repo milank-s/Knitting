@@ -734,8 +734,6 @@ public class StellationController : MonoBehaviour {
 		//this is always zero anyway
 		Vector3 targetPos = Vector3.zero;
 
-		Debug.Log(v);
-
 		//cache z depth of previous stellation
 		float zOffset = v.z;
 
@@ -745,7 +743,7 @@ public class StellationController : MonoBehaviour {
 			zOffset = (v.z - upperRight.z);
 
 			//add spacing
-			zOffset -= 3;
+			zOffset -= 2;
 		}
 
 		//translate to the center of the previous stellation
@@ -869,7 +867,6 @@ public class StellationController : MonoBehaviour {
 		
 		depth = (upperRight.z - lowerLeft.z);
 		center = Vector3.Lerp(lowerLeft, upperRight, 0.5f);
-		Debug.Log(depth);
 	}
 
 	public void SetCameraInfo(bool teleport = false)

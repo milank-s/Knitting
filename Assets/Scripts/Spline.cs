@@ -386,6 +386,7 @@ public class Spline : MonoBehaviour
 		line = new VectorLine (name, linePoints, lineWidth, LineType.Continuous);
 		line.layer = LayerMask.NameToLayer("Default");
 
+
 		if (MapEditor.editing)
 		{
 			line.color = Color.white;

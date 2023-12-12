@@ -259,9 +259,8 @@ public class SceneController : MonoBehaviour
         if(Services.main.activeStellation != null){
             newStellation = fileName != Services.main.activeStellation.title;
             offset = Services.main.activeStellation.center;
-            if(newStellation){
-                offset.z -= Services.main.activeStellation.depth/2f;
-            }
+            offset.z -= Services.main.activeStellation.depth/2f;
+            
         }else{
             Debug.Log("no active stellation");
 
@@ -269,7 +268,6 @@ public class SceneController : MonoBehaviour
 
         //we need to make sure that bounds and center are set before we offset
 		Services.main.activeStellation = MapEditor.instance.Load(fileName);
-
         
         Services.main.activeStellation.OffsetPosition(offset, newStellation);
         
