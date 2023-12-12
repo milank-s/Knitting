@@ -352,7 +352,7 @@ public class Point : MonoBehaviour
 			glow = Mathf.Lerp(glow, 0, Time.deltaTime * 2);
 
 			//this is probably not optimized
-			renderer.transform.rotation = Quaternion.LookRotation((CameraFollow.instance.pos - Pos).normalized, renderer.transform.up);
+			renderer.transform.rotation = Quaternion.LookRotation((CameraFollow.instance.transform.position - Pos).normalized, renderer.transform.up);
 			
 			if(pointType == PointTypes.start){
 				if(controller.collected){

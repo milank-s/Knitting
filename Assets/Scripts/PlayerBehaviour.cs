@@ -172,6 +172,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 	public void Awake(){
+		
+		pos = transform.position;
+		
 		joystickLocked = true;
 		pointDest = null;
 		traversedPoints = new List<Point> ();
@@ -356,7 +359,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	{
 
 		//make everything look at the camera
-		glitchFX.transform.LookAt(CameraFollow.instance.pos);
+		glitchFX.transform.LookAt(CameraFollow.instance.transform.position);
 
 		if(curDirection.sqrMagnitude > 0){
 			visualRoot.rotation = Quaternion.LookRotation(curDirection, CameraFollow.forward);

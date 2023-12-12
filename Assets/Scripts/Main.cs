@@ -458,20 +458,7 @@
 	//it is the only function that calls player.initialize
 	
 	public void EnterLevel(){
-        StartCoroutine(Services.main.EnterLevelRoutine());
-    }
-
-	public IEnumerator EnterLevelRoutine(){
-
-		state = GameState.paused;
-
-		Services.fx.title.text = activeStellation.title;
-		// Services.fx.overlay.color = Color.black;
-
-		yield return new WaitForSeconds(0.25f);
-
-		// Services.fx.overlay.color = Color.clear;
-		Services.fx.title.text = "";
+        //StartCoroutine(ShowTitle());
 
 		playerInput.SwitchCurrentActionMap("Player");
 		Cursor.lockState = CursorLockMode.Locked;
@@ -481,6 +468,17 @@
 
 		Services.Player.SetActive(true);
 		Services.PlayerBehaviour.Initialize();
+    }
+
+	public IEnumerator ShowTitle(){
+
+		Services.fx.title.text = activeStellation.title;
+		// Services.fx.overlay.color = Color.black;
+
+		yield return new WaitForSeconds(0.25f);
+
+		// Services.fx.overlay.color = Color.clear;
+		Services.fx.title.text = "";
 	}
 
 	public void EnterUIMode()

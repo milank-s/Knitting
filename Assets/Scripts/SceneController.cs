@@ -259,7 +259,9 @@ public class SceneController : MonoBehaviour
         if(Services.main.activeStellation != null){
             newStellation = fileName != Services.main.activeStellation.title;
             offset = Services.main.activeStellation.center;
-            offset.z -= Services.main.activeStellation.depth/2f;
+            if(newStellation){
+                offset.z -= Services.main.activeStellation.depth/2f;
+            }
             
         }else{
             Debug.Log("no active stellation");
@@ -339,7 +341,8 @@ public class SceneController : MonoBehaviour
 
         //sound off cut to black
         // Services.fx.overlay.color = Color.black;
-        
+        Services.main.activeStellation.SetCameraInfo();
+
         //move camera on z to new stellation position
 		yield return StartCoroutine(CameraFollow.instance.MoveRoutine());
 

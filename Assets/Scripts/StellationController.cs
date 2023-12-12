@@ -730,9 +730,10 @@ public class StellationController : MonoBehaviour {
 	}
 
 	public void OffsetPosition(Vector3 v, bool newStellation){
-		
-		//this is always zero anyway
-		Vector3 targetPos = Vector3.zero;
+
+
+		//translate to the center of the previous stellation
+		Vector3 targetPos = v - center;
 
 		//cache z depth of previous stellation
 		float zOffset = v.z;
@@ -744,14 +745,10 @@ public class StellationController : MonoBehaviour {
 
 			//add spacing
 			zOffset -= 2;
+			
+			//set depth to the offset
+			targetPos.z = zOffset;
 		}
-
-		//translate to the center of the previous stellation
-		targetPos = v - center;
-
-		//set depth to the offset
-		targetPos.z = zOffset;
-
 
 		//set cached position and move transform
 		pos = targetPos;
@@ -871,7 +868,6 @@ public class StellationController : MonoBehaviour {
 
 	public void SetCameraInfo(bool teleport = false)
 	{
-		CameraFollow.instance.desiredFOV = desiredFOV;
 
 		float height = Mathf.Abs(upperRight.y - lowerLeft.y);
 		float fov = CameraDolly.FOVForHeightAndDistance(height, Main.cameraDistance) + 10f;
@@ -879,9 +875,11 @@ public class StellationController : MonoBehaviour {
 		CameraFollow.instance.lockX = lockX;
 		CameraFollow.instance.lockY = lockY;
 		CameraFollow.instance.lockZ = lockZ;
+		
+		CameraFollow.instance.desiredFOV = desiredFOV;
 
 		if(!setCameraPos) cameraPos = center;
-	
+
 		if(teleport){
 			CameraFollow.instance.WarpToPosition(cameraPos);
 		}else{

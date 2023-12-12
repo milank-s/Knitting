@@ -5,7 +5,6 @@ public class CameraFollow : MonoBehaviour {
 	public float speed;
 	public Camera uiCam;
 	public Transform target;
-	public Vector3 pos;
 	private Vector3 velocity = Vector2.zero;
 	Vector3 nudge;
 	Vector3 offset;
@@ -42,15 +41,37 @@ public class CameraFollow : MonoBehaviour {
 		//this assumes view dir is forward
 		targetPos = pos;
 		transform.position = pos - Main.cameraDistance * Vector3.forward;
+		offset = Vector3.zero;
 	}
 
 	public IEnumerator MoveRoutine(){
 
 		//get active stellation position
 		//lerp to that position
-		
-		yield return null;
+		float t = 0;
+		float startFOV = cam.fieldOfView;
+		Vector3 startPos = transform.position;
+		Vector3 dest = targetPos;
 
+		if(Services.main.activeStellation._startPoints.Count > 0){
+			Vector3 startPointPos = Services.main.activeStellation.start.Pos;
+			if(!lockX) dest.x = startPointPos.x;
+			if(!lockY) dest.y = startPointPos.y;
+			if(!lockZ) dest.z = startPointPos.z;
+		}
+		
+		Vector3 destOffset = dest - Main.cameraDistance * Vector3.forward;
+
+		while(t < 1){
+			float easedT = Easing.QuadEaseOut(t);
+			cam.fieldOfView = Mathf.Lerp(startFOV, desiredFOV, t);
+			transform.position = Vector3.Lerp(startPos, destOffset, easedT);
+			t += Time.deltaTime;
+			yield return null;
+		}
+
+		cam.fieldOfView = desiredFOV;
+		WarpToPosition(dest);
 	}
 
 
@@ -61,12 +82,11 @@ public class CameraFollow : MonoBehaviour {
 		//find its bounds
 		// get around them
 		
-		pos = Services.PlayerBehaviour.pos;
+		Vector3 desiredPos = Services.PlayerBehaviour.pos;
 		Vector3 playerDir = Services.PlayerBehaviour.curDirection;
 		Vector3 toPlayer;
 
 		if(Services.PlayerBehaviour.state == PlayerState.Traversing){
-
 
 			//I wasn't smart enough to get this working
 			//why dont you just track the players rotation delta and apply it to the camera?
@@ -95,14 +115,10 @@ public class CameraFollow : MonoBehaviour {
 			float t = Services.PlayerBehaviour.progress;
 			if(!Services.PlayerBehaviour.goingForward) t = 1-t;
 			transform.rotation = Quaternion.Lerp(r1, r2, t);
-			Debug.DrawLine(pos, pos - transform.forward * Main.cameraDistance);
 
 		}else{
 			toPlayer = transform.forward;
 		}
-
-		//this now needs to be rotated using the current player direction pole
-		pos -= transform.forward * (Main.cameraDistance);
 		
 		if(Services.PlayerBehaviour.state != PlayerState.Flying){
 			
@@ -122,17 +138,20 @@ public class CameraFollow : MonoBehaviour {
 		}
 
 		if(lockX){
-			pos.x = targetPos.x;
+			desiredPos.x = targetPos.x;
 		}
 
 		if(lockY){
-			pos.y = targetPos.y;
+			desiredPos.y = targetPos.y;
 		}
 
 		if(lockZ){
-			pos.z = targetPos.z;
+			desiredPos.z = targetPos.z;
 		}
-	
+		
+		//this now needs to be rotated using the current player direction pole
+		desiredPos -= transform.forward * (Main.cameraDistance);
+
 		cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, desiredFOV, Time.deltaTime * 3);
 
 		float height;
@@ -156,8 +175,7 @@ public class CameraFollow : MonoBehaviour {
 		yPos = Mathf.Lerp(CameraDolly.bottomBound, CameraDolly.topBound, 0.5f);
 		xPos = Mathf.Lerp(CameraDolly.leftBound, CameraDolly.rightBound, 0.5f);
 
-		pos = pos + offset;
-		transform.position = pos;
+		transform.position = Vector3.Lerp(transform.position, desiredPos + offset, Time.deltaTime * 10);
 		forward = transform.forward;
 	}
 }
