@@ -257,7 +257,8 @@ public class SceneController : MonoBehaviour
 
         if(Services.main.activeStellation != null){
             newStellation = fileName != Services.main.activeStellation.title;
-            offset = Services.main.activeStellation.pos;
+            offset = Services.main.activeStellation.center;
+            offset.z -= Services.main.activeStellation.depth/2f;
         }
 
         //we need to make sure that bounds and center are set before we offset
