@@ -251,15 +251,8 @@ public class SceneController : MonoBehaviour
     //when loading a stellation file
 	public void LoadFile(string fileName)
 	{
-        //if there is already an active stellation get its position
-        //cache it and add an offset 
-        Vector3 pos = Vector3.zero;
-        if(Services.main.activeStellation != null){
-            pos = Services.main.activeStellation.pos;
-        }
 
 		Services.main.activeStellation = MapEditor.instance.Load(fileName);
-		Services.main.activeStellation.MoveToPos(pos);
 
         //I think a better way to check this is whether curlevelIndex is -1?
         // if (!MapEditor.editing)
@@ -267,8 +260,13 @@ public class SceneController : MonoBehaviour
 		{
 			SceneController.instance.stellationsLoaded.Add(Services.main.activeStellation);
 		}
-
+        
 		Services.main.InitializeLevel();
+        
+        Services.main.activeStellation.MoveToCenter();
+        Services.main.activeStellation.SetCameraInfo(true);
+
+		//this fixes points but not the camera
 	}
 
     void LoadScene(){

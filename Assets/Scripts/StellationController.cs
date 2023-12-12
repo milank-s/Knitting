@@ -314,14 +314,12 @@ public class StellationController : MonoBehaviour {
 		if(_startPoints.Count > 0){
 			_startPoints.Sort((p1,p2)=>TryComparePoints(p1, p2));
 		}
-			
 
 		if (start == null)
 		{
 			if(_startPoints.Count > 0)
 			{
 				start = _startPoints[0];
-				
 			}else{
 				start = _points[0];
 			}
@@ -720,10 +718,25 @@ public class StellationController : MonoBehaviour {
 		}
 	}
 
-	public void MoveToPos(Vector3 p){
-		pos = p;
+	public void MoveToCenter(){
+		//we need to add our z bounds
+		//and offset back to align with x and y?
+		//your points don't like this shit
+	
+		//what other positions do we need updated
+		
+		Vector3 diff = Vector3.zero;
+		diff.z -= 1;
+		diff -= center;
+		pos -= diff;
+		cameraPos -= diff;
 		transform.position = pos;
+		
+		foreach(Point p in _points){
+			p.MoveInitPosition(diff);
+		}
 	}
+
 	public void NextWord(){
 		//Services.main.text.text += GetNextWord();
 	}
@@ -788,7 +801,7 @@ public class StellationController : MonoBehaviour {
 	void GetBounds(){
 
 	lowerLeft = new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
-		upperRight = new Vector3(-Mathf.Infinity, -Mathf.Infinity, -Mathf.Infinity);
+	upperRight = new Vector3(-Mathf.Infinity, -Mathf.Infinity, -Mathf.Infinity);
 
 		foreach (Point p in _points)
 		{
@@ -822,13 +835,12 @@ public class StellationController : MonoBehaviour {
 				lowerLeft.z = p.Pos.z;
 			}
 		}
+		
+		center = Vector3.Lerp(lowerLeft, upperRight, 0.5f);
 	}
 	public void SetCameraInfo(bool teleport = false)
 	{
-
 		CameraFollow.instance.desiredFOV = desiredFOV;
-
-		center = Vector3.Lerp(lowerLeft, upperRight, 0.5f);
 
 		float height = Mathf.Abs(upperRight.y - lowerLeft.y);
 		float fov = CameraDolly.FOVForHeightAndDistance(height, Main.cameraDistance) + 10f;
@@ -837,22 +849,13 @@ public class StellationController : MonoBehaviour {
 		CameraFollow.instance.lockY = lockY;
 		CameraFollow.instance.lockZ = lockZ;
 
-		if(setCameraPos){
-			if(teleport){
-				CameraFollow.instance.WarpToPosition(cameraPos + pos);
-			}else{
-				CameraFollow.targetPos = cameraPos + pos;
-			}
+		if(!setCameraPos) cameraPos = center;
+	
+		if(teleport){
+			CameraFollow.instance.WarpToPosition(cameraPos);
 		}else{
-			if(teleport){
-				CameraFollow.instance.WarpToPosition(center);
-			}else{
-				CameraFollow.targetPos = center;
-			}
+			CameraFollow.targetPos = cameraPos;
 		}
-
-		//I think we need to set far clipping plane and fog here
-
 	}
 	
 	public bool CheckSpeed()

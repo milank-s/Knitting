@@ -75,7 +75,6 @@ public class Point : MonoBehaviour
 	public static float mass = 50f;
                      	[HideInInspector]
 	public Vector3 anchorPos;
-
 	public Vector3 initPos;
 	[Space(10)]
 
@@ -375,6 +374,11 @@ public class Point : MonoBehaviour
 		//transform.LookAt(Services.mainCam.transform.position, Vector3.up);
 	}
 
+	public void MoveInitPosition(Vector3 v){
+		anchorPos += v;
+		initPos += v;
+	}
+
 	public void Movement(){
 		
 		Vector3 stretch = transform.position - (anchorPos); // + controller.pos);
@@ -571,7 +575,6 @@ public class Point : MonoBehaviour
 //		damping = Mathf.Clamp(damping - 100, 100, 10000);
 		
 		SwitchState(PointState.on);
-		
 
 		if(pointType != PointTypes.ghost)
 		{
