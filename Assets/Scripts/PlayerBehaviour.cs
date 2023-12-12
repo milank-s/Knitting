@@ -218,6 +218,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		transform.position = curPoint.Pos;
 		cursorPos = pos;
 		cursor.transform.position = cursorPos;
+		cursorRenderer.enabled = false;
 		traversedPoints.Add (curPoint);
 
 		curPoint.OnPlayerEnterPoint();

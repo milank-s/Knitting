@@ -204,35 +204,36 @@ public class SceneController : MonoBehaviour
 
     public void SkipStellation(){
 
-         curLevel++;
+        LoadNextStellation();
+
+        //  curLevel++;
         
-        if (curSetIndex == -1 && curLevelName == "")
-        {
-            //we're in the editor, pop them out into it
+        // if (curSetIndex == -1 && curLevelName == "")
+        // {
+        //     //we're in the editor, pop them out into it
 
-            Services.main.ToggleEditMode();
-            return;
+        //     Services.main.ToggleEditMode();
+        //     return;
 
-        }
+        // }
 
-        //stopgap stuff for when I want to test the level without going through the menu;
-        if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
+        // //stopgap stuff for when I want to test the level without going through the menu;
+        // if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
             
-            //we need to get rid of our collectibles 
-            //Stellation controller function to deal with them?
-            if(Services.main.activeStellation != null){
-                Services.main.activeStellation.Cleanup();
-            }
-            LoadWithTransition();
-        }
-        else
-        {
-            //reopen menu, empty scene;
+        //     LoadNextStellation();
+
+        //     LoadWithTransition();
+        // }
+        // else
+        // {
+        //     //reopen menu, empty scene;
                 
-           Services.main.QuitLevel();
+        //    Services.main.QuitLevel();
             
-        }
+        // }
     }
+
+
     public void LoadNextStellation()
     {
         curLevel++;
@@ -247,7 +248,13 @@ public class SceneController : MonoBehaviour
 
         //stopgap stuff for when I want to test the level without going through the menu;
         if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
+
+            if(Services.main.activeStellation != null){
+                Services.main.activeStellation.Cleanup();
+            }
+
            LoadWithTransition();
+
         }else{
            FinishLevelSet();
         }
@@ -261,15 +268,17 @@ public class SceneController : MonoBehaviour
         bool newStellation = true;
 
         if(Services.main.activeStellation != null){
+            
             newStellation = fileName != Services.main.activeStellation.title;
+
             offset = Services.main.activeStellation.center;
+
             if(newStellation){
                 offset.z -= Services.main.activeStellation.depth/2f;
             }
             
         }else{
             Debug.Log("no active stellation");
-
         }
 
         //we need to make sure that bounds and center are set before we offset
@@ -328,29 +337,31 @@ public class SceneController : MonoBehaviour
             LoadScene();
         }else{
             curLevelName = GetCurLevel();
+            Debug.Log("Loading " + curLevelName);
+
             LoadFile(curLevelName);
         }
 
-        //play the animation for the camera and title
-		yield return StartCoroutine(LevelTransitionRoutine());
-		
         //call player init function
         Services.main.EnterLevel();
+
+        //there is aperiod of time between init and transition where
+        //the player is still on the last stellation and is causing problems
+        //what is our method for stopping the player from inputting anything?
+
+        //play the animation for the camera and title
+		yield return StartCoroutine(LevelTransitionRoutine());
 	}
 
     //transition between levels in the flow of play
 	public IEnumerator LevelTransitionRoutine(){
 
-		Services.main.state = Main.GameState.paused;
+		//Services.main.state = Main.GameState.paused;
 
-        //sound off cut to black
-        // Services.fx.overlay.color = Color.black;
         Services.main.activeStellation.SetCameraInfo();
 
         //move camera on z to new stellation position
 		yield return StartCoroutine(CameraFollow.instance.MoveRoutine());
-
-        // Services.fx.overlay.color = Color.clear;
 	}
 
 

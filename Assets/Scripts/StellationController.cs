@@ -246,6 +246,8 @@ public class StellationController : MonoBehaviour {
 	{
 		won = true;
 
+		Services.PlayerBehaviour.SwitchState(PlayerState.Animating);
+		
 		//We are in a scene that supports multiple controllers
 		if (StellationManager.instance != null)
 		{
@@ -494,6 +496,8 @@ public class StellationController : MonoBehaviour {
 		foreach(Collectible c in collectibles){
 			c.Reset();
 		}
+
+		OnPlayerExit();
 	}
 
 	public void CheckCompletion(){

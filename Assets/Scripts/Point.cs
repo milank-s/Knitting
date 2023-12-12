@@ -550,6 +550,8 @@ public class Point : MonoBehaviour
 	public void OnPlayerEnterPoint()
 	{
 		if(Services.main.activeStellation != controller){
+			Debug.Log("exiting stellation");
+			
 			Services.main.activeStellation.OnPlayerExit();
 			controller.OnPlayerEnter();		
 			//entered new stellation	

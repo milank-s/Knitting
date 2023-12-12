@@ -133,8 +133,10 @@ public class MenuController : MonoBehaviour
 		{
 			Cursor.visible = false;
 			Cursor.lockState = CursorLockMode.Locked;
+			RenderSettings.fog = true;
+		
 		}
-
+		
 		if (settingsOpen)
 		{
 			OpenSettings();

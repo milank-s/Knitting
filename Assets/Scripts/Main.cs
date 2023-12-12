@@ -65,7 +65,7 @@
 	public SplineAction OnSplineExit;
 	private bool pressedPause;
 	
-	public static float cameraDistance = 5;
+	public static float cameraDistance = 3;
 
 	public Gamepad gamepad
 	{
@@ -338,10 +338,13 @@
 
 				Services.fx.Step();
 				
+				//I would like to pause this between levels
 				if (Services.PlayerBehaviour.curPoint != null)
 				{
-					Services.PlayerBehaviour.Step();
-					CameraFollow.instance.FollowPlayer();
+					if(activeStellation != null && !activeStellation.won){
+						Services.PlayerBehaviour.Step();
+						CameraFollow.instance.FollowPlayer();
+					}
 				}
 			}
 			else

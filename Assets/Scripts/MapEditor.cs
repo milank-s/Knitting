@@ -125,7 +125,6 @@ public class MapEditor : MonoBehaviour
     public Dropdown levelList;
     public Dropdown unlockTypes;
 
-    private static float cameraDistance = 2;
     private List<GameObject> text;
 
     public StellationController controller;
@@ -331,7 +330,7 @@ public class MapEditor : MonoBehaviour
         l.enabled = false;
         mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
         worldPos = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y,
-            cameraDistance));
+            Main.cameraDistance));
         
         DirectoryInfo directoryInfo = new DirectoryInfo(Application.streamingAssetsPath + "/Levels");
         FileInfo[] allFiles = directoryInfo.GetFiles("*.*");
@@ -704,7 +703,7 @@ public class MapEditor : MonoBehaviour
         lastMousePos = mousePos;
         mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
         worldPos = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y,
-            cameraDistance));
+            Main.cameraDistance));
         
         cursor.transform.position = mousePos;
     }
@@ -981,21 +980,21 @@ public class MapEditor : MonoBehaviour
         cam.transform.position = center;
 
         if(viewDir == Vector3.left){
-            cam.transform.position += (extents.x + cameraDistance) * Vector3.right;
+            cam.transform.position += (extents.x + Main.cameraDistance) * Vector3.right;
         }else if(viewDir == Vector3.right){
-            cam.transform.position -= (extents.x + cameraDistance) * Vector3.right;
+            cam.transform.position -= (extents.x + Main.cameraDistance) * Vector3.right;
         }
 
          if(viewDir == Vector3.up){
-            cam.transform.position -= (extents.y + cameraDistance) * Vector3.up;
+            cam.transform.position -= (extents.y + Main.cameraDistance) * Vector3.up;
         }else if(viewDir == Vector3.down){
-            cam.transform.position += (extents.y + cameraDistance) * Vector3.up;
+            cam.transform.position += (extents.y + Main.cameraDistance) * Vector3.up;
         }
 
          if(viewDir == Vector3.forward){
-            cam.transform.position -= (extents.z + cameraDistance) * Vector3.forward;
+            cam.transform.position -= (extents.z + Main.cameraDistance) * Vector3.forward;
         }else if(viewDir == Vector3.back){
-            cam.transform.position += (extents.z + cameraDistance) * Vector3.forward;
+            cam.transform.position += (extents.z + Main.cameraDistance) * Vector3.forward;
         }
     }
     void EditSelectedPoint()
@@ -1657,7 +1656,7 @@ void DragCamera()
 
         mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
         worldPos = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y,
-            cameraDistance));
+            Main.cameraDistance));
         lastPos = worldPos;
     }
     
