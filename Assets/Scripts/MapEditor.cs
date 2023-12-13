@@ -716,7 +716,6 @@ public class MapEditor : MonoBehaviour
             DeselectSpline();
         
     }
-
     void RaycastFromCursor()
     {
         hitPoint = null;
@@ -2464,7 +2463,7 @@ void DragCamera()
     {   
         foreach (Spline s in selectedSplines)
         {
-            s.ChangeMaterial(s.lineMaterial);
+            if(s != null) s.ChangeMaterial(s.lineMaterial);
         }
         selectedSplines.Clear();
         splineSelectedTip.SetActive(false);

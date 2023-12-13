@@ -221,8 +221,8 @@
 		Spline.noiseSpeed = 5;
 		Spline.amplitude = 0.5f;
 
-		editor.DeselectPoints();
-		editor.DeselectSpline();
+		editor.DeselectAll();
+		
 		Point.Points.Clear();
 		Spline.Splines.Clear();
 	}
@@ -504,7 +504,6 @@
 			
 			if (enter)
 			{
-				
 				//should I use full reset here
 				OnReset.Invoke();
 
