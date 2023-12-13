@@ -465,7 +465,7 @@ public class MapEditor : MonoBehaviour
         if (splineindex >= 0 && splineindex < controller._splines.Count)
         {
 
-            if (Input.GetKeyDown(KeyCode.Alpha9))
+            if (Input.GetKeyDown(KeyCode.L))
             {
                
                 bool locked = selectedSpline.type == Spline.SplineType.locked;
@@ -1048,8 +1048,8 @@ public class MapEditor : MonoBehaviour
             }
             else if (Input.GetKeyDown(KeyCode.Alpha3))
             {
-                 SetPointType(PointTypes.connect);
-                 curPointType = PointTypes.connect;
+                 SetPointType(PointTypes.pickup);
+                 curPointType = PointTypes.pickup;
 
             }
             else if (Input.GetKeyDown(KeyCode.Alpha4))
@@ -1074,6 +1074,9 @@ public class MapEditor : MonoBehaviour
               else if (Input.GetKeyDown(KeyCode.Alpha8))
             {
                 SetPointType(PointTypes.reset);
+            }else if(Input.GetKeyDown(KeyCode.Alpha9))
+            {
+                SetPointType(PointTypes.connect);
             }
              
             
