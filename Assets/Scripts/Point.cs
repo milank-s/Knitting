@@ -550,7 +550,6 @@ public class Point : MonoBehaviour
 	public void OnPlayerEnterPoint()
 	{
 		if(Services.main.activeStellation != controller){
-			Debug.Log("exiting stellation");
 			
 			Services.main.activeStellation.OnPlayerExit();
 			controller.OnPlayerEnter();		
@@ -591,7 +590,7 @@ public class Point : MonoBehaviour
 			}
 		
 			if(recieveCollectible && !hasCollectible){	
-				if(pointType == PointTypes.start){
+				if(pointType == PointTypes.start || pointType == PointTypes.end){
 					controller.DepositPlayer();
 				}else{
 					controller.DepositCollectible(this);
@@ -626,17 +625,13 @@ public class Point : MonoBehaviour
 					if(controller.OnHitStart != null){
 						controller.OnHitStart.Invoke();
 					}
-
-					if (StellationManager.instance != null &&
-					    Services.main.activeStellation != controller)
-					{
-						//StellationManager.instance.EnterStellation(controller);
-					}
 					
 					
 					break;
 				
 				case PointTypes.end:
+
+					//I like this idea. I don't think it's well explained or utilized at the moment
 
 					if(!controller.isComplete)	{
 						

@@ -17,7 +17,6 @@ public class CameraFollow : MonoBehaviour {
 	public bool lockX, lockY, lockZ;
 	public float desiredFOV;
 	public static Vector3 targetPos;
-	
 	public static CameraFollow instance;
 	// Use this for initialization
 	void Awake()

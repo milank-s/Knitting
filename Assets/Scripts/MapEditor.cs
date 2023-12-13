@@ -2361,6 +2361,7 @@ void DragCamera()
 
     public void SetStellationTitle(String s){
         controller.title = s;
+        controller.name = s;
         typing = false;
     }
 

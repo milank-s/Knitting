@@ -487,7 +487,6 @@ public class StellationController : MonoBehaviour {
 
 	public void DepositPlayer(){
 		if(collected){
-			Debug.Log("player entering deposit point");
 			isComplete = true;
 		}
 	}
@@ -541,6 +540,8 @@ public class StellationController : MonoBehaviour {
 	
 	public void OnPlayerExit(){
 		isPlayerOn = false;
+		
+		Debug.Log("leaving " + title);
 	}
 
 	public void OnPlayerEnter()
@@ -549,7 +550,10 @@ public class StellationController : MonoBehaviour {
 		Services.main.activeStellation = this;
 	
 		//I'd prefer to lerp camera position and fov
-		SetCameraInfo(false);
+		
+		Debug.Log("entering " + title);
+
+		SetCameraInfo();
 
 		Show(true);
 
@@ -876,7 +880,7 @@ public class StellationController : MonoBehaviour {
 		center = Vector3.Lerp(lowerLeft, upperRight, 0.5f);
 	}
 
-	public void SetCameraInfo(bool teleport = false)
+	public void SetCameraInfo()
 	{
 
 		float height = Mathf.Abs(upperRight.y - lowerLeft.y);
@@ -890,11 +894,8 @@ public class StellationController : MonoBehaviour {
 
 		if(!setCameraPos) cameraPos = center;
 
-		if(teleport){
-			CameraFollow.instance.WarpToPosition(cameraPos);
-		}else{
-			CameraFollow.targetPos = cameraPos;
-		}
+		CameraFollow.targetPos = cameraPos;
+		
 	}
 	
 	public bool CheckSpeed()

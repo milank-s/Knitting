@@ -216,6 +216,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		cursorDistance = minCursorDistance;
 		curPoint = Services.StartPoint;
 		transform.position = curPoint.Pos;
+		pos = transform.position;
 		cursorPos = pos;
 		cursor.transform.position = cursorPos;
 		cursorRenderer.enabled = false;

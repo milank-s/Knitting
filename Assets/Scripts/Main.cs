@@ -526,11 +526,12 @@
 					editor.splinesParent = splineParent;
 					editor.pointsParent = pointParent;
 					newController.name = "Untitled";
+					c.title = "Untitled";
 					newController.transform.parent = splineParent;
 				}
 				else
 				{
-					string levelName = editor.controller.name;
+					string levelName = editor.controller.title;
 					FullReset();
 					activeStellation = editor.Load(levelName);
 					
