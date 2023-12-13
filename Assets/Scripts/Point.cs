@@ -21,7 +21,7 @@ using UnityEngine.Events;
 //###################################################
 //###################################################
 
-public enum PointTypes{normal, fly, ghost, stop, connect, reset, start, end}
+public enum PointTypes{normal, fly, ghost, stop, connect, reset, start, end, pickup}
 public class Point : MonoBehaviour
 {
 
@@ -68,6 +68,7 @@ public class Point : MonoBehaviour
 	[Space(10)] 
 	public bool usedToFly;
 	public bool isKinematic;
+	public bool setDirection = false;
 	[HideInInspector]
 	
 	public static float damping = 1000f;
@@ -280,7 +281,7 @@ public class Point : MonoBehaviour
 			textMesh.color = Color.black;
 		}
 
-		if(pointType == PointTypes.normal){
+		if(pointType == PointTypes.pickup){
 			spawnCollectible = true;
 			renderer.enabled = false;
 
@@ -298,9 +299,15 @@ public class Point : MonoBehaviour
 
 	}
 
+	public void SetForward(Vector3 dir){
+		renderer.transform.rotation = Quaternion.LookRotation(CameraFollow.instance.transform.forward, dir);
+
+	}
+
 	public void SetPointType(PointTypes t)
 	{
 		renderer.enabled = true;
+		setDirection = false;
 		pointType = t;
 		
 		meshFilter.mesh= Services.Prefabs.pointMeshes[(int)t];
@@ -308,7 +315,7 @@ public class Point : MonoBehaviour
 		switch(t){
 
 			case PointTypes.fly:
-				
+				setDirection = true;
 				break;
 
 			case PointTypes.stop:
@@ -324,7 +331,7 @@ public class Point : MonoBehaviour
 				break;
 			
 			case PointTypes.normal:
-				
+				setDirection = true;
 				break;
 			
 			case PointTypes.start:
@@ -352,7 +359,7 @@ public class Point : MonoBehaviour
 			glow = Mathf.Lerp(glow, 0, Time.deltaTime * 2);
 
 			//this is probably not optimized
-			renderer.transform.rotation = Quaternion.LookRotation((CameraFollow.instance.transform.position - Pos).normalized, renderer.transform.up);
+			renderer.transform.rotation = Quaternion.LookRotation(CameraFollow.instance.transform.forward, renderer.transform.up);
 			
 			if(pointType == PointTypes.start){
 				if(controller.collected){
@@ -647,20 +654,26 @@ public class Point : MonoBehaviour
 		
 	}
 
-	
-	public void OnPointExit(){
+	public void OnPlayerExitPoint(){
+
+		if(setDirection){
+			SetForward(Services.PlayerBehaviour.curDirection);
+		}
 
 		switch(pointType){
+			case PointTypes.normal:
+				
+			break;
+
 			case PointTypes.stop:
 
 			break;
 
 			case PointTypes.fly:
-
 				
 			break;
 
-			case PointTypes.normal:
+			case PointTypes.pickup:
 				if(spawnCollectible && collectible.collected){
 					SetPointType(PointTypes.ghost);
 				}
@@ -822,6 +835,10 @@ public class Point : MonoBehaviour
 	public void PlayerOnPoint(Vector3 direction, float force)
 	{
 		timeOnPoint += Time.deltaTime;
+		if(setDirection){
+			SetForward(direction);
+		}
+
 		//anchorPos = initPos + ((Vector3)Random.insideUnitCircle / 10f * Services.PlayerBehaviour.flow *  Mathf.Clamp01(timeOnPoint));
 		//velocity += (Vector3)Random.insideUnitCircle / Mathf.Pow(1 + timeOnPoint, 2);
 	}

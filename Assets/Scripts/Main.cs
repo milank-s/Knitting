@@ -395,7 +395,7 @@
 		float curSpeed = Services.PlayerBehaviour.curSpeed;
 		float flow = Services.PlayerBehaviour.flow;
 		
-		Services.PlayerBehaviour.curPoint.OnPointExit();
+		Services.PlayerBehaviour.curPoint.OnPlayerExitPoint();
 
 		if (Services.PlayerBehaviour.curSpline != null)
 		{

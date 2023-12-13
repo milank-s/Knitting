@@ -503,14 +503,20 @@ public class Spline : MonoBehaviour
 					distanceDelta = rollingDistance;
 
 					UpdateSplineSegment(i, index, step);
+					
 
 					distanceDelta = rollingDistance - distanceDelta;
 					segDist += distanceDelta;
 				}
 				
-
+					//this only happens after setup
 				if(populatedPointPositions){
 					DrawSplineSegment(i, index, step);
+				}else{
+					//this only happens on setup
+					if(k == 0 && curPoint.setDirection){
+						curPoint.SetForward(pointVelocities[index]);
+					} 
 				}
 				
 			}
@@ -1023,7 +1029,7 @@ public class Spline : MonoBehaviour
 		
 		Vector3 pos = GetPointAtIndex (i, t);
 		Vector3 vel = GetVelocityAtIndex(i, t);
-
+		
 		rollingDistance += (prevPos - pos).magnitude;
 		prevPos = pos;
 

@@ -1612,7 +1612,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					boostTimer = 0;
 				}
 				
-				curPoint.OnPointExit();
+				curPoint.OnPlayerExitPoint();
 
 				connectTime = 1;
 
