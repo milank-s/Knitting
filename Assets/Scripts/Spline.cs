@@ -530,6 +530,10 @@ public class Spline : MonoBehaviour
 			}
 		}
 
+		if(!populatedPointPositions && !closed && EndPoint.setDirection){
+			EndPoint.SetForward(pointVelocities[pointVelocities.Count-1]);
+		} 
+
 		populatedPointPositions = true;
 	}
 

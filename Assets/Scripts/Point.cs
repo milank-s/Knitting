@@ -656,13 +656,9 @@ public class Point : MonoBehaviour
 
 	public void OnPlayerExitPoint(){
 
-		if(setDirection){
-			SetForward(Services.PlayerBehaviour.curDirection);
-		}
-
 		switch(pointType){
 			case PointTypes.normal:
-				
+				SetForward(Services.PlayerBehaviour.curDirection);
 			break;
 
 			case PointTypes.stop:
