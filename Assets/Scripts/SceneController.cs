@@ -272,10 +272,11 @@ public class SceneController : MonoBehaviour
             newStellation = fileName != Services.main.activeStellation.title;
 
             //the camera has been following the player
-            if(Services.main.activeStellation.lockX && Services.main.activeStellation.lockY){
-                offset = Services.PlayerBehaviour.transform.position;
-            }else{
+            
+            if(!newStellation || Services.main.activeStellation.lockX && Services.main.activeStellation.lockY){
                 offset = Services.main.activeStellation.center;
+            }else{
+                offset = Services.PlayerBehaviour.transform.position;
             }
 
             if(newStellation){
