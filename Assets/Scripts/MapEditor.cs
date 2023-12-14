@@ -710,7 +710,6 @@ public class MapEditor : MonoBehaviour
 
     public void DeselectAll()
     {
-        
             //RemoveSelectedPoint(hitPoint);
             DeselectPoints();
             DeselectSpline();
@@ -1335,6 +1334,7 @@ public class MapEditor : MonoBehaviour
 
         if (!contains)
         {
+            //we should also select this?
             levelList.options.Add(new Dropdown.OptionData(c.name));
         }
     }
@@ -1392,17 +1392,17 @@ public class MapEditor : MonoBehaviour
     public void Reset()
     {
         DeselectAll();
-        if (controller != null)
-        {
-            controller._splines.Clear();   
-        }
 		
         Destroy(splinesParent.gameObject);
 		
         splinesParent = new GameObject().transform;
         splinesParent.transform.parent = stellationsParent;
         splinesParent.name = sceneTitle.text;
+
         controller = splinesParent.gameObject.AddComponent<StellationController>();
+        controller._points = new List<Point>();
+        controller._splines = new List<Spline>();
+
         pointsParent = new GameObject().transform;
         pointsParent.name = "points";
         pointsParent.parent = splinesParent;
@@ -2364,6 +2364,7 @@ void DragCamera()
     public void SetStellationTitle(String s){
         controller.title = s;
         controller.name = s;
+        
         typing = false;
     }
 

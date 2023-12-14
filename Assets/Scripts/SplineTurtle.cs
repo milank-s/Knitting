@@ -156,8 +156,6 @@ public class SplineTurtle : MonoBehaviour {
 			PivotSpeed = Random.Range (0f, 2f);
 
 		}
-
-	
 	}
 
 	public void UpdateTurtle()
@@ -234,7 +232,6 @@ public class SplineTurtle : MonoBehaviour {
 			curPoint = spp.p;
 			curPoint.transform.parent = editor.pointsParent.transform;
 			curSpline.transform.parent = editor.splinesParent;
-			editor.AddSpline(curSpline);
 		}
 
 		if (maxCrawlers < 100) {
@@ -356,8 +353,9 @@ public class SplineTurtle : MonoBehaviour {
 		foreach(Point p in Point.Points){
 			p.continuity = continuity;
 			p.tension = tension;
+
 			if(p._connectedSplines.Count > 1){
-				if(p.pointType == PointTypes.ghost) p.SetPointType(PointTypes.stop);
+				p.SetPointType(PointTypes.stop);
 			}else if(ghostPoints){
 				p.SetPointType(PointTypes.ghost);
 			}else{
@@ -403,7 +401,7 @@ public class SplineTurtle : MonoBehaviour {
 			newPoint.transform.parent = editor.pointsParent.transform;
 		}
 
-		if (newPoint._connectedSplines.Count < 2 && ghostPoints)
+		if (ghostPoints)
 		{
 			newPoint.SetPointType(PointTypes.ghost);
 		}

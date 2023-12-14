@@ -822,7 +822,7 @@ public class Spline : MonoBehaviour
 		{
 			controller._splines.Remove(this);
 			
-			if (controller._escapeSplines.Contains(this))
+			if (controller._escapeSplines != null && controller._escapeSplines.Contains(this))
 			{
 				controller._escapeSplines.Remove(this);
 			}

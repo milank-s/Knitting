@@ -383,6 +383,7 @@ public class StellationController : MonoBehaviour {
 	}
 
 	public void AddSpline(Spline s){
+
 		if(!_splines.Contains(s)){
 			_splines.Add(s);
 			s.controller = this;

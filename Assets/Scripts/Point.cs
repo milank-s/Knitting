@@ -399,7 +399,6 @@ public class Point : MonoBehaviour
 	public void AddSpline(Spline s){
 		if (!_connectedSplines.Contains (s)) {
 			_connectedSplines.Add (s);
-		}else{
 		}
 	}
 
