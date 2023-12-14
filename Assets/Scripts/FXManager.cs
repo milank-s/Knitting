@@ -96,7 +96,6 @@ public class FXManager : MonoBehaviour
 
     public IEnumerator FlashWord(bool fadeIn = false)
 	{
-		
 		float t = 0;
 		while (t < 1)
 		{

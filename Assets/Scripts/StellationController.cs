@@ -549,10 +549,6 @@ public class StellationController : MonoBehaviour {
 		isPlayerOn = true;
 		Services.main.activeStellation = this;
 	
-		//I'd prefer to lerp camera position and fov
-		
-		Debug.Log("entering " + title);
-
 		SetCameraInfo();
 
 		Show(true);
