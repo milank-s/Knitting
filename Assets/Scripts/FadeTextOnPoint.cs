@@ -53,14 +53,14 @@ public class FadeTextOnPoint: MonoBehaviour {
 						alpha = 1;	
 					}
 				}else{
-					alpha = Mathf.Clamp01(alpha - Time.deltaTime);
+					alpha = Mathf.Clamp01(alpha - Time.deltaTime * 2);
 				}
 
 				t.color = new Color(1, 1, 1, alpha);
 			}
 			else if (!startOn)
 			{
-				alpha = Mathf.Clamp01(alpha - Time.deltaTime / 3);
+				alpha = Mathf.Clamp01(alpha - Time.deltaTime * 2);
 				t.color = new Color(1, 1, 1, alpha);
 			}
 		}

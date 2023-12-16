@@ -461,7 +461,7 @@
 	//it is the only function that calls player.initialize
 	
 	public void EnterLevel(){
-        StartCoroutine(ShowTitle());
+        // StartCoroutine(ShowTitle());
 
 		playerInput.SwitchCurrentActionMap("Player");
 		Cursor.lockState = CursorLockMode.Locked;

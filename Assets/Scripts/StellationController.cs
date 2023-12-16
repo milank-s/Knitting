@@ -543,8 +543,7 @@ public class StellationController : MonoBehaviour {
 	
 	public void OnPlayerExit(){
 		isPlayerOn = false;
-		
-		Debug.Log("leaving " + title);
+
 	}
 
 	public void OnPlayerEnter()
@@ -762,7 +761,7 @@ public class StellationController : MonoBehaviour {
 			zOffset = (v.z - upperRight.z);
 
 			//add spacing
-			zOffset -= 2;
+			zOffset -= 3;
 			
 			//set depth to the offset
 			targetPos.z = zOffset;
