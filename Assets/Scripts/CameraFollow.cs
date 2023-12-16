@@ -136,6 +136,9 @@ public class CameraFollow : MonoBehaviour {
 			nudge = transform.TransformVector(Services.PlayerBehaviour.cursorDir);
 		}
 
+		//NUDGE IS ANNOYING ME RN
+		nudge = Vector3.zero;
+
 		if(lockX){
 			desiredPos.x = targetPos.x;
 		}

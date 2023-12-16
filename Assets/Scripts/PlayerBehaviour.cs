@@ -1593,8 +1593,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 					 // * (1 + Services.PlayerBehaviour.boostTimer);
 					
-						if(boost < Point.boostAmount) boost = Point.boostAmount;
-						Services.fx.SpawnCircle(curPoint.transform);
+					if(boost < Point.boostAmount) boost = Point.boostAmount;
+						
 					
 					if (buttonWasPressed)
 					{
@@ -1610,9 +1610,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 					Services.fx.EmitLinearBurst((int)(boostTimer * 5), boostTimer * 2,transform, cursorDir2);
 					boostTimer = 0;
+
+					
+					curPoint.OnPlayerExitPoint();
 				}
-				
-				curPoint.OnPlayerExitPoint();
+			
 
 				connectTime = 1;
 

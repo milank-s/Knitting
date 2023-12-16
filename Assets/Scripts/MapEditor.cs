@@ -272,12 +272,6 @@ public class MapEditor : MonoBehaviour
         typing = true;
     }
 
-    public void SetStellationName(String name)
-    {
-        typing = false;
-        controller.name = name;
-    }
-
     public void ChangeFOV(System.Single s)
     {
         controller.desiredFOV = (int)s;
@@ -1393,15 +1387,22 @@ public class MapEditor : MonoBehaviour
     {
         DeselectAll();
 		
-        Destroy(splinesParent.gameObject);
+        string levelName = controller.title;
+        Destroy(controller.gameObject);
 		
         splinesParent = new GameObject().transform;
         splinesParent.transform.parent = stellationsParent;
-        splinesParent.name = sceneTitle.text;
-
+        
         controller = splinesParent.gameObject.AddComponent<StellationController>();
         controller._points = new List<Point>();
         controller._splines = new List<Spline>();
+        controller.title = levelName;
+        controller.name = levelName;
+
+        //this is also wiping all your fov settings... text... win con....
+        //why use the nuclear option on the controller?
+        //just remove points and splines while leaving the controller intact
+
 
         pointsParent = new GameObject().transform;
         pointsParent.name = "points";

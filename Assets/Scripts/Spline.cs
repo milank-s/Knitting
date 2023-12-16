@@ -90,7 +90,6 @@ public class Spline : MonoBehaviour
 	public SplineState state;
 
 	public int order;
-	private bool _locked;
 	
 
 	public static int curveFidelity = 10;
@@ -357,6 +356,9 @@ public class Spline : MonoBehaviour
 	{
 
 		state = t;
+		
+		//off should mean you dont draw me and I reset my drawn indices, why the fuck is it locking?
+
 
 		if (t == SplineState.off)
 		{

@@ -158,11 +158,13 @@
 			StellationManager.instance.ResetToCheckpoint();
 			
 		}else{
+			
+			string activeLevel = activeStellation.title;
+
 			//this doesnt work for the editor
 			if(SceneController.instance.curSetIndex != -1){
 				
 				//did this shit ever fucking work?
-				string activeLevel = activeStellation.title;
 				
 				SceneController.instance.UnloadStellation(activeStellation);
 		
@@ -178,8 +180,6 @@
 
 				// editor.TogglePlayMode();
 
-				//this is fucking up because you're not resetting and level is never initialized
-				string levelName = activeStellation.title;
 				
 				//why does this need a full reset but the above condition doesnt?
 				//FullReset();
@@ -190,7 +190,7 @@
 				//this is fucking up because curlevelset is -1
 				//just do it by hand
 				// SceneController.instance.LoadLevel();
-				SceneController.instance.LoadDirect(levelName);
+				SceneController.instance.LoadDirect(activeLevel);
 
 			}
 		}	
@@ -461,7 +461,7 @@
 	//it is the only function that calls player.initialize
 	
 	public void EnterLevel(){
-        //StartCoroutine(ShowTitle());
+        StartCoroutine(ShowTitle());
 
 		playerInput.SwitchCurrentActionMap("Player");
 		Cursor.lockState = CursorLockMode.Locked;
@@ -478,7 +478,7 @@
 		Services.fx.title.text = activeStellation.title;
 		// Services.fx.overlay.color = Color.black;
 
-		yield return new WaitForSeconds(0.25f);
+		yield return new WaitForSeconds(0.33f);
 
 		// Services.fx.overlay.color = Color.clear;
 		Services.fx.title.text = "";

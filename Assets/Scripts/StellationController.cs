@@ -497,6 +497,10 @@ public class StellationController : MonoBehaviour {
 			c.Reset();
 		}
 
+		foreach(Point p in _points){
+			p.SwitchState(Point.PointState.off);
+		}
+		
 		OnPlayerExit();
 	}
 
@@ -513,8 +517,6 @@ public class StellationController : MonoBehaviour {
 		// 		return;
 		// 	}
 		// }
-
-		Debug.Log("all collectibles delivered");
 
 		if(!collected) ShowStartPoint();
 		collected = true;
@@ -569,18 +571,23 @@ public class StellationController : MonoBehaviour {
 		}
 	}
 
+	public void Lock(){
+		foreach (Point p in _points)
+		{
+			p.SwitchState(Point.PointState.locked);
+		}
+
+		foreach(Spline s in _splines){
+			s.SwitchState(Spline.SplineState.off);
+		}
+	}
+
 	public void Show(bool b)
 	{
 		foreach (Point p in _points)
 		{
-			if (b)
-			{
-				p.SwitchState(Point.PointState.off);	
-			}
-			else
-			{
-				p.SwitchState(Point.PointState.locked);
-			}
+			//turns locked points off and on points off, covers most cases, looks stupid
+			p.SwitchState(Point.PointState.off);	
 		}
 
 		if (b)

@@ -56,7 +56,7 @@ public class SceneController : MonoBehaviour
 			Services.menu.Show(false);
 		}
 
-        if (Services.main.state == Main.GameState.playing && Input.GetKeyDown(KeyCode.Period))
+        if (Application.isEditor && !MapEditor.editing && Services.main.state == Main.GameState.playing && Input.GetKeyDown(KeyCode.Period))
         {
             SkipStellation();
         }
@@ -368,6 +368,12 @@ public class SceneController : MonoBehaviour
 
         //move camera on z to new stellation position
 		yield return StartCoroutine(CameraFollow.instance.MoveRoutine());
+	}
+
+    public IEnumerator LevelCompleteRoutine(){
+
+        //some cool shit idk
+        yield return null;
 	}
 
 

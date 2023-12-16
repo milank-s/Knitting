@@ -125,7 +125,7 @@ public class StellationManager : MonoBehaviour
 
 			//lock stellations and make sure they're not enabled after
 			if(i >= checkpoint && controllers[i].hasUnlock){
-				controllers[i].unlock.Show(false);
+				controllers[i].unlock.Lock();
 				lockedStellations.Add(controllers[i].unlock);
 			}
 			

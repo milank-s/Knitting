@@ -513,10 +513,8 @@ public class Point : MonoBehaviour
 
 			case PointState.off:
 
-				if (prevState == PointState.locked)
-				{
-					
-						// you need to add some colour, they're just black
+				if(textMesh != null){
+					textMesh.GetComponent<FadeTextOnPoint>().stayOn = false;
 				}
 
 				break;
@@ -524,6 +522,10 @@ public class Point : MonoBehaviour
 			case PointState.on:
 				if (prevState != PointState.on)
 				{
+					if(textMesh != null){
+					textMesh.GetComponent<FadeTextOnPoint>().stayOn = true;
+				}
+
 					foreach(Spline sp in _connectedSplines){
 						if(!sp.drawing){
 							sp.StartDrawRoutine(this);
@@ -655,6 +657,8 @@ public class Point : MonoBehaviour
 
 	public void OnPlayerExitPoint(){
 
+		Services.fx.SpawnCircle(transform);
+
 		switch(pointType){
 			case PointTypes.normal:
 				SetForward(Services.PlayerBehaviour.curDirection);
@@ -693,7 +697,6 @@ public class Point : MonoBehaviour
 		bool buttonPressed = Services.PlayerBehaviour.buttonWasPressed;
 
 		if(Services.PlayerBehaviour.buttonDown) return false;
-		
 		
 		switch (pointType)
 		{
