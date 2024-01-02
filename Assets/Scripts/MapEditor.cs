@@ -81,7 +81,7 @@ public class MapEditor : MonoBehaviour
     public Transform container;
     private bool raycastNull;
     private Camera cam;
-    public Camera zCam;
+    //public Camera zCam;
     public Slider tensionSlider;
     public Slider biasSlider;
     public GameObject pointSelectedTip;
@@ -244,7 +244,9 @@ public class MapEditor : MonoBehaviour
     public Sprite[] cursors;
 
     public Image cursor;
-
+    
+    string userLevelPath;
+    string devLevelPath;
 
     void Awake()
     {
@@ -318,6 +320,7 @@ public class MapEditor : MonoBehaviour
     public void LockZ(bool b){
         controller.lockZ = b;
     }
+
     IEnumerator Start()
     {
         cam = Services.mainCam;
@@ -326,7 +329,15 @@ public class MapEditor : MonoBehaviour
         worldPos = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y,
             Main.cameraDistance));
         
-        DirectoryInfo directoryInfo = new DirectoryInfo(Application.streamingAssetsPath + "/Levels");
+        
+        userLevelPath = Application.streamingAssetsPath + "/Levels";
+
+        devLevelPath = Application.dataPath + "/Resources/Levels";
+
+        string filePath = Application.isEditor ? devLevelPath : userLevelPath;
+
+        DirectoryInfo directoryInfo = new DirectoryInfo(filePath);
+        
         FileInfo[] allFiles = directoryInfo.GetFiles("*.*");
         
         foreach (FileInfo file in allFiles)
@@ -1314,7 +1325,8 @@ public class MapEditor : MonoBehaviour
             level["spline" + j] = splineData;
         }
 
-        WriteJSONtoFile(Application.streamingAssetsPath + "/Levels", c.name + ".json", level);
+        string filePath = Application.isEditor ? devLevelPath : userLevelPath;
+        WriteJSONtoFile(filePath, c.name + ".json", level);
 
         
         bool contains = false;
@@ -1425,8 +1437,11 @@ public class MapEditor : MonoBehaviour
     {
         GameObject parent;
         GameObject pointParent;
-        
-        JSONNode json = ReadJSONFromFile(Application.streamingAssetsPath + "/Levels", fileName + ".json");
+
+        //if we're in the application OR if a level set is asking, use streamingassets
+        string filePath = Application.isEditor ? devLevelPath : userLevelPath;
+        filePath = SceneController.instance.curSetIndex != -1 ? devLevelPath : filePath; 
+        JSONNode json = ReadJSONFromFile(filePath, fileName + ".json");
    
         if(stellationController == null){
             parent = new GameObject();
@@ -1830,7 +1845,7 @@ void DragCamera()
                         if (Input.mouseScrollDelta.y != 0)
                         {
 
-                            zCam.gameObject.SetActive(true);
+                            //zCam.gameObject.SetActive(true);
                         }
 //                                dragging = true;
 //                            if (hitPoint != activePoint)
@@ -1841,13 +1856,13 @@ void DragCamera()
                     }
                     else
                     {
-                        zCam.gameObject.SetActive(false);
+                       //zCam.gameObject.SetActive(false);
                     }
 }
                 else
                 {
                     
-                    zCam.gameObject.SetActive(false);
+                   // zCam.gameObject.SetActive(false);
                 }
 
                 if (!dragging && hitPoint == null && Input.GetMouseButton(0) &&

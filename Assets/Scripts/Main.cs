@@ -161,41 +161,12 @@
 			
 			string activeLevel = activeStellation.title;
 
-			//this doesnt work for the editor
-			if(SceneController.instance.curSetIndex != -1){
-				
-				//did this shit ever fucking work?
-				
-				SceneController.instance.UnloadStellation(activeStellation);
-		
-				//why are we using this shit
-				// SceneController.instance.LoadFile(activeLevel);
-
-				SceneController.instance.LoadDirect(activeLevel);
-
-			}else{
-				//this is fucking up because when collectibles are picked up
-				//you change the point types
-				//need a full reset not just a reinit
-
-				// editor.TogglePlayMode();
-
-				
-				//why does this need a full reset but the above condition doesnt?
-				//FullReset();
-				
-				SceneController.instance.UnloadStellation(activeStellation);
-
-				//SceneController.instance.LoadFile(activeStellation.title);
-				//this is fucking up because curlevelset is -1
-				//just do it by hand
-				// SceneController.instance.LoadLevel();
-				SceneController.instance.LoadDirect(activeLevel);
-
-			}
+			//be mindful of how stellations track and reset collectibles
+			//if stellations can be changed or modified then you need to read from file
+			
+			SceneController.instance.UnloadStellation(activeStellation);
+			SceneController.instance.LoadDirect(activeLevel);
 		}	
-
-		//maybe I just use loadfile
 	}
 
 

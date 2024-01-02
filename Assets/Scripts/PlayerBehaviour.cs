@@ -1311,7 +1311,6 @@ public class PlayerBehaviour: MonoBehaviour {
 					Vector2 p2 = Services.mainCam.WorldToScreenPoint(p.Pos);
 					Vector3 toPoint = (p2 - p1).normalized;
 					float directAngle = Vector2.Angle(cursorDir, toPoint);
-
 					bool tangent = false;
 
 					Vector3 startdir = Vector3.zero;
@@ -1345,6 +1344,19 @@ public class PlayerBehaviour: MonoBehaviour {
 					startdir = (p2 - p1).normalized;
 					curAngle = Vector2.Angle(cursorDir, startdir);
 					
+					float angleToMomentum = Vector2.Angle(curDirection, startdir);
+
+					//I really dont want players changing momentume at acute angles
+					//on ghost points
+
+					//only redirect themselves within reason...
+					//this will have awful edge cases and I dont fucking care?
+
+					if(isGhostPoint && angleToMomentum > StopAngleDiff && intersection){
+						continue;
+
+					}
+
 					if(Mathf.Abs(Vector3.Dot(startdir.normalized, Services.mainCam.transform.forward)) > 0.75f){
 						tangent = true;
 					}
