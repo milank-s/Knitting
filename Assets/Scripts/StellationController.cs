@@ -262,7 +262,6 @@ public class StellationController : MonoBehaviour {
 			}else{
 				SceneController.instance.LoadNextStellation();
 			}
-
 		}
 		else
 		{

@@ -1438,9 +1438,17 @@ public class MapEditor : MonoBehaviour
         GameObject parent;
         GameObject pointParent;
 
+        
         //if we're in the application OR if a level set is asking, use streamingassets
-        string filePath = Application.isEditor ? devLevelPath : userLevelPath;
-        filePath = SceneController.instance.curSetIndex != -1 ? devLevelPath : filePath; 
+
+        bool userLevels = Application.isEditor;
+        string filePath = userLevels ? devLevelPath : userLevelPath;
+
+        bool gameFiles = SceneController.instance.curSetIndex != -1;
+
+        //if we're loading a level for the main game, not for editor use, use game files
+        filePath = gameFiles ? devLevelPath : filePath; 
+
         JSONNode json = ReadJSONFromFile(filePath, fileName + ".json");
    
         if(stellationController == null){
