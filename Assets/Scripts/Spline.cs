@@ -139,6 +139,7 @@ public class Spline : MonoBehaviour
 	
 	[Header("Visuals")]
 
+	//{0 = normal, 1 = dotted, 2 = zags, 3 = dashed, 4 = charcoal, 5 = pencil}
 	public int lineMaterial = 0;
 	public int lineWidth = 3;
 	private float textureWidth = 1;
@@ -663,13 +664,13 @@ public class Spline : MonoBehaviour
 		prevPos = SplinePoints[0].Pos;
 		
 		//should this match player speed?
-		if(speed > 0){
+		if(speed != 0){
 
 			line.textureOffset -= Time.deltaTime * (speed / line.textureScale) * 50;
 		}
 		
 		distortion = Services.PlayerBehaviour.easedDistortion - shake;
-		magnitude = Mathf.Clamp01(distortion) * amplitude * Mathf.Clamp01(segmentDistance) * Mathf.Clamp01(Services.PlayerBehaviour.flow);
+		magnitude = Mathf.Clamp01(distortion) * amplitude * Mathf.Clamp01(segmentDistance) * Mathf.Clamp01(Services.PlayerBehaviour.boost);
 		// magnitude += distortion;
 	}
 

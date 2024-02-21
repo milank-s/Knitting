@@ -55,6 +55,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	private bool hasFlown = false;
 	private bool foundConnection = false;
 	private bool freeCursor = false;
+	
+	private bool upstream = false; 
+
 	[Space(10)]
 
 	[HideInInspector]
@@ -62,7 +65,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	
 	[HideInInspector]
 	public bool goingForward = true;
-	bool onBelt = false;
 	public bool facingForward;
 
 	public delegate void StateChange();
@@ -480,12 +482,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			CalculateMoveSpeed ();
 			curSpeed = GetSpeed();
 
-			if(!onBelt && potentialSpeed <= 0){
+			if(upstream && potentialSpeed <= 0){
 				Lose();
 				return;
 			}
 			
-			UpdateProgress(curSpeed * Time.deltaTime);
+			UpdateProgress();
 			UpdatePositionOnSpline();
 			CheckProgress ();
 
@@ -545,18 +547,20 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		if(state == PlayerState.Traversing){
-			if(curSpline.speed > 0 && goingForward){
-				return Mathf.Clamp(boost + flow, 0, maxSpeed);
-			}else{
+
+			// ok so we're not differentiating this at all?
+			// if(curSpline.speed > 0 && goingForward){
+			// 	return Mathf.Clamp(boost + flow, 0, maxSpeed);
+			// }else{
+				
 				return boost + flow; // (flow * easedAccuracy); //* easedAccuracy + boost; //* cursorDir.magnitude;
-			}
+			// }
 		}
 		if(state == PlayerState.Switching){
 			return Mathf.Lerp(curSpeed, 0, Time.deltaTime * 2);
 		}
 
 		return curSpeed;
-	
 	}
 
 	bool FindPointToConnect(){
@@ -1039,56 +1043,82 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void CalculateMoveSpeed(){
 
+		//store speed of spline 
 		float splineSpeed = curSpline.speed;
-		float speedGain = easedAccuracy * 2 - 1;
+
+		//absolute value
+		float absSpeed = Mathf.Abs(splineSpeed);
+
+		//accuracy with directional information
+		float signedAcc = easedAccuracy * 2 - 1;
 		
-		// float gravityCoefficient = Mathf.Clamp01(-curDirection.y);
-		// float gravityPull = -curDirection.y - curDirection.z;
-		
+		//boost goes down over time
 		boost -= Time.deltaTime * boostDecay;
-		onBelt = splineSpeed > 0;
 		
-		if(onBelt){
-			if(goingForward){
+		//is the player fighting a spline
+		upstream = curSpline.speed != 0 && (goingForward && splineSpeed < 0) || (!goingForward && splineSpeed > 0);
+
+		//if we're going with the flow
+		if(!upstream){
 			
-				easedDistortion = 0;
-				easedAccuracy = 1;
+			//this makes feedback loops trivial and is stupid
+			easedDistortion = 0;
 
-				speedGain = 0;
-				
-				// if(flow < splineSpeed){
-				// 	flow = Mathf.Lerp(flow, splineSpeed, Time.deltaTime * 2);
-				// }	
-				if(boost < splineSpeed){
-					boost = splineSpeed;
-				}	
-				
-			}else{
-				speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
-				flow -= splineSpeed * Time.deltaTime;
+			//give them boost
+			if(boost < absSpeed){
+				boost = absSpeed;
 			}
-		}else{
 			
-			flow = Mathf.Clamp(flow, 0, maxSpeed);
-			boost = Mathf.Clamp(boost, 0, maxSpeed);
-			// speedGain = Mathf.Clamp(speedGain, -maxSpeed, 0);
+		//if we're going against the flow
+		}else if (absSpeed != 0){
+			
+			//disable speed gain
+			signedAcc = Mathf.Clamp(signedAcc, -1, 0);
+			
+			//take from flow before boost
 
-			if(speedGain >= 0){
-				flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);// * gravityCoefficient;
+			if(flow == 0){
+				boost -= absSpeed * Time.deltaTime;
 			}else{
-				if(flow == 0){
-					boost -= flowDecay * Time.deltaTime;
-				}else{
-					flow += speedGain * flowDecay * Time.deltaTime;
-				}
+				flow -= absSpeed * Time.deltaTime;
 			}
-
 		}
 
+	
+		//add to player flow based on accuracy
+		float speedGain = signedAcc * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);
 		
+		//give direction info to player acceleration
+		float speedDir = goingForward ? 1 : -1;
+		// if(upstream && curSpline.speed != 0) splineSpeedGain *= -1;
+		
+		//give player speed
+		flow += speedGain;
+		
+		//give spline speed
+		//I feel like there's no way every spline should be able to do this...
+
+		if(curSpline.lineMaterial == 3){
+			if(upstream){
+				curSpline.speed += speedDir * curSpeed * Time.deltaTime;
+			}else{
+				curSpline.speed += speedGain * speedDir;
+			}
+		}
+
+		flow = Mathf.Clamp(flow, 0, maxSpeed);
+		boost = Mathf.Clamp(boost, 0, maxSpeed);
+		curSpline.speed = Mathf.Clamp(curSpline.speed, -maxSpeed, maxSpeed);
+
+
+		if(signedAcc >= 0){
+			//flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);// * gravityCoefficient;
+			
+		}
+
 		//flow -= Mathf.Clamp01(-gravityPull) * Time.deltaTime;
 
-		if(onBelt && !goingForward && curSpeed <= Mathf.Epsilon){
+		if(upstream && curSpeed <= Mathf.Epsilon){
 			//ok they're being pushed back
 			ReverseDirection();
 		}
@@ -1130,13 +1160,18 @@ public class PlayerBehaviour: MonoBehaviour {
 		// }
 	}
 
-	void UpdateProgress(float distanceToTravel){
+	void UpdateProgress(){
 		
 		int curSegment = goingForward ? (int)Mathf.Ceil((float)Spline.curveFidelity * progress) : (int)Mathf.Floor((float)Spline.curveFidelity * progress);
 
 		Vector3 curPos = pos;
 		float rollingDistance = 0;
 		float prevStep = progress;
+		
+		float distanceToTravel = curSpeed * Time.deltaTime;
+		// float splineSpeed = curSpline.speed;
+		// if(upstream) splineSpeed = -splineSpeed;
+		// distanceToTravel += splineSpeed;
 
 		if(goingForward){
 			for (int k = curSegment; k <= Spline.curveFidelity; k++)
