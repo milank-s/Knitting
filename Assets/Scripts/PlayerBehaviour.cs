@@ -1052,63 +1052,61 @@ public class PlayerBehaviour: MonoBehaviour {
 		//accuracy with directional information
 		float signedAcc = easedAccuracy * 2 - 1;
 		
-		//boost goes down over time
-		boost -= Time.deltaTime * boostDecay;
-		
 		//is the player fighting a spline
 		upstream = curSpline.speed != 0 && (goingForward && splineSpeed < 0) || (!goingForward && splineSpeed > 0);
+		
+		//give direction info to player acceleration
+		float speedDir = goingForward ? 1 : -1;
 
-		//if we're going with the flow
-		if(!upstream){
-			
-			//this makes feedback loops trivial and is stupid
-			easedDistortion = 0;
-
-			//give them boost
-			if(boost < absSpeed){
-				boost = absSpeed;
-			}
-			
 		//if we're going against the flow
-		}else if (absSpeed != 0){
+		if (upstream){
 			
 			//disable speed gain
 			signedAcc = Mathf.Clamp(signedAcc, -1, 0);
 			
 			//take from flow before boost
+			float splineSpeedLost = absSpeed * Time.deltaTime;
+			float playerSpeedLost = curSpeed * Time.deltaTime;
+
+			if(curSpline.lineMaterial == 3){
+				curSpline.speed += speedDir * (splineSpeedLost + playerSpeedLost);
+			}
 
 			if(flow == 0){
-				boost -= absSpeed * Time.deltaTime;
+				boost -= playerSpeedLost + splineSpeedLost;
 			}else{
-				flow -= absSpeed * Time.deltaTime;
+				flow -= playerSpeedLost + splineSpeedLost;
 			}
 		}
 
-	
 		//add to player flow based on accuracy
 		float speedGain = signedAcc * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);
-		
-		//give direction info to player acceleration
-		float speedDir = goingForward ? 1 : -1;
-		// if(upstream && curSpline.speed != 0) splineSpeedGain *= -1;
-		
-		//give player speed
-		flow += speedGain;
-		
-		//give spline speed
-		//I feel like there's no way every spline should be able to do this...
 
-		if(curSpline.lineMaterial == 3){
-			if(upstream){
-				curSpline.speed += speedDir * curSpeed * Time.deltaTime;
-			}else{
+		//if we're going with the flow
+		if(!upstream){
+			
+			boost -= Time.deltaTime * boostDecay;
+
+			//this makes feedback loops trivial and is stupid
+			easedDistortion = 0;
+
+			//give them boost
+			if(curSpeed < absSpeed){
+				boost = absSpeed - curSpeed;
+			}
+
+			if(curSpline.lineMaterial == 3){
 				curSpline.speed += speedGain * speedDir;
 			}
 		}
+		
+		
+		//give player speed
+		flow += speedGain;
 
 		flow = Mathf.Clamp(flow, 0, maxSpeed);
 		boost = Mathf.Clamp(boost, 0, maxSpeed);
-		curSpline.speed = Mathf.Clamp(curSpline.speed, -maxSpeed, maxSpeed);
+		curSpline.speed = Mathf.Clamp(curSpline.speed, -maxSpeed * 2, maxSpeed * 2);
 
 
 		if(signedAcc >= 0){
