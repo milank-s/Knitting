@@ -239,8 +239,45 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	void Lose(){
 		//some fx;
+		SwitchState(PlayerState.Animating);
+		Die();
+	}
+
+	public void Die(){
+		StartCoroutine(DieRoutine());
+	}
+
+	public IEnumerator DieRoutine(){
+	
+		// particle effect on player
+		// force on each point in proximity to the player
+		// each point light turns off
+		// all black before reset
+
+
+		float t = 0; 
+		renderer.enabled = false;
+		
+		Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, visualRoot);
+		
+		yield return new WaitForSeconds (0.15f);
+
+		foreach(Point p in Services.main.activeStellation._points){
+			Vector3 toPlayer = (p.Pos - visualRoot.position);
+			p.AddForce(toPlayer * 10 + Random.onUnitSphere * toPlayer.magnitude * 10);
+		}
+		easedDistortion = 10;
+
+		while(t < 1){
+			
+			// easedDistortion = Mathf.Lerp(0, 1, t);
+			t += Time.deltaTime;
+			yield return null;
+		}
+
 		Services.main.ResetLevel();
 	}
+		
 
 	public void Reset()
 	{
@@ -393,6 +430,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		renderer.enabled = !glitching;
 		glitchFX.enabled = glitching;
+		
 
 		if (joystickLocked)
 		{

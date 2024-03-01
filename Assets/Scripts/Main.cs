@@ -313,7 +313,9 @@
 				if (Services.PlayerBehaviour.curPoint != null)
 				{
 					if(activeStellation != null && !activeStellation.won){
-						Services.PlayerBehaviour.Step();
+						if(Services.PlayerBehaviour.state != PlayerState.Animating){
+							Services.PlayerBehaviour.Step();
+						}	
 						CameraFollow.instance.FollowPlayer();
 					}
 				}
