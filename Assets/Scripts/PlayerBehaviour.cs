@@ -1423,10 +1423,9 @@ public class PlayerBehaviour: MonoBehaviour {
 					//only redirect themselves within reason...
 					//this will have awful edge cases and I dont fucking care?
 
-					if(isGhostPoint && angleToMomentum > StopAngleDiff && intersection){
-						continue;
-
-					}
+					// if(isGhostPoint && angleToMomentum > StopAngleDiff && intersection){
+					// 	continue;
+					// }
 
 					if(Mathf.Abs(Vector3.Dot(startdir.normalized, Services.mainCam.transform.forward)) > 0.75f){
 						tangent = true;

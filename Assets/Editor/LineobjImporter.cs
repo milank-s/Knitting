@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-
 [UnityEditor.AssetImporters.ScriptedImporter(1, "lineobj")]
 public class LineobjImporter : UnityEditor.AssetImporters.ScriptedImporter
 {

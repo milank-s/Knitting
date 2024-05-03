@@ -53,7 +53,10 @@ public class SceneController : MonoBehaviour
 			OpenEditor();
 			MapEditor.instance.LoadInEditor(loadFileName);
 			openFileOnStart = false;
-			Services.menu.Show(false);
+            /////uhhh shouldnt openeditor do this anyway
+			// Services.menu.Show(false);
+            Services.main.ToggleEditMode();
+            
 		}
 
         if (Application.isEditor && !MapEditor.editing && Services.main.state == Main.GameState.playing && Input.GetKeyDown(KeyCode.Period))

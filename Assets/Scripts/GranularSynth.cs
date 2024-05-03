@@ -2,9 +2,6 @@
 using UnityEngine;
 using UnityEngine.Audio;
 using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine.Experimental.XR.Interaction;
-using Vectrosity;
 
 public class GranularSynth : MonoBehaviour
 {
