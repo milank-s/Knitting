@@ -185,7 +185,7 @@ public class Point : MonoBehaviour
 		Initialize();
 	}
 
-	void Initialize()
+	public void Initialize()
 	{
 		if(initialized) return;
 		initialized = true;
@@ -713,14 +713,10 @@ public class Point : MonoBehaviour
 				{
 					return false;
 				}
-
-				break;
 			
 			case PointTypes.end:
 				
 				return true;
-				
-				break;
 			
 			case PointTypes.stop:
 				if (buttonPressed)
@@ -731,20 +727,20 @@ public class Point : MonoBehaviour
 				{
 					return false;
 				}
-				break;
+				
 			case PointTypes.connect:
 
 			return true;
 
-			if (buttonPressed)
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-				break;
+				// if (buttonPressed)
+				// {
+				// 	return true;
+				// }
+				// else
+				// {
+				// 	return false;
+				// }
+				// break;
 
 			case PointTypes.fly:
 
@@ -756,8 +752,6 @@ public class Point : MonoBehaviour
 				{
 					return false;
 				}
-				break;
-			
 
 			
 			default:

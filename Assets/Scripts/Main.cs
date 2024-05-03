@@ -16,6 +16,7 @@
 
 	public enum GameState {playing, paused, menu}
 
+	public bool devMode = true;
 	public GameState state;
 
 	[Header("Player References")]

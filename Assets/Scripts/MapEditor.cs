@@ -252,8 +252,10 @@ public class MapEditor : MonoBehaviour
     {
 
         instance = this;
-        
-        
+
+        userLevelPath = Application.streamingAssetsPath + "/UserLevels";
+        devLevelPath = Application.streamingAssetsPath + "/Stellations";
+
         text = new List<GameObject>();
         
         foreach (Text t in canvas.GetComponentsInChildren<Text>())
@@ -321,6 +323,7 @@ public class MapEditor : MonoBehaviour
         controller.lockZ = b;
     }
 
+
     IEnumerator Start()
     {
         cam = Services.mainCam;
@@ -328,13 +331,8 @@ public class MapEditor : MonoBehaviour
         mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
         worldPos = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y,
             Main.cameraDistance));
-        
-        
-        userLevelPath = Application.streamingAssetsPath + "/Levels";
 
-        devLevelPath = Application.dataPath + "/Resources/Levels";
-
-        string filePath = Application.isEditor ? devLevelPath : userLevelPath;
+        string filePath = Services.main.devMode ? devLevelPath : userLevelPath;
 
         DirectoryInfo directoryInfo = new DirectoryInfo(filePath);
         
@@ -1325,7 +1323,7 @@ public class MapEditor : MonoBehaviour
             level["spline" + j] = splineData;
         }
 
-        string filePath = Application.isEditor ? devLevelPath : userLevelPath;
+        string filePath = Services.main.devMode ? devLevelPath : userLevelPath;
         WriteJSONtoFile(filePath, c.name + ".json", level);
 
         
@@ -1441,8 +1439,9 @@ public class MapEditor : MonoBehaviour
         
         //if we're in the application OR if a level set is asking, use streamingassets
 
-        bool userLevels = Application.isEditor;
-        string filePath = userLevels ? devLevelPath : userLevelPath;
+        // bool devLevels = Application.isEditor;
+        bool devLevels = true;
+        string filePath = devLevels ? devLevelPath : userLevelPath;
 
         bool gameFiles = SceneController.instance.curSetIndex != -1;
 

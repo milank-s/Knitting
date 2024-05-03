@@ -123,7 +123,6 @@ public class SynthController : MonoBehaviour
 			s = keys[5];
 		}else{
 			s = keys[0];
-			length = 0.1f;
 		}
 
 		s.PlayNote(p.note, length);
@@ -142,7 +141,8 @@ public class SynthController : MonoBehaviour
 		float height = p.controller.GetNormalizedHeight(p.Pos);
 		float width = p.controller.GetNormalizedWidth(p.Pos);
 
-		int note = homeNote + major[(int)Mathf.Floor(width * (major.Length-1))]; // + octave;
+		// int note = homeNote + major[(int)Mathf.Floor(width * (major.Length-1))]; // + octave;
+		int note = homeNote + major[(int)(Random.value * major.Length-1)]; // + octave;
 
 		return note;
 	}
@@ -190,7 +190,7 @@ public class SynthController : MonoBehaviour
 	public void ExitPoint(){
 		
 		noisePad.PlayNote(62);
-		noisePad.PlayNote(66);
+		noisePad.PlayNote(64);
 		
 		PlaySplineChord();
 		
