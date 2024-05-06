@@ -45,13 +45,13 @@ public class Pathfinding : MonoBehaviour
         Dictionary<Point, Point> cameFrom = new Dictionary<Point, Point>();
 
         // For node n, gScore[n] is the cost of the cheapest path from start to n currently known.
-        Dictionary<Point, float> curBest = new Dictionary<Point, float>();
-        curBest.Add(start, 0);
+        Dictionary<Point, float> toPoint = new Dictionary<Point, float>();
+        toPoint.Add(start, 0);
 
         // For node n, fScore[n] := gScore[n] + h(n). fScore[n] represents our current best guess as to
         // how cheap a path could be from start to finish if it goes through n.
-        Dictionary<Point, float> newScore = new Dictionary<Point, float>();
-        newScore.Add(start, Vector3.Distance(start.Pos, goal.Pos));
+        Dictionary<Point, float> toEnd = new Dictionary<Point, float>();
+        toEnd.Add(start, Vector3.Distance(start.Pos, goal.Pos));
 
         while (openSet.Count > 0) {
             // This operation can occur in O(Log(N)) time if openSet is a min-heap or a priority queue
@@ -65,15 +65,38 @@ public class Pathfinding : MonoBehaviour
 
             openSet.Remove(cur);
 
+            float curMin = Mathf.Infinity;
+
             foreach (Point neighbor in cur._neighbours){
                 // d(current,neighbor) is the weight of the edge from current to neighbor
                 // tentative_gScore is the distance from start to the neighbor through current
-                float n = newScore[cur] + Vector3.Distance(cur.Pos, neighbor.Pos);
-                if (n < newScore[neighbor]){
+                float curDist = toPoint[cur] + Vector3.Distance(cur.Pos, neighbor.Pos);
+                
+                if(toPoint.ContainsKey(neighbor)){
+                    toPoint[neighbor] = curDist;
+                }else{
+                    toPoint.Add(neighbor, curDist);
+                }
+                //what if we dont have toPoint[neighbor]
+                //how could we have it if we are just reaching it now?
+                if (curDist < toPoint[neighbor]){
                     // This path to neighbor is better than any previous one. Record it!
-                    cameFrom[neighbor] = cur;
-                    curBest[neighbor] = n;
-                    newScore[neighbor] = n + Vector3.Distance(neighbor.Pos, goal.Pos);
+                    if(!cameFrom.ContainsKey(neighbor)){
+                        cameFrom.Add(neighbor, cur);
+                    }else{
+                        cameFrom[neighbor] = cur;
+                    }
+
+                    toPoint[neighbor] = curDist;
+                    float total = curDist + Vector3.Distance(neighbor.Pos, goal.Pos);
+
+                    if(toEnd.ContainsKey(neighbor)){
+                        toEnd[neighbor] = total;
+                    }else{
+                        toEnd.Add(neighbor, total);
+                    }
+                    
+
                     if (!openSet.Contains(neighbor)){
                         openSet.Add(neighbor);
                     }
