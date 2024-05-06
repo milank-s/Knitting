@@ -17,7 +17,7 @@ Crawler : MonoBehaviour
     protected float speed;
     public bool running;
     protected float progress;
-    float distance;
+    protected float distance;
 
     protected Vector3 lastPos;
     protected Vector3 delta;
@@ -54,7 +54,7 @@ Crawler : MonoBehaviour
                 if(point.pointType != PointTypes.ghost){
                     OnPoint();
                 }
-                GetNextPoint();
+                SetNextPoint();
             }
 
             boost = Mathf.Lerp(boost, 0, Time.deltaTime * 2);
@@ -100,9 +100,17 @@ Crawler : MonoBehaviour
         
         boost += Point.boostAmount;
     }
-    public virtual void GetNextPoint()
+    public virtual void SetNextPoint()
     {
         
+        GetNextPoint();
+
+        distance = spline.GetSegmentDistance(curIndex);
+        EnterPoint(point);
+        
+    }
+
+    public void GetNextPoint(){
         progress = forward ? 0 : 1;
         
         if(forward){
@@ -126,9 +134,6 @@ Crawler : MonoBehaviour
         }
         
         point = spline.SplinePoints[curIndex];
-        distance = spline.GetSegmentDistance(curIndex);
-        EnterPoint(point);
-        
     }
 
     public virtual void EnterPoint(Point p){

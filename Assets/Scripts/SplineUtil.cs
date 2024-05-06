@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class SplineUtil : MonoBehaviour {
 
+	static public bool GetDirection(Point p1, Point p2, Spline s){
+		int indexDiff = s.SplinePoints.IndexOf(p1) - s.SplinePoints.IndexOf(p2);
+		return !(indexDiff == -1 || indexDiff > 1);
+	}
+
 	static public Point CreatePoint(Vector3 pos){
 		GameObject p = Instantiate(Resources.Load("Prefabs/Point")) as GameObject;
 		Point newPoint = p.GetComponent<Point>();
@@ -17,8 +22,6 @@ public class SplineUtil : MonoBehaviour {
 		
 		return newPoint;
 	}
-
-
 
 	public static Vector3 GetScreenSpaceDirection(Vector3 pos, Vector3 dir){
 		Vector2 start = Services.mainCam.WorldToViewportPoint(pos);

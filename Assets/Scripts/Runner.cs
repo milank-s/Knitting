@@ -43,11 +43,6 @@ public class Runner : Crawler
         caught = true;
 
     }
-
-    public override void GetNextPoint()
-    {
-            base.GetNextPoint();
-    }
     
     public override void OnTriggerEnter(Collider col){
         if(Services.PlayerBehaviour.state != PlayerState.Traversing) return;
