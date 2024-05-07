@@ -31,8 +31,12 @@ public class Pathfinding : MonoBehaviour
     totalPath.Reverse();
     
     string n = "";
-    foreach(Point p in totalPath){
-        n += p.name + " > ";
+    for(int i = 0; i < totalPath.Count; i++){
+        n += totalPath[i].name;
+
+        if(i < totalPath.Count -1){
+            n += " > ";
+        }
     }
     Debug.Log(n);
 
@@ -79,6 +83,9 @@ public class Pathfinding : MonoBehaviour
                 // d(current,neighbor) is the weight of the edge from current to neighbor
                 // tentative_gScore is the distance from start to the neighbor through current
                 float curDist = toPoint[cur] + Vector3.Distance(cur.Pos, neighbor.Pos);
+                //can use spline distance[] array, but need to make sure you're not using
+                //the wrong indices based on direction
+
                 
                 bool newRoute = false;
                 if(toPoint.ContainsKey(neighbor)){

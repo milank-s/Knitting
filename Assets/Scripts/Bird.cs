@@ -127,6 +127,7 @@ public class Bird : Crawler
 
                 if(speed < 0){
                     ReverseDir();
+                    speed = -speed;
                 }
             }else{
                 speed = Mathf.Lerp(speed, baseSpeed, Time.deltaTime * 2);

@@ -47,12 +47,11 @@ public class Chaser : Crawler
                     }else{
                         curIndex --;
                     }
-                      
                 }
-        
             }
         }
 
+        Debug.Log("index = " + curIndex);
         distance = spline.GetSegmentDistance(curIndex);
         EnterPoint(point);
 

@@ -90,7 +90,6 @@ Crawler : MonoBehaviour
     public void ReverseDir(){
         forward = !forward;
         dir = forward ? 1 : -1;
-        speed = Mathf.Abs(speed);
     }
 
     public virtual void BreakOff(){
@@ -121,7 +120,8 @@ Crawler : MonoBehaviour
             }
             else
             {
-                curIndex = 0;
+                ReverseDir();
+                progress = 1;
             }
         }else{
             if(curIndex > 0)
@@ -130,7 +130,8 @@ Crawler : MonoBehaviour
             }
             else
             {
-                curIndex = spline.SplinePoints.Count -1;
+                ReverseDir();
+                progress = 0;
             }
         }
         
