@@ -105,6 +105,7 @@ Crawler : MonoBehaviour
         
         GetNextPoint();
 
+        progress = forward ? 0 : 1;
         distance = spline.GetSegmentDistance(curIndex);
         EnterPoint(point);
         

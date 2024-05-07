@@ -1171,9 +1171,9 @@ public class Spline : MonoBehaviour
 
 	public float GetSegmentDistance(int i){
 		//need to know direction and closed?
-
 		return distances[i];
 	}
+
 	public void CalculateSegmentDistance ()
 	{
 		//IDK IF THIS WORKS FORWARD/BACKWARDS

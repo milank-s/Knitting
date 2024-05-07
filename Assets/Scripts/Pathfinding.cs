@@ -23,10 +23,18 @@ public class Pathfinding : MonoBehaviour
     List<Point> totalPath = new List<Point>();
     totalPath.Add(current);
 
-    foreach(Point p in cameFrom.Keys){
+    while(cameFrom.ContainsKey(current)){
         current = cameFrom[current];
         totalPath.Add(current);
     }
+
+    totalPath.Reverse();
+    
+    string n = "";
+    foreach(Point p in totalPath){
+        n += p.name + " > ";
+    }
+    Debug.Log(n);
 
     return totalPath;
 
@@ -72,14 +80,16 @@ public class Pathfinding : MonoBehaviour
                 // tentative_gScore is the distance from start to the neighbor through current
                 float curDist = toPoint[cur] + Vector3.Distance(cur.Pos, neighbor.Pos);
                 
+                bool newRoute = false;
                 if(toPoint.ContainsKey(neighbor)){
                     toPoint[neighbor] = curDist;
                 }else{
+                    newRoute = true;
                     toPoint.Add(neighbor, curDist);
                 }
                 //what if we dont have toPoint[neighbor]
                 //how could we have it if we are just reaching it now?
-                if (curDist < toPoint[neighbor]){
+                if (newRoute || curDist < toPoint[neighbor]){
                     // This path to neighbor is better than any previous one. Record it!
                     if(!cameFrom.ContainsKey(neighbor)){
                         cameFrom.Add(neighbor, cur);
