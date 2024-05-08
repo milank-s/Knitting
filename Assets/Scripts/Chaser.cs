@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Chaser : Crawler
 {
     List<Point> path;
@@ -10,38 +11,50 @@ public class Chaser : Crawler
         path = new List<Point>();
     }
 
-    public void Update(){
+    public void OnDrawGizmos(){
         for(int i = 0; i < path.Count; i++){
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(path[i].Pos, 3);
             if(i < path.Count -1){
-                Debug.DrawLine(path[i].Pos, path[i+1].Pos);
+                Gizmos.DrawLine(path[i].Pos, path[i+1].Pos);
             }
         }
     }
     public override void SetNextPoint(){
 
-        GetNextPoint();
+        //if you have reached the end going forward, update your current point
+        //if you have reached the end going backward, you are already there
 
-        path = Pathfinding.FindPlayer(point);
+        int next = curIndex;
+        if(forward){
+            if(curIndex < spline.SplinePoints.Count - 1){
+                next ++;
+            }else{
+                if(spline.closed){
+                    next = 0;
+                }
+            }
+        }
+
+        Point nextPoint = spline.SplinePoints[next];
+        path = Pathfinding.FindPlayer(nextPoint);
         
         //what if the player is on the same point that we are?
         //what do we do?
-        if(path != null){
+        if(path != null && path.Count > 1){
+            point = nextPoint;
+            Point p = path[1];
+            spline = point.GetConnectingSpline(p);
+            curIndex = spline.GetPointIndex(point);
+            bool newDir = SplineUtil.GetDirection(point, p, spline);
 
-            if(path.Count > 0 && path[path.Count-1] != point){
+            if(newDir != forward){
 
-                Point nextPoint = path[1];
-                spline = point.GetConnectingSpline(nextPoint);
-                curIndex = spline.GetPointIndex(point);
-                forward = SplineUtil.GetDirection(point, nextPoint, spline);
-                dir = forward ? 1 : -1;
-                progress = forward ? 0 : 1;
+                forward = newDir;
                 
                 if(!forward){
-                    
                     if(curIndex == 0){
                         if(spline.closed){
-                            curIndex = spline.numPoints - 1;
-                        }else{
                             curIndex = spline.numPoints - 1;
                         }
                     }else{
@@ -49,9 +62,14 @@ public class Chaser : Crawler
                     }
                 }
             }
+
+            dir = forward ? 1 : -1;
+            progress = forward ? 0 : 1;
+
+        }else{
+            GetNextPoint();
         }
 
-        Debug.Log("index = " + curIndex);
         distance = spline.GetSegmentDistance(curIndex);
         EnterPoint(point);
 

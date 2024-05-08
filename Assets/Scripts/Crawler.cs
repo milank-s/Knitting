@@ -120,8 +120,12 @@ Crawler : MonoBehaviour
             }
             else
             {
-                ReverseDir();
-                progress = 1;
+                if(spline.closed){
+                    curIndex = 0;
+                }else{
+                    ReverseDir();
+                    progress = 1;
+                }
             }
         }else{
             if(curIndex > 0)
@@ -130,8 +134,12 @@ Crawler : MonoBehaviour
             }
             else
             {
-                ReverseDir();
-                progress = 0;
+                if(spline.closed){
+                    curIndex = spline.SplinePoints.Count-1;
+                }else{
+                    ReverseDir();
+                    progress = 0;
+                }
             }
         }
         

@@ -5,8 +5,12 @@ using UnityEngine;
 public class SplineUtil : MonoBehaviour {
 
 	static public bool GetDirection(Point p1, Point p2, Spline s){
-		int indexDiff = s.SplinePoints.IndexOf(p1) - s.SplinePoints.IndexOf(p2);
-		return !(indexDiff == -1 || indexDiff > 1);
+		int indexDiff = s.SplinePoints.IndexOf(p2) - s.SplinePoints.IndexOf(p1);
+		if(indexDiff == -1 || indexDiff > 1){
+			return false;
+		}else{
+			return true;
+		}
 	}
 
 	static public Point CreatePoint(Vector3 pos){

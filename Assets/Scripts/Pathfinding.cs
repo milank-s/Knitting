@@ -38,6 +38,7 @@ public class Pathfinding : MonoBehaviour
             n += " > ";
         }
     }
+    
     Debug.Log(n);
 
     return totalPath;
