@@ -775,10 +775,22 @@ public class Point : MonoBehaviour
 		return _connectedSplines.Count > 0;
 	}
 
+	//this can fuck up. check the index difference for legality
+
 	public Spline GetConnectingSpline(Point p){
 		foreach (Spline s in _connectedSplines) {
-			if (s.IsPointConnectedTo(p))
-				return s;
+			if (s.IsPointConnectedTo(p)){
+				int indexDiff = s.GetPointIndex(p) - s.GetPointIndex(this);
+				if(Mathf.Abs(indexDiff) == 1){
+					return s;
+				}else{
+					if(s.closed){
+						return s;
+					}
+				}
+				
+				continue;
+			}
 		}
 		return null;
 	}

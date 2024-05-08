@@ -140,7 +140,8 @@ public void Step(){
 
         if(!forward){
             pointIndex -= 1;
-            if(s.closed) pointIndex = s.CheckForLoop(pointIndex);
+            // if(s.closed) pointIndex = s.CheckForLoop(pointIndex);
+            pointIndex = s.CheckForLoop(pointIndex);
             p = s.SplinePoints[pointIndex];
         }
 

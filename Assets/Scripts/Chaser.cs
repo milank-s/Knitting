@@ -14,7 +14,7 @@ public class Chaser : Crawler
     public void OnDrawGizmos(){
         for(int i = 0; i < path.Count; i++){
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(path[i].Pos, 3);
+            Gizmos.DrawWireSphere(path[i].Pos, 0.2f);
             if(i < path.Count -1){
                 Gizmos.DrawLine(path[i].Pos, path[i+1].Pos);
             }
@@ -47,19 +47,15 @@ public class Chaser : Crawler
             spline = point.GetConnectingSpline(p);
             curIndex = spline.GetPointIndex(point);
             bool newDir = SplineUtil.GetDirection(point, p, spline);
+            forward = newDir;
 
-            if(newDir != forward){
-
-                forward = newDir;
-                
-                if(!forward){
-                    if(curIndex == 0){
-                        if(spline.closed){
-                            curIndex = spline.numPoints - 1;
-                        }
-                    }else{
-                        curIndex --;
+            if(!forward){
+                if(curIndex == 0){
+                    if(spline.closed){
+                        curIndex = spline.numPoints - 1;
                     }
+                }else{
+                    curIndex --;
                 }
             }
 

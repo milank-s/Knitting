@@ -97,7 +97,7 @@ Crawler : MonoBehaviour
 
     public virtual void OnPoint(){
         
-        boost += Point.boostAmount;
+        //boost += Point.boostAmount;
     }
     public virtual void SetNextPoint()
     {
@@ -114,7 +114,7 @@ Crawler : MonoBehaviour
         progress = forward ? 0 : 1;
         
         if(forward){
-            if(curIndex < spline.SplinePoints.Count - 1)
+            if(curIndex < spline.SplinePoints.Count - 2)
             {
                 curIndex++;
             }

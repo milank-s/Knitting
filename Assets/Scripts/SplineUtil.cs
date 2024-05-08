@@ -9,6 +9,8 @@ public class SplineUtil : MonoBehaviour {
 		if(indexDiff == -1 || indexDiff > 1){
 			return false;
 		}else{
+			if(indexDiff > 1) Debug.Log("SO FUCKING ILLEGAL");
+			
 			return true;
 		}
 	}
