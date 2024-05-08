@@ -507,7 +507,6 @@ public class Spline : MonoBehaviour
 
 					UpdateSplineSegment(i, index, step);
 					
-
 					distanceDelta = rollingDistance - distanceDelta;
 					segDist += distanceDelta;
 				}
@@ -521,7 +520,6 @@ public class Spline : MonoBehaviour
 						curPoint.SetForward(pointVelocities[index]);
 					} 
 				}
-				
 			}
 
 			if(updatingPositions){
@@ -1170,6 +1168,7 @@ public class Spline : MonoBehaviour
 	}
 
 	public float GetSegmentDistance(int i){
+		
 		//need to know direction and closed?
 		return distances[i];
 	}

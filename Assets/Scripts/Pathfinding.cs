@@ -15,7 +15,21 @@ public class Pathfinding : MonoBehaviour
     //use static reference to player 
     //return next point
     public static List<Point> FindPlayer(Point p){
-        return GetNextPoint(p, Services.PlayerBehaviour.curPoint);
+        Point target;
+        switch(Services.PlayerBehaviour.state){
+            case PlayerState.Traversing:
+                target = Services.PlayerBehaviour.pointDest;
+            break;
+
+            case PlayerState.Switching:
+                target = Services.PlayerBehaviour.curPoint;
+            break;
+
+            default:
+            return null;
+
+        }
+        return GetNextPoint(p, target);
     }
 
     static List<Point> reconstruct_path(Dictionary<Point, Point> cameFrom, Point current){
@@ -39,8 +53,7 @@ public class Pathfinding : MonoBehaviour
         }
     }
     
-    Debug.Log(n);
-
+    // Debug.Log(n);
     return totalPath;
 
     }

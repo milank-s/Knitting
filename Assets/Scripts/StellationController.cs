@@ -366,7 +366,7 @@ public class StellationController : MonoBehaviour {
 		if(!spawnedCrawler && unlockMethod == UnlockType.speed){
 			spawnedCrawler = true;
 			CrawlerManager newCrawler = gameObject.AddComponent<CrawlerManager>();
-			//newCrawler.speed = speed;
+			newCrawler.speed = speed;
 			newCrawler.crawlerCount = 1;
 			newCrawler.spawnFrequency = 0;
 			newCrawler.crawlerType = CrawlerType.chaser;

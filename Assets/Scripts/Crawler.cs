@@ -16,6 +16,7 @@ Crawler : MonoBehaviour
     protected float boost;
     protected float speed;
     public bool running;
+    public bool moving;
     protected float progress;
     protected float distance;
 
@@ -33,6 +34,7 @@ Crawler : MonoBehaviour
 
     public virtual void Setup(Spline s, bool f)
     {
+        moving = true;
         speed = baseSpeed;
         curIndex = f? 0 : s.SplinePoints.Count - 1;
         point = s.SplinePoints[curIndex];
@@ -50,29 +52,37 @@ Crawler : MonoBehaviour
     {
         if (running)
         {
-            if(progress < 0 || progress > 1){
-                if(point.pointType != PointTypes.ghost){
-                    OnPoint();
+            if(moving){
+                if(progress < 0 || progress > 1){
+                    if(point.pointType != PointTypes.ghost){
+                        OnHitPoint();
+                    }
+                    SetNextPoint();
                 }
-                SetNextPoint();
-            }
 
-            boost = Mathf.Lerp(boost, 0, Time.deltaTime * 2);
-            //why arent we dividing by distance?
-            progress += (((speed + boost) * dir)/(distance)) * Time.deltaTime;
-               
-            //hacky fix to spline distances not being populated at first
+                boost = Mathf.Lerp(boost, 0, Time.deltaTime * 2);
+                //why arent we dividing by distance?
+                progress += (((speed + boost) * dir)/(distance)) * Time.deltaTime;
+                
+                //hacky fix to spline distances not being populated at first
 
-            if(distance == 0) return;
-            
-            transform.position = spline.GetPointAtIndex(curIndex, progress);
-            delta = (transform.position - lastPos);
-            lastPos = transform.position;
-            
-            // if(delta.sqrMagnitude > 0){
-            //     transform.forward = delta.normalized;
+                if(distance == 0) return;
+                
+                transform.position = spline.GetPointAtIndex(curIndex, progress);
+                delta = (transform.position - lastPos);
+                lastPos = transform.position;
+                
+                // if(delta.sqrMagnitude > 0){
+                //     transform.forward = delta.normalized;
             // }
+            }else{
+                Switching();
+            }
         }
+    }
+
+    public virtual void Switching(){
+
     }
 
     public virtual void OnTriggerEnter(Collider col){
@@ -95,13 +105,12 @@ Crawler : MonoBehaviour
     public virtual void BreakOff(){
     }
 
-    public virtual void OnPoint(){
+    public virtual void OnHitPoint(){
         
-        //boost += Point.boostAmount;
+        boost = Point.boostAmount;
     }
     public virtual void SetNextPoint()
     {
-        
         GetNextPoint();
 
         progress = forward ? 0 : 1;
@@ -120,7 +129,7 @@ Crawler : MonoBehaviour
             }
             else
             {
-                if(spline.closed){
+                if(spline.closed && curIndex == spline.SplinePoints.Count - 1){
                     curIndex = 0;
                 }else{
                     ReverseDir();
