@@ -51,6 +51,7 @@ public class Point : MonoBehaviour
 	public static int pointCount = 0;
 	public static float boostAmount = 1f;
 	public float distortion;
+	public float distanceFromPlayer;
 	float glow;
 
 	bool initialized = false;
@@ -557,10 +558,12 @@ public class Point : MonoBehaviour
 	
 	public void OnPlayerEnterPoint()
 	{
+		Pathfinding.PopulateGraphDistances(this);
+		
 		if(Services.main.activeStellation != controller){
 			
 			Services.main.activeStellation.OnPlayerExit();
-			controller.OnPlayerEnter();		
+			controller.OnPlayerEnter();
 			//entered new stellation	
 		}
 
@@ -569,7 +572,6 @@ public class Point : MonoBehaviour
 		proximity = 1;
 		timeOnPoint = 0;
 		timesHit++;
-		
 		
 		OnPointEnter();
 		

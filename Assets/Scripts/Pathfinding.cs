@@ -14,6 +14,7 @@ public class Pathfinding : MonoBehaviour
 
     //use static reference to player 
     //return next point
+    public static Dictionary<Point, int> distToPlayer;
     public static List<Point> FindPlayer(Point p){
         Point target;
         switch(Services.PlayerBehaviour.state){
@@ -29,8 +30,70 @@ public class Pathfinding : MonoBehaviour
             return null;
 
         }
-        return GetNextPoint(p, target);
+        return GetCriticalPath(p, target);
     }
+    
+    //you need to route the crawler through points closer to the player
+    //to get to points further away
+    public static List<Point> EscapePlayer(Point start){
+        List<Point> totalPath = new List<Point>();
+        
+        Point cur = start;
+        bool running = true;
+        while(running){
+
+            totalPath.Add(cur);
+            float curDist = cur.distanceFromPlayer;
+            
+            bool done = true;
+            foreach(Point p in cur._neighbours){
+    
+                if(p.distanceFromPlayer > curDist){
+                    done = false;
+                    cur = p;
+                    curDist = p.distanceFromPlayer;
+                }
+            }
+
+            if(done) running = false;
+        }
+
+        return totalPath;
+    }
+
+    public static void PopulateGraphDistances(Point start){
+        
+        HashSet<Point> visited = new HashSet<Point>();
+        Queue<Point> q = new Queue<Point>();
+        q.Enqueue(start);
+        visited.Add(start);
+
+        while(q.Count > 0){
+                //pop
+            Point cur = q.Dequeue();
+            foreach(Point p in cur._neighbours){
+                
+                //get distance to neighbour through current point
+                float curDist = cur.distanceFromPlayer;
+                float newDist = curDist + Vector3.Distance(p.Pos, cur.Pos);
+
+                //if this isnt in the map, add it 
+                if(!visited.Contains(p)){
+                   visited.Add(p);
+                   p.distanceFromPlayer = newDist;
+                   q.Enqueue(p);
+
+                //else, check whether its shorter than the current distance
+                }else{
+                    if(newDist < p.distanceFromPlayer){
+                        p.distanceFromPlayer = newDist;
+                    }
+                }
+
+            }
+        }
+    }
+    
 
     static List<Point> reconstruct_path(Dictionary<Point, Point> cameFrom, Point current){
 
@@ -57,9 +120,68 @@ public class Pathfinding : MonoBehaviour
     return totalPath;
 
     }
+    
+    public static List<Point> GetLongestPath(Point start, Point goal){
+        List<Point> openSet = new List<Point>();
+        openSet.Add(start);
+        
+        List<Point> traversedPoints = new List<Point>();
+        traversedPoints.Add(start);
+
+        Dictionary<Point, Point> cameFrom = new Dictionary<Point, Point>();
+        Dictionary<Point, float> toPoint = new Dictionary<Point, float>();
+        toPoint.Add(start, 0);
+
+        Dictionary<Point, float> toEnd = new Dictionary<Point, float>();
+        toEnd.Add(start, Vector3.Distance(start.Pos, goal.Pos));
+
+        while (openSet.Count > 0) {
+            Point cur = openSet[0];
+
+            if (cur == goal){
+                return reconstruct_path(cameFrom, cur);
+                //return next point in sequence
+            }
+
+            openSet.Remove(cur);
+
+            foreach (Point neighbor in cur._neighbours){
+
+                float curDist = toPoint[cur] + Vector3.Distance(cur.Pos, neighbor.Pos);
+                bool newRoute = false;
+
+                if(!toPoint.ContainsKey(neighbor)){
+                    newRoute = true;
+                    toPoint.Add(neighbor, curDist);
+                }
+                
+                if (newRoute || curDist > toPoint[neighbor]){
+                    if(!cameFrom.ContainsKey(neighbor)){
+                        cameFrom.Add(neighbor, cur);
+                    }else{
+                        cameFrom[neighbor] = cur;
+                    }
+
+                    toPoint[neighbor] = curDist;
+                    float total = curDist + Vector3.Distance(neighbor.Pos, goal.Pos);
+
+                    if(toEnd.ContainsKey(neighbor)){
+                        toEnd[neighbor] = total;
+                    }else{
+                        toEnd.Add(neighbor, total);
+                    }
+
+                    if (!openSet.Contains(neighbor)){
+                        openSet.Add(neighbor);
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
     //gets next point and appropriate spline to get to destination
-    public static List<Point> GetNextPoint(Point start, Point goal){
+    public static List<Point> GetCriticalPath(Point start, Point goal){
         // The set of discovered nodes that may need to be (re-)expanded.
         // Initially, only the start node is known.
         // This is usually implemented as a min-heap or priority queue rather than a hash-set.
@@ -91,20 +213,15 @@ public class Pathfinding : MonoBehaviour
 
             openSet.Remove(cur);
 
-            float curMin = Mathf.Infinity;
-
             foreach (Point neighbor in cur._neighbours){
                 // d(current,neighbor) is the weight of the edge from current to neighbor
                 // tentative_gScore is the distance from start to the neighbor through current
                 float curDist = toPoint[cur] + Vector3.Distance(cur.Pos, neighbor.Pos);
                 //can use spline distance[] array, but need to make sure you're not using
                 //the wrong indices based on direction
-
                 
                 bool newRoute = false;
-                if(toPoint.ContainsKey(neighbor)){
-                    toPoint[neighbor] = curDist;
-                }else{
+                if(!toPoint.ContainsKey(neighbor)){
                     newRoute = true;
                     toPoint.Add(neighbor, curDist);
                 }
@@ -133,7 +250,6 @@ public class Pathfinding : MonoBehaviour
                     }
                 }
             }
-        
         }
 
         Debug.Log("never reached goal");

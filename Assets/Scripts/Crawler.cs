@@ -107,8 +107,9 @@ Crawler : MonoBehaviour
 
     public virtual void OnHitPoint(){
         
-        boost = Point.boostAmount;
+        // boost = Point.boostAmount;
     }
+    
     public virtual void SetNextPoint()
     {
         GetNextPoint();

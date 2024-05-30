@@ -388,8 +388,6 @@
 		
 		Services.PlayerBehaviour.ResetFX();
 
-		//they are already switching in the cases when this is called
-		// Services.PlayerBehaviour.SwitchState(PlayerState.Switching);
 	}
 
 

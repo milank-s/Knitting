@@ -33,7 +33,7 @@ public class Chaser : Crawler
         }
 
         point = spline.SplinePoints[next];
-        path = Pathfinding.FindPlayer(point);
+        path = Pathfinding.EscapePlayer(point);
         
         //what if the player is on the same point that we are?
         //what do we do?

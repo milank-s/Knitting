@@ -764,14 +764,6 @@ public class PlayerBehaviour: MonoBehaviour {
 						return;
 					}
 				}
-//			else if (curPoint.pointType == PointTypes.end)
-//			{
-//				if (buttonUp)
-//				{
-////					curPoint.OnPointExit();
-////					SwitchState(PlayerState.Animating);
-//				}
-//			}
 				else{
 					l.positionCount = 0;
 				 }
@@ -800,7 +792,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			if (curPoint.pointType == PointTypes.end && !curPoint.controller.isComplete)
 			{
 				StayOnPoint();
-//				SwitchState(PlayerState.Animating);
 			}
 			else
 			{
@@ -1855,6 +1846,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				
 				curPoint = pointDest;
 				
+
 				if(curPoint.pointType != PointTypes.ghost){
 					
 					//store current speed
