@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using UnityEngine;
-
+using UnityEditor;
 public class StellationController : MonoBehaviour {
 
 	public enum UnlockType{laps, speed, pickups}
@@ -185,6 +185,8 @@ public class StellationController : MonoBehaviour {
 							break;
 
 						}
+						
+						Handles.Label(s.SplinePoints[i].transform.position + Vector3.up/5f, s.SplinePoints[i].distanceFromPlayer.ToString("F2"));
 
 						if(s.SplinePoints[i].pointType != PointTypes.ghost){
 							Gizmos.DrawWireSphere(s.SplinePoints[i].transform.position, 0.033f);

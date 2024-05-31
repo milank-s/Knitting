@@ -33,11 +33,15 @@ public class Chaser : Crawler
         }
 
         point = spline.SplinePoints[next];
-        path = Pathfinding.EscapePlayer(point);
+        List<Point> path = Pathfinding.GetLongestPath(point, Pathfinding.furthestPoint);
+        Debug.Log(Pathfinding.furthestPoint);
         
         //what if the player is on the same point that we are?
         //what do we do?
         if(path != null){
+            
+            //path = Pathfinding.GetCriticalPath(point, fromPlayer[fromPlayer.Count -1]);
+
             moving = true;
             //we need to get to the player
             if(path.Count > 1){

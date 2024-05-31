@@ -15,6 +15,7 @@ public class Pathfinding : MonoBehaviour
     //use static reference to player 
     //return next point
     public static Dictionary<Point, int> distToPlayer;
+    public static Point furthestPoint;
     public static List<Point> FindPlayer(Point p){
         Point target;
         switch(Services.PlayerBehaviour.state){
@@ -35,13 +36,14 @@ public class Pathfinding : MonoBehaviour
     
     //you need to route the crawler through points closer to the player
     //to get to points further away
-    public static List<Point> EscapePlayer(Point start){
+    public static List<Point> EscapePlayer(){
+        Point start = Services.PlayerBehaviour.curPoint;
         List<Point> totalPath = new List<Point>();
         
         Point cur = start;
         bool running = true;
         while(running){
-
+            
             totalPath.Add(cur);
             float curDist = cur.distanceFromPlayer;
             
@@ -66,7 +68,9 @@ public class Pathfinding : MonoBehaviour
         HashSet<Point> visited = new HashSet<Point>();
         Queue<Point> q = new Queue<Point>();
         q.Enqueue(start);
+        start.distanceFromPlayer = 0;
         visited.Add(start);
+        float d = 0;
 
         while(q.Count > 0){
                 //pop
@@ -76,9 +80,15 @@ public class Pathfinding : MonoBehaviour
                 //get distance to neighbour through current point
                 float curDist = cur.distanceFromPlayer;
                 float newDist = curDist + Vector3.Distance(p.Pos, cur.Pos);
-
-                //if this isnt in the map, add it 
+                
+                //if this isnt in the map, add it       
                 if(!visited.Contains(p)){
+                   
+                    if(newDist > d){
+                        d = newDist;
+                        furthestPoint = p;
+                    }
+                    
                    visited.Add(p);
                    p.distanceFromPlayer = newDist;
                    q.Enqueue(p);
@@ -97,12 +107,20 @@ public class Pathfinding : MonoBehaviour
 
     static List<Point> reconstruct_path(Dictionary<Point, Point> cameFrom, Point current){
 
+    Debug.Log("RECONSTRUCTING PATH");
+    HashSet<Point> visited = new HashSet<Point>();
+    visited.Add(current);
     List<Point> totalPath = new List<Point>();
     totalPath.Add(current);
 
-    while(cameFrom.ContainsKey(current)){
+    while(cameFrom.ContainsKey(current)){    
+
         current = cameFrom[current];
         totalPath.Add(current);
+        
+        if(visited.Contains(current)) break;
+
+        visited.Add(current);
     }
 
     totalPath.Reverse();
@@ -125,15 +143,12 @@ public class Pathfinding : MonoBehaviour
         List<Point> openSet = new List<Point>();
         openSet.Add(start);
         
-        List<Point> traversedPoints = new List<Point>();
-        traversedPoints.Add(start);
+        HashSet<Point> visited = new HashSet<Point>();
+        visited.Add(start);
 
         Dictionary<Point, Point> cameFrom = new Dictionary<Point, Point>();
         Dictionary<Point, float> toPoint = new Dictionary<Point, float>();
         toPoint.Add(start, 0);
-
-        Dictionary<Point, float> toEnd = new Dictionary<Point, float>();
-        toEnd.Add(start, Vector3.Distance(start.Pos, goal.Pos));
 
         while (openSet.Count > 0) {
             Point cur = openSet[0];
@@ -146,8 +161,8 @@ public class Pathfinding : MonoBehaviour
             openSet.Remove(cur);
 
             foreach (Point neighbor in cur._neighbours){
-
-                float curDist = toPoint[cur] + Vector3.Distance(cur.Pos, neighbor.Pos);
+                
+                float curDist = neighbor.distanceFromPlayer;
                 bool newRoute = false;
 
                 if(!toPoint.ContainsKey(neighbor)){
@@ -163,15 +178,9 @@ public class Pathfinding : MonoBehaviour
                     }
 
                     toPoint[neighbor] = curDist;
-                    float total = curDist + Vector3.Distance(neighbor.Pos, goal.Pos);
 
-                    if(toEnd.ContainsKey(neighbor)){
-                        toEnd[neighbor] = total;
-                    }else{
-                        toEnd.Add(neighbor, total);
-                    }
-
-                    if (!openSet.Contains(neighbor)){
+                    if (!visited.Contains(neighbor)){
+                        visited.Add(neighbor);
                         openSet.Add(neighbor);
                     }
                 }
