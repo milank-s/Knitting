@@ -34,8 +34,7 @@ public class Pathfinding : MonoBehaviour
         return GetCriticalPath(p, target);
     }
     
-    //you need to route the crawler through points closer to the player
-    //to get to points further away
+    //this is a greedy search and very stupid
     public static List<Point> EscapePlayer(){
         Point start = Services.PlayerBehaviour.curPoint;
         List<Point> totalPath = new List<Point>();
@@ -107,7 +106,6 @@ public class Pathfinding : MonoBehaviour
 
     static List<Point> reconstruct_path(Dictionary<Point, Point> cameFrom, Point current){
 
-    Debug.Log("RECONSTRUCTING PATH");
     HashSet<Point> visited = new HashSet<Point>();
     visited.Add(current);
     List<Point> totalPath = new List<Point>();
@@ -117,7 +115,6 @@ public class Pathfinding : MonoBehaviour
 
         current = cameFrom[current];
         totalPath.Add(current);
-        
         if(visited.Contains(current)) break;
 
         visited.Add(current);
@@ -170,14 +167,14 @@ public class Pathfinding : MonoBehaviour
                     toPoint.Add(neighbor, curDist);
                 }
                 
-                if (newRoute || curDist > toPoint[neighbor]){
+                if (newRoute || toPoint[neighbor] > curDist){
                     if(!cameFrom.ContainsKey(neighbor)){
                         cameFrom.Add(neighbor, cur);
                     }else{
                         cameFrom[neighbor] = cur;
                     }
 
-                    toPoint[neighbor] = curDist;
+                    //toPoint[neighbor] = curDist;
 
                     if (!visited.Contains(neighbor)){
                         visited.Add(neighbor);
