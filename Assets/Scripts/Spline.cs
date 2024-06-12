@@ -1109,6 +1109,7 @@ public class Spline : MonoBehaviour
 		if (v == Vector3.zero) {
 			Debug.Log("bugged velocity at " + t);
 		}
+		
 		return v;
 	}
 

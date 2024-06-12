@@ -509,11 +509,15 @@ public class StellationController : MonoBehaviour {
 
 	public void CheckCompletion(){
 
+		int numPickups = 0;
 		//doing it on the collectible side
 		foreach(Collectible c in collectibles){
+			numPickups ++;
 			if(!c.deposited) return;
 		}
 
+		if(numPickups == 0) return;
+		
 		//doing it on the point side
 		// foreach(Point p in _points){
 		// 	if(p.recieveCollectible && p.collectible == null){

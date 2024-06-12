@@ -1117,7 +1117,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			boost -= Time.deltaTime * boostDecay;
 
 			//this makes feedback loops trivial and is stupid
-			easedDistortion = 0;
+			//easedDistortion = 0;
 
 			//give them boost
 			if(curSpeed < absSpeed){
