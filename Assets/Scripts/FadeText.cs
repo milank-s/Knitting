@@ -37,8 +37,8 @@ public class FadeText: MonoBehaviour {
 		}
 		else
 		{
-				alpha = Mathf.Clamp01(alpha - Time.deltaTime  * speed);
-				t.color = new Color(1, 1, 1, alpha);
+			alpha = Mathf.Clamp01(alpha - Time.deltaTime  * speed);
+			t.color = new Color(1, 1, 1, alpha);
 			
 		}
 

@@ -20,6 +20,9 @@ public class TextFormatting : MonoBehaviour {
 		} else {
 			lerpVal = 1;
 		}
+
+		Services.Prefabs.SetFont(Text, Random.Range(0, Services.Prefabs.fonts.Length));
+
 	}
 	
 	// Update is called once per frame

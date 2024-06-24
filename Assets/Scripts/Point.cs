@@ -101,8 +101,10 @@ public class Point : MonoBehaviour
 	
 
 	public Color color;
+
 	[HideInInspector]
-	public float c = 0;
+	public float brightness = 0;
+	public float hue = 0;
 	public float accretion;
 	public static Point Select;
 	public MeshRenderer renderer;
@@ -128,7 +130,7 @@ public class Point : MonoBehaviour
 	{
 		get
 		{
-			return new Color(c, c, c, 1) + color;
+			return Color.HSVToRGB(hue, 1, brightness) + color;
 		}
 	}
 	
@@ -195,6 +197,8 @@ public class Point : MonoBehaviour
 		// map editor doesnt want you to keep spawning collectibles
 		// if you flip this variable after the point is made it will not be reflected in the editor
 
+		
+		hue = Random.Range(0, 1f);
 		mat = renderer.material;
 		initPos = transform.position;
 		state = PointState.off;
@@ -265,7 +269,7 @@ public class Point : MonoBehaviour
 		initTension = tension;
 		initBias = bias;
 	
-		c = 0;
+		brightness = 0;
 		cooldown = 0;
 		timesHit = 0;
 		
@@ -274,7 +278,7 @@ public class Point : MonoBehaviour
 		if (MapEditor.editing)
 		{
 			color = Color.white;
-			c = 1;
+			brightness = 1;
 		}
 
 		if (text != "" && textMesh != null)
@@ -421,7 +425,7 @@ public class Point : MonoBehaviour
 		tension = initTension;
 		continuity = initContinuity;
 		timesHit = 0;
-		c = 0;
+		brightness = 0;
 		cooldown = 0;
 		note = SynthController.instance.GetNote(this);
 	}
@@ -820,7 +824,10 @@ public class Point : MonoBehaviour
 		// c = (Mathf.Sin (3 * (Time.time + timeOffset))/4 + 0.3f) + proximity;
 //		c = proximity + Mathf.Sin(Time.time + timeOffset)/10 + 0.11f;
 		// ACCRETION IS SHOWING POINTS THAT IT SHOULDNT?????
-		c = glow + proximity + (state == PointState.on ? (Mathf.Sin(-Time.time * 2 + timeOffset)/4f + 0.25f) : 0f); // + timesHit/5f;
+
+		//if you used HSB this would be the brightness param
+
+		brightness = glow + proximity + (state == PointState.on ? (Mathf.Sin(-Time.time * 2 + timeOffset)/4f + 0.25f) : 0f); // + timesHit/5f;
 		
 		// accretion
 		

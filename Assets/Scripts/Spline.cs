@@ -63,6 +63,9 @@ public class Spline : MonoBehaviour
 	public VectorLine line;
 
 	[HideInInspector]
+
+	float hue;
+	Color color;
 	public float completion;	
 	public float alpha = 0.66f;
 
@@ -319,6 +322,8 @@ public class Spline : MonoBehaviour
 
 		//surely these are values that should be called in reset?
 
+		hue = Random.Range(0f, 1f);
+		color = Color.HSVToRGB(hue, 1, 1);
 		completion = 0;
 		drawing = false;
 		drawn = false;
@@ -803,15 +808,17 @@ public class Spline : MonoBehaviour
 
 
 				Color c;
-				c = Color.Lerp(curPoint._color, nextPoint._color, step);
+				float brightness = Mathf.Lerp(curPoint.brightness, nextPoint.brightness, step);
+				// c = Color.Lerp(curPoint._color, nextPoint._color, step);
 				
 
 				//c += (Color.white * Mathf.Clamp01(_completion - 1));
 				c.a = alpha;
-				line.SetColor(c, segmentIndex);
+
+				line.SetColor(Color.HSVToRGB(hue, 1, brightness), segmentIndex);
 				
 			}else{
-				line.SetColor(Color.white, segmentIndex);
+				line.SetColor(color, segmentIndex);
 			}
 	}
 

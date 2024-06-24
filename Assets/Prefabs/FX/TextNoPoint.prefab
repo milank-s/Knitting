@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 4513873053666326}
   - component: {fileID: 23540779108795536}
   - component: {fileID: 102166254826080318}
-  - component: {fileID: 114316496267623248}
-  m_Layer: 5
-  m_Name: FadeText
+  - component: {fileID: -67394045583396718}
+  m_Layer: 9
+  m_Name: TextNoPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -94,7 +94,7 @@ TextMesh:
   m_Color:
     serializedVersion: 2
     rgba: 4294967295
---- !u!114 &114316496267623248
+--- !u!114 &-67394045583396718
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -103,11 +103,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1264891880110480}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d71ad8638b454088b52876c8631bc21, type: 3}
+  m_Script: {fileID: 11500000, guid: ac4fc2271df8de04c84980571ff46c08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  alpha: 1
-  p: {fileID: 0}
-  startOn: 0
-  stayOn: 1
-  destroy: 0
+  alpha: 0
+  speed: 1
+  startOn: 1
+  stayOn: 0
+  destroy: 1

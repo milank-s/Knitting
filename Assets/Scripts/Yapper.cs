@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class TextHolder : MonoBehaviour {
+public class Yapper : MonoBehaviour {
 
 	public GameObject wordObject;
 	public string 	text;
@@ -11,13 +11,18 @@ public class TextHolder : MonoBehaviour {
 	string[]		words;
 	int 			wordCount;
 
+	float timer = 0;
+
 	void Start () {
 		Cursor.visible = false;
 		words = text.Split(new char[] {' '});
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+	void Update(){
+		if(timer - Time.time < 0){
+			timer = Time.time + Random.Range(0.2f, 0.33f);
+			CreateWord(transform.position);
+		}
 	}
 
 	public string GetText(){
@@ -26,7 +31,7 @@ public class TextHolder : MonoBehaviour {
 	public GameObject CreateWord(Vector3 pos){
 		wordCount++;
 		GameObject newWord = (GameObject)Instantiate (wordObject, pos, Quaternion.identity);
-		newWord.GetComponent<TextFormatting> ().setText (words [wordCount % words.Length]);
+		newWord.GetComponent<TextFormatting> ().setText (GetText());
 		if(allAtOnce) newWord.GetComponent<TextFormatting> ().setText (text);
 		newWord.GetComponent<TextFormatting>().fade = fade;
 		newWord.GetComponent<TextFormatting>().rotFixed = noRotation;
