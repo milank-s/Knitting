@@ -839,6 +839,10 @@ public class Point : MonoBehaviour
 			
 		}else
 		{
+			if(HasSplines()){
+				hue = _connectedSplines[_connectedSplines.Count-1].hue;
+			}
+
 			mat.color = _color; 	
 		}
 

@@ -64,7 +64,7 @@ public class Spline : MonoBehaviour
 
 	[HideInInspector]
 
-	float hue;
+	public float hue;
 	Color color;
 	public float completion;	
 	public float alpha = 0.66f;
