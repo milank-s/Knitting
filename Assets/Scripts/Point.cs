@@ -130,7 +130,7 @@ public class Point : MonoBehaviour
 	{
 		get
 		{
-			return Color.HSVToRGB(hue, 1, brightness) + color;
+			return Color.HSVToRGB(hue, 0, brightness) + color;
 		}
 	}
 	

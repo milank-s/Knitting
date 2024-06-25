@@ -65,6 +65,7 @@ public class Spline : MonoBehaviour
 	[HideInInspector]
 
 	public float hue;
+	public float saturation;
 	Color color;
 	public float completion;	
 	public float alpha = 0.66f;
@@ -323,7 +324,8 @@ public class Spline : MonoBehaviour
 		//surely these are values that should be called in reset?
 
 		hue = Random.Range(0f, 1f);
-		color = Color.HSVToRGB(hue, 1, 1);
+		saturation = 0;
+		color = Color.HSVToRGB(hue, saturation, 1);
 		completion = 0;
 		drawing = false;
 		drawn = false;
@@ -815,7 +817,7 @@ public class Spline : MonoBehaviour
 				//c += (Color.white * Mathf.Clamp01(_completion - 1));
 				c.a = alpha;
 
-				line.SetColor(Color.HSVToRGB(hue, 1, brightness), segmentIndex);
+				line.SetColor(Color.HSVToRGB(hue, saturation, brightness), segmentIndex);
 				
 			}else{
 				line.SetColor(color, segmentIndex);
