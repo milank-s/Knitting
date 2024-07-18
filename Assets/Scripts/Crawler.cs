@@ -10,8 +10,8 @@ Crawler : MonoBehaviour
     public bool useSpline = true;
     public bool forward = true;
     protected Spline spline;
-    protected Point point;
-    protected int curIndex;
+    public Point point;
+    public int curIndex;
     public float baseSpeed = 1;
     protected float boost;
     protected float speed;
@@ -32,11 +32,12 @@ Crawler : MonoBehaviour
         index = c.GetCrawlerIndex(this);
     }
 
-    public virtual void Setup(Spline s, bool f)
+    public virtual void Setup(Spline s, bool f, int startIndex = 0)
     {
         moving = true;
         speed = baseSpeed;
-        curIndex = f? 0 : s.SplinePoints.Count - 1;
+        // curIndex = f? 0 : s.SplinePoints.Count - 1;
+        curIndex = startIndex;
         point = s.SplinePoints[curIndex];
         forward = f;
         progress = forward ? 0 : 1;
@@ -45,7 +46,6 @@ Crawler : MonoBehaviour
         dir = forward ? 1 : -1;
         transform.position = s.SplinePoints[curIndex].Pos;
         lastPos = transform.position;
-
     }
 
     public virtual void Step()

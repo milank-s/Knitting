@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum CrawlerType {blocker, chaser, passive, bird}
+public enum CrawlerType {blocker, chaser, passive, bird, spark}
 public class CrawlerManager : MonoBehaviour
 {
     public int crawlerCount = 10;
@@ -10,7 +10,7 @@ public class CrawlerManager : MonoBehaviour
     public float spawnFrequency = 0.5f;
     public bool forward = true;
     public Spline spline;
-    public CrawlerType crawlerType = CrawlerType.blocker;
+    public CrawlerType crawlerType = CrawlerType.spark;
     private List<Crawler> crawlers;
     private int index;
     public bool emitting;
@@ -24,15 +24,35 @@ public class CrawlerManager : MonoBehaviour
         emitting = true;
         cleared = false;
 
+        Debug.Log("initializing crawler");
+        
         for (int i = 0; i < crawlerCount; i++)
         {
-            Crawler newCrawler = Instantiate(Services.Prefabs.crawlers[(int)crawlerType], transform).GetComponent<Crawler>();
-            newCrawler.baseSpeed = speed;
-            crawlers.Add(newCrawler);
-            newCrawler.Init(this);
+            SpawnCrawler(crawlerType);
         }
 
         //Services.main.OnReset += Reset;
+    }
+    public void EmitSparks(Point p){
+        Debug.Log("emitting sparks");
+        foreach(Point n in p._neighbours){
+            Spark newCrawler = (Spark)SpawnCrawler(CrawlerType.spark);
+    
+            Spline s = p.GetConnectingSpline(n);
+            bool f = s.IsGoingForward(p, n);
+            newCrawler.Setup(s, f);
+            newCrawler.curIndex = f ? s.GetPointIndex(p) : s.GetPointIndex(n);
+            newCrawler.point = f ? p : n;
+            AddCrawler();
+        }
+    }
+
+    public Crawler SpawnCrawler(CrawlerType t){
+        Crawler newCrawler = Instantiate(Services.Prefabs.crawlers[(int)t], transform).GetComponent<Crawler>();
+        newCrawler.baseSpeed = speed;
+        crawlers.Add(newCrawler);
+        newCrawler.Init(this);
+        return newCrawler;
     }
 
     public int GetCrawlerIndex(Crawler c){
@@ -61,8 +81,8 @@ public class CrawlerManager : MonoBehaviour
             }
         }
 
-        foreach(Crawler c in crawlers){
-            if(c.running) c.Step();
+        for(int i = 0; i < crawlers.Count; i++){
+            if(crawlers[i].running) crawlers[i].Step();
         }
     }
 

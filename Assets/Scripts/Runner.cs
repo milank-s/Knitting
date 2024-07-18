@@ -9,7 +9,7 @@ public class Runner : Crawler
     float timer = 0;
     bool caught = false;
 
-    public override void Setup(Spline s, bool f)
+    public override void Setup(Spline s, bool f, int startIndex = 0)
     {
         base.Setup(s, f);
         caught = false;

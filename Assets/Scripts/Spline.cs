@@ -1127,6 +1127,16 @@ public class Spline : MonoBehaviour
 		return r1 * (1 - 4 * t + 3 * (t * t)) + t * (-6 * p1 + 6 * p2 + 6 * p1 * t - 6 * p2 * t + r2 * (-2 + 3 * t));
 	}
 
+	public bool IsGoingForward(Point p1, Point p2){
+		int i1 = SplinePoints.IndexOf(p1);
+		int i2 = SplinePoints.IndexOf(p2);
+		int diff = i2 - i1;
+		if(diff < 0 || diff > 1){
+			return true;
+		}
+
+		return false;
+	}
 	public Vector3 GetDirection (float t)
 	{
 		//Vector2 noZ = GetVelocity (t);

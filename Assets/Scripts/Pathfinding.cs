@@ -34,6 +34,8 @@ public class Pathfinding : MonoBehaviour
         return GetCriticalPath(p, target);
     }
     
+    
+
     //this is a greedy search and very stupid
     public static List<Point> EscapePlayer(){
         Point start = Services.PlayerBehaviour.curPoint;
