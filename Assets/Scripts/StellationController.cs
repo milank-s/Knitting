@@ -373,7 +373,7 @@ public class StellationController : MonoBehaviour {
 			newCrawler.speed = speed;
 			newCrawler.crawlerCount = 1;
 			newCrawler.spawnFrequency = 0;
-			newCrawler.crawlerType = CrawlerType.spark;
+			newCrawler.crawlerType = CrawlerType.chaser;
 			// OnHitStart += newCrawler.Reset;
 			newCrawler.spline = splines[0];
 			crawlers.Add(newCrawler);

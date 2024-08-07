@@ -322,16 +322,17 @@ public class PlayerBehaviour: MonoBehaviour {
 	}
 
 	public void PressButton(InputAction.CallbackContext context){
-		//if button down, buttonDown = true;
-		//if button up, buttonDown = false
+		
 
 		if(Services.main.state != Main.GameState.playing){return;}
 
-		if(context.performed){
-			buttonDown = true;
-		}
+		bool dwn = context.ReadValueAsButton();
 
-		if(context.canceled){
+		if(!buttonDown && dwn){
+			
+			buttonDown = true;
+		}else if(buttonDown && !dwn){
+			// Debug.Log(context.action.)
 			buttonUp = true;
 			buttonDown = false;
 			charging = false;
@@ -341,6 +342,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 			buttonDownTimer = buttonDownBuffer;
 		}
+
 
 	}
 
@@ -459,7 +461,6 @@ public class PlayerBehaviour: MonoBehaviour {
 				boostTimer = Mathf.Clamp01(boostTimer);
 			}
 
-			buttonDown = true;
 			charging = true;
 			//buttonDownTimer = buttonDownBuffer;
 		}
@@ -1490,9 +1491,9 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		Vector2 inputVector = context.ReadValue<Vector2>();
 
-		// if(context.control.name == "stick"){
-		// 		inputVector = Quaternion.Euler(0,0,90) * inputVector;
-		// }
+		if(context.control.name == "stick"){
+				inputVector = Quaternion.Euler(0,0,-90) * inputVector;
+		}
 
 //		Vector3 lastCursorDir = cursorDir;
 		if (context.control.name == "stick" || context.control.name == "leftStick") {

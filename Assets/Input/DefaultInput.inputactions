@@ -6,15 +6,6 @@
             "id": "2de7a821-7e78-45c2-8894-0bb754b5fca2",
             "actions": [
                 {
-                    "name": "OldMove",
-                    "type": "Value",
-                    "id": "e158cd68-6266-4741-a1ee-01d2f04acdfe",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
                     "name": "Cancel",
                     "type": "Button",
                     "id": "95e96afb-4fad-44db-86ed-aa94d454766d",
@@ -38,7 +29,7 @@
                     "id": "74fda9b7-790c-45c3-9a96-54049c39a85e",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press(behavior=2)",
+                    "interactions": "",
                     "initialStateCheck": false
                 },
                 {
@@ -61,138 +52,6 @@
                 }
             ],
             "bindings": [
-                {
-                    "name": "",
-                    "id": "978bfe49-cc26-4a3d-ab7b-7d7a29327403",
-                    "path": "<Gamepad>/leftStick",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
-                    "action": "OldMove",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "WASD",
-                    "id": "00ca640b-d935-4593-8157-c05846ea39b3",
-                    "path": "Dpad",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "OldMove",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "up",
-                    "id": "e2062cb9-1b15-46a2-838c-2f8d72a0bdd9",
-                    "path": "<Keyboard>/w",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "OldMove",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "up",
-                    "id": "8180e8bd-4097-4f4e-ab88-4523101a6ce9",
-                    "path": "<Keyboard>/upArrow",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "OldMove",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "down",
-                    "id": "320bffee-a40b-4347-ac70-c210eb8bc73a",
-                    "path": "<Keyboard>/s",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "OldMove",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "down",
-                    "id": "1c5327b5-f71c-4f60-99c7-4e737386f1d1",
-                    "path": "<Keyboard>/downArrow",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "OldMove",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "d2581a9b-1d11-4566-b27d-b92aff5fabbc",
-                    "path": "<Keyboard>/a",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "OldMove",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "2e46982e-44cc-431b-9f0b-c11910bf467a",
-                    "path": "<Keyboard>/leftArrow",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "OldMove",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "fcfe95b8-67b9-4526-84b5-5d0bc98d6400",
-                    "path": "<Keyboard>/d",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "OldMove",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "77bff152-3580-4b21-b6de-dcd0c7e41164",
-                    "path": "<Keyboard>/rightArrow",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "OldMove",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "",
-                    "id": "1635d3fe-58b6-4ba9-a4e2-f4b964f6b5c8",
-                    "path": "<XRController>/{Primary2DAxis}",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "XR",
-                    "action": "OldMove",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "3ea4d645-4504-4529-b061-ab81934c3752",
-                    "path": "<Joystick>/stick",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Joystick",
-                    "action": "OldMove",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
                 {
                     "name": "",
                     "id": "c1f7a91b-d0fd-4a62-997e-7fb9b69bf235",
@@ -220,7 +79,7 @@
                     "id": "3e5f5442-8668-4b27-a940-df99bad7e831",
                     "path": "<HID::Ultimarc UltraStik Ultimarc Ultra-Stik Player 1>/stick",
                     "interactions": "",
-                    "processors": "InvertVector2(invertX=false,invertY=false)",
+                    "processors": "",
                     "groups": "Joystick",
                     "action": "Move",
                     "isComposite": false,
@@ -261,17 +120,6 @@
                 },
                 {
                     "name": "",
-                    "id": "ee3d0cd2-254e-47a7-a8cb-bc94d9658c54",
-                    "path": "<Joystick>/trigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Joystick",
-                    "action": "Fire",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "8255d333-5683-4943-a58a-ccb207ff1dce",
                     "path": "<XRController>/{PrimaryAction}",
                     "interactions": "",
@@ -283,8 +131,19 @@
                 },
                 {
                     "name": "",
-                    "id": "8a8af65b-e051-42c4-bd86-07be1d81f440",
+                    "id": "2465b488-4a71-4442-b7a1-e5ba02cd9db4",
                     "path": "<HID::Ultimarc A-PAC Controller A-PAC>/button3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f282cf6f-97ea-42f9-9563-2d477b04cc5a",
+                    "path": "<HID::Ultimarc A-PAC Controller Ultimarc A-PAC Controller>/button3",
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
@@ -576,9 +435,9 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "up",
+                    "name": "down",
                     "id": "3db53b26-6601-41be-9887-63ac74e79d19",
-                    "path": "<Joystick>/stick/up",
+                    "path": "<HID::Ultimarc UltraStik Ultimarc Ultra-Stik Player 1>/stick/right",
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
@@ -587,7 +446,7 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "down",
+                    "name": "left",
                     "id": "0cb3e13e-3d90-4178-8ae6-d9c5501d653f",
                     "path": "<Joystick>/stick/down",
                     "interactions": "",
@@ -598,9 +457,9 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "left",
+                    "name": "up",
                     "id": "0392d399-f6dd-4c82-8062-c1e9c0d34835",
-                    "path": "<Joystick>/stick/left",
+                    "path": "<HID::Ultimarc UltraStik Ultimarc Ultra-Stik Player 1>/stick/left",
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
@@ -611,7 +470,7 @@
                 {
                     "name": "right",
                     "id": "942a66d9-d42f-43d6-8d70-ecb4ba5363bc",
-                    "path": "<Joystick>/stick/right",
+                    "path": "<HID::Ultimarc UltraStik Ultimarc Ultra-Stik Player 1>/stick/up",
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
@@ -731,6 +590,17 @@
                 },
                 {
                     "name": "",
+                    "id": "60412ac4-f5ed-430d-b52b-7a0493ae9e4d",
+                    "path": "<HID::Ultimarc A-PAC Controller A-PAC>/button3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "82627dcc-3b13-4ba9-841d-e4b746d6553e",
                     "path": "*/{Cancel}",
                     "interactions": "",
@@ -791,6 +661,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Touch",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6b1fd3cb-30f6-4f52-a045-799ba344bfe4",
+                    "path": "<HID::Ultimarc A-PAC Controller A-PAC>/button3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
                     "action": "Click",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -908,7 +789,12 @@
             "bindingGroup": "Joystick",
             "devices": [
                 {
-                    "devicePath": "<Joystick>",
+                    "devicePath": "<HID::Ultimarc A-PAC Controller A-PAC>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<HID::Ultimarc UltraStik Ultimarc Ultra-Stik Player 1>",
                     "isOptional": false,
                     "isOR": false
                 }
