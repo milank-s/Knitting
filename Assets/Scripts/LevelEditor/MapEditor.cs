@@ -440,7 +440,7 @@ public class MapEditor : MonoBehaviour
         if (Point.Points.Count > 0)
         {
             Services.main.InitializeLevel();
-            Services.main.EnterLevel();
+            Services.main.ActivatePlayer();
         }
 
         canvas.gameObject.SetActive(!editing);

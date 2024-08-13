@@ -116,6 +116,7 @@ public class SceneController : MonoBehaviour
 
     public void OnStart(){
         	//get any open scene in order to play it
+
 		if (SceneManager.sceneCount > 1)
 		{
 			for (int i = 0; i < SceneManager.sceneCount; i++)
@@ -236,7 +237,6 @@ public class SceneController : MonoBehaviour
         // }
     }
 
-
     public void LoadNextStellation()
     {
         curLevel++;
@@ -335,9 +335,12 @@ public class SceneController : MonoBehaviour
 
     //loads and starts player instantly
     public void LoadDirect(string levelTitle){
+        if(curLevelSet.isScene){
+            LoadScene();
+        }else{
+            LoadFile(levelTitle);
+        }
 
-        LoadFile(levelTitle);
-        Services.main.EnterLevel();
     }
 
     public IEnumerator LoadLevelRoutine(){
@@ -352,7 +355,6 @@ public class SceneController : MonoBehaviour
         }
 
         //call player init function
-        Services.main.EnterLevel();
 
         //there is aperiod of time between init and transition where
         //the player is still on the last stellation and is causing problems

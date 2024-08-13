@@ -426,13 +426,15 @@
 		if(OnLoadLevel != null){
 			OnLoadLevel(activeStellation);
 		}
+
+        Services.main.ActivatePlayer();
 	}
 
 	//this happens when levels are loaded and reset
 	//but there is a lot of redundancy that suggests it only needs to come from the main menu and level editor
 	//it is the only function that calls player.initialize
 	
-	public void EnterLevel(){
+	public void ActivatePlayer(){
         // StartCoroutine(ShowTitle());
 
 		playerInput.SwitchCurrentActionMap("Player");

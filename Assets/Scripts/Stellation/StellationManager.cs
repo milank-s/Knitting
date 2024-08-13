@@ -105,7 +105,7 @@ public class StellationManager : MonoBehaviour
 		//this is pretty fucking heavy duty 
 		//there should be a dedicated reset function
 		Services.main.InitializeLevel();
-
+		
 		//for now, fuck stellation managers
 		// ????????????????????????????????
 		//Services.main.EnterLevelRoutine()
@@ -145,6 +145,7 @@ public class StellationManager : MonoBehaviour
 				controllers[i].DrawStellation();
 			}
 		}
+
 	}
 
 	public void SaveStellation(StellationController c){

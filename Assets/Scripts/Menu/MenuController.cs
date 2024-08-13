@@ -80,7 +80,6 @@ public class MenuController : MonoBehaviour
 				
 				gameStateKnob.transform.localEulerAngles = new Vector3(90, 90, -90);
 			break;
-			
         }
     }
 
