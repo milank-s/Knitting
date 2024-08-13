@@ -643,8 +643,8 @@ public class MapEditor : MonoBehaviour
 
                 if (Input.GetKeyDown(KeyCode.Equals))
                 {
-                    SynthController.instance.keys[0].PlayNote(70, 0.5f, 0.5f);
                     Point p = selectedSpline.AddNewPoint(selectedSpline.SplinePoints.IndexOf(activePoint));
+                    AudioManager.instance.helmAudio.PlayNoteOnPoint(p);
                     p.transform.parent = pointsParent;
                 }
             }
@@ -960,12 +960,17 @@ public class MapEditor : MonoBehaviour
      {
          activePoint.SetPointType(t);
          
+         Point samplePoint = null;
          foreach(Point p in selectedPoints){
              p.SetPointType(t);
+             samplePoint = p;
          }
 
          //play effects
-         SynthController.instance.keys[0].PlayNote((int)t * 4 + 60, 0.5f, 0.1f);
+        //  SynthController.instance.keys[0].PlayNote((int)t * 4 + 60, 0.5f, 0.1f);
+        if(samplePoint){
+         AudioManager.instance.helmAudio.PlayNoteOnPoint(samplePoint);
+        }
          Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, activePoint.transform);
      }
 
@@ -2103,7 +2108,7 @@ void DragCamera()
                         if (Input.GetMouseButtonDown(0))
                         {
                             
-                            SynthController.instance.keys[0].PlayNote((int)hitPoint.pointType * 4 + 60, 0.5f, 0.5f);
+                            AudioManager.instance.helmAudio.PlayNoteOnPoint(hitPoint);
                             AddSelectedPoint(hitPoint);
                         }
                     }
@@ -2161,7 +2166,7 @@ void DragCamera()
                     {
                         newPoint.SetPointType(PointTypes.start);
                     }
-                    SynthController.instance.keys[0].PlayNote(60, 0.5f, 0.1f);
+                    AudioManager.instance.helmAudio.PlayNoteOnPoint(newPoint);
                 }
 
                 break;

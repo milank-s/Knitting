@@ -22,9 +22,9 @@ public class SplineUtil : MonoBehaviour {
 		newPoint.transform.position = pos;
 		newPoint.GetComponent<Collider> ().enabled = true;
 
-		#if !UNITY_EDITOR
+		// #if !UNITY_EDITOR
 		newPoint.Initialize();
-		#endif
+		//#endif
 		
 		return newPoint;
 	}

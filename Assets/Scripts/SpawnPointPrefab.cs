@@ -7,17 +7,6 @@ public class SpawnPointPrefab : ScriptableObject {
 
 	static public Point CreatePoint(Vector3 pos){
 
-		// #if (UNITY_EDITOR)
-		// GameObject p = PrefabUtility.InstantiatePrefab(Services.Prefabs.point as GameObject) as GameObject;
-		// Point newPoint = p.GetComponent<Point>();
-		//
-		// newPoint.transform.position = pos;
-		// newPoint.originalPos = pos;
-		// newPoint.GetComponent<Collider> ().enabled = true;
-		//
-		// return newPoint;
-		// #endif
-
 		GameObject p2 =  Instantiate(Resources.Load<GameObject>("Prefabs/Point")) as GameObject;
 		Point newPoint2 = p2.GetComponent<Point>();
 

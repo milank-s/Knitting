@@ -270,7 +270,7 @@ public class SplineTurtle : MonoBehaviour {
 
 			pointCount = 1;
 
-			curPoint = SpawnPointPrefab.CreatePoint (turtle.position);
+			curPoint =  SplineUtil.CreatePoint (turtle.position);
 			curPoint.transform.parent = editor.pointsParent.transform;
 			points.Add(curPoint);
 
@@ -380,10 +380,10 @@ public class SplineTurtle : MonoBehaviour {
 		if (Raycast) {
 			newPoint = SplineUtil.RaycastDownToPoint (turtle.position, Mathf.Infinity, 100f);
 			if (newPoint == null) {
-				newPoint = SpawnPointPrefab.CreatePoint (turtle.position);
+				newPoint =  SplineUtil.CreatePoint(turtle.position);
 			}
 		} else {
-			newPoint = SpawnPointPrefab.CreatePoint (turtle.position);
+			newPoint = SplineUtil.CreatePoint (turtle.position);
 		}
 
 		if(newPoint != curPoint){

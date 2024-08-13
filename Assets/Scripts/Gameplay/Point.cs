@@ -97,7 +97,7 @@ public class Point : MonoBehaviour
 	public float timeOffset;
 	[HideInInspector]
 	public float proximity = 0;
-	public int note;
+	public int note = 32;
 	
 
 	public Color color;
@@ -191,6 +191,7 @@ public class Point : MonoBehaviour
 	public void Initialize()
 	{
 		if(initialized) return;
+
 		initialized = true;
 
 		// so when does this happen 
@@ -427,7 +428,7 @@ public class Point : MonoBehaviour
 		timesHit = 0;
 		brightness = 0;
 		cooldown = 0;
-		note = SynthController.instance.GetNote(this);
+		
 	}
 
 	public void CleanText()

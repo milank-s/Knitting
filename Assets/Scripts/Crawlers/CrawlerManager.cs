@@ -23,8 +23,6 @@ public class CrawlerManager : MonoBehaviour
         crawlers = new List<Crawler>();
         emitting = true;
         cleared = false;
-
-        Debug.Log("initializing crawler");
         
         for (int i = 0; i < crawlerCount; i++)
         {
@@ -34,7 +32,9 @@ public class CrawlerManager : MonoBehaviour
         //Services.main.OnReset += Reset;
     }
     public void EmitSparks(Point p){
+        
         Debug.Log("emitting sparks");
+
         foreach(Point n in p._neighbours){
             Spark newCrawler = (Spark)SpawnCrawler(CrawlerType.spark);
     

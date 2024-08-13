@@ -1295,7 +1295,7 @@ public class Spline : MonoBehaviour
 				newPos = GetPointAtIndex(i, 0.5f);
 			}
 
-			newPoint = SpawnPointPrefab.CreatePoint(newPos);
+			newPoint =  SplineUtil.CreatePoint(newPos);
 			InsertPoint(newPoint, i+1);
 			
 			Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, newPoint.transform);
@@ -1303,11 +1303,11 @@ public class Spline : MonoBehaviour
 			newPoint.transform.parent = transform;
 		}else
 		{
-			newPoint = SpawnPointPrefab.CreatePoint(transform.position);
+			newPoint =  SplineUtil.CreatePoint(transform.position);
 				
 			Services.fx.PlayAnimationAtPosition(FXManager.FXType.pulse, newPoint.transform);
 			
-			Point newPoint2 = SpawnPointPrefab.CreatePoint (transform.position + Vector3.up/5f);
+			Point newPoint2 =  SplineUtil.CreatePoint (transform.position + Vector3.up/5f);
 			SplinePoints.Add(newPoint);
 			SplinePoints.Add(newPoint2);
 			newPoint.transform.parent = transform;

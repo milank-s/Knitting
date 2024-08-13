@@ -6,11 +6,8 @@ public class FlyingTrigger : MonoBehaviour
 {
     public bool unlockCam;
     
-    // Update is called once per frame
     public void Fly()
     {
-        // Services.mainCam.fieldOfView = 80;
-		// CameraFollow.instance.desiredFOV = 80;
         if(unlockCam){
             CameraFollow.instance.lockX = false;
             CameraFollow.instance.lockY = false;
