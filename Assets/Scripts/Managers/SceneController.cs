@@ -175,7 +175,7 @@ public class SceneController : MonoBehaviour
     public static SceneController instance;
 
     public string GetCurLevel(){
-        Debug.Log("curLevelSet = " + curSetIndex + " curLevel = " + curLevel);
+        
         return curLevelSet.levels[curLevel];
     }
     public void SelectNextLevel(bool increment)

@@ -90,6 +90,11 @@ public class StellationManager : MonoBehaviour
 	}
 
 	void Setup(){
+
+		SaveGame.Load();
+
+		Debug.Log("level " + level + " checkpoint" + checkpoint + " point #" + startPoint);
+
 		//this is macro position within the game and should be selected from the main menu
 		for(int i = 0; i < stellationSets.Count; i++){
 			if(i != level){
@@ -103,15 +108,13 @@ public class StellationManager : MonoBehaviour
 
 		//CODE FOR CHANGING STARTPOINT
 		// Services.StartPoint = controllers[checkpoint].start;
-		Services.StartPoint = controllers[checkpoint]._points[startPoint];
 
 		//this is pretty fucking heavy duty 
 		//there should be a dedicated reset function
 		Services.main.InitializeLevel();
-		
-		//for now, fuck stellation managers
-		// ????????????????????????????????
-		//Services.main.EnterLevelRoutine()
+
+		Services.StartPoint = Services.main.activeStellation._points[startPoint];
+		Services.main.WarpPlayerToNewPoint(Services.StartPoint);
 
 		//each stellation set should also have its own checkpoint to place players at the appropriate spot
 		//and draw in all previous stellations based on this when resetting
@@ -127,7 +130,7 @@ public class StellationManager : MonoBehaviour
 			controllers[i].Setup();
 
 			//lock stellations and make sure they're not enabled after
-			if(i >= checkpoint && controllers[i].hasUnlock){
+			if(i >= checkpoint &&  controllers[i].hasUnlock){
 				controllers[i].unlock.Lock();
 				lockedStellations.Add(controllers[i].unlock);
 			}

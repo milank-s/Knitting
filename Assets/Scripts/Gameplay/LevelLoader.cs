@@ -9,7 +9,8 @@ public class LevelLoader : MonoBehaviour
         //save the current point position 
         
         //you should do this based on scene name
-        SaveGame.Load();
+        SaveGame.Save();
+
         SceneController.instance.LoadScene(levelName);
     }
 }
