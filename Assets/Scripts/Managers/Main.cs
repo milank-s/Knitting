@@ -425,8 +425,6 @@
 		if(OnLoadLevel != null){
 			OnLoadLevel(activeStellation);
 		}
-
-        Services.main.ActivatePlayer();
 	}
 
 	//this happens when levels are loaded and reset

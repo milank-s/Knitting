@@ -279,6 +279,7 @@ public class SceneController : MonoBehaviour
 		}
         
 		Services.main.InitializeLevel();
+        Services.main.ActivatePlayer();
 	}
 
     void UnloadScene(){

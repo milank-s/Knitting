@@ -106,19 +106,13 @@ public class StellationManager : MonoBehaviour
 		controllers = stellationSets[level].controllers;
 		Services.main.activeStellation = controllers[checkpoint];
 
-		//CODE FOR CHANGING STARTPOINT
-		// Services.StartPoint = controllers[checkpoint].start;
 
 		//this is pretty fucking heavy duty 
 		//there should be a dedicated reset function
+
+		//we need a way of overriding the start point before the call goes out to animate the splines
 		Services.main.InitializeLevel();
-
 		Services.StartPoint = Services.main.activeStellation._points[startPoint];
-		Services.main.WarpPlayerToNewPoint(Services.StartPoint);
-
-		//each stellation set should also have its own checkpoint to place players at the appropriate spot
-		//and draw in all previous stellations based on this when resetting
-		
 
 		//second loop, load the stellations and set up any necessary unlocks
 
@@ -151,7 +145,8 @@ public class StellationManager : MonoBehaviour
 				controllers[i].DrawStellation();
 			}
 		}
-
+		
+		Services.main.ActivatePlayer();
 	}
 
 	public void SaveStellation(StellationController c){
