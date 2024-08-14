@@ -194,19 +194,7 @@ MonoBehaviour:
       m_Calls: []
   OnButtonDown:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1372052851}
-        m_TargetAssemblyTypeName: LevelLoader, Assembly-CSharp
-        m_MethodName: LoadLevel
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: World
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   OnExit:
     m_PersistentCalls:
       m_Calls: []
@@ -880,9 +868,9 @@ MonoBehaviour:
   center: {x: 0, y: 0, z: 0}
   depth: 0
   isKinematic: 0
-  damping: 2000
+  damping: 600
   stiffness: 500
-  mass: 1
+  mass: 20
   setCameraPos: 0
   desiredFOV: 50
   lockX: 1
@@ -1337,13 +1325,13 @@ PrefabInstance:
     - target: {fileID: 7389836182560681000, guid: 6584d7529f6b09242b8cfa6b06b29a12,
         type: 3}
       propertyPath: controllers.Array.size
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7389836182560681000, guid: 6584d7529f6b09242b8cfa6b06b29a12,
         type: 3}
       propertyPath: controllers.Array.data[0]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 450469947}
     - target: {fileID: 7389836182560681000, guid: 6584d7529f6b09242b8cfa6b06b29a12,
         type: 3}
       propertyPath: controllers.Array.data[1]

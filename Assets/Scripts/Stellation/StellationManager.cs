@@ -12,8 +12,7 @@ public class StellationManager : MonoBehaviour
 	public int startPoint;
 	public static StellationManager instance;
 	
-	public List<StellationGroup> stellationSets;
-	List<StellationController> controllers;
+	public List<StellationController> controllers;
 
 	[Space(15)]
 	public UnityEvent OnCompleteLap;
@@ -29,7 +28,7 @@ public class StellationManager : MonoBehaviour
 	{
 		instance = this;
 
-		foreach(StellationController c in stellationSets[level].controllers){
+		foreach(StellationController c in controllers){
 			c.Initialize();
 		}
 	}
@@ -93,17 +92,15 @@ public class StellationManager : MonoBehaviour
 
 		SaveGame.Load();
 
-		Debug.Log("level " + level + " checkpoint" + checkpoint + " point #" + startPoint);
+		Debug.Log(" checkpoint" + checkpoint + " point #" + startPoint);
 
 		//this is macro position within the game and should be selected from the main menu
-		for(int i = 0; i < stellationSets.Count; i++){
-			if(i != level){
-				stellationSets[i].gameObject.SetActive(false);
-			}
-		}
+		// for(int i = 0; i < stellationSets.Count; i++){
+		// 	if(i != level){
+		// 		stellationSets[i].gameObject.SetActive(false);
+		// 	}
+		// }
 		
-		stellationSets[level].gameObject.SetActive(true);
-		controllers = stellationSets[level].controllers;
 		Services.main.activeStellation = controllers[checkpoint];
 
 
@@ -160,30 +157,8 @@ public class StellationManager : MonoBehaviour
 		if(index > checkpoint){
 			checkpoint = index;
 		}
-	}
 
-	void EnterStellationGroup(StellationGroup g){
-
-		//gotta save this to player prefs pls
-
-		checkpoint = 0;
-		level = stellationSets.IndexOf(g);
-		PlayerPrefs.SetInt("level", level);
-		PlayerPrefs.SetInt("checkpoint", checkpoint);
-	}
-
-	void ExitStellationGroup(){
-
-		DisableStellationGroup();
-	}
-
-	void EnableStellationGroup(){
-
-
-	}
-
-	void DisableStellationGroup(){
-
+		SaveGame.Save();
 	}
 
 	public void ResetToCheckpoint(){

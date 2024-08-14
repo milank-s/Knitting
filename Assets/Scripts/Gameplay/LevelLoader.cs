@@ -1,13 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using SimpleJSON;
 public class LevelLoader : MonoBehaviour
 {
-    public void Start(){
-        //do something if we're complete
-        //to make it obvious on the map
-    }
 
     public void LoadLevel(string levelName){
         

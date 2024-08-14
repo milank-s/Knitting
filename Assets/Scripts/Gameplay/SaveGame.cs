@@ -17,7 +17,7 @@ public class SaveGame
         JSONObject levelData = new JSONObject();
 
         int level =  StellationManager.instance.level;
-        int checkpoint = StellationManager.instance.stellationSets[level].controllers.IndexOf(Services.main.activeStellation);
+        int checkpoint = StellationManager.instance.controllers.IndexOf(Services.main.activeStellation);
         int pointIndex = Services.main.activeStellation._points.IndexOf(Services.PlayerBehaviour.curPoint);
         levelData["checkpoint"].AsInt = checkpoint; 
         levelData["startPoint"].AsInt = pointIndex; 
@@ -32,19 +32,17 @@ public class SaveGame
         }
      }
 
-    public static void Load(){
+    public static JSONNode Load(){
         JSONNode json = ReadJSONFromFile("saves");
-        if(json == null) return;
+        if(json == null) return null;
 
         if(StellationManager.instance != null){
             string levelName = SceneController.curLevelName;
-            if(json[levelName] == null) return;
-        
-            StellationManager.instance.checkpoint = json[levelName]["checkpoint"];
-            StellationManager.instance.startPoint = json[levelName]["startPoint"];
+            if(json[levelName] == null) return null;
+    
         }
-        
-        //do stuff
+
+        return json;
     }
 
     static void WriteJSONtoFile(string fileName, JSONObject json)

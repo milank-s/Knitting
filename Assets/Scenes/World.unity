@@ -548,7 +548,7 @@ MonoBehaviour:
   center: {x: -0.008355141, y: -0.021249399, z: 0}
   depth: 0
   isKinematic: 0
-  damping: 2000
+  damping: 600
   stiffness: 100
   mass: 50
   setCameraPos: 0
@@ -1100,8 +1100,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81d0fa94596e80d4296cafaa7f1aee39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controllers:
-  - {fileID: 450469947}
 --- !u!4 &1372052850
 Transform:
   m_ObjectHideFlags: 0
@@ -1623,13 +1621,13 @@ PrefabInstance:
     - target: {fileID: 7389836182560681000, guid: 6584d7529f6b09242b8cfa6b06b29a12,
         type: 3}
       propertyPath: controllers.Array.size
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7389836182560681000, guid: 6584d7529f6b09242b8cfa6b06b29a12,
         type: 3}
       propertyPath: controllers.Array.data[0]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 450469947}
     - target: {fileID: 7389836182560681000, guid: 6584d7529f6b09242b8cfa6b06b29a12,
         type: 3}
       propertyPath: controllers.Array.data[1]
