@@ -61,7 +61,7 @@ public class SceneController : MonoBehaviour
 
         if (Application.isEditor && !MapEditor.editing && Services.main.state == GameState.playing && Input.GetKeyDown(KeyCode.Period))
         {
-            LoadNextStellation();
+            FinishStellation();
         }
         
     }
@@ -208,25 +208,29 @@ public class SceneController : MonoBehaviour
         Services.menu.SelectLevelSet(curLevelSet, increment, true);
     }
 
-    public void LoadNextStellation()
+    public void FinishStellation()
     {
-        curLevel++;
         
         if (curSetIndex == -1 && curLevelName == "")
         {
             //we're in the editor, pop player out            
             Services.main.ToggleEditMode();
-
             return;
         }
 
         //stopgap stuff for when I want to test the level without going through the menu;
-        if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
+        if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count -1){    
+
+            curLevel++;
 
             if(Services.main.activeStellation != null){
                 Services.main.activeStellation.Cleanup();
             }
 
+            //in scenes we want to return to the level tree
+            //this means loading the 0th level in the set?
+            //assuming thats how we access the root level
+            //do we want recursive levels? do we want to travel up and down levels?
            LoadWithTransition();
 
         }else{
@@ -301,7 +305,7 @@ public class SceneController : MonoBehaviour
         
 		UnloadScene();
         curLevelName = sceneName;
-        
+
         if (sceneName != "")
 		{
 			SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);

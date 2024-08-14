@@ -264,12 +264,12 @@ public class StellationController : MonoBehaviour {
 			if(hasUnlock){
 				unlock.Unlock();
 			}else{
-				SceneController.instance.LoadNextStellation();
+				SceneController.instance.FinishStellation();
 			}
 		}
 		else
 		{
-			SceneController.instance.LoadNextStellation();
+			SceneController.instance.FinishStellation();
 		}
 					
 		
@@ -550,7 +550,6 @@ public class StellationController : MonoBehaviour {
 	
 	public void OnPlayerExit(){
 		isPlayerOn = false;
-
 	}
 
 	public void OnPlayerEnter()
