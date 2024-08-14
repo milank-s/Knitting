@@ -221,8 +221,6 @@ public class SceneController : MonoBehaviour
         //stopgap stuff for when I want to test the level without going through the menu;
         if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count -1){    
 
-            curLevel++;
-
             if(Services.main.activeStellation != null){
                 Services.main.activeStellation.Cleanup();
             }
@@ -231,7 +229,16 @@ public class SceneController : MonoBehaviour
             //this means loading the 0th level in the set?
             //assuming thats how we access the root level
             //do we want recursive levels? do we want to travel up and down levels?
-           LoadWithTransition();
+
+            if(StellationManager.instance != null){
+
+                //mark complete and return to world map
+                //return to world map
+
+            }else{
+                curLevel++;
+                LoadWithTransition();
+            }
 
         }else{
            FinishLevelSet();
@@ -299,6 +306,7 @@ public class SceneController : MonoBehaviour
     }
     void LoadScene(){
 		
+		curLevelName = GetCurLevel();
         LoadScene(curLevelName);
 	}
 

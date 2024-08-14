@@ -215,20 +215,17 @@ public class Point : MonoBehaviour
 		{
 			mat.color = Color.black;
 		}
-//		stiffness = 1600;
-//		damping = 1000;
-//		mass = 20;
 
 		timeOffset = Point.pointCount;
 
 		_neighbours = new List<Point> ();
 		_connectedSplines = new List<Spline> ();
 
-		textMesh = GetComponentInChildren<TextMesh>();
+		// textMesh = GetComponentInChildren<TextMesh>();
 		
-		if(textMesh != null){
-			textMesh.GetComponent<FadeTextOnPoint>().p = this;
-		}
+		// if(textMesh != null){
+		// 	textMesh.GetComponent<FadeTextOnPoint>().p = this;
+		// }
 		
 		Points.Add(this);
 		Point.pointCount++;
@@ -521,19 +518,11 @@ public class Point : MonoBehaviour
 
 			case PointState.off:
 
-				if(textMesh != null){
-					textMesh.GetComponent<FadeTextOnPoint>().stayOn = false;
-				}
-
 				break;
 
 			case PointState.on:
 				if (prevState != PointState.on)
 				{
-					if(textMesh != null){
-					textMesh.GetComponent<FadeTextOnPoint>().stayOn = true;
-				}
-
 					foreach(Spline sp in _connectedSplines){
 						if(!sp.drawing){
 							sp.StartDrawRoutine(this);
@@ -581,16 +570,7 @@ public class Point : MonoBehaviour
 		timesHit++;
 		
 		OnPointEnter();
-		
-		// if (controller.CheckSpeed())
-		// {
-		if(textMesh != null){
-			textMesh.GetComponent<FadeTextOnPoint>().alpha = 1;
-		}
-		// }
-
-//		stiffness = Mathf.Clamp(stiffness -100, 100, 10000);
-//		damping = Mathf.Clamp(damping - 100, 100, 10000);
+	
 		
 		SwitchState(PointState.on);
 
@@ -863,6 +843,15 @@ public class Point : MonoBehaviour
 		if(setDirection){
 			SetForward(direction);
 		}
+		
+		bool buttonPressed = Services.PlayerBehaviour.buttonWasPressed;
+
+		if(buttonPressed){
+			if(OnButtonDown != null){
+				OnButtonDown.Invoke();
+			}
+		}	
+
 
 		//anchorPos = initPos + ((Vector3)Random.insideUnitCircle / 10f * Services.PlayerBehaviour.flow *  Mathf.Clamp01(timeOnPoint));
 		//velocity += (Vector3)Random.insideUnitCircle / Mathf.Pow(1 + timeOnPoint, 2);

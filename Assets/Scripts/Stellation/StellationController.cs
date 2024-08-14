@@ -687,7 +687,8 @@ public class StellationController : MonoBehaviour {
 	public void ReloadFromEditor()
 	{
 		Services.main.editor.LoadIntoStellation(this);
-		StellationManager manager = GetComponentInParent<StellationManager>();
+		
+		//StellationManager manager = GetComponentInParent<StellationManager>();
 
 		//doing loading non destructively now
 		

@@ -28,7 +28,6 @@ public class StellationEditor : Editor
 
 			EditorApplication.ExecuteMenuItem("Edit/Play");
 			
-			
 		}
 
 		if (GUILayout.Button("Reload From File"))
@@ -38,8 +37,8 @@ public class StellationEditor : Editor
 			StellationManager m = controller.GetComponentInParent<StellationManager>();
 			controller.ReloadFromEditor();
 
-			EditorUtility.SetDirty(controller);
-			EditorUtility.SetDirty(m);
+			// EditorUtility.SetDirty(controller);
+			// EditorUtility.SetDirty(m);
 		}
 		
 	}

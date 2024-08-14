@@ -7,6 +7,10 @@ using System.IO;
 public class SaveGame
 {
     
+    //TODO
+    //Overworld saves that player has finished level
+    //Unlocks points based on last level finished
+    
     public static void Save(){
         
         JSONObject saveFile = new JSONObject();
