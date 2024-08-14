@@ -201,11 +201,11 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void ResetPlayerToStartPoint()
 	{
-		if(Services.main.state != Main.GameState.playing && !MapEditor.editing){return;}
+		if(Services.main.state != GameState.playing && !MapEditor.editing){return;}
 
 		Services.fx.PlayAnimationOnPlayer(FXManager.FXType.glitch);
 
-		if (Services.main.state == Main.GameState.playing)
+		if (Services.main.state == GameState.playing)
 		{
 			Services.main.WarpPlayerToNewPoint(Services.main.activeStellation.start);
 			Reset();
@@ -324,7 +324,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void PressButton(InputAction.CallbackContext context){
 		
 
-		if(Services.main.state != Main.GameState.playing){return;}
+		if(Services.main.state != GameState.playing){return;}
 
 		bool dwn = context.ReadValueAsButton();
 
@@ -908,7 +908,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Fly(){
 		
-		if(Services.main.state != Main.GameState.playing){return;}
+		if(Services.main.state != GameState.playing){return;}
 
 		//SwitchState(PlayerState.Flying);
 		
@@ -1487,7 +1487,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void CursorInput (InputAction.CallbackContext context){
 
-		if(Services.main.state != Main.GameState.playing){return;}
+		if(Services.main.state != GameState.playing){return;}
 		
 		Vector2 inputVector = context.ReadValue<Vector2>();
 

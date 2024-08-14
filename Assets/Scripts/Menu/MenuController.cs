@@ -48,7 +48,7 @@ public class MenuController : MonoBehaviour
 	}
 
 	void Update(){
-		if((Services.main.state == Main.GameState.menu || Services.main.state == Main.GameState.paused)){
+		if((Services.main.state == GameState.menu || Services.main.state == GameState.paused)){
 			if(EventSystem.current.currentSelectedGameObject != selection){
 				selection = EventSystem.current.currentSelectedGameObject;
 				changedSelection = true;

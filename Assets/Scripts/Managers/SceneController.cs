@@ -59,16 +59,16 @@ public class SceneController : MonoBehaviour
             
 		}
 
-        if (Application.isEditor && !MapEditor.editing && Services.main.state == Main.GameState.playing && Input.GetKeyDown(KeyCode.Period))
+        if (Application.isEditor && !MapEditor.editing && Services.main.state == GameState.playing && Input.GetKeyDown(KeyCode.Period))
         {
-            SkipStellation();
+            LoadNextStellation();
         }
         
     }
 
     public void OnNavigate(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Started && Services.main.state == Main.GameState.menu)
+        if (context.phase == InputActionPhase.Started && Services.main.state == GameState.menu)
         {
             
             Services.menu.RotateYKnob(context.ReadValue<Vector2>());
@@ -132,7 +132,9 @@ public class SceneController : MonoBehaviour
 			if(curLevelName == ""){
 				Services.main.OpenMenu();
 			}else{
-				curSetIndex = -1;
+                //this is for something to do with leveleditor I think
+
+				//curSetIndex = -1;
 				Services.menu.Show(false);
 			}
 		}else{
@@ -150,12 +152,12 @@ public class SceneController : MonoBehaviour
     public void OpenEditor()
     {
         
-        if (Services.main.state == Main.GameState.menu)
+        if (Services.main.state == GameState.menu)
         {
             Services.menu.Show(false);
         }
 
-        if (Services.main.state == Main.GameState.paused)
+        if (Services.main.state == GameState.paused)
         {
             Services.main.Pause(false);
         }
@@ -167,12 +169,13 @@ public class SceneController : MonoBehaviour
             Cursor.visible = true;
         }
 
-        Services.main.state = Main.GameState.playing;
+        Services.main.state = GameState.playing;
     }
     
     public static SceneController instance;
 
     public string GetCurLevel(){
+        Debug.Log("curLevelSet = " + curSetIndex + " curLevel = " + curLevel);
         return curLevelSet.levels[curLevel];
     }
     public void SelectNextLevel(bool increment)
@@ -203,38 +206,6 @@ public class SceneController : MonoBehaviour
         }
 
         Services.menu.SelectLevelSet(curLevelSet, increment, true);
-    }
-
-
-    public void SkipStellation(){
-
-        LoadNextStellation();
-
-        //  curLevel++;
-        
-        // if (curSetIndex == -1 && curLevelName == "")
-        // {
-        //     //we're in the editor, pop them out into it
-
-        //     Services.main.ToggleEditMode();
-        //     return;
-
-        // }
-
-        // //stopgap stuff for when I want to test the level without going through the menu;
-        // if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count){    
-            
-        //     LoadNextStellation();
-
-        //     LoadWithTransition();
-        // }
-        // else
-        // {
-        //     //reopen menu, empty scene;
-                
-        //    Services.main.QuitLevel();
-            
-        // }
     }
 
     public void LoadNextStellation()
@@ -306,12 +277,11 @@ public class SceneController : MonoBehaviour
 		Services.main.InitializeLevel();
 	}
 
-    void LoadScene(){
-		
-		if(SceneManager.sceneCount > 1){
+    void UnloadScene(){
+        if(SceneManager.sceneCount > 1){
 			if (curLevelName != "")
 			{
-				SceneManager.UnloadSceneAsync(curLevel);
+				SceneManager.UnloadSceneAsync(curLevelName);
 			}
 		}
 		
@@ -321,17 +291,22 @@ public class SceneController : MonoBehaviour
 		
 		curLevel = s;
 		curLevelName = GetCurLevel();
-
-		if (curLevelName != "")
-		{
-			SceneManager.LoadScene(curLevelName, LoadSceneMode.Additive);
-		}
+    }
+    void LoadScene(){
+		
+        LoadScene(curLevelName);
 	}
 
-    //dollies camera to the new stellation
-    public void LoadWithTransition(){
-		StartCoroutine(LoadLevelRoutine());
+    public void LoadScene(string sceneName){
+        
+		UnloadScene();
+
+        if (sceneName != "")
+		{
+			SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+		}
     }
+
 
     //loads and starts player instantly
     public void LoadDirect(string levelTitle){
@@ -343,19 +318,22 @@ public class SceneController : MonoBehaviour
 
     }
 
+    //dollies camera to the new stellation
+    public void LoadWithTransition(){
+        
+		StartCoroutine(LoadLevelRoutine());
+    }
+
     public IEnumerator LoadLevelRoutine(){
         
-        if(curLevelSet.isScene){
-            LoadScene();
-        }else{
-            curLevelName = GetCurLevel();
-            Debug.Log("Loading " + curLevelName);
+        Services.main.state = GameState.paused;
+        
+        LoadDirect(curLevelName);
 
-            LoadFile(curLevelName);
-        }
-
-        //call player init function
-
+        //You have a problem right now where ActivatePlayer is called from InitializeLevel
+        //so they could be fucking around while this is happening
+        //because the game is in play mode
+        
         //there is aperiod of time between init and transition where
         //the player is still on the last stellation and is causing problems
         //what is our method for stopping the player from inputting anything?
@@ -367,7 +345,7 @@ public class SceneController : MonoBehaviour
     //transition between levels in the flow of play
 	public IEnumerator LevelTransitionRoutine(){
 
-		//Services.main.state = Main.GameState.paused;
+		//Services.main.state = GameState.paused;
 
         Services.main.activeStellation.SetCameraInfo();
 

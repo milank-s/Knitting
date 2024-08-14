@@ -41,7 +41,7 @@ public class Decorator : MonoBehaviour
 
     void Update(){
     
-        if(!spline.drawing && Services.main.state != Main.GameState.paused){
+        if(!spline.drawing && Services.main.state != GameState.paused){
 
             if(!done){
                 done = true;

@@ -8,13 +8,14 @@
 	using UnityEngine.SceneManagement;
 	using UnityEngine.InputSystem;
 
+
+	public enum GameState {playing, paused, menu}
+
 	public class Main : MonoBehaviour {
 
-		
 	[Header("Editor info")]
 	[SerializeField] public string loadFileName;
 
-	public enum GameState {playing, paused, menu}
 
 	public bool devMode = true;
 	public GameState state;
@@ -122,7 +123,7 @@
 			OnReset.Invoke();
 		}
 
-		state = Main.GameState.menu;
+		state = GameState.menu;
 		playerInput.SwitchCurrentActionMap("UI");
 		
 		if (MapEditor.editing)

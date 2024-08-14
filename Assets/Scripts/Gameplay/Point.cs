@@ -28,6 +28,8 @@ public class Point : MonoBehaviour
 	#region
 
 	public UnityEvent OnEnter;
+	public UnityEvent OnButtonDown;
+	public UnityEvent OnExit;
 	
 
 	public enum PointState{locked, off, on}
@@ -700,8 +702,15 @@ public class Point : MonoBehaviour
 	public bool CanLeave()
 	{
 
+
 		bool buttonUp = Services.PlayerBehaviour.buttonUp;
 		bool buttonPressed = Services.PlayerBehaviour.buttonWasPressed;
+
+		if(buttonPressed){
+			if(OnButtonDown != null){
+				OnButtonDown.Invoke();
+			}
+		}	
 
 		if(Services.PlayerBehaviour.buttonDown) return false;
 		

@@ -192,6 +192,12 @@ MonoBehaviour:
   OnEnter:
     m_PersistentCalls:
       m_Calls: []
+  OnButtonDown:
+    m_PersistentCalls:
+      m_Calls: []
+  OnExit:
+    m_PersistentCalls:
+      m_Calls: []
   state: 1
   pointType: 0
   _neighbours: []
@@ -549,7 +555,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
-  closed: 1
+  closed: 0
   bidirectional: 1
   drawing: 0
   drawn: 0
@@ -762,6 +768,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OnEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  OnButtonDown:
+    m_PersistentCalls:
+      m_Calls: []
+  OnExit:
     m_PersistentCalls:
       m_Calls: []
   state: 1
@@ -1025,6 +1037,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1372052850}
   - component: {fileID: 1372052849}
+  - component: {fileID: 1372052851}
   m_Layer: 0
   m_Name: Testing
   m_TagString: Untagged
@@ -1062,6 +1075,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1372052851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1372052848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83f30c56cc3a6654c976fb9d9075e2a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1401403048
 GameObject:
   m_ObjectHideFlags: 0
@@ -1139,6 +1164,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OnEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  OnButtonDown:
+    m_PersistentCalls:
+      m_Calls: []
+  OnExit:
     m_PersistentCalls:
       m_Calls: []
   state: 1
@@ -1441,6 +1472,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OnEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  OnButtonDown:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1372052851}
+        m_TargetAssemblyTypeName: LevelLoader, Assembly-CSharp
+        m_MethodName: LoadLevel
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Circle
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnExit:
     m_PersistentCalls:
       m_Calls: []
   state: 1
