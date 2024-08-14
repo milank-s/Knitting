@@ -701,8 +701,6 @@ public class Point : MonoBehaviour
 
 	public bool CanLeave()
 	{
-
-
 		bool buttonUp = Services.PlayerBehaviour.buttonUp;
 		bool buttonPressed = Services.PlayerBehaviour.buttonWasPressed;
 

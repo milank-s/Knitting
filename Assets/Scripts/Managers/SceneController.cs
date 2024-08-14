@@ -300,7 +300,8 @@ public class SceneController : MonoBehaviour
     public void LoadScene(string sceneName){
         
 		UnloadScene();
-
+        curLevelName = sceneName;
+        
         if (sceneName != "")
 		{
 			SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);

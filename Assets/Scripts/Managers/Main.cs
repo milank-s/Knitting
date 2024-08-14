@@ -300,8 +300,6 @@
 
 		if (state == GameState.playing)
 		{
-
-
 			if (!MapEditor.editing)
 			{
 
