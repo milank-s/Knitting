@@ -154,10 +154,6 @@ public class StellationManager : MonoBehaviour
 		if(index > checkpoint){
 			checkpoint = index;
 		}
-
-		if(saveProgress){
-			SaveGame.Save();
-		}
 	}
 
 	public void ResetToCheckpoint(){

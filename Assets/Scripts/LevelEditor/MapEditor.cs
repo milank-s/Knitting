@@ -351,6 +351,7 @@ public class MapEditor : MonoBehaviour
             }
         }
 
+        unlockTypes.options.Add(new Dropdown.OptionData("None"));
         unlockTypes.options.Add(new Dropdown.OptionData("Laps"));
         unlockTypes.options.Add(new Dropdown.OptionData("Speed"));
         unlockTypes.options.Add(new Dropdown.OptionData("Pickups"));

@@ -210,14 +210,14 @@ public class SceneController : MonoBehaviour
 
     public void FinishStellation()
     {
-        
         //why do we check if the curLevelName is null my friend
         if (curSetIndex == -1 && curLevelName == "")
         {
             //we're in the editor, pop player out            
             Services.main.ToggleEditMode();
         }else{    
-
+            Services.main.activeStellation.isComplete = true;
+            
             if(Services.main.activeStellation != null){
                 Services.main.activeStellation.Cleanup();
             }
@@ -318,8 +318,6 @@ public class SceneController : MonoBehaviour
         
 		UnloadScene();
         curLevelName = sceneName;
-
-        Debug.Log("loading " + sceneName);
 
         if (sceneName != "")
 		{

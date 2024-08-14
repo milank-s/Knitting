@@ -202,7 +202,11 @@ public class Point : MonoBehaviour
 
 		
 		hue = Random.Range(0, 1f);
-		mat = renderer.material;
+		if(Application.isPlaying){
+			mat = renderer.material;
+		}else{
+			mat = renderer.sharedMaterial;
+		}
 		initPos = transform.position;
 		state = PointState.off;
 		//Pos = transform.position;

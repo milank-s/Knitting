@@ -10,7 +10,8 @@ public class SaveGame
     //TODO
     //Overworld saves that player has finished level
     //Unlocks points based on last level finished
-    
+    public static JSONNode data;
+
     public static void Save(){
         
         JSONObject saveFile = new JSONObject();
@@ -31,19 +32,12 @@ public class SaveGame
             node[SceneController.curLevelName] = levelData;
             File.WriteAllText(Application.streamingAssetsPath + "/Saves/saves.json", node.ToString());
         }
+
+        Load();
      }
 
-    public static JSONNode Load(){
-        JSONNode json = ReadJSONFromFile("saves");
-        if(json == null) return null;
-
-        if(StellationManager.instance != null){
-            string levelName = SceneController.curLevelName;
-            if(json[levelName] == null) return null;
-    
-        }
-
-        return json;
+    public static void Load(){
+        data = ReadJSONFromFile("saves");
     }
 
     static void WriteJSONtoFile(string fileName, JSONObject json)

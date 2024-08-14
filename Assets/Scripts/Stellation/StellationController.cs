@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEditor;
 public class StellationController : MonoBehaviour {
 
-	public enum UnlockType{laps, speed, pickups}
+	public enum UnlockType{none, laps, speed, pickups}
 	
 	public delegate void StellationEvent();
 
@@ -818,7 +818,13 @@ public class StellationController : MonoBehaviour {
 			
 				CheckCompletion();
 				break;
+			
+
+			default:
+			
+			break;
 			}
+
 		}
 
 		if(!won && isComplete){
