@@ -9,6 +9,7 @@ public class StellationManager : MonoBehaviour
 {
 	public int level;
 	public int checkpoint;
+	public int startPoint;
 	public static StellationManager instance;
 	
 	public List<StellationGroup> stellationSets;
@@ -100,7 +101,9 @@ public class StellationManager : MonoBehaviour
 		controllers = stellationSets[level].controllers;
 		Services.main.activeStellation = controllers[checkpoint];
 
-		Services.StartPoint = controllers[checkpoint].start;
+		//CODE FOR CHANGING STARTPOINT
+		// Services.StartPoint = controllers[checkpoint].start;
+		Services.StartPoint = controllers[checkpoint]._points[startPoint];
 
 		//this is pretty fucking heavy duty 
 		//there should be a dedicated reset function
