@@ -31,10 +31,16 @@ public class FadeTextOnPoint: MonoBehaviour {
 			p = GetComponentInParent<Point>();
 			if (p != null)
 			{
+				p.OnEnter.AddListener(LightUp);
 				hasPoint = true;
 			}
 	
 	}
+
+	public void LightUp(){
+		alpha = 1;
+	}
+
 	// Update is called once per frame
 	void Update () {
 
@@ -53,7 +59,8 @@ public class FadeTextOnPoint: MonoBehaviour {
 						alpha = 1;	
 					}
 				}else{
-					alpha = Mathf.Clamp01(alpha - Time.deltaTime * 2);
+					// alpha = Mathf.Clamp01(alpha - Time.deltaTime * 2);
+					alpha = p.proximity;
 				}
 
 				t.color = new Color(1, 1, 1, alpha);
