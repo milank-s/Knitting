@@ -402,9 +402,9 @@ public class StellationController : MonoBehaviour {
 				p.controller = this;
 				_points.Add(p);
 				p.isKinematic = isKinematic;
-				p.damping = damping;
-				p.mass = mass;
-				p.stiffness = stiffness;
+				Point.damping = damping;
+				Point.mass = mass;
+				Point.stiffness = stiffness;
 				p.Setup();
 			}
 
