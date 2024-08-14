@@ -10,6 +10,7 @@ public class StellationProgress : MonoBehaviour
         //do something if we're complete
         //to make it obvious on the map
         //unlock points etc
+        
         string levelName = SceneController.curLevelName;
         JSONNode saveData = SaveGame.Load();
 
@@ -20,6 +21,9 @@ public class StellationProgress : MonoBehaviour
                 StellationManager.instance.checkpoint = saveData[levelName]["checkpoint"];
                 StellationManager.instance.startPoint = saveData[levelName]["startPoint"];
             }
+            
+            StellationManager.instance.Setup();
+
         }
 
     }

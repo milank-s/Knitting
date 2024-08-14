@@ -211,15 +211,12 @@ public class SceneController : MonoBehaviour
     public void FinishStellation()
     {
         
+        //why do we check if the curLevelName is null my friend
         if (curSetIndex == -1 && curLevelName == "")
         {
             //we're in the editor, pop player out            
             Services.main.ToggleEditMode();
-            return;
-        }
-
-        //stopgap stuff for when I want to test the level without going through the menu;
-        if(curSetIndex != -1 && curLevel < curLevelSet.levels.Count -1){    
+        }else{    
 
             if(Services.main.activeStellation != null){
                 Services.main.activeStellation.Cleanup();
@@ -234,14 +231,20 @@ public class SceneController : MonoBehaviour
 
                 //mark complete and return to world map
                 //return to world map
+                //
+                SaveGame.Save();
+                LoadScene("World");
 
             }else{
                 curLevel++;
-                LoadWithTransition();
-            }
+                
+                if(curLevel < curLevelSet.levels.Count){
 
-        }else{
-           FinishLevelSet();
+                    LoadWithTransition();
+                }else{
+                    FinishLevelSet();
+                }
+            }
         }
     }
 
@@ -293,6 +296,7 @@ public class SceneController : MonoBehaviour
         if(SceneManager.sceneCount > 1){
 			if (curLevelName != "")
 			{
+                Debug.Log("unloading " + curLevelName);
 				SceneManager.UnloadSceneAsync(curLevelName);
 			}
 		}
@@ -314,6 +318,8 @@ public class SceneController : MonoBehaviour
         
 		UnloadScene();
         curLevelName = sceneName;
+
+        Debug.Log("loading " + sceneName);
 
         if (sceneName != "")
 		{

@@ -1079,27 +1079,15 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1372052850}
-  - component: {fileID: 1372052849}
+  - component: {fileID: 1372052852}
   - component: {fileID: 1372052851}
   m_Layer: 0
-  m_Name: Testing
+  m_Name: Progress
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1372052849
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1372052848}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81d0fa94596e80d4296cafaa7f1aee39, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1372052850
 Transform:
   m_ObjectHideFlags: 0
@@ -1126,6 +1114,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 83f30c56cc3a6654c976fb9d9075e2a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1372052852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1372052848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae85d64813fd121478aa019466a2c938, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1418299530
@@ -1620,6 +1620,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7389836182560681000, guid: 6584d7529f6b09242b8cfa6b06b29a12,
         type: 3}
+      propertyPath: saveProgress
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7389836182560681000, guid: 6584d7529f6b09242b8cfa6b06b29a12,
+        type: 3}
       propertyPath: controllers.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -1667,7 +1672,7 @@ PrefabInstance:
         type: 3}
       propertyPath: stellationSets.Array.data[0]
       value: 
-      objectReference: {fileID: 1372052849}
+      objectReference: {fileID: 0}
     - target: {fileID: 7389836182560681000, guid: 6584d7529f6b09242b8cfa6b06b29a12,
         type: 3}
       propertyPath: stellationSets.Array.data[1]
@@ -1771,7 +1776,7 @@ PrefabInstance:
     - target: {fileID: 7389836182560681003, guid: 6584d7529f6b09242b8cfa6b06b29a12,
         type: 3}
       propertyPath: m_Name
-      value: SceneBase
+      value: Manager
       objectReference: {fileID: 0}
     - target: {fileID: 7389836182560681006, guid: 6584d7529f6b09242b8cfa6b06b29a12,
         type: 3}

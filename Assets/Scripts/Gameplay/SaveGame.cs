@@ -21,6 +21,7 @@ public class SaveGame
         int pointIndex = Services.main.activeStellation._points.IndexOf(Services.PlayerBehaviour.curPoint);
         levelData["checkpoint"].AsInt = checkpoint; 
         levelData["startPoint"].AsInt = pointIndex; 
+        levelData["complete"].AsBool = Services.main.activeStellation.isComplete; 
         saveFile[SceneController.curLevelName] = levelData;
 
         JSONNode node = ReadJSONFromFile("saves");

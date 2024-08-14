@@ -20,7 +20,7 @@ public class StellationManager : MonoBehaviour
 	public UnityEvent OnLeaveStart;
 	public UnityEvent OnNextStart;
 
-	public bool save;
+	public bool saveProgress = false;
 	string[] stellations;
 	public string fileName = "";
 
@@ -35,7 +35,9 @@ public class StellationManager : MonoBehaviour
 
 	public void Start()
 	{		
-		Setup();
+		if(!saveProgress){
+			Setup();
+		}
 	}
 
 	void CompleteLap(){
@@ -67,7 +69,6 @@ public class StellationManager : MonoBehaviour
 		//I have no idea what this is about but I think its a way to save connections to file
 		//depends if you want persistent connections or not
 
-		if(save){
 		for(int i = controllers.Count -1; i >= 0; i--)
 		{
 			if(PlayerPrefs.HasKey(controllers[i].name)){
@@ -85,14 +86,10 @@ public class StellationManager : MonoBehaviour
 				//player hasn't played the level yet. Set name so that it saves to new file
 			}
 		}
-		}
+		
 	}
 
-	void Setup(){
-
-		SaveGame.Load();
-
-		Debug.Log(" checkpoint" + checkpoint + " point #" + startPoint);
+	public void Setup(){
 
 		//this is macro position within the game and should be selected from the main menu
 		// for(int i = 0; i < stellationSets.Count; i++){
@@ -158,7 +155,9 @@ public class StellationManager : MonoBehaviour
 			checkpoint = index;
 		}
 
-		SaveGame.Save();
+		if(saveProgress){
+			SaveGame.Save();
+		}
 	}
 
 	public void ResetToCheckpoint(){
