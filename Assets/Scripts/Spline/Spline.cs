@@ -703,6 +703,13 @@ public class Spline : MonoBehaviour
 			}
 		}
 	}
+	public Point GetActualFuckingPoint(int i, bool dir){
+		if(dir){
+			return SplinePoints[i];
+		}else{
+			return SplinePoints[i+1];
+		}
+	}
 
 	public Point GetNextPoint(int i, bool dir){
 		if(dir){
@@ -1150,10 +1157,10 @@ public class Spline : MonoBehaviour
 		int i2 = SplinePoints.IndexOf(p2);
 		int diff = i2 - i1;
 		if(diff < 0 || diff > 1){
-			return true;
+			return false;
 		}
 
-		return false;
+		return true;
 	}
 	public Vector3 GetDirection (float t)
 	{
@@ -1208,6 +1215,7 @@ public class Spline : MonoBehaviour
 	public float GetSegmentDistance(int i){
 		
 		//need to know direction and closed?
+		if(i < 0 || i >= numPoints) Debug.Log(i);
 		return distances[i];
 	}
 

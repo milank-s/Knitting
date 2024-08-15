@@ -7,46 +7,47 @@ public class Spark : Crawler
     //start at point
     //at each intersection, add to list of points
     //spawn a new spark for any branching paths
+    //doesn't loop
 
     List<Point> visited;
-    public void Start(){
+
+    public override void Setup(Spline s, bool f, int startIndex = 0){
+        base.Setup(s, f, startIndex);
+        
         visited = new List<Point>();
+        visited.Add(point);
     }
     
     public override void SetNextPoint()
     {
         
-        Debug.Log("spark setting next point");
+        bool curDir = forward;
+        Point dest = spline.SplinePoints[curIndex];
 
-        Point lastPoint = point;
+        if(dest != null){
+            foreach(Point p in dest._neighbours){
+
+                Spline s = p.GetConnectingSpline(dest);
+                if(s == spline) continue;
+                
+                // spawn a spark going to this point
+
+                Spark newCrawler = (Spark)controller.SpawnCrawler(CrawlerType.spark);
+                bool f = s.IsGoingForward(dest, p);
+                int i = f ? s.GetPointIndex(dest) : s.GetPointIndex(p);
+                newCrawler.Setup(s, f, i);
+            }
+        }
+
         base.SetNextPoint();
-        
-        if(visited.Contains(point)){
+
+        if(visited.Contains(point) || curDir != forward){
             //I'm done
             Stop();
             //play particle effect
-        }else{
-
-            visited.Add(point);
-            Point nextPoint = spline.GetNextPoint(curIndex, forward);
-    
-            foreach(Point p in point._neighbours){
-
-                    Spline s = p.GetConnectingSpline(point);
-                    if(s == spline) continue;
-                    
-                    Debug.Log("spawning new spark");
-                    // spawn a spark going to this point
-
-                    Spark newCrawler = (Spark)controller.SpawnCrawler(CrawlerType.spark);
-                    bool f = s.IsGoingForward(point, p);
-                    newCrawler.Setup(s, f);
-                    
-                    newCrawler.curIndex = f ? s.GetPointIndex(point) : s.GetPointIndex(p);
-                    newCrawler.point = f ? point : p;
-                    
-                
-            }
         }
+
+        visited.Add(point);
+
     }
 }

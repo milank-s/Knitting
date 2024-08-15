@@ -10,7 +10,12 @@ Crawler : MonoBehaviour
     public bool useSpline = true;
     public bool forward = true;
     protected Spline spline;
+
+    //this is merely the reference to the point we base movement off
     public Point point;
+
+    //this is the last point that we arrived at
+    protected Point curPoint;
     public int curIndex;
     public float baseSpeed = 1;
     protected float boost;
@@ -47,6 +52,7 @@ Crawler : MonoBehaviour
         transform.position = s.SplinePoints[curIndex].Pos;
         distance = spline.GetSegmentDistance(curIndex);
         lastPos = transform.position;
+        curPoint = spline.GetActualFuckingPoint(curIndex, forward);
 
     }
 
@@ -100,7 +106,7 @@ Crawler : MonoBehaviour
         return true; 
     }
 
-    public void ReverseDir(){
+    public virtual void ReverseDir(){
         forward = !forward;
         dir = forward ? 1 : -1;
     }
@@ -116,23 +122,26 @@ Crawler : MonoBehaviour
     public virtual void SetNextPoint()
     {
         GetNextPoint();
-
-        progress = forward ? 0 : 1;
-        distance = spline.GetSegmentDistance(curIndex);
-        EnterPoint(point);
+        EnterPoint(curPoint);
     }
 
     public void GetNextPoint(){
+        
         progress = forward ? 0 : 1;
         
+        //WHAT THE FUCK IS THE FUCKING POINT THAT YOU ARE VISUALLY ON?
+        curPoint = spline.SplinePoints[curIndex];
+        bool looping = false;
+
         if(forward){
-            if(curIndex < spline.SplinePoints.Count - 1)
+            if(curIndex < spline.SplinePoints.Count - (spline.closed ? 0 : 1))
             {
                 curIndex++;
             }
             else
             {
-                if(spline.closed && curIndex == spline.SplinePoints.Count - 1){
+                if(spline.closed){
+                    looping = true;
                     curIndex = 0;
                 }else{
                     ReverseDir();
@@ -147,6 +156,7 @@ Crawler : MonoBehaviour
             else
             {
                 if(spline.closed){
+                    looping = true;
                     curIndex = spline.SplinePoints.Count-1;
                 }else{
                     ReverseDir();
@@ -155,6 +165,12 @@ Crawler : MonoBehaviour
             }
         }
         
+        if(looping){
+            distance = spline.GetSegmentDistance(spline.SplinePoints.Count-1);
+        }else{
+            distance = spline.GetSegmentDistance(curIndex);
+        }
+
         point = spline.SplinePoints[curIndex];
 
     }
