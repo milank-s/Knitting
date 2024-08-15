@@ -24,6 +24,16 @@ public class StellationProgress : MonoBehaviour
             
             StellationManager.instance.Setup();
         }
+
+        
+        //we need to get the level we just came from
+        //and check if it was completed
+
+        // bool markComplete = SaveGame.data[lastLevel]["complete"];
+    }
+
+    public void MarkComplete(){
+
     }
 
     public void TryLoadLevel(string levelName){
@@ -33,9 +43,6 @@ public class StellationProgress : MonoBehaviour
         SaveGame.Save();
         SceneController.instance.LoadScene(levelName);
         
-    }
-    public void MarkComplete(){
-
     }
 
     public bool isComplete(string levelName){

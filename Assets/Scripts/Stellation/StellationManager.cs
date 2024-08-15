@@ -33,6 +33,11 @@ public class StellationManager : MonoBehaviour
 		}
 	}
 
+	void OnApplicationQuit()
+    {
+        SaveGame.ClearSave();
+    }
+
 	public void Start()
 	{		
 		if(!saveProgress){

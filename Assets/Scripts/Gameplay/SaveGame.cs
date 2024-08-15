@@ -12,6 +12,10 @@ public class SaveGame
     //Unlocks points based on last level finished
     public static JSONNode data;
 
+    public static void ClearSave(){
+        JSONObject saveFile = new JSONObject();
+        WriteJSONtoFile("saves", saveFile);
+    }
     public static void Save(){
         
         JSONObject saveFile = new JSONObject();
