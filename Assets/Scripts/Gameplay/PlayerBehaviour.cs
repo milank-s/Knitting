@@ -240,10 +240,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	void Lose(){
 		//some fx;
 		SwitchState(PlayerState.Animating);
-		Die();
-	}
-
-	public void Die(){
 		StartCoroutine(DieRoutine());
 	}
 

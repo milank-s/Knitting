@@ -328,6 +328,9 @@ public class SceneController : MonoBehaviour
 
     //loads and starts player instantly
     public void LoadDirect(string levelTitle){
+        //editor override
+        if(curSetIndex == -1) LoadFile(levelTitle); return;
+
         if(curLevelSet.isScene){
             LoadScene();
         }else{
