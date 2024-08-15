@@ -366,21 +366,25 @@ public class StellationController : MonoBehaviour {
 		}
 
 		//stopgap to test chasing crawler;
-		
+	
+
+		collectibles = GetComponentsInChildren<Collectible>().ToList();
+
 		if(!spawnedCrawler && unlockMethod == UnlockType.speed){
 			spawnedCrawler = true;
 			CrawlerManager newCrawler = gameObject.AddComponent<CrawlerManager>();
 			newCrawler.speed = speed;
 			newCrawler.crawlerCount = 1;
+			newCrawler.spline = splines[0];
 			newCrawler.spawnFrequency = 0;
 			newCrawler.crawlerType = CrawlerType.spark;
-			// OnHitStart += newCrawler.Reset;
-			newCrawler.spline = splines[0];
+			// // // OnHitStart += newCrawler.Reset;
 			crawlers.Add(newCrawler);
+			
+			
 			newCrawler.Initialize();
+			newCrawler.EmitSparks(start);
 		}
-
-		collectibles = GetComponentsInChildren<Collectible>().ToList();
 
 		Setup();
 	}

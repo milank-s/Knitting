@@ -34,14 +34,21 @@ public class CrawlerManager : MonoBehaviour
         
         Debug.Log("emitting sparks");
 
+        StartCoroutine(EmitSparksRoutine(p));
+    }
+
+    IEnumerator EmitSparksRoutine(Point p){
+        
+        yield return null;
+
         foreach(Point n in p._neighbours){
+            Debug.Log("spawning sparks");
             Spark newCrawler = (Spark)SpawnCrawler(CrawlerType.spark);
     
             Spline s = p.GetConnectingSpline(n);
             bool f = s.IsGoingForward(p, n);
-            newCrawler.Setup(s, f);
-            newCrawler.curIndex = f ? s.GetPointIndex(p) : s.GetPointIndex(n);
-            newCrawler.point = f ? p : n;
+            int i = f ? s.GetPointIndex(p) : s.GetPointIndex(n);
+            newCrawler.Setup(s, f, i);
             AddCrawler(f);
         }
     }

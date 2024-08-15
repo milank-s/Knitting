@@ -707,6 +707,10 @@ public class Spline : MonoBehaviour
 	public Point GetNextPoint(int i, bool dir){
 		if(dir){
 			if(i == numPoints-1){
+				if(!closed){
+					
+					Debug.Log("I want the next point but I'm at the end and not closed");
+				}
 				return StartPoint;
 			}
 
@@ -1202,8 +1206,23 @@ public class Spline : MonoBehaviour
 	public float GetSegmentDistance(int i){
 		
 		//need to know direction and closed?
-		if(i < 0 || i >= distances.Count) Debug.Log(i + "/" + (numPoints-1));
+		if(i >= distances.Count){
+			return CalculateSegmentDistance(i);
+		}
 		return distances[i];
+	}
+
+	public float CalculateSegmentDistance(int i){
+		float step = (1.0f / (float)curveFidelity);
+		float dist = 0;
+
+		for (int k = 0; k < curveFidelity; k++) {
+
+			float t = (float)k / (float)(curveFidelity);
+			dist += Vector3.Distance (GetPointAtIndex(i, t), GetPointAtIndex(i, t + step));
+		}
+
+		return dist;
 	}
 
 	public void CalculateSegmentDistance ()

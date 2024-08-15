@@ -50,7 +50,7 @@ Crawler : MonoBehaviour
         running = true;
         dir = forward ? 1 : -1;
         transform.position = s.SplinePoints[curIndex].Pos;
-        distance = spline.GetSegmentDistance(curIndex);
+        distance = spline.GetDistance(curIndex);
         lastPos = transform.position;
         
     }
@@ -121,7 +121,7 @@ Crawler : MonoBehaviour
     public virtual void SetNextPoint()
     {
         curPoint = spline.GetNextPoint(curIndex, forward);
-        
+
         EnterPoint(curPoint);
         GetNextPoint();
     }
@@ -163,12 +163,8 @@ Crawler : MonoBehaviour
                 }
             }
         }
-        
-        if(looping){
-            distance = spline.GetSegmentDistance(spline.SplinePoints.Count-1);
-        }else{
-            distance = spline.GetSegmentDistance(curIndex);
-        }
+
+        distance = spline.GetSegmentDistance(curIndex);
 
         point = spline.SplinePoints[curIndex];
 
