@@ -703,29 +703,16 @@ public class Spline : MonoBehaviour
 			}
 		}
 	}
-	public Point GetActualFuckingPoint(int i, bool dir){
-		if(dir){
-			return SplinePoints[i];
-		}else{
-			return SplinePoints[i+1];
-		}
-	}
 
 	public Point GetNextPoint(int i, bool dir){
 		if(dir){
 			if(i == numPoints-1){
-				if(closed) return StartPoint;
-				return null; //this shouldnt be possible
+				return StartPoint;
 			}
 
 			return SplinePoints[i+1];
 		}else{
-			if(i == 0){
-				if(closed) return EndPoint;
-				return null; //this shouldnt be possible
-			}
-
-			return SplinePoints[i-1];
+			return SplinePoints[i];
 		}
 	}
 	void DrawLine(int pointIndex, int segmentIndex, float step, bool calculatePosition = false)
@@ -1215,7 +1202,7 @@ public class Spline : MonoBehaviour
 	public float GetSegmentDistance(int i){
 		
 		//need to know direction and closed?
-		if(i < 0 || i >= numPoints) Debug.Log(i);
+		if(i < 0 || i >= distances.Count) Debug.Log(i + "/" + (numPoints-1));
 		return distances[i];
 	}
 

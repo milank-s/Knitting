@@ -52,8 +52,7 @@ Crawler : MonoBehaviour
         transform.position = s.SplinePoints[curIndex].Pos;
         distance = spline.GetSegmentDistance(curIndex);
         lastPos = transform.position;
-        curPoint = spline.GetActualFuckingPoint(curIndex, forward);
-
+        
     }
 
     public virtual void Step()
@@ -121,29 +120,29 @@ Crawler : MonoBehaviour
     
     public virtual void SetNextPoint()
     {
-        GetNextPoint();
+        curPoint = spline.GetNextPoint(curIndex, forward);
+        
         EnterPoint(curPoint);
+        GetNextPoint();
     }
 
     public void GetNextPoint(){
         
         progress = forward ? 0 : 1;
         
-        //WHAT THE FUCK IS THE FUCKING POINT THAT YOU ARE VISUALLY ON?
-        curPoint = spline.SplinePoints[curIndex];
         bool looping = false;
 
         if(forward){
-            if(curIndex < spline.SplinePoints.Count - (spline.closed ? 0 : 1))
-            {
-                curIndex++;
-            }
-            else
-            {
+        
+            curIndex++;
+
+            if(curIndex < spline.SplinePoints.Count - (spline.closed ? 0 : 1)){
+                //we good
+            }else{
                 if(spline.closed){
-                    looping = true;
                     curIndex = 0;
                 }else{
+                    curIndex --;
                     ReverseDir();
                     progress = 1;
                 }
