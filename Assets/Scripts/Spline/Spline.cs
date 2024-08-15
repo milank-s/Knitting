@@ -703,6 +703,24 @@ public class Spline : MonoBehaviour
 			}
 		}
 	}
+
+	public Point GetNextPoint(int i, bool dir){
+		if(dir){
+			if(i == numPoints-1){
+				if(closed) return StartPoint;
+				return null; //this shouldnt be possible
+			}
+
+			return SplinePoints[i+1];
+		}else{
+			if(i == 0){
+				if(closed) return EndPoint;
+				return null; //this shouldnt be possible
+			}
+
+			return SplinePoints[i-1];
+		}
+	}
 	void DrawLine(int pointIndex, int segmentIndex, float step, bool calculatePosition = false)
 	{
 		Vector3 v = Vector3.zero;

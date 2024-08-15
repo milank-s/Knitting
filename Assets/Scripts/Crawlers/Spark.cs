@@ -15,29 +15,37 @@ public class Spark : Crawler
     
     public override void SetNextPoint()
     {
+        
+        Debug.Log("spark setting next point");
+
         Point lastPoint = point;
         base.SetNextPoint();
         
         if(visited.Contains(point)){
             //I'm done
+            Stop();
+            //play particle effect
         }else{
 
             visited.Add(point);
-
+            Point nextPoint = spline.GetNextPoint(curIndex, forward);
+    
             foreach(Point p in point._neighbours){
-                
-                if(p != lastPoint){
+
+                    Spline s = p.GetConnectingSpline(point);
+                    if(s == spline) continue;
+                    
                     Debug.Log("spawning new spark");
                     // spawn a spark going to this point
-                    // Spark newCrawler = (Spark)controller.SpawnCrawler(CrawlerType.spark);
-                    // Spline s = p.GetConnectingSpline(point);
-                    // bool f = s.IsGoingForward(point, p);
-                    // newCrawler.Setup(s, f);
+
+                    Spark newCrawler = (Spark)controller.SpawnCrawler(CrawlerType.spark);
+                    bool f = s.IsGoingForward(point, p);
+                    newCrawler.Setup(s, f);
                     
-                    // newCrawler.curIndex = f ? s.GetPointIndex(point) : s.GetPointIndex(p);
-                    // newCrawler.point = f ? point : p;
+                    newCrawler.curIndex = f ? s.GetPointIndex(point) : s.GetPointIndex(p);
+                    newCrawler.point = f ? point : p;
                     
-                }
+                
             }
         }
     }

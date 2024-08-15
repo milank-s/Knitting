@@ -45,7 +45,9 @@ Crawler : MonoBehaviour
         running = true;
         dir = forward ? 1 : -1;
         transform.position = s.SplinePoints[curIndex].Pos;
+        distance = spline.GetSegmentDistance(curIndex);
         lastPos = transform.position;
+
     }
 
     public virtual void Step()
@@ -54,6 +56,7 @@ Crawler : MonoBehaviour
         {
             if(moving){
                 if(progress < 0 || progress > 1){
+                    
                     if(point.pointType != PointTypes.ghost){
                         OnHitPoint();
                     }
@@ -117,14 +120,13 @@ Crawler : MonoBehaviour
         progress = forward ? 0 : 1;
         distance = spline.GetSegmentDistance(curIndex);
         EnterPoint(point);
-        
     }
 
     public void GetNextPoint(){
         progress = forward ? 0 : 1;
         
         if(forward){
-            if(curIndex < spline.SplinePoints.Count - 2)
+            if(curIndex < spline.SplinePoints.Count - 1)
             {
                 curIndex++;
             }
@@ -154,6 +156,7 @@ Crawler : MonoBehaviour
         }
         
         point = spline.SplinePoints[curIndex];
+
     }
 
     public virtual void EnterPoint(Point p){

@@ -8,7 +8,6 @@ public class CrawlerManager : MonoBehaviour
     public int crawlerCount = 10;
     public float speed = 3;
     public float spawnFrequency = 0.5f;
-    public bool forward = true;
     public Spline spline;
     public CrawlerType crawlerType = CrawlerType.spark;
     private List<Crawler> crawlers;
@@ -43,7 +42,7 @@ public class CrawlerManager : MonoBehaviour
             newCrawler.Setup(s, f);
             newCrawler.curIndex = f ? s.GetPointIndex(p) : s.GetPointIndex(n);
             newCrawler.point = f ? p : n;
-            AddCrawler();
+            AddCrawler(f);
         }
     }
 
@@ -77,7 +76,7 @@ public class CrawlerManager : MonoBehaviour
                 count ++;
                 emitting = count < crawlerCount;
                 spawnTimer = 0;
-                AddCrawler();
+                AddCrawler(true);
             }
         }
 
@@ -92,7 +91,7 @@ public class CrawlerManager : MonoBehaviour
         
         for (int i = 0; i < crawlerCount; i++)
         {
-            AddCrawler();
+            AddCrawler(true);
         }
     }
 
@@ -101,7 +100,7 @@ public class CrawlerManager : MonoBehaviour
         Services.main.OnReset -= Reset;
     }
 
-    public void AddCrawler()
+    public void AddCrawler(bool forward)
     {
         bool available = false;
 
