@@ -142,6 +142,7 @@ public class StellationController : MonoBehaviour {
 		return "";
 	}
 
+	#if UNITY_EDITOR
 	void OnDrawGizmos(){
 
 		Gizmos.color = Color.red;
@@ -185,6 +186,8 @@ public class StellationController : MonoBehaviour {
 							break;
 
 						}
+
+						
 						
 						Handles.Label(s.SplinePoints[i].transform.position + Vector3.up/5f, s.SplinePoints[i].distanceFromPlayer.ToString("F2"));
 						Handles.Label(s.SplinePoints[i].transform.position + Vector3.up/10f, s.SplinePoints[i].name);
@@ -202,6 +205,7 @@ public class StellationController : MonoBehaviour {
 		//}
 	}
 
+	#endif
 	public string GetNextWord (){
 		if(words != null){
 

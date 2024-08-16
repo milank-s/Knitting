@@ -33,7 +33,7 @@ public class Spark : Crawler
 
         bool emitted = false;
 
-        Debug.Log("curPoint = " + curPoint.name);
+        // Debug.Log("curPoint = " + curPoint.name);
 
         foreach(Point p in curPoint._neighbours){
             foreach(Spline s in curPoint.GetConnectingSplines(p)){
@@ -44,7 +44,7 @@ public class Spark : Crawler
                 Spark newCrawler = (Spark)controller.SpawnCrawler(CrawlerType.spark);
                 bool f = s.IsGoingForward(curPoint, p);
                 int i = f ? s.GetPointIndex(curPoint) : s.GetPointIndex(p);
-                Debug.Log("going from " + curPoint.name + " to " + p.name + " dir = " + f + " index = " + i);
+                // Debug.Log("going from " + curPoint.name + " to " + p.name + " dir = " + f + " index = " + i);
                 newCrawler.Setup(s, f, i);
             }
         }
