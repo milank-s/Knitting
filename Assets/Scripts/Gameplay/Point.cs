@@ -773,8 +773,8 @@ public class Point : MonoBehaviour
 		return _connectedSplines.Count > 0;
 	}
 
-	//this can fuck up. check the index difference for legality
-
+	//points can have an arbitrary amount of connecting splines!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	
 	public Spline GetConnectingSpline(Point p){
 		foreach (Spline s in _connectedSplines) {
 			if (s.IsPointConnectedTo(p)){
@@ -791,6 +791,25 @@ public class Point : MonoBehaviour
 			}
 		}
 		return null;
+	}
+
+	public List<Spline> GetConnectingSplines(Point p){
+		List<Spline> sp = new List<Spline>();
+		foreach (Spline s in _connectedSplines) {
+			if (s.IsPointConnectedTo(p)){
+				int indexDiff = s.GetPointIndex(p) - s.GetPointIndex(this);
+				if(Mathf.Abs(indexDiff) == 1){
+					sp.Add(s);
+				}else{
+					if(s.closed){
+						sp.Add(s);
+					}
+				}
+				
+				continue;
+			}
+		}
+		return sp;
 	}
 
 	public bool IsAdjacent(Point n){

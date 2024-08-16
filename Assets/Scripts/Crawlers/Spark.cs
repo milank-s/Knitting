@@ -8,26 +8,32 @@ public class Spark : Crawler
     //at each intersection, add to list of points
     //spawn a new spark for any branching paths
     //doesn't loop
-
-    List<Point> visited;
+    public static List<Point> visited;
 
     public override void Setup(Spline s, bool f, int startIndex = 0){
         base.Setup(s, f, startIndex);
-        
-        visited = new List<Point>();
-        visited.Add(point);
+        if(visited == null){
+            visited = new List<Point>();
+        }
     }
     
     public override void SetNextPoint()
     {
+        
         bool curDir = forward;
 
         base.SetNextPoint();
 
-        if(curPoint != null){
-            foreach(Point p in curPoint._neighbours){
+        if(visited.Contains(curPoint)){
+            Debug.Log("already visited, stopping");
+            Stop();
+            return;
+        }
 
-                Spline s = p.GetConnectingSpline(curPoint);
+        //wait why the fuck would curpoint be null
+
+        foreach(Point p in curPoint._neighbours){
+            foreach(Spline s in p.GetConnectingSplines(curPoint)){
                 if(s == spline) continue;
                 
                 // spawn a spark going to this point
@@ -39,12 +45,11 @@ public class Spark : Crawler
             }
         }
 
-        if(visited.Contains(point) || curDir != forward){
-            //I'm done
+        visited.Add(curPoint);
+
+        if(curDir != forward){
+            Debug.Log("reached end of not-closed line");
             Stop();
-            //play particle effect
         }
-        
-        visited.Add(point);
     }
 }

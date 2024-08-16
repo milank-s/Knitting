@@ -165,7 +165,6 @@ Crawler : MonoBehaviour
         }
 
         distance = spline.GetSegmentDistance(curIndex);
-
         point = spline.SplinePoints[curIndex];
 
     }

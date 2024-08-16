@@ -38,7 +38,7 @@ public class CrawlerManager : MonoBehaviour
     }
 
     IEnumerator EmitSparksRoutine(Point p){
-        
+
         yield return null;
 
         foreach(Point n in p._neighbours){
@@ -95,6 +95,8 @@ public class CrawlerManager : MonoBehaviour
     public void RestartCrawlers(){
         //dumb but whatever
         if(Services.main.activeStellation.isComplete) return;
+        
+        Spark.visited = new List<Point>();
         
         for (int i = 0; i < crawlerCount; i++)
         {
