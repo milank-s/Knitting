@@ -374,21 +374,21 @@ public class StellationController : MonoBehaviour {
 
 		collectibles = GetComponentsInChildren<Collectible>().ToList();
 
-		if(!spawnedCrawler && unlockMethod == UnlockType.speed){
-			spawnedCrawler = true;
-			CrawlerManager newCrawler = gameObject.AddComponent<CrawlerManager>();
-			newCrawler.speed = speed;
-			newCrawler.crawlerCount = 1;
-			newCrawler.spline = splines[0];
-			newCrawler.spawnFrequency = 0;
-			newCrawler.crawlerType = CrawlerType.spark;
-			// // // OnHitStart += newCrawler.Reset;
-			crawlers.Add(newCrawler);
+		// if(!spawnedCrawler && unlockMethod == UnlockType.speed){
+		// 	spawnedCrawler = true;
+		// 	CrawlerManager newCrawler = gameObject.AddComponent<CrawlerManager>();
+		// 	newCrawler.speed = speed;
+		// 	newCrawler.crawlerCount = 0;
+		// 	newCrawler.spline = splines[0];
+		// 	newCrawler.spawnFrequency = 0;
+		// 	newCrawler.crawlerType = CrawlerType.spark;
+		// 	// // // OnHitStart += newCrawler.Reset;
+		// 	crawlers.Add(newCrawler);
 			
 			
-			newCrawler.Initialize();
-			newCrawler.EmitSparks(start);
-		}
+		// 	newCrawler.Initialize();
+		// 	// newCrawler.EmitSparks(start);
+		// }
 
 		Setup();
 	}
@@ -820,7 +820,7 @@ public class StellationController : MonoBehaviour {
 			
 			case UnlockType.speed:
 				
-				CheckCompletion();
+				isComplete = CheckSpeed();
 
 				break;
 

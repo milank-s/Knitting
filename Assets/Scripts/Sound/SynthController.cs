@@ -20,10 +20,12 @@ public class SynthController : MonoBehaviour
     public HelmSynth[] flutters;
     public HelmSynth noisePad;
     public HelmSynth flyingSynth;
+    public HelmSynth flowSynth;
 
 	private HelmSynth currentFlutter;
 	
 	public static float frequency = 0.25f;
+	public static float flow = 0.25f;
 
 	int homeNote;
 
@@ -114,6 +116,7 @@ public class SynthController : MonoBehaviour
 		
 		float length = 1;
 		HelmSynth s;
+
 		if(p.pointType == PointTypes.fly){
 			 length = 2;
 			 s = keys[4];
@@ -121,8 +124,12 @@ public class SynthController : MonoBehaviour
 			 s = keys[2];
 		}else if(p.pointType == PointTypes.start){
 			s = keys[5];
-		}else{
+		}else if(p.pointType == PointTypes.normal){
 			s = keys[0];
+		}else if (p.pointType == PointTypes.reset){
+			s = keys[1];
+		}else{
+			s = keys[3];
 		}
 
 		s.PlayNote(p.note, length);
@@ -194,6 +201,8 @@ public class SynthController : MonoBehaviour
 		
 		PlaySplineChord();
 		
+		flowSynth.PlayNote(42);
+		
 		pads[lineType].Mute(false);
 		
         if(currentFlutter != null){
@@ -219,7 +228,8 @@ public class SynthController : MonoBehaviour
 			// currentFlutter.SetVolume(Services.PlayerBehaviour.normalizedAccuracy);
 		}
 		noisePad.SetVolume(Services.PlayerBehaviour.easedDistortion);
-		
+		pads[lineType].SetVolume(flow/2f);
+		flowSynth.SetVolume(Mathf.Pow(flow, 3));
 		//pitch bending
 		//based on the note's assigned pitch, move the wheel a portion of that amount to the target pitch
 

@@ -86,7 +86,7 @@ public class AudioManager : MonoBehaviour
     public void OnTraversing(){
 
         SynthController.instance.MovementSynth();
-        SynthController.frequency = Services.PlayerBehaviour.curSpeed/Services.PlayerBehaviour.maxSpeed;
+        SynthController.flow = Services.PlayerBehaviour.curSpeed/Services.PlayerBehaviour.maxSpeed;
         clock.bpm = Mathf.Lerp(80, 300, SynthController.frequency);
     }
 

@@ -74,10 +74,11 @@ public class Point : MonoBehaviour
 	public bool setDirection = false;
 	[HideInInspector]
 	
-	public static float damping = 1000f;
-	public static float stiffness = 1000f;
-	public static float mass = 50f;
-                     	[HideInInspector]
+	public static float damping = 2000f;
+	public static float stiffness = 2000f;
+	public static float mass = 20f;
+	
+	[HideInInspector]
 	public Vector3 anchorPos;
 	public Vector3 initPos;
 	[Space(10)]
