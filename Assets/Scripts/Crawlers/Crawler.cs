@@ -40,13 +40,14 @@ Crawler : MonoBehaviour
     public virtual void Setup(Spline s, bool f, int startIndex = 0)
     {
         moving = true;
+        
+        curIndex = startIndex;
+        spline = s;
         speed = baseSpeed;
         // curIndex = f? 0 : s.SplinePoints.Count - 1;
-        curIndex = startIndex;
         point = s.SplinePoints[curIndex];
         forward = f;
         progress = forward ? 0 : 1;
-        spline = s;
         running = true;
         dir = forward ? 1 : -1;
         transform.position = s.SplinePoints[curIndex].Pos;

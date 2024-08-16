@@ -774,7 +774,7 @@ public class Point : MonoBehaviour
 	}
 
 	//points can have an arbitrary amount of connecting splines!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	
+	//this is all kinds of fucked up
 	public Spline GetConnectingSpline(Point p){
 		foreach (Spline s in _connectedSplines) {
 			if (s.IsPointConnectedTo(p)){
@@ -797,16 +797,7 @@ public class Point : MonoBehaviour
 		List<Spline> sp = new List<Spline>();
 		foreach (Spline s in _connectedSplines) {
 			if (s.IsPointConnectedTo(p)){
-				int indexDiff = s.GetPointIndex(p) - s.GetPointIndex(this);
-				if(Mathf.Abs(indexDiff) == 1){
-					sp.Add(s);
-				}else{
-					if(s.closed){
-						sp.Add(s);
-					}
-				}
-				
-				continue;
+				sp.Add(s);
 			}
 		}
 		return sp;

@@ -1147,7 +1147,7 @@ public class Spline : MonoBehaviour
 		int i1 = SplinePoints.IndexOf(p1);
 		int i2 = SplinePoints.IndexOf(p2);
 		int diff = i2 - i1;
-		if(diff < 0 || diff > 1){
+		if(diff == -1 || diff > 1){
 			return false;
 		}
 
