@@ -127,7 +127,7 @@ public class SynthController : MonoBehaviour
 		}else if(p.pointType == PointTypes.normal){
 			s = keys[0];
 		}else if (p.pointType == PointTypes.reset){
-			s = keys[1];
+			 s = keys[4];
 		}else{
 			s = keys[3];
 		}
