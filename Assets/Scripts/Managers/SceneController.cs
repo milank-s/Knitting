@@ -239,7 +239,7 @@ public class SceneController : MonoBehaviour
                 curLevel++;
                 
                 if(curLevel < curLevelSet.levels.Count){
-
+                    curLevelName = curLevelSet.levels[curLevel];
                     LoadWithTransition();
                 }else{
                     FinishLevelSet();
@@ -283,10 +283,17 @@ public class SceneController : MonoBehaviour
 
         //I think a better way to check this is whether curlevelIndex is -1?
         // if (!MapEditor.editing)
-		if (curSetIndex == -1)
+		if (curSetIndex != -1)
 		{
 			SceneController.instance.stellationsLoaded.Add(Services.main.activeStellation);
 		}
+
+        if(SceneController.instance.stellationsLoaded.Count > 1){
+
+            StellationController c  =SceneController.instance.stellationsLoaded[0];
+            SceneController.instance.stellationsLoaded.Remove(c);
+            Destroy(c.gameObject);
+        }
         
 		Services.main.InitializeLevel();
         Services.main.ActivatePlayer();
@@ -337,6 +344,7 @@ public class SceneController : MonoBehaviour
         if(curLevelSet.isScene){
             LoadScene();
         }else{
+            Debug.Log("loading "+ levelTitle);
             LoadFile(levelTitle);
         }
 
