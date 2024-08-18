@@ -946,7 +946,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			l.positionCount = 2;
 			l.SetPosition(0, pointDest.Pos);
 			l.SetPosition (1,pos);
-		}else{
+		}else if(curPoint.pointType == PointTypes.connect){
 			
 			l.positionCount = 0;
 		}
@@ -1547,7 +1547,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 
-		if (cursorDir2.magnitude < 0.9f){
+		if (cursorDir2.magnitude < 0.2f){
 			joystickLocked = true;
 		}else{
 			joystickLocked = false;

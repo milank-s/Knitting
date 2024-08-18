@@ -672,6 +672,7 @@ public class Spline : MonoBehaviour
 		if(speed != 0){
 
 			line.textureOffset -= Time.deltaTime * (speed / line.textureScale) * 50;
+			line.textureScale = Mathf.Sign(speed) * Mathf.Abs(line.textureScale);
 		}
 		
 		distortion = Services.PlayerBehaviour.easedDistortion - shake;
