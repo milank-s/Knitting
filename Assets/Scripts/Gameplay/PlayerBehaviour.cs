@@ -80,6 +80,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		signedAccuracy,
 		flow = 0,
 		boost,
+		speedGain,
 		boostTimer,
 		curSpeed,
 		connectTime,
@@ -263,6 +264,10 @@ public class PlayerBehaviour: MonoBehaviour {
 			p.AddForce(toPlayer * 10 + Random.onUnitSphere * toPlayer.magnitude * 10);
 		}
 		easedDistortion = 10;
+
+		//mute synths NOW
+		AudioManager.instance.PlayerDeath();
+		//play destruction note
 
 		while(t < 1){
 			
@@ -517,7 +522,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			CalculateMoveSpeed ();
 			curSpeed = GetSpeed();
 
-			if(upstream && potentialSpeed <= 0){
+			if((upstream && potentialSpeed <= 0) || (curSpeed < 0.5f && speedGain < 0)){
 				Lose();
 				return;
 			}
@@ -1106,7 +1111,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		//add to player flow based on accuracy
-		float speedGain = signedAcc * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);
+		speedGain = signedAcc * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);
 
 		//if we're going with the flow
 		if(!upstream){
@@ -1134,6 +1139,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		boost = Mathf.Clamp(boost, 0, maxSpeed);
 		curSpline.speed = Mathf.Clamp(curSpline.speed, -maxSpeed * 2, maxSpeed * 2);
 
+
+		Debug.Log(speedGain);
 
 		if(signedAcc >= 0){
 			//flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);// * gravityCoefficient;

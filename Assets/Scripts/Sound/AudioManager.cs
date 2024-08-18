@@ -39,6 +39,16 @@ public class AudioManager : MonoBehaviour
     }
     
 
+    public void PlayerDeath(){
+        helmAudio.ResetSynths();
+        helmAudio.keys[2].PlayNote(40);
+        helmAudio.keys[2].PlayNote(42);
+        helmAudio.keys[2].PlayNote(44);
+    }
+
+    public void PlayerLeaveStart(){
+
+    }
     public void PlayLevelSounds(){
         if(SceneController.instance.curLevelSet.audio.Length > 0 && SceneController.instance.curLevelSet.audio.Length < SceneController.curLevel){
             audioRecordings.clip = SceneController.instance.curLevelSet.audio[SceneController.curLevel];
