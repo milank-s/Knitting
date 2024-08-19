@@ -143,6 +143,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	public TrailRenderer flyingTrail;
 	public TrailRenderer shortTrail;
 	public ParticleSystem sparks;
+	ParticleSystem.EmissionModule sparkEmission;
 	private LineRenderer l;
 	public SpriteRenderer cursorRenderer;
 	public MeshRenderer renderer;
@@ -176,6 +177,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Awake(){
 		
+		sparkEmission = sparks.emission;
 		pos = transform.position;
 
 		joystickLocked = true;
@@ -1612,12 +1614,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		switch (state)
 		{
 			case PlayerState.Traversing:
-				Services.fx.BakeParticles(sparks, Services.fx.brakeParticleMesh);
-				Services.fx.playerTrail.emitting = false;
 
 				//this isn't accurate, its called on ghost points
-
-				//turn on sparks
 				break;
 
 			case PlayerState.Flying:
@@ -1856,10 +1854,12 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				
 				curPoint = pointDest;
-				
 
 				if(curPoint.pointType != PointTypes.ghost){
 					
+					Services.fx.BakeParticles(sparks, Services.fx.brakeParticleMesh);
+					Services.fx.playerTrail.emitting = false;
+
 					//store current speed
 					// flow = curSpeed;
 					// boost = 0;
@@ -1922,7 +1922,6 @@ public class PlayerBehaviour: MonoBehaviour {
 	public void Effects()
 	{
 
-		ParticleSystem.EmissionModule e = sparks.emission;
 
 		float Absflow = Mathf.Abs(flow);
 
@@ -1935,9 +1934,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			
 			if (state != PlayerState.Switching)
 			{
-				e.rateOverTimeMultiplier = Mathf.Pow(1-easedAccuracy, 2) * 20 * potentialSpeed;
+				sparkEmission.rateOverTimeMultiplier = easedDistortion * 100 * potentialSpeed;
 			}else{
-				e.rateOverTimeMultiplier= 0;
+				sparkEmission.rateOverTimeMultiplier= 0;
 			}
 
 		}

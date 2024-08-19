@@ -85,8 +85,8 @@ public class FXManager : MonoBehaviour
       Services.PlayerBehaviour.OnStartFlying += flyingParticles.Play;
       Services.PlayerBehaviour.OnStartFlying += PlayFlyingTrail;
       Services.PlayerBehaviour.OnStoppedFlying += BakeFlyingTrail;
-      
 
+      //no no no no no non on onon
       Services.PlayerBehaviour.OnExitPoint += Services.PlayerBehaviour.sparks.Play;
 
       //Services.PlayerBehaviour.OnStoppedTraversing += BakeTraversingParticles;
@@ -203,11 +203,6 @@ public void Step(){
 
     public void BakeFlyingParticles(){
         BakeParticles(flyingParticles, flyingParticleMesh);
-    }
-
-    public void BakeTraversingParticles(){
-        BakeParticles(Services.PlayerBehaviour.sparks, brakeParticleMesh);
-        //BakeParticles(popParticles, brakeParticleMesh);
     }
 
     public void BakeFlyingTrail(){
@@ -339,8 +334,9 @@ public void Step(){
       //StartCoroutine(FlashSprite(newSprite.transform));
   }
 
-  public void SpawnParticle(Vector3 pos, ParticleType p){
+  public void SpawnParticle(Vector3 pos, ParticleType p, Vector3 dir){
     ParticleSystem newParticles = Instantiate(particlePrefabs[(int)p], pos, Quaternion.identity);
+    newParticles.transform.forward = dir;
   }
 
   IEnumerator FlashSprite(Transform tr)
