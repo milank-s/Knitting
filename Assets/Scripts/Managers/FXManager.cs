@@ -122,19 +122,21 @@ public void Step(){
       showPointsRoutine = StartCoroutine(ShowUnfinishedPoints());
   }
 
-  public void ShowSplineDirection(Spline s)
+  public void ShowSplineDirection(Spline s, Point p1, Point p2)
   {
 
-     lineDirectionRoutine.Add(StartCoroutine(DrawSplineDirection(s)));
+     lineDirectionRoutine.Add(StartCoroutine(DrawSplineDirection(s, p1, p2)));
    
   }
-     IEnumerator DrawSplineDirection(Spline s)
+     IEnumerator DrawSplineDirection(Spline s, Point p1, Point p2)
     {
         yield return null;
 
-        if(lineDirectionRoutine.Count == 0)yield break;
+        if(lineDirectionRoutine.Count == 0) yield break;
         
-        bool forward = Services.PlayerBehaviour.goingForward;
+        //this is probably not reliable
+        bool forward = s.IsGoingForward(p1, p2);
+        
         float start = forward ? 0.1f : 0.9f;
         int pointIndex = s.selectedIndex;
         Point p = s.SplinePoints[pointIndex];

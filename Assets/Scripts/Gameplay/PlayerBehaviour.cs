@@ -685,7 +685,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			cursorRenderer.sprite = traverseSprite;
 			hasPath = true;
 
-		
 			//I think this is bugging if the player enters a ghost point when their angle is > 
 			//that necessary to progress
 			
@@ -693,22 +692,16 @@ public class PlayerBehaviour: MonoBehaviour {
 			{
 				canTraverse = true;
 
-				//why here
-				// if (curSpline != null)
-				// {
-				// 	curSpline.SetSelectedPoint(curPoint);
-				// }
 			}
 			else
 			{
-				
 				bool newSplineSelected = prevSplineDest == null || splineDest != prevSplineDest;
 
 				if (newSplineSelected){
-					Services.fx.ShowSplineDirection(splineDest);
+					Services.fx.ShowSplineDirection(splineDest, curPoint, pointDest);
 				}
 
-				if( pointDest.pointType != PointTypes.ghost)
+				if(pointDest.pointType != PointTypes.ghost)
 				{
 					Services.fx.ShowNextPoint(pointDest);
 

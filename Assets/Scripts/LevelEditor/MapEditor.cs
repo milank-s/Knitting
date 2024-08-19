@@ -1826,7 +1826,7 @@ void DragCamera()
             selectedSplines.Add(selectedSpline);
             
             //draw locked stuff diff ? if(selectedSpline.)
-            selectedSpline.SwitchMaterial(3);
+            selectedSpline.SwitchMaterial(2);
             lineWidthSlider.ChangeValue(selectedSpline.lineWidth);
             splineSpeedVal.SetValueWithoutNotify(selectedSpline.speed);
             splineSpeedReadout.text = selectedSpline.speed.ToString("F1");
