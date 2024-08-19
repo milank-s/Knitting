@@ -105,6 +105,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public float potentialSpeed => flow + boost;
 	public float easedAccuracy;
+	public float normalizedAccuracy;
 	public float easedDistortion;
 
 	[Header("Flying tuning")]
@@ -430,8 +431,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		screenSpaceDir = (p2 - p1).normalized;
 
 		if(state != PlayerState.Animating){
-			easedAccuracy = Mathf.Clamp01(Mathf.Pow(Mathf.Clamp01(signedAccuracy), accuracyCoefficient));
-			easedDistortion = Mathf.Lerp(easedDistortion, Mathf.Pow(1 - easedAccuracy, 2f) + Spline.shake, Time.deltaTime * 5);
+			
+			normalizedAccuracy = signedAccuracy/2f + 0.5f;
+			easedAccuracy = Mathf.Clamp01(Mathf.Pow(normalizedAccuracy, accuracyCoefficient));
+			easedDistortion = Mathf.Lerp(easedDistortion, (1- easedAccuracy) + Spline.shake, Time.deltaTime * 5);
 		}
 
 		Debug.DrawLine(pos, pos + Services.mainCam.transform.TransformDirection(cursorDir)/5f, Color.cyan);
@@ -476,12 +479,12 @@ public class PlayerBehaviour: MonoBehaviour {
 			// boostIndicator.transform.position =pos + (Vector3) cursorDir2 * ((Vector3)transform.position - cursorPos).magnitude;
 			// boostIndicator.transform.rotation = Quaternion.LookRotation(CameraFollow.forward, cursorDir2);
 
-			if(charging && state != PlayerState.Switching){
-				boostTimer += Time.deltaTime;
-				boostTimer = Mathf.Clamp01(boostTimer);
-			}
+			// if(charging && state != PlayerState.Switching){
+			// 	boostTimer += Time.deltaTime;
+			// 	boostTimer = Mathf.Clamp01(boostTimer);
+			// }
 
-			charging = true;
+			// charging = true;
 			//buttonDownTimer = buttonDownBuffer;
 		}
 		else
@@ -540,7 +543,10 @@ public class PlayerBehaviour: MonoBehaviour {
 			CalculateMoveSpeed ();
 			curSpeed = GetSpeed();
 
-			if((upstream && potentialSpeed <= 0) || (curSpeed < 0.1f && speedGain < 0)){
+			// Debug.Log("boost = " + boost.ToString("F1") + " flow = " + flow.ToString("F1") + " speedGain = " + (speedGain/Time.deltaTime).ToString("F1"));
+
+			if((upstream && potentialSpeed <= 0) || (potentialSpeed <= 0.1f)){
+				
 				Lose();
 				return;
 			}
@@ -611,7 +617,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			// 	return Mathf.Clamp(boost + flow, 0, maxSpeed);
 			// }else{
 				
-				return boost + (flow * easedAccuracy); //* easedAccuracy + boost; //* cursorDir.magnitude;
+				return boost + (flow * Mathf.Lerp(easedAccuracy, 1, adjustedProgress)); //* easedAccuracy + boost; //* cursorDir.magnitude;
 			// }
 		}
 		if(state == PlayerState.Switching){
@@ -944,7 +950,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		decelerationTimer = Mathf.Lerp(decelerationTimer, 0, Time.deltaTime * 2);
 		timeOnPoint += Time.deltaTime;
 
-		if(buttonDown && !freeCursor && (pointDest != null || curPoint.pointType == PointTypes.fly && state != PlayerState.Flying)){
+		if(buttonDown && !freeCursor){ //pointDest != null || curPoint.pointType == PointTypes.fly && state != PlayerState.Flying)){
 			boostTimer += Time.deltaTime / stopTimer;
 			boostIndicator.enabled = true;
 		}else{
@@ -1126,15 +1132,16 @@ public class PlayerBehaviour: MonoBehaviour {
 		if(signedAcc >= 0){
 			speedGain = signedAcc * acceleration * accelerationCurve.Evaluate(flow/maxSpeed);
 		}else{
-			speedGain = signedAcc * flowDecay;
+			speedGain = (signedAcc-1) * flowDecay;
 		}
 
+		float negativeSpeedGain = Mathf.Abs(Mathf.Clamp(speedGain, -1000, 0));
 		speedGain *= Time.deltaTime;
 		//if we're going with the flow
 
 		if(!upstream){
 			
-			boost -= Time.deltaTime * boostDecay;
+			boost -= Time.deltaTime * (boostDecay + negativeSpeedGain);
 
 			//give them boost
 			if(curSpeed < absSpeed){
@@ -1673,12 +1680,15 @@ public class PlayerBehaviour: MonoBehaviour {
 				if(curPoint.pointType != PointTypes.ghost){
 
 					 // * (1 + Services.PlayerBehaviour.boostTimer);
-					
-					if(boost < Point.boostAmount) boost = Point.boostAmount;
+				
 						
 					
 					if (buttonWasPressed)
 					{
+						if(boost < Point.boostAmount) {
+							boost = (Point.boostAmount + boostTimer)/2f;
+						}
+
 						buttonDownTimer = 0;
 						
 						Services.fx.PlayAnimationOnPlayer(FXManager.FXType.fizzle);

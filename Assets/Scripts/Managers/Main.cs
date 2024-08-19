@@ -168,7 +168,6 @@
 			//be mindful of how stellations track and reset collectibles
 			//if stellations can be changed or modified then you need to read from file
 
-			Debug.Log("");
 			SceneController.instance.UnloadStellation(activeStellation);
 			SceneController.instance.LoadDirect(activeLevel);
 		}	

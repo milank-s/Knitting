@@ -77,9 +77,9 @@ public class StellationController : MonoBehaviour {
 
 	[Space(10)]
 	[Header("Tuning")]
-	public float startSpeed = 0;
-	public float acceleration = 0f;
-	public float maxSpeed = 3;
+	public float startSpeed = 0.2f;
+	public float acceleration = 0.1f;
+	public float maxSpeed = 5;
 	//if a player loops through a stellation with multiple starts they will be placed on a new start each time
 
 	public Vector3 center;

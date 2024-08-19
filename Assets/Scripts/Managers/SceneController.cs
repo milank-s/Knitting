@@ -337,14 +337,14 @@ public class SceneController : MonoBehaviour
     public void LoadDirect(string levelTitle){
         //editor override
         if(curSetIndex == -1) {
-            Debug.Log("loading from editor");
+            
             LoadFile(levelTitle); return;
         }
 
         if(curLevelSet.isScene){
             LoadScene();
         }else{
-            Debug.Log("loading "+ levelTitle);
+            
             LoadFile(levelTitle);
         }
 

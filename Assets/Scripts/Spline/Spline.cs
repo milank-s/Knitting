@@ -676,7 +676,7 @@ public class Spline : MonoBehaviour
 		}
 		
 		distortion = Services.PlayerBehaviour.easedDistortion - shake;
-		magnitude = Mathf.Clamp01(distortion) * amplitude * Mathf.Clamp01(segmentDistance) * Mathf.Clamp01(Services.PlayerBehaviour.boost);
+		magnitude = Mathf.Clamp01(distortion) * amplitude * Mathf.Clamp01(segmentDistance) * Mathf.Clamp01(Services.PlayerBehaviour.potentialSpeed);
 		// magnitude += distortion;
 	}
 
