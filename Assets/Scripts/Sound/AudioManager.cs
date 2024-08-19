@@ -41,9 +41,7 @@ public class AudioManager : MonoBehaviour
 
     public void PlayerDeath(){
         helmAudio.ResetSynths();
-        helmAudio.keys[2].PlayNote(40);
-        helmAudio.keys[2].PlayNote(42);
-        helmAudio.keys[2].PlayNote(44);
+        helmAudio.keys[4].PlayNote(40);
     }
 
     public void PlayerLeaveStart(){

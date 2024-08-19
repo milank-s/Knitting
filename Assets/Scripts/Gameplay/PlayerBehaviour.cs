@@ -261,21 +261,27 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		foreach(Point p in Services.main.activeStellation._points){
 			Vector3 toPlayer = (p.Pos - visualRoot.position);
-			p.AddForce(toPlayer * 10 + Random.onUnitSphere * toPlayer.magnitude * 10);
+			p.AddForce(toPlayer * 10 + Random.onUnitSphere * toPlayer.magnitude * 50);
 		}
-		easedDistortion = 10;
 
 		//mute synths NOW
 		AudioManager.instance.PlayerDeath();
 		//play destruction note
-
+		float a = Spline.alpha;
+		Services.fx.Fade(false, 1);
 		while(t < 1){
 			
-			// easedDistortion = Mathf.Lerp(0, 1, t);
+			Spline.shake = Mathf.Lerp(0.25f, 0, t);
+			Spline.alpha = Mathf.Lerp(a, 0, t);
 			t += Time.deltaTime;
 			yield return null;
 		}
+		Spline.alpha = a;
+		Spline.shake = 0;
 
+		yield return new WaitForSeconds (0.15f);
+
+		Services.fx.Fade(true, 0.2f);
 		Services.main.ResetLevel();
 	}
 		
@@ -414,14 +420,18 @@ public class PlayerBehaviour: MonoBehaviour {
 		screenSpacePos = p1;
 		screenSpaceDir = (p2 - p1).normalized;
 
+		if(state != PlayerState.Animating){
+			easedAccuracy = Mathf.Clamp01(Mathf.Pow(Mathf.Clamp01(signedAccuracy), accuracyCoefficient));
+			easedDistortion = Mathf.Lerp(easedDistortion, Mathf.Pow(1 - easedAccuracy, 2f) + Spline.shake, Time.deltaTime * 5);
+		}
+
 		Debug.DrawLine(pos, pos + Services.mainCam.transform.TransformDirection(cursorDir)/5f, Color.cyan);
 		Debug.DrawLine(pos, pos + Services.mainCam.transform.TransformDirection(screenSpaceDir)/2f, Color.yellow);
 
 		//curspeed going to zero making movement asymptotes
 		
 		//set all your important floats bruh
-		easedAccuracy = Mathf.Clamp01(Mathf.Pow(Mathf.Clamp01(signedAccuracy), accuracyCoefficient));
-		easedDistortion = Mathf.Lerp(easedDistortion, Mathf.Pow(1 - easedAccuracy, 2f) + Spline.shake, Time.deltaTime * 5);
+
 
 		if(state == PlayerState.Traversing){
 			glitching = signedAccuracy < 0 || joystickLocked;
@@ -522,7 +532,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			CalculateMoveSpeed ();
 			curSpeed = GetSpeed();
 
-			if((upstream && potentialSpeed <= 0) || (curSpeed < 0.5f && speedGain < 0)){
+			if((upstream && potentialSpeed <= 0) || (curSpeed < 0.1f && speedGain < 0)){
 				Lose();
 				return;
 			}
@@ -1138,9 +1148,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		flow = Mathf.Clamp(flow, 0, maxSpeed);
 		boost = Mathf.Clamp(boost, 0, maxSpeed);
 		curSpline.speed = Mathf.Clamp(curSpline.speed, -maxSpeed * 2, maxSpeed * 2);
-
-
-		Debug.Log(speedGain);
 
 		if(signedAcc >= 0){
 			//flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);// * gravityCoefficient;

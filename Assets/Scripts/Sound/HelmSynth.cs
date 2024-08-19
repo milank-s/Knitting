@@ -4,6 +4,7 @@ using UnityEngine;
 using AudioHelm;
 public class HelmSynth : MonoBehaviour
 {
+    public float volume = 1;
    public int octave = 0;
     public bool hasStutter = false;
     public bool hasTremelo = false;
@@ -11,6 +12,7 @@ public class HelmSynth : MonoBehaviour
     public HelmController patch;
 
    public void PlayNote(int note, float duration = 102, float velocity = 1){
+        SetVolume(velocity);
         note += octave * 12;
         if(duration > 100){
             patch.NoteOn(note, velocity);
@@ -30,7 +32,7 @@ public class HelmSynth : MonoBehaviour
    }
 
     public void SetVolume(float f){
-        patch.SetParameterPercent(Param.kVolume, f);
+        patch.SetParameterPercent(Param.kVolume, f/volume);
     }
 
    public void Modulate(){
@@ -41,9 +43,9 @@ public class HelmSynth : MonoBehaviour
     
     if(hasStutter){
         
-        // float val = patch.GetParameterValue(Param.kStutterResampleFrequency);
-        // val += Input.mouseScrollDelta.y/10f;
-        // patch.SetParameterValue(Param.kStutterResampleFrequency, val);
+        float val = patch.GetParameterValue(Param.kStutterResampleFrequency);
+        val += Input.mouseScrollDelta.y/10f;
+        patch.SetParameterValue(Param.kStutterResampleFrequency, val);
         
     //    Debug.Log("stutter tempo: " 
     //                     + patch.GetParameterValue(Param.kStutterResampleTempo)
@@ -51,19 +53,19 @@ public class HelmSynth : MonoBehaviour
     //                     + patch.GetParameterPercent(Param.kStutterResampleTempo)
     //                     );
 
-    //     Debug.Log("stutter frequency: " 
-    //                     + patch.GetParameterValue(Param.kStutterResampleFrequency)
-    //                     + " percent: "
-    //                     + patch.GetParameterPercent(Param.kStutterResampleFrequency)
-    //                     );
+        // Debug.Log("stutter frequency: " 
+        //                 + patch.GetParameterValue(Param.kStutterResampleFrequency)
+        //                 + " percent: "
+        //                 + patch.GetParameterPercent(Param.kStutterResampleFrequency)
+        //                 );
         
     }
     if(hasTremelo){
         
-    // float val = patch.GetParameterPercent(Param.kPolyLfoFrequency);
-    //    val += Input.mouseScrollDelta.y/10f;
+    float val = patch.GetParameterPercent(Param.kPolyLfoFrequency);
+       val += Input.mouseScrollDelta.y/10f;
 
-    //   // patch.SetParameterPercent(Param.kPolyLfoFrequency, val); 
+      patch.SetParameterPercent(Param.kPolyLfoFrequency, val); 
 
     //     Debug.Log("LFO tempo: " 
     //                     + patch.GetParameterValue(Param.kPolyLfoTempo)
@@ -71,11 +73,11 @@ public class HelmSynth : MonoBehaviour
     //                     + patch.GetParameterPercent(Param.kPolyLfoTempo)
     //                     );
 
-    //     Debug.Log("LFO frequency: " 
-    //                     + patch.GetParameterValue(Param.kPolyLfoFrequency)
-    //                     + " percent: "
-    //                     + patch.GetParameterPercent(Param.kPolyLfoFrequency)
-    //                     );
+        // Debug.Log("LFO frequency: " 
+        //                 + patch.GetParameterValue(Param.kPolyLfoFrequency)
+        //                 + " percent: "
+        //                 + patch.GetParameterPercent(Param.kPolyLfoFrequency)
+        //                 );
        
     }
    }

@@ -68,7 +68,7 @@ public class Spline : MonoBehaviour
 	public float saturation;
 	Color color;
 	public float completion;	
-	public float alpha = 0.66f;
+	public static float alpha = 0.66f;
 
 	public int numPoints => SplinePoints.Count;
 
@@ -832,9 +832,9 @@ public class Spline : MonoBehaviour
 				
 
 				//c += (Color.white * Mathf.Clamp01(_completion - 1));
+				c = Color.HSVToRGB(hue, saturation, brightness);
 				c.a = alpha;
-
-				line.SetColor(Color.HSVToRGB(hue, saturation, brightness), segmentIndex);
+				line.SetColor(c, segmentIndex);
 				
 			}else{
 				line.SetColor(color, segmentIndex);

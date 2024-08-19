@@ -198,8 +198,8 @@ public class SynthController : MonoBehaviour
 	
 	public void ExitPoint(){
 		
-		noisePad.PlayNote(42);
-		noisePad.PlayNote(34);
+		noisePad.PlayNote(62);
+		noisePad.PlayNote(64);
 		
 		PlaySplineChord();
 		
@@ -229,9 +229,14 @@ public class SynthController : MonoBehaviour
 			//need to set gain on the mixer side not on the patch side
 			// currentFlutter.SetVolume(Services.PlayerBehaviour.normalizedAccuracy);
 		}
-		noisePad.SetVolume(Services.PlayerBehaviour.easedDistortion/2f);
-		pads[lineType].SetVolume(flow/2f);
-		flowSynth.SetVolume(Mathf.Pow(flow, 3));
+		float noise = Services.PlayerBehaviour.easedDistortion;
+		noisePad.SetVolume(Mathf.Lerp(0, noise, Services.PlayerBehaviour.curSpeed));
+
+
+		float completion = Mathf.Pow(flow, 3);
+		pads[lineType].SetVolume(Mathf.Lerp(0, 1-completion, 1-noise));
+		flowSynth.SetVolume(completion);
+
 		//pitch bending
 		//based on the note's assigned pitch, move the wheel a portion of that amount to the target pitch
 
@@ -299,20 +304,26 @@ public class SynthController : MonoBehaviour
     void TestNotes()
     {
 
-		//instruments[curPatch].Modulate();
+		instruments[curPatch].Modulate();
 
 		if(Input.GetKeyDown(KeyCode.UpArrow)){
-			note += 10;
-			
+			int newNote = note - pitch;
+			pitch += 10;
+			newNote += pitch;
+			note = newNote;
+
 			instruments[curPatch].Stop();
-			instruments[curPatch].PlayNote(note);
+			instruments[curPatch].PlayNote(newNote);
 		}
 
 		if(Input.GetKeyDown(KeyCode.DownArrow)){
-			note -= 10;
-			
+			int newNote = note - pitch;
+			pitch -= 10;
+			newNote += pitch;
+			note = newNote;
+
 			instruments[curPatch].Stop();
-			instruments[curPatch].PlayNote(note);
+			instruments[curPatch].PlayNote(newNote);
 		}
 
 		if(Input.GetKeyDown(KeyCode.LeftShift)){
@@ -330,23 +341,7 @@ public class SynthController : MonoBehaviour
 			}
 		}
 
-		if (Input.GetKeyUp(KeyCode.Alpha1) || Input.GetKeyUp(KeyCode.Alpha2)
-		|| Input.GetKeyUp(KeyCode.Alpha3) || Input.GetKeyUp(KeyCode.Alpha4)
-		|| Input.GetKeyUp(KeyCode.Alpha5) || Input.GetKeyUp(KeyCode.Alpha6))
-	    {
-			instruments[curPatch].Stop();
-	    }
-
-		if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2)
-		|| Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4)
-		|| Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.Alpha6))
-	    {
-			
-			note = pitch + Random.Range(0, major.Length);
-			instruments[curPatch].PlayNote(note);
-	    }
-
-	    if (Input.GetKeyDown(KeyCode.Alpha1))
+		if (Input.GetKeyDown(KeyCode.Alpha1))
 	    {
 			curPatch = 0;
 	    }
@@ -377,6 +372,22 @@ public class SynthController : MonoBehaviour
 			curPatch = 5;
 	    }
 
+		if (Input.GetKeyUp(KeyCode.Alpha1) || Input.GetKeyUp(KeyCode.Alpha2)
+		|| Input.GetKeyUp(KeyCode.Alpha3) || Input.GetKeyUp(KeyCode.Alpha4)
+		|| Input.GetKeyUp(KeyCode.Alpha5) || Input.GetKeyUp(KeyCode.Alpha6))
+	    {
+			instruments[curPatch].Stop();
+	    }
+
+		if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2)
+		|| Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4)
+		|| Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.Alpha6))
+	    {
+			
+			note = pitch + Random.Range(0, major.Length);
+			instruments[curPatch].PlayNote(note);
+	    }
+
     }
     
     
@@ -384,7 +395,9 @@ public class SynthController : MonoBehaviour
     {
 
 		#if UNITY_EDITOR	
-		TestNotes();
+		if(Services.main.state == GameState.menu){
+			TestNotes();
+		}
 		#endif
         //Sound of noise when player goes of accuracy
         //pads[lineType].SetParameterValue(Param.kVolume,Mathf.Clamp01( 1 - (Services.PlayerBehaviour.accuracy + 0.2f)) * Mathf.Clamp01(Services.PlayerBehaviour.flow/5f));

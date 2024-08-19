@@ -143,6 +143,8 @@
 	{	
 		if(state != GameState.playing || MapEditor.editing) return;
 
+
+
 		state = GameState.paused;
 
 		if(OnReset != null){
