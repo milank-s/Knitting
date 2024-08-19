@@ -548,20 +548,20 @@ public void Step(){
 
 public IEnumerator FadeIn(float fadeLength){
 		
-		float t = 0;
-		
-		while (t < 1){
+    float t = 0;
+    
+    while (t < 1){
 
-			overlay.color = Color.Lerp(Color.black, Color.clear, Easing.QuadEaseIn(t/fadeLength));
-			//GlitchEffect.SetValues(1-t);
-            
-			t += Time.unscaledDeltaTime/fadeLength;
-			yield return null;
-		}
+        overlay.color = Color.Lerp(Color.black, Color.clear, Easing.QuadEaseIn(t/fadeLength));
+        //GlitchEffect.SetValues(1-t);
+        
+        t += Time.unscaledDeltaTime/fadeLength;
+        yield return null;
+    }
 
-		//GlitchEffect.SetValues(0);
-		overlay.color = Color.clear;
-	}
+    //GlitchEffect.SetValues(0);
+    overlay.color = Color.clear;
+}
 
 	// public IEnumerator FlashImage(bool fadeIn = false)
 	// {

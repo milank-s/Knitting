@@ -252,12 +252,15 @@ public class PlayerBehaviour: MonoBehaviour {
 		// force on each point in proximity to the player
 		// each point light turns off
 		// all black before reset
-
+		
 
 		float t = 0; 
 		renderer.enabled = false;
 		glitchFX.enabled = false;
 		sparkEmission.rateOverTimeMultiplier = 0;
+
+
+		yield return new WaitForSeconds(0.2f);
 
 		Services.fx.PlayParticle(ParticleType.lose, pos, Vector3.forward);
 
@@ -267,25 +270,40 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 		
 		AudioManager.instance.PlayerDeath();
-		
-		Services.fx.Fade(false, 1);
 
+		bool cancel = false;
+        //GlitchEffect.SetValues(1-t);
+        
 		while(t < 1){
 			
-			Spline.shake = Mathf.Lerp(0.25f, 0, t);
+			//pretty sure this script just gets deleted and this never triggers
+			
+			if(Services.main.state == GameState.menu){
+				cancel = true;
+				break;
+			}
+
+			Services.fx.overlay.color = Color.Lerp(Color.clear, Color.black, Easing.QuadEaseIn(t));
+			Spline.shake = Mathf.Lerp(0.33f, 0, t);
+
 			t += Time.deltaTime;
 			yield return null;
 		}
+
 		Spline.shake = 0;
 
-		Services.fx.Fade(true, 0.2f);
-		Services.main.ResetLevel();
+		if(cancel){
+			Services.fx.overlay.color = Color.clear;
+		}else{
+			Services.fx.Fade(true, 0.2f);
+			Services.main.ResetLevel();
+		}
 	}
 		
 
 	public void Reset()
 	{
-		
+		Services.fx.overlay.color = Color.clear;
 		hasCollectible = false;
 		collectibles = new List<Collectible>();
 
@@ -600,7 +618,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			// 	return Mathf.Clamp(boost + flow, 0, maxSpeed);
 			// }else{
 				
-				return boost + flow; // (flow * easedAccuracy); //* easedAccuracy + boost; //* cursorDir.magnitude;
+				return boost + (flow * easedAccuracy); //* easedAccuracy + boost; //* cursorDir.magnitude;
 			// }
 		}
 		if(state == PlayerState.Switching){
@@ -1118,15 +1136,19 @@ public class PlayerBehaviour: MonoBehaviour {
 		}
 
 		//add to player flow based on accuracy
-		speedGain = signedAcc * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);
+		
+		if(signedAcc >= 0){
+			speedGain = signedAcc * acceleration * accelerationCurve.Evaluate(flow/maxSpeed);
+		}else{
+			speedGain = signedAcc * flowDecay;
+		}
 
+		speedGain *= Time.deltaTime;
 		//if we're going with the flow
+
 		if(!upstream){
 			
 			boost -= Time.deltaTime * boostDecay;
-
-			//this makes feedback loops trivial and is stupid
-			//easedDistortion = 0;
 
 			//give them boost
 			if(curSpeed < absSpeed){
@@ -1134,7 +1156,10 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 
 			if(curSpline.lineMaterial == 3){
-				curSpline.speed += speedGain * speedDir;
+
+				float splineMomentum = Mathf.Clamp01(speedGain);
+				//do we want to make it impossible to slow down splines when you're in line with them?
+				curSpline.speed += splineMomentum * speedDir;
 			}
 		}
 		
@@ -1145,13 +1170,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		flow = Mathf.Clamp(flow, 0, maxSpeed);
 		boost = Mathf.Clamp(boost, 0, maxSpeed);
 		curSpline.speed = Mathf.Clamp(curSpline.speed, -maxSpeed * 2, maxSpeed * 2);
-
-		if(signedAcc >= 0){
-			//flow += speedGain * acceleration * Time.deltaTime * accelerationCurve.Evaluate(flow/maxSpeed);// * gravityCoefficient;
-			
-		}
-
-		//flow -= Mathf.Clamp01(-gravityPull) * Time.deltaTime;
 
 		if(upstream && curSpeed <= Mathf.Epsilon){
 			//ok they're being pushed back

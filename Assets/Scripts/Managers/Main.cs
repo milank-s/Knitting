@@ -413,6 +413,9 @@
 	public void InitializeLevel(){
 		
 		activeStellation.Initialize();
+		
+		//static variables?
+		Spline.shake = 0;
 
 		if (Services.StartPoint == null && Point.Points.Count > 0)
 		{
