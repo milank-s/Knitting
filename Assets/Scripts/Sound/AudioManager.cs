@@ -22,6 +22,7 @@ public class AudioManager : MonoBehaviour
     }
     void Start()
     {
+        Reset();
         clock.pause = true;
         
         // Services.main.OnPointEnter += EnterPoint;

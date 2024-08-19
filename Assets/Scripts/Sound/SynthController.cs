@@ -125,7 +125,7 @@ public class SynthController : MonoBehaviour
 		}else if(p.pointType == PointTypes.stop){
 			 s = keys[2];
 		}else if(p.pointType == PointTypes.start){
-			s = keys[5];
+			s = keys[3];
 		}else if(p.pointType == PointTypes.normal){
 			s = keys[0];
 		}else if (p.pointType == PointTypes.reset){
@@ -200,6 +200,7 @@ public class SynthController : MonoBehaviour
 		
 		noisePad.PlayNote(62);
 		noisePad.PlayNote(64);
+		noisePad.SetVolume(0);
 		
 		PlaySplineChord();
 		
@@ -230,7 +231,7 @@ public class SynthController : MonoBehaviour
 			// currentFlutter.SetVolume(Services.PlayerBehaviour.normalizedAccuracy);
 		}
 		float noise = Services.PlayerBehaviour.easedDistortion;
-		noisePad.SetVolume(Mathf.Lerp(0, noise, Services.PlayerBehaviour.curSpeed));
+		noisePad.SetVolume(Mathf.Lerp(0, noise, Services.PlayerBehaviour.potentialSpeed));
 
 
 		float completion = Mathf.Pow(flow, 3);

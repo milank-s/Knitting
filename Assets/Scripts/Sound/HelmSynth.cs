@@ -11,8 +11,11 @@ public class HelmSynth : MonoBehaviour
     public bool hasDistortion = false;
     public HelmController patch;
 
+    public void Start(){
+        patch.SetParameterPercent(Param.kVolume, volume);
+    }
    public void PlayNote(int note, float duration = 102, float velocity = 1){
-        SetVolume(velocity);
+        // SetVolume(velocity);
         note += octave * 12;
         if(duration > 100){
             patch.NoteOn(note, velocity);
@@ -32,7 +35,7 @@ public class HelmSynth : MonoBehaviour
    }
 
     public void SetVolume(float f){
-        patch.SetParameterPercent(Param.kVolume, f/volume);
+        patch.SetParameterPercent(Param.kVolume, f*volume);
     }
 
    public void Modulate(){
