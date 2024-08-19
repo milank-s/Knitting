@@ -200,7 +200,6 @@ public class SynthController : MonoBehaviour
 		
 		noisePad.PlayNote(62);
 		noisePad.PlayNote(64);
-		noisePad.SetVolume(0);
 		
 		PlaySplineChord();
 		
@@ -218,6 +217,8 @@ public class SynthController : MonoBehaviour
 		noisePad.Stop();
 		// pads[lineType].Mute(true);
 
+		//can we just stop notes instead of muting please?
+		
         if(currentFlutter != null){
 			currentFlutter.Mute(true);
 		}

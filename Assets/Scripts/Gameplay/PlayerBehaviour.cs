@@ -353,10 +353,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			buttonUp = true;
 			buttonDown = false;
 			charging = false;
-			if (state == PlayerState.Traversing)
-			{
-				boostTimer = 0;
-			}
+			
+			boostTimer = 0;
+			
 			buttonDownTimer = buttonDownBuffer;
 		}
 
