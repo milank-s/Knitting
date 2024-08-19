@@ -255,12 +255,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 
 		float t = 0; 
-		renderer.enabled = false;
-		glitchFX.enabled = false;
-		sparkEmission.rateOverTimeMultiplier = 0;
-
-
-		yield return new WaitForSeconds(0.2f);
 
 		Services.fx.PlayParticle(ParticleType.lose, pos, Vector3.forward);
 
@@ -277,7 +271,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		while(t < 1){
 			
 			//pretty sure this script just gets deleted and this never triggers
-			
+
 			if(Services.main.state == GameState.menu){
 				cancel = true;
 				break;
@@ -477,10 +471,10 @@ public class PlayerBehaviour: MonoBehaviour {
 		//UI boost visuals and button input
 		if (buttonDown)
 		{
-			boostIndicator.enabled = true;
-			// directionIndicator.enabled = true;
-			boostIndicator.transform.position =pos + (Vector3) cursorDir2 * ((Vector3)transform.position - cursorPos).magnitude;
-			boostIndicator.transform.rotation = Quaternion.LookRotation(CameraFollow.forward, cursorDir2);
+			// boostIndicator.enabled = true;
+			
+			// boostIndicator.transform.position =pos + (Vector3) cursorDir2 * ((Vector3)transform.position - cursorPos).magnitude;
+			// boostIndicator.transform.rotation = Quaternion.LookRotation(CameraFollow.forward, cursorDir2);
 
 			if(charging && state != PlayerState.Switching){
 				boostTimer += Time.deltaTime;
@@ -494,8 +488,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		{
 			boostIndicator.enabled = false;
 		}
-
-		boostIndicator.transform.localScale = Vector3.Lerp(Vector3.one * 0.2f, Vector3.one , boostTimer);
+		boostIndicator.transform.localScale = Vector3.Lerp(Vector3.one * 2, Vector3.one, Easing.QuadEaseOut(boostTimer));
 
 		//player sprite stretching
 
@@ -1923,7 +1916,12 @@ public class PlayerBehaviour: MonoBehaviour {
 
 //				GranularSynth.rewinding.TurnOn();
 //				//turn off particles
-//
+//				
+
+				sparkEmission.rateOverTimeMultiplier = 0;
+				boostIndicator.enabled = false;
+				glitchFX.enabled = false;
+				renderer.enabled = false;
 				cursorRenderer.enabled = false;
 				state = PlayerState.Animating;
 
@@ -1947,7 +1945,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			
 			if (state != PlayerState.Switching)
 			{
-				sparkEmission.rateOverTimeMultiplier = Mathf.Pow(easedDistortion, 2) * 100 * curSpeed;
+				sparkEmission.rateOverTimeMultiplier = Mathf.Pow(easedDistortion, 2) * 250 * curSpeed;
 			}else{
 				sparkEmission.rateOverTimeMultiplier= 0;
 			}
