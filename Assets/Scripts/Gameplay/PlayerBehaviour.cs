@@ -256,32 +256,27 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		float t = 0; 
 		renderer.enabled = false;
-		
-		Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, visualRoot);
-		
-		yield return new WaitForSeconds (0.15f);
+		glitchFX.enabled = false;
+		sparkEmission.rateOverTimeMultiplier = 0;
+
+		Services.fx.PlayParticle(ParticleType.lose, pos, Vector3.forward);
 
 		foreach(Point p in Services.main.activeStellation._points){
 			Vector3 toPlayer = (p.Pos - visualRoot.position);
-			p.AddForce(toPlayer * 10 + Random.onUnitSphere * toPlayer.magnitude * 50);
+			p.AddForce(Random.onUnitSphere * 50);
 		}
-
-		//mute synths NOW
+		
 		AudioManager.instance.PlayerDeath();
-		//play destruction note
-		float a = Spline.alpha;
+		
 		Services.fx.Fade(false, 1);
+
 		while(t < 1){
 			
 			Spline.shake = Mathf.Lerp(0.25f, 0, t);
-			Spline.alpha = Mathf.Lerp(a, 0, t);
 			t += Time.deltaTime;
 			yield return null;
 		}
-		Spline.alpha = a;
 		Spline.shake = 0;
-
-		yield return new WaitForSeconds (0.15f);
 
 		Services.fx.Fade(true, 0.2f);
 		Services.main.ResetLevel();
@@ -1703,7 +1698,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				break;
 
 			case PlayerState.Animating:
-
+				glitching = false;
 				cursorRenderer.enabled = true;
 				break;
 		}
@@ -1934,7 +1929,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			
 			if (state != PlayerState.Switching)
 			{
-				sparkEmission.rateOverTimeMultiplier = easedDistortion * 100 * potentialSpeed;
+				sparkEmission.rateOverTimeMultiplier = Mathf.Pow(easedDistortion, 2) * 100 * curSpeed;
 			}else{
 				sparkEmission.rateOverTimeMultiplier= 0;
 			}

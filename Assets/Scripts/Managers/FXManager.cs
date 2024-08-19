@@ -5,10 +5,11 @@ using Vectrosity;
 using UnityEngine.UI;
 using System.Linq;
 
+ public enum ParticleType{start, lose}
+
 public class FXManager : MonoBehaviour
 {
     public enum FXType{fizzle, burst, rotate, pulse, cross, glitch}
-     public enum ParticleType{radialBurst}
 
      public GameObject circleEffect;
     public SpriteRenderer nextPointSprite;
@@ -334,7 +335,7 @@ public void Step(){
       //StartCoroutine(FlashSprite(newSprite.transform));
   }
 
-  public void SpawnParticle(Vector3 pos, ParticleType p, Vector3 dir){
+  public void PlayParticle(ParticleType p, Vector3 pos, Vector3 dir){
     ParticleSystem newParticles = Instantiate(particlePrefabs[(int)p], pos, Quaternion.identity);
     newParticles.transform.forward = dir;
   }
