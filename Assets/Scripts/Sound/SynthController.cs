@@ -196,7 +196,7 @@ public class SynthController : MonoBehaviour
 
 			//dots
 			case 1:
-			lineType = 7;
+			lineType = 2;
 			break;
 
 			//dashed
