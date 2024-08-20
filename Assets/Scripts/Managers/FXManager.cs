@@ -138,14 +138,13 @@ public void Step(){
         bool forward = s.IsGoingForward(p1, p2);
         
         float start = forward ? 0.1f : 0.9f;
-        int pointIndex = s.selectedIndex;
-        Point p = s.SplinePoints[pointIndex];
+        int pointIndex = s.GetPointIndex(p1);
 
         if(!forward){
             pointIndex -= 1;
             // if(s.closed) pointIndex = s.CheckForLoop(pointIndex);
             pointIndex = s.CheckForLoop(pointIndex);
-            p = s.SplinePoints[pointIndex];
+            //p = s.SplinePoints[pointIndex];
         }
 
         Vector3 offset = s.GetCachedVelocity(pointIndex, start, forward);
@@ -160,7 +159,7 @@ public void Step(){
         newLine.color = new Color(1,1,1);
         newLine.smoothWidth = true;
         newLine.smoothColor = true;
-      
+        newLine.layer = LayerMask.NameToLayer("Default");
         linesDrawn.Add(newLine);
 
         Material newMat = Services.Prefabs.lines[0];
