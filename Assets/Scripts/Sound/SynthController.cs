@@ -185,6 +185,42 @@ public class SynthController : MonoBehaviour
 		
 		//do we want to add another voice per x steps between notes?
 		//to create triads quads etc
+
+		int m = Services.PlayerBehaviour.curSpline.lineMaterial;
+
+		switch(m){
+			//normal line
+			case 0:
+			lineType = 0;
+			break;
+
+			//dots
+			case 1:
+			lineType = 7;
+			break;
+
+			//dashed
+			case 2:
+			lineType = 2;
+			break;
+
+			//arrows
+			case 3:
+			lineType = 4;
+			break;
+
+			//charcoal
+			case 4:
+			lineType = 6;
+			break;
+
+			//pen
+			case 5:
+			lineType = 0;
+			break;
+
+
+		}
 		pads[lineType].PlayNote(curNote);
 		pads[lineType].PlayNote(targetNote);
 	}
