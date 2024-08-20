@@ -732,8 +732,9 @@ public class StellationController : MonoBehaviour {
 
 				if (unlockMethod == UnlockType.speed)
 				{
-					
-					float playerSpeed = Services.PlayerBehaviour.flow;
+					//flow or curspeed, that is the question
+
+					float playerSpeed = Services.PlayerBehaviour.curSpeed;
 					
 					
 					if(count > average){

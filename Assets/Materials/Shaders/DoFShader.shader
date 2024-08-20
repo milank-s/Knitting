@@ -15,7 +15,7 @@ Shader "Custom/SimpleAlpha" {
         Cull Off
 
         CGPROGRAM
-        #pragma surface surf NoLighting alphatest:_Cutoff 
+        #pragma surface surf NoLighting alpha
         #pragma target 2.0
         #pragma multi_compile_instancing
         #include "UnityCG.cginc"
