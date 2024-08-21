@@ -298,6 +298,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	public void Reset()
 	{
+		
+		Spline.shake = 0;
+		charging = false;
+		boostTimer = 0;
 		Services.fx.overlay.color = Color.clear;
 		hasCollectible = false;
 		collectibles = new List<Collectible>();
@@ -324,6 +328,10 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		pointDest = null;
 		lastPoint = null;
+		buttonDown = false;
+		buttonUp = false;
+		
+		buttonDownTimer = 0;
 
 		ResetFX();
 	}
@@ -473,23 +481,24 @@ public class PlayerBehaviour: MonoBehaviour {
 		//UI boost visuals and button input
 		if (buttonDown)
 		{
-			// boostIndicator.enabled = true;
+			boostIndicator.enabled = true;
 			
 			// boostIndicator.transform.position =pos + (Vector3) cursorDir2 * ((Vector3)transform.position - cursorPos).magnitude;
 			// boostIndicator.transform.rotation = Quaternion.LookRotation(CameraFollow.forward, cursorDir2);
 
-			// if(charging && state != PlayerState.Switching){
-			// 	boostTimer += Time.deltaTime;
-			// 	boostTimer = Mathf.Clamp01(boostTimer);
-			// }
+			if(charging && state != PlayerState.Switching){
+				boostTimer += Time.deltaTime;
+				boostTimer = Mathf.Clamp01(boostTimer);
+			}
 
-			// charging = true;
-			//buttonDownTimer = buttonDownBuffer;
+			charging = true;
+			buttonDownTimer = buttonDownBuffer;
 		}
 		else
 		{
 			boostIndicator.enabled = false;
 		}
+
 		boostIndicator.transform.localScale = Vector3.Lerp(Vector3.one * 2, Vector3.one, Easing.QuadEaseOut(boostTimer));
 
 		//player sprite stretching
@@ -1619,7 +1628,6 @@ public class PlayerBehaviour: MonoBehaviour {
 		switch (state)
 		{
 			case PlayerState.Traversing:
-
 				//this isn't accurate, its called on ghost points
 				break;
 

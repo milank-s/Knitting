@@ -315,11 +315,6 @@ public class SceneController : MonoBehaviour
 		curLevel = s;
 		curLevelName = GetCurLevel();
     }
-    void LoadScene(){
-		
-		curLevelName = GetCurLevel();
-        LoadScene(curLevelName);
-	}
 
     public void LoadScene(string sceneName){
         
@@ -332,6 +327,9 @@ public class SceneController : MonoBehaviour
 		}
     }
 
+    public void LoadDirect(){
+        LoadDirect(GetCurLevel());
+    }
 
     //loads and starts player instantly
     public void LoadDirect(string levelTitle){
@@ -342,7 +340,7 @@ public class SceneController : MonoBehaviour
         }
 
         if(curLevelSet.isScene){
-            LoadScene();
+            LoadScene(GetCurLevel());
         }else{
             
             LoadFile(levelTitle);
