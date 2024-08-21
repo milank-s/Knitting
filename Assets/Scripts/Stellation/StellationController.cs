@@ -4,6 +4,8 @@ using System;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.Events;
+
 public class StellationController : MonoBehaviour {
 
 	public enum UnlockType{none, laps, speed, pickups}
@@ -16,6 +18,7 @@ public class StellationController : MonoBehaviour {
 	public StellationController unlock;
 	public bool isPlayerOn;
 	public bool lockSplines;
+	bool hasStarted = false;
 
 	List<CrawlerManager> crawlers;
 	
@@ -28,13 +31,12 @@ public class StellationController : MonoBehaviour {
 	public bool won = false;
 	public bool collected = false;
 
-	
 	[Header("Events")]
-
+	public UnityEvent OnLeaveStart;
+	public UnityEvent OnCompleteStellation;
+	
 	public StellationEvent OnCompleteLap;
-	public StellationEvent OnCompleteStellation;
 	public StellationEvent OnHitStart;
-	public StellationEvent OnLeaveStart;
 	public StellationEvent OnNextStart;
 	public StellationEvent OnPickup;
 	public StellationEvent OnDeposit;
@@ -443,6 +445,7 @@ public class StellationController : MonoBehaviour {
 	//when resetting this will need to be called?
 	public void Setup()
 	{
+		hasStarted = false;
 		curSplineIndex = 0;
 		startIndex = 0;
 		timer = 0;
@@ -487,6 +490,16 @@ public class StellationController : MonoBehaviour {
 		foreach(Spline s in _escapeSplines){
 			s.SwitchState(Spline.SplineState.off);
 		}
+	}
+
+	//start all crawlers;
+
+
+	void StartStellation(){
+		
+		hasStarted = true;
+		
+
 	}
 
 	public void DepositCollectible(Point p){
@@ -546,7 +559,13 @@ public class StellationController : MonoBehaviour {
 		Services.fx.PlayAnimationAtPosition(FXManager.FXType.rotate, _startPoints[0].transform);
 	}
 
+
 	public void LeftStartPoint(){
+
+		if(!hasStarted){
+			StartStellation();
+		}
+
 		if(startIndex%_startPoints.Count == 0 && !isComplete){
 			//start the timer bro;
 			timer = 0;
