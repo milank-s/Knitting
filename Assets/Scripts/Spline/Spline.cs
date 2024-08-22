@@ -51,9 +51,8 @@ public class Spline : MonoBehaviour
 	float rollingDistance;
 	float magnitude;
 	public static List<Spline> Splines = new List<Spline> ();
-	public static float drawSpeed = 3f;
+	public static float drawSpeed = 2f;
 	
-
 	[HideInInspector]
 	public List<Point> SplinePoints;
 
@@ -144,7 +143,8 @@ public class Spline : MonoBehaviour
 			return (SplinePoints.Count - (closed ? 0 : 1)) * curveFidelity;
 		}
 	}
-	float drawProgress;
+	float drawProgUpper;
+	float drawProgLower;
 	private bool drawnIn;
 	private int lowHitPoint = int.MaxValue;
 	private int highHitPoint = -int.MaxValue;
@@ -261,7 +261,8 @@ public class Spline : MonoBehaviour
 		SetVectorLine();
 		Selected = StartPoint;
 		distance = 0;
-		drawProgress = 0;
+		drawProgUpper = 0;
+		drawProgLower = 0;
 		
 		for(int i = 0; i < SplinePoints.Count; i++) {
 			
@@ -512,7 +513,6 @@ public class Spline : MonoBehaviour
 				int index = (i * curveFidelity) + k;
 				float step = (float) k / (float) (curveFidelity-1);
 				
-
 				//trying to save meager amounts of compute
 				
 				//I do this once to populate, and then only when player is on
@@ -570,20 +570,24 @@ public class Spline : MonoBehaviour
 
 			if(!hitEnd && segindex == upperDrawIndex){
 				
+
 				float dist = Vector3.Distance(pointPositions[segindex], pointPositions[segindex-1]);
 
-				drawProgress += (drawSpeed/dist) * Time.deltaTime;
+				drawProgUpper += (drawSpeed / dist) * Time.deltaTime;
+				
+				DrawLine(i, segindex, step + (drawProgUpper/(float)curveFidelity), true);
+				
 
-				DrawLine(i, segindex, step + drawProgress/(float)curveFidelity, true);
+				// Debug.Log("distance Covered = " + dist + " progress = " + drawProgUpper);
 				
 				//go to the next segment
-				if(drawProgress > 1){
-					drawProgress = 0;
+				if(drawProgUpper > 1){
+
+					drawProgUpper = 0;
 					upperDrawIndex++;
 
 					if(upperDrawIndex == upperPointIndex * curveFidelity + curveFidelity){
 						upperPointIndex ++;
-						Debug.Log("upper point index = " + upperPointIndex);
 						
 						if(upperPointIndex < SplinePoints.Count){
 							SplinePoints[upperPointIndex].SwitchState(Point.PointState.on);
@@ -600,13 +604,14 @@ public class Spline : MonoBehaviour
 			
 
 				float dist = Vector3.Distance(pointPositions[segindex], pointPositions[segindex + 1]);
-				drawProgress += (drawSpeed/dist) * Time.deltaTime;
 
-				DrawLine(i, segindex, step - drawProgress/(float)curveFidelity, true);
+				DrawLine(i, segindex, step - (drawProgLower/(float)curveFidelity), true);
+
+				drawProgLower += (drawSpeed / dist) * Time.deltaTime;
 				
 				//go to the next segment
-				if(drawProgress > 1){
-					drawProgress = 0;
+				if(drawProgLower > 1){
+					drawProgLower = 0;
 					lowerDrawIndex --;
 
 					if(lowerDrawIndex == lowerPointIndex * curveFidelity - curveFidelity){
@@ -656,11 +661,10 @@ public class Spline : MonoBehaviour
 
 		if(state != SplineState.on) return;
 
-		
 		if(!drawing && !drawn){
 			
 			Debug.Log("draw from " + p.name);
-			
+			drawn = false;
 			drawing = true;
 			upperPointIndex = SplinePoints.IndexOf(p);
 			lowerPointIndex = upperPointIndex;
@@ -689,7 +693,6 @@ public class Spline : MonoBehaviour
 		
 		//should this match player speed?
 		if(speed != 0){
-
 			line.textureOffset -= Time.deltaTime * (speed / line.textureScale) * 50;
 			line.textureScale = Mathf.Sign(speed) * Mathf.Abs(line.textureScale);
 		}

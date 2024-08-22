@@ -146,9 +146,13 @@ public class StellationManager : MonoBehaviour
 		Services.StartPoint = Services.main.activeStellation._points[startPoint];
 
 		//this function tells the active stellation to draw I believe
-		Services.main.ActivatePlayer();
+		StartCoroutine(ActivatePlayer());
 	}
 
+	public IEnumerator ActivatePlayer(){
+		yield return new WaitForSeconds(0.1f);
+		Services.main.ActivatePlayer();
+	}
 	public void SaveStellation(StellationController c){
 		//right now the way the save function uses the point parent and active stellation might cause problems
 		MapEditor.instance.Save(c);

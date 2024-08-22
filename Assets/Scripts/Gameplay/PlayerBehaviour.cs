@@ -129,7 +129,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 	[Header("Input")]
 	public bool usingJoystick;
-	public bool joystickLocked;
+	public bool joystickLocked = true;
 	[Space(10)]
 
 	[Header("AV")]
@@ -224,6 +224,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		transform.position = curPoint.Pos;
 		pos = transform.position;
 		cursorPos = pos;
+		cursorDir2 = Vector3.zero;
+		cursorDir = Vector3.zero;
 		cursor.transform.position = cursorPos;
 		cursorRenderer.enabled = false;
 		traversedPoints.Add (curPoint);
@@ -709,6 +711,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			}
 			else
 			{
+				
 				bool newSplineSelected = prevSplineDest == null || splineDest != prevSplineDest;
 
 				if (newSplineSelected){
@@ -723,6 +726,7 @@ public class PlayerBehaviour: MonoBehaviour {
 					
 					Services.fx.nextPointSprite.enabled = false;
 				}
+				
 			}
 
 			//boostTimer >= 1 ||  if you wnna fuck with ppl
@@ -1343,6 +1347,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		bool isGhostPoint = curPoint.pointType == PointTypes.ghost;
 		bool forward = true;
+
+		if(!isGhostPoint && joystickLocked) return false;
 
 		if (curPoint.HasSplines ()) {
 
