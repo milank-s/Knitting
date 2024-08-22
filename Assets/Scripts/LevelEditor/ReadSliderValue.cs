@@ -15,7 +15,7 @@ public class ReadSliderValue : MonoBehaviour
     public InputField input;
     public Text text;
     [SerializeField] public UnityEngine.UI.Slider slider;
-
+    
     public UnityEvent OnChangeValue;
     public void Start()
     {

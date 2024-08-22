@@ -289,7 +289,7 @@ public class MapEditor : MonoBehaviour
         selectedSpline.crawlerDir = b;
     }
 
-    public void SetCrawlerType(float i){
+    public void SetCrawlerType(Int32 i){
         
         if(!selectedSpline) return;
         selectedSpline.crawlerType = (CrawlerType)i;
@@ -300,6 +300,7 @@ public class MapEditor : MonoBehaviour
         crawlerSpeed.ChangeValue(s.crawlerSpeed);
         crawlerDir.ChangeValue(s.crawlerDir);
         crawlerType.SetValueWithoutNotify((int)s.crawlerType);
+        crawlerIndex.slider.maxValue = s.SplinePoints.Count -1;
     }
 
     public void SetCrawlerIndex(float i){
@@ -1616,7 +1617,7 @@ public class MapEditor : MonoBehaviour
             newSpline.transform.parent = parent.transform;
             newSpline.order =  json["spline" + i]["order"];
             newSpline.bidirectional = json["spline" + i]["bidirectional"];
-            newSpline.crawlerType = (CrawlerType)json["spline" + i]["crawlerType"];
+            newSpline.crawlerType = (CrawlerType) ((int)json["spline" + i]["crawlerType"]);
             newSpline.crawlerSpeed = json["spline" + i]["crawlerSpeed"];
             newSpline.crawlerIndex =  json["spline" + i]["crawlerIndex"];
             newSpline.crawlerDir =  json["spline" + i]["crawlerDir"];
