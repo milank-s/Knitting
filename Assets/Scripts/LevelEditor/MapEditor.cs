@@ -1353,6 +1353,10 @@ public class MapEditor : MonoBehaviour
             splineData["lineWidth"] = s.lineWidth;
             splineData["bidirectional"].AsBool = s.bidirectional;
             splineData["speed"].AsFloat = s.speed;
+            splineData["crawlerType"].AsInt = (int)s.crawlerType;
+            splineData["crawlerIndex"].AsInt = s.crawlerIndex;
+            splineData["crawlerDir"].AsBool = s.crawlerDir;
+            splineData["crawlerSpeed"].AsFloat = s.crawlerSpeed;
             JSONObject pointIndices = new JSONObject();
 
             int pi = 0;
@@ -1612,7 +1616,10 @@ public class MapEditor : MonoBehaviour
             newSpline.transform.parent = parent.transform;
             newSpline.order =  json["spline" + i]["order"];
             newSpline.bidirectional = json["spline" + i]["bidirectional"];
-            newSpline.speed = json["spline" + i]["speed"];
+            newSpline.crawlerType = (CrawlerType)json["spline" + i]["crawlerType"];
+            newSpline.crawlerSpeed = json["spline" + i]["crawlerSpeed"];
+            newSpline.crawlerIndex =  json["spline" + i]["crawlerIndex"];
+            newSpline.crawlerDir =  json["spline" + i]["crawlerDir"];
             newSpline.ChangeMaterial(newSpline.lineMaterial);
             newSplines.Add(newSpline);
         }
