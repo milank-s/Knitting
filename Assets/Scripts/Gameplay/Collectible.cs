@@ -30,7 +30,6 @@ public class Collectible : MonoBehaviour
         done = false;
         flocking = false;
         depositPoint = null;
-        
 
         if(!hasSpawnpoint){
             transform.position = startPos;

@@ -16,9 +16,21 @@ public class Runner : Crawler
         timer = 0;
         collider.enabled = false;
         collectible.collider.enabled = false;
+
         collectible.SetTarget(transform);
+        collectible.transform.position = transform.position;
         speed *= (float)(index + 1)/(float)controller.crawlerCount;
         collectible.flocking = false;
+        Services.main.activeStellation.collectibles.Add(collectible);
+    }
+
+    public override void Stop(){
+
+        //remove collectible from controller list, necessary?
+        //maybe not
+        collectible.Reset();
+
+        base.Stop();
     }
 
     public override void Step()

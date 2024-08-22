@@ -51,7 +51,7 @@ public class CrawlerManager : MonoBehaviour
     }
 
     public Crawler SpawnCrawler(CrawlerType t){
-        Crawler newCrawler = Instantiate(Services.Prefabs.crawlers[(int)t], transform).GetComponent<Crawler>();
+        Crawler newCrawler = Instantiate(Services.Prefabs.crawlers[(int)t -1], transform).GetComponent<Crawler>();
         newCrawler.baseSpeed = speed;
         crawlers.Add(newCrawler);
         newCrawler.Init(this);

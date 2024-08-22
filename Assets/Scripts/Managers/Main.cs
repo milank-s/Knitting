@@ -340,6 +340,10 @@
 					s.line.Draw3D();
 				}
 			}
+
+			foreach(CrawlerManager c in Services.Prefabs.crawlerPools){
+				c.Step();
+			}
 		}
 
 		if (pressedPause)

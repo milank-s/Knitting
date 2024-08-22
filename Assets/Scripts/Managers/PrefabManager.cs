@@ -32,6 +32,8 @@ public class PrefabManager : MonoBehaviour {
 				CrawlerManager m = g.AddComponent<CrawlerManager>();
 				m.crawlerType = c;
 				g.name = Enum.GetName(typeof(CrawlerType), (int)c);
+				crawlerPools.Add(m);
+				m.Initialize();
 			}
 		}
 	}

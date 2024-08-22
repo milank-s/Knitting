@@ -41,7 +41,7 @@ Crawler : MonoBehaviour
 
     public virtual void Setup(Spline s, bool f, int i = 0)
     {
-        
+        baseSpeed = s.crawlerSpeed;
         forward = f;
         startIndex = i;
         startSpline = s;

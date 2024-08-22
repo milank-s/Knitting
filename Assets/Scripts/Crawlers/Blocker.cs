@@ -34,7 +34,7 @@ public class Blocker : Crawler
             //destroyed by player from behind
             DamageMe();
         }else{
-            Debug.Log("ow");
+            
             DamagePlayer();
         }
     }else{

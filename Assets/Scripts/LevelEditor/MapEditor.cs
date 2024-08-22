@@ -293,6 +293,7 @@ public class MapEditor : MonoBehaviour
         
         if(!selectedSpline) return;
         selectedSpline.crawlerType = (CrawlerType)i;
+        Debug.Log("setting crawlerType to " + (CrawlerType)i + " " + i);
     }
 
     void SetCrawlerInfo(Spline s){
@@ -388,6 +389,8 @@ public class MapEditor : MonoBehaviour
                 levelList.options.Add(new Dropdown.OptionData(fileName));
             }
         }
+
+        int val = 0;
 
         foreach(CrawlerType c in Enum.GetValues(typeof(CrawlerType))){
             string crawlername = Enum.GetName(typeof(CrawlerType), (int)c);
