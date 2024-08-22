@@ -564,7 +564,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			CheckProgress ();
 
 		}
-		//else if? should happen all on same frame?
+		
 		if(state == PlayerState.Switching)
 		{
 			transform.position = curPoint.Pos;

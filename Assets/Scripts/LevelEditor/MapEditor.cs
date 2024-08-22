@@ -293,7 +293,6 @@ public class MapEditor : MonoBehaviour
         
         if(!selectedSpline) return;
         selectedSpline.crawlerType = (CrawlerType)i;
-        Debug.Log("setting crawlerType to " + (CrawlerType)i + " " + i);
     }
 
     void SetCrawlerInfo(Spline s){
