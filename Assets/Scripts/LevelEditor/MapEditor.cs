@@ -297,6 +297,11 @@ public class MapEditor : MonoBehaviour
     }
 
     void SetCrawlerInfo(Spline s){
+         
+        if(!crawlerOptions.activeSelf){
+            ToggleCrawlerOptions();
+        }
+
         crawlerIndex.ChangeValue(s.crawlerIndex);
         crawlerSpeed.ChangeValue(s.crawlerSpeed);
         crawlerDir.ChangeValue(s.crawlerDir);
@@ -736,9 +741,6 @@ public class MapEditor : MonoBehaviour
                 AddSelectedPoint(p);
             }
 
-            if(!crawlerOptions.activeSelf){
-                ToggleCrawlerOptions();
-            }
             SetCrawlerInfo(controller._splines[i]);
 
         }
@@ -1886,6 +1888,8 @@ void DragCamera()
             splineSpeedVal.SetValueWithoutNotify(selectedSpline.speed);
             splineSpeedReadout.text = selectedSpline.speed.ToString("F1");
             splineSelectedTip.SetActive(true);
+
+            SetCrawlerInfo(selectedSpline);
         }
 
     }

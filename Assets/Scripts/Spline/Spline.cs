@@ -39,10 +39,10 @@ public class Spline : MonoBehaviour
 	public static float frequency = 20f;
 
 	[Header("crawler settings")]
-	public CrawlerType crawlerType;
-	public float crawlerSpeed;
+	public CrawlerType crawlerType = CrawlerType.none;
+	public float crawlerSpeed = 1;
 	public int crawlerIndex;
-	public bool crawlerDir;
+	public bool crawlerDir = true;
 	
 	
 	[HideInInspector]

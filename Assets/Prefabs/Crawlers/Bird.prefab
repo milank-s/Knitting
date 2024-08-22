@@ -31,6 +31,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.02, y: 0.02, z: 0.02}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3010613464945328324}
   m_Father: {fileID: 0}
@@ -48,10 +49,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30834a73c96ad8944b6b850fb2bbf940, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useSpline: 1
   forward: 1
+  point: {fileID: 0}
+  curIndex: 0
   baseSpeed: 1
-  boostAmount: 0.5
   running: 0
+  moving: 0
   trail: {fileID: 699734406090259837}
 --- !u!114 &6674464388053343297
 MonoBehaviour:
@@ -65,11 +69,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c1c3a53f5bfe4f669e843d602570d30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minVelocity: 0
-  maxVelocity: 0
   randomness: 0
-  pointTarget: {x: 0, y: 0, z: 0}
+  target: {fileID: 0}
   velocity: {x: 0, y: 0, z: 0}
+  speed: 0
   controller: {fileID: 0}
 --- !u!135 &3046710827450709890
 SphereCollider:
@@ -161,6 +164,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5170252073360023536}
   m_RootOrder: 0
@@ -186,7 +190,7 @@ TrailRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: beedff7ab683745948cc40fa0a9da696, type: 2}
+  - {fileID: 2100000, guid: 59df02a78512d4336ab361732d8d46f4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
