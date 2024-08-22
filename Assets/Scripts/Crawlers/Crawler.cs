@@ -24,9 +24,11 @@ Crawler : MonoBehaviour
     public bool moving;
     protected float progress;
     protected float distance;
-
+    protected bool startDir;
+    protected Spline startSpline;
     protected Vector3 lastPos;
     protected Vector3 delta;
+    protected int startIndex;
     protected int dir;
     protected int index;
     protected CrawlerManager controller;
@@ -37,23 +39,28 @@ Crawler : MonoBehaviour
         index = c.GetCrawlerIndex(this);
     }
 
-    public virtual void Setup(Spline s, bool f, int startIndex = 0)
+    public virtual void Setup(Spline s, bool f, int i = 0)
     {
-        moving = true;
         
-        curIndex = startIndex;
-        spline = s;
-        speed = baseSpeed;
-        // curIndex = f? 0 : s.SplinePoints.Count - 1;
-        point = s.SplinePoints[curIndex];
         forward = f;
+        startIndex = i;
+        startSpline = s;
+        startDir = f;
+        Restart();
+    }
+
+    public virtual void Restart(){   
+        moving = true;
+        curIndex = startIndex;
+        spline = startSpline;
+        speed = baseSpeed;
+        point = spline.SplinePoints[curIndex];
         progress = forward ? 0 : 1;
         running = true;
         dir = forward ? 1 : -1;
-        transform.position = s.SplinePoints[curIndex].Pos;
+        transform.position = spline.SplinePoints[curIndex].Pos;
         distance = spline.GetDistance(curIndex);
         lastPos = transform.position;
-        
     }
 
     public virtual void Step()

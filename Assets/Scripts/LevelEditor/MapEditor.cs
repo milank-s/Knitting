@@ -125,6 +125,13 @@ public class MapEditor : MonoBehaviour
     public Dropdown levelList;
     public Dropdown unlockTypes;
 
+    [Header("Crawler Settings")]
+    public GameObject crawlerOptions;
+    public Dropdown crawlerType;
+    public ReadSliderValue crawlerSpeed;
+    public ReadSliderValue crawlerIndex;
+    public ReadToggleValue crawlerDir;
+
     private List<GameObject> text;
 
     public StellationController controller;
@@ -276,6 +283,36 @@ public class MapEditor : MonoBehaviour
         typing = true;
     }
 
+    public void SetCrawlerDir(bool b){
+        
+        if(!selectedSpline) return;
+        selectedSpline.crawlerDir = b;
+    }
+
+    public void SetCrawlerType(float i){
+        
+        if(!selectedSpline) return;
+        selectedSpline.crawlerType = (CrawlerType)i;
+    }
+
+    void SetCrawlerInfo(Spline s){
+        crawlerIndex.ChangeValue(s.crawlerIndex);
+        crawlerSpeed.ChangeValue(s.crawlerSpeed);
+        crawlerDir.ChangeValue(s.crawlerDir);
+        crawlerType.SetValueWithoutNotify((int)s.crawlerType);
+    }
+
+    public void SetCrawlerIndex(float i){
+        if(!selectedSpline) return;
+        int ind = (int)i;
+        selectedSpline.crawlerIndex = ind;
+    }
+
+    public void SetCrawlerSpeed(float f){
+        if(!selectedSpline) return;
+        selectedSpline.crawlerSpeed = f;
+    }
+
     public void ChangeFOV(System.Single s)
     {
         controller.desiredFOV = (int)s;
@@ -351,6 +388,11 @@ public class MapEditor : MonoBehaviour
             }
         }
 
+        foreach(CrawlerType c in Enum.GetValues(typeof(CrawlerType))){
+            string crawlername = Enum.GetName(typeof(CrawlerType), (int)c);
+            crawlerType.options.Add(new Dropdown.OptionData(crawlername));
+        }
+        
         unlockTypes.options.Add(new Dropdown.OptionData("None"));
         unlockTypes.options.Add(new Dropdown.OptionData("Laps"));
         unlockTypes.options.Add(new Dropdown.OptionData("Speed"));
@@ -422,9 +464,6 @@ public class MapEditor : MonoBehaviour
         tooltipParent.gameObject.SetActive(on);
     }
 
-    public void ToggleCrawlerMode(){
-        
-    }
     
     public void TogglePlayMode()
     {
@@ -692,6 +731,11 @@ public class MapEditor : MonoBehaviour
             {
                 AddSelectedPoint(p);
             }
+
+            if(!crawlerOptions.activeSelf){
+                ToggleCrawlerOptions();
+            }
+            SetCrawlerInfo(controller._splines[i]);
 
         }
     }
@@ -2496,9 +2540,14 @@ void DragCamera()
         selectedSplines.Clear();
         splineSelectedTip.SetActive(false);
         splineOrder.text = "";
+        if(crawlerOptions.activeSelf){
+            ToggleCrawlerOptions();
+        }
     }
     
-    
+    public void ToggleCrawlerOptions(){
+        crawlerOptions.SetActive(!crawlerOptions.activeSelf);
+    }
     public void DeselectPoints()
     {
         selectedPoints.Clear();

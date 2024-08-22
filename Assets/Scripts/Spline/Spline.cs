@@ -23,6 +23,7 @@ public class Spline : MonoBehaviour
 	public SplineType type = SplineType.normal;
 
 	public enum SplineType{normal, moving, locked}
+
 	public enum SplineState{off, on}
 
 	[Space(10)]
@@ -36,18 +37,25 @@ public class Spline : MonoBehaviour
 	public static float amplitude = 0.25f;
 	public static float noiseSpeed = 100;
 	public static float frequency = 20f;
+
+	[Header("crawler settings")]
+	public CrawlerType crawlerType;
+	public float crawlerSpeed;
+	public int crawlerIndex;
+	public bool crawlerDir;
+	
 	
 	[HideInInspector]
 	public float distortion;
 	bool complete;
 	float rollingDistance;
 	float magnitude;
-	public static System.Collections.Generic.List<Spline> Splines = new System.Collections.Generic.List<Spline> ();
+	public static List<Spline> Splines = new List<Spline> ();
 	public static float drawSpeed = 3f;
 	
 
 	[HideInInspector]
-	public System.Collections.Generic.List<Point> SplinePoints;
+	public List<Point> SplinePoints;
 
 	[SerializeField]
 	public List<Vector3> pointPositions;
