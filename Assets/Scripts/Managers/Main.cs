@@ -187,7 +187,7 @@
         Services.main.editor.controller = null;
         Services.main.pointParent = null;
         Services.main.splineParent = null;
-        
+
         SceneController.instance.stellationsLoaded.Clear();
         SceneController.curLevel = 0;   
 		
@@ -238,6 +238,7 @@
 		Services.Sounds = GetComponent<SoundBank> ();
 		Services.main = this;
 		PauseMenu.SetActive(false);
+		Services.Prefabs.InitCrawlers();
 	
 	}
 

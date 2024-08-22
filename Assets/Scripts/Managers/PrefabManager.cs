@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 [ExecuteInEditMode]
 public class PrefabManager : MonoBehaviour {
 
 
 	public List<Crawler> crawlers;
+	public List<CrawlerManager> crawlerPools;
 	public GameObject soundEffectObject;
 	public GameObject spawnedText;
 	public GameObject text;
@@ -22,6 +24,17 @@ public class PrefabManager : MonoBehaviour {
 	public Material[] fontMaterials;
 	public Font[] fonts;
 
+	public void InitCrawlers(){
+		foreach(CrawlerType c in Enum.GetValues(typeof(CrawlerType))){
+			if(c != CrawlerType.none){
+				GameObject g = new GameObject();
+				g.transform.parent = transform;
+				CrawlerManager m = g.AddComponent<CrawlerManager>();
+				m.crawlerType = c;
+				g.name = Enum.GetName(typeof(CrawlerType), (int)c);
+			}
+		}
+	}
 
 	public void SetFont(TextMesh t, int i)
 	{

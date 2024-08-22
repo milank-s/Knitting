@@ -306,6 +306,7 @@ public class StellationController : MonoBehaviour {
 		
 			for (int i = 0; i < splines.Length; i++)
 			{
+				
 				Spline s = splines[i];
 				s.Initialize();
 
@@ -315,6 +316,7 @@ public class StellationController : MonoBehaviour {
 				s.SetSplineType(s.type);
 				
 				s.controller = this;
+
 				index++;
 			}
 		}
@@ -376,25 +378,24 @@ public class StellationController : MonoBehaviour {
 
 		collectibles = GetComponentsInChildren<Collectible>().ToList();
 
-		// if(!spawnedCrawler && unlockMethod == UnlockType.speed){
-		// 	spawnedCrawler = true;
-		// 	CrawlerManager newCrawler = gameObject.AddComponent<CrawlerManager>();
-		// 	newCrawler.speed = speed;
-		// 	newCrawler.crawlerCount = 0;
-		// 	newCrawler.spline = splines[0];
-		// 	newCrawler.spawnFrequency = 0;
-		// 	newCrawler.crawlerType = CrawlerType.spark;
-		// 	// // // OnHitStart += newCrawler.Reset;
-		// 	crawlers.Add(newCrawler);
-			
-			
-		// 	newCrawler.Initialize();
-		// 	// newCrawler.EmitSparks(start);
-		// }
-
 		Setup();
 	}
 
+
+	public void StartCrawlers(){
+		foreach(Spline s in _splines){
+						
+			//there is absolutely no fucking shot you should spawn crawler managers
+			//have them setup in prefab manager and just ask for instances of them
+
+			if(s.crawlerType != CrawlerType.none){
+				CrawlerManager m = Services.Prefabs.crawlerPools[(int)s.crawlerType - 1];
+				m.speed = speed;
+				m.AddCrawler(s, s.crawlerDir, s.crawlerIndex);
+			}
+		}
+	}
+	
 	public void AddSpline(Spline s){
 
 		if(!_splines.Contains(s)){
@@ -498,7 +499,7 @@ public class StellationController : MonoBehaviour {
 	void StartStellation(){
 		
 		hasStarted = true;
-		
+		StartCrawlers();
 
 	}
 

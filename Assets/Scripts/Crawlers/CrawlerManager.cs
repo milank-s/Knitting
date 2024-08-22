@@ -26,7 +26,7 @@ public class CrawlerManager : MonoBehaviour
             SpawnCrawler(crawlerType);
         }
 
-        //Services.main.OnReset += Reset;
+        Services.main.OnReset += Reset;
     }
     public void EmitSparks(Point p){
         
@@ -124,9 +124,7 @@ public class CrawlerManager : MonoBehaviour
 
         if (!available)
         {
-            return;
-            // toUse = crawlers[Mathf.Clamp((index % crawlers.Count) + 1, 0, crawlers.Count-1)];
-            // index++;
+            toUse = SpawnCrawler(crawlerType);
         }
         
         toUse.gameObject.SetActive(true);
