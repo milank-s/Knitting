@@ -109,10 +109,6 @@ public class StellationManager : MonoBehaviour
 		//this is pretty fucking heavy duty 
 		//there should be a dedicated reset function
 
-		//we need a way of overriding the start point before the call goes out to animate the splines
-		Services.main.InitializeLevel();
-		Services.StartPoint = Services.main.activeStellation._points[startPoint];
-
 		//second loop, load the stellations and set up any necessary unlocks
 
 		List<StellationController> lockedStellations = new List<StellationController>();
@@ -130,7 +126,7 @@ public class StellationManager : MonoBehaviour
 			
 		}
 		
-		controllers[checkpoint].OnPlayerEnter();
+		// controllers[checkpoint].OnPlayerEnter();
 
 		for(int i = 0; i < controllers.Count; i++){
 
@@ -140,11 +136,16 @@ public class StellationManager : MonoBehaviour
 			}
 
 			//draw in splines for accessed stellations
-			if(i <= checkpoint){
+			if(i <= checkpoint && controllers[i] != Services.main.activeStellation){
 				controllers[i].DrawStellation();
 			}
 		}
-		
+
+				//we need a way of overriding the start point before the call goes out to animate the splines
+		Services.main.InitializeLevel();
+		Services.StartPoint = Services.main.activeStellation._points[startPoint];
+
+		//this function tells the active stellation to draw I believe
 		Services.main.ActivatePlayer();
 	}
 

@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class DemoScript : MonoBehaviour
 {
     
@@ -10,9 +10,15 @@ public class DemoScript : MonoBehaviour
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.R)){
-            //you need to set the current level index I think
-            SceneController.curLevel = 0;
-            SceneController.instance.LoadDirect();
+            
+            if(SceneManager.sceneCount > 1){
+                
+                SceneController.instance.LoadScene(SceneManager.GetSceneAt(SceneManager.sceneCount -1).name);
+            }else{
+                //you need to set the current level index I think
+                SceneController.curLevel = 0;
+                SceneController.instance.LoadDirect();
+            }
             
         }   
     }

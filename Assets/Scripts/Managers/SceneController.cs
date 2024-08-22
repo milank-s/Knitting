@@ -303,7 +303,7 @@ public class SceneController : MonoBehaviour
         if(SceneManager.sceneCount > 1){
 			if (curLevelName != "")
 			{
-                Debug.Log("unloading " + curLevelName);
+                // Debug.Log("unloading " + curLevelName);
 				SceneManager.UnloadSceneAsync(curLevelName);
 			}
 		}

@@ -621,6 +621,8 @@ public class StellationController : MonoBehaviour {
 
 	public void Show(bool b)
 	{
+		// Debug.Log("show " + b + " " + gameObject.name);
+		
 		foreach (Point p in _points)
 		{
 			//turns locked points off and on points off, covers most cases, looks stupid

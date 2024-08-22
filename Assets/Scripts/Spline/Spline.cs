@@ -583,10 +583,12 @@ public class Spline : MonoBehaviour
 
 					if(upperDrawIndex == upperPointIndex * curveFidelity + curveFidelity){
 						upperPointIndex ++;
-
+						Debug.Log("upper point index = " + upperPointIndex);
+						
 						if(upperPointIndex < SplinePoints.Count){
 							SplinePoints[upperPointIndex].SwitchState(Point.PointState.on);
 						}else{
+							Debug.Log("I think I hit the end");
 							hitEnd = true;
 						}
 						
@@ -620,7 +622,7 @@ public class Spline : MonoBehaviour
 			}
 			}
 			
-			if(hitEnd && hitStart){
+			if(hitEnd && hitStart && drawing){
 				drawn = true; 
 				drawing = false;
 			}
@@ -629,13 +631,16 @@ public class Spline : MonoBehaviour
 	}
 
 	public void DrawEntireSpline(){
-		if(state != SplineState.on) return;
+		// if(state != SplineState.on) return;
+		
+		Debug.Log("draw entire " + name);
 
-		if(!drawing && !drawn){
+		if(!drawing){
+			drawn = false;
+			drawing = true;
 			
 			SplinePoints[0].SwitchState(Point.PointState.on);
-
-			drawing = true;
+		
 			upperPointIndex = 0;
 			lowerPointIndex = 0;
 			upperDrawIndex = upperPointIndex * curveFidelity + 1;
@@ -651,7 +656,10 @@ public class Spline : MonoBehaviour
 
 		if(state != SplineState.on) return;
 
+		
 		if(!drawing && !drawn){
+			
+			Debug.Log("draw from " + p.name);
 			
 			drawing = true;
 			upperPointIndex = SplinePoints.IndexOf(p);
@@ -660,11 +668,14 @@ public class Spline : MonoBehaviour
 			lowerDrawIndex = upperPointIndex * curveFidelity - 2;
 
 			if(lowerDrawIndex < 0) {
+				
+				Debug.Log("at start already");
 				hitStart = true;
 				
 			}
 			
 			if(upperDrawIndex > totalLineSegments) {
+				Debug.Log("at end already");
 				hitEnd = true;
 			}
 		}
@@ -1391,6 +1402,9 @@ public class Spline : MonoBehaviour
 		hitEnd = false;
 		hitStart = false;
 		drawing = true;
+
+		Debug.Log("drawing cuz I added a point");
+
 	}
 
 	public void DrawVelocity (Vector3 pos, float t, Vector3 direction)
