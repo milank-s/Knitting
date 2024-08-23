@@ -143,8 +143,6 @@
 	{	
 		if(state != GameState.playing || MapEditor.editing) return;
 
-
-
 		state = GameState.paused;
 
 		if(OnReset != null){
@@ -425,6 +423,11 @@
 		{
 			Services.StartPoint = Point.Points[0];
 		}
+
+		
+        // StartCoroutine(Services.fx.ShowTitle());
+        StartCoroutine(Services.fx.ShowDescription());
+
 		
 		//once again, this is the wrong place for this shit
 		//is this for sound? fx? crawlers? player?
@@ -453,17 +456,6 @@
 		Services.Player.SetActive(true);
 		Services.PlayerBehaviour.Initialize();
     }
-
-	public IEnumerator ShowTitle(){
-
-		Services.fx.title.text = activeStellation.title;
-		// Services.fx.overlay.color = Color.black;
-
-		yield return new WaitForSeconds(0.33f);
-
-		// Services.fx.overlay.color = Color.clear;
-		Services.fx.title.text = "";
-	}
 
 	public void EnterUIMode()
 	{

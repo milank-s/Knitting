@@ -304,7 +304,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		Spline.shake = 0;
 		charging = false;
 		boostTimer = 0;
-		Services.fx.overlay.color = Color.clear;
+		
 		hasCollectible = false;
 		collectibles = new List<Collectible>();
 

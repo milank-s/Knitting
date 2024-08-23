@@ -97,6 +97,30 @@ public class FXManager : MonoBehaviour
       
   }
 
+    public IEnumerator ShowTitle(){
+        
+        overlay.color = Color.black;
+
+		Services.fx.title.text = Services.main.activeStellation.text;
+		Services.fx.overlay.color = Color.black;
+
+		yield return new WaitForSeconds(0.33f);
+
+		Services.fx.overlay.color = Color.clear;
+		Services.fx.title.text = "";
+	}
+
+    public IEnumerator ShowDescription(){
+
+        overlay.color = Color.black;
+        subtitle.text = Services.main.activeStellation.text;
+        yield return new WaitForSeconds(0.33f);
+
+        subtitle.text = "";
+        
+        overlay.color = Color.clear;
+
+    }
     public IEnumerator FlashWord(bool fadeIn = false)
 	{
 		float t = 0;
@@ -114,6 +138,8 @@ public class FXManager : MonoBehaviour
 			t += Time.deltaTime * 2;
 			yield return null;
 		} 
+
+        if(fadeIn) title.color = !fadeIn ? Color.clear : Color.white;
 	}
 
 void Update(){

@@ -104,7 +104,7 @@ public class SceneController : MonoBehaviour
 	IEnumerator CompleteLevelSet(){
 		
         //typical level ending sequence
-		yield return StartCoroutine(LevelTransitionRoutine());
+		yield return StartCoroutine(LevelCompleteRoutine());
 
         //queue up next level on menu
 		SceneController.instance.SelectNextLevel(true);
@@ -349,16 +349,24 @@ public class SceneController : MonoBehaviour
     }
 
     //dollies camera to the new stellation
-    public void LoadWithTransition(){
+    public void LoadWithTransition(string levelName){
         
-		StartCoroutine(LoadLevelRoutine());
+		StartCoroutine(LoadLevelRoutine(levelName));
     }
 
-    public IEnumerator LoadLevelRoutine(){
+    
+    public void LoadWithTransition(){
+        
+        Debug.Log("load with transition");
+
+		StartCoroutine(LoadLevelRoutine(GetCurLevel()));
+    }
+
+    public IEnumerator LoadLevelRoutine(string levelName){
         
         Services.main.state = GameState.paused;
         
-        LoadDirect(curLevelName);
+        LoadDirect(levelName);
 
         //You have a problem right now where ActivatePlayer is called from InitializeLevel
         //so they could be fucking around while this is happening
@@ -375,18 +383,15 @@ public class SceneController : MonoBehaviour
     //transition between levels in the flow of play
 	public IEnumerator LevelTransitionRoutine(){
 
-		//Services.main.state = GameState.paused;
-
         Services.main.activeStellation.SetCameraInfo();
 
-        //move camera on z to new stellation position
-		yield return StartCoroutine(CameraFollow.instance.MoveRoutine());
+        yield return StartCoroutine(CameraFollow.instance.MoveRoutine());
 	}
 
     public IEnumerator LevelCompleteRoutine(){
 
-        //some cool shit idk
-        yield return null;
+        Services.main.activeStellation.SetCameraInfo();
+		yield return StartCoroutine(CameraFollow.instance.MoveRoutine());
 	}
 
 

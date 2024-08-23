@@ -283,6 +283,11 @@ public class MapEditor : MonoBehaviour
         typing = true;
     }
 
+    public void StopTyping()
+    {
+        typing = false;
+    }
+
     public void SetCrawlerDir(bool b){
         
         if(!selectedSpline) return;
