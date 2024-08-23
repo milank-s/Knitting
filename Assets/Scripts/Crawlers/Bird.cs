@@ -86,7 +86,7 @@ public class Bird : Crawler
             
             // boidBehaviour.enabled = false;
             trail.emitting = false;
-            Services.fx.BakeTrail(trail, Services.fx.flyingTrailMesh);
+            //Services.fx.BakeTrail(trail, Services.fx.flyingTrailMesh);
             curIndex = spline.GetPointIndex(pointDest);
             flying = false;
             progress = forward ? 0 : 1;

@@ -1,4 +1,4 @@
-Shader "Custom/SimpleAlpha" {
+Shader "Custom/NoAlpha" {
     Properties {
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
         
@@ -15,7 +15,7 @@ Shader "Custom/SimpleAlpha" {
         Cull Off
 
         CGPROGRAM
-        #pragma surface surf NoLighting alphatest:_Cutoff 
+        #pragma surface surf NoLighting alphatest:_Cutoff
         #pragma target 2.0
         #pragma multi_compile_instancing
         #include "UnityCG.cginc"
@@ -30,8 +30,8 @@ Shader "Custom/SimpleAlpha" {
 
         void surf (Input IN, inout SurfaceOutput o) {
             half4 c = tex2D (_MainTex, IN.uv_MainTex);
-            o.Albedo = _Color;
-            o.Alpha = c.a;
+            o.Albedo = IN.color * _Color;
+            o.Alpha = c.a * _Color.a;
         }
         
         fixed4 LightingNoLighting(SurfaceOutput s, fixed3 lightDir, fixed atten)

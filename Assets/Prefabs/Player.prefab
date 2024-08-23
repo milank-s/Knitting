@@ -81,7 +81,7 @@ ParticleSystemRenderer:
   m_MinParticleSize: 0
   m_MaxParticleSize: 1
   m_CameraVelocityScale: 0
-  m_VelocityScale: 0.025
+  m_VelocityScale: 0.02
   m_LengthScale: 2
   m_SortingFudge: 0
   m_NormalDirection: 1
@@ -2146,7 +2146,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
   LifetimeByEmitterSpeedModule:
-    enabled: 0
+    enabled: 1
     m_Curve:
       serializedVersion: 2
       minMaxState: 1
@@ -2200,7 +2200,7 @@ ParticleSystem:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-    m_Range: {x: 0, y: 1}
+    m_Range: {x: 1, y: 5}
   ForceModule:
     enabled: 0
     x:
@@ -5146,7 +5146,7 @@ TrailRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: cc8311ec55b15a74aa091876d0c8ad50, type: 2}
+  - {fileID: 2100000, guid: 07e29e603c26b6b4199c7becb6297de7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5166,7 +5166,7 @@ TrailRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1000
+  m_SortingOrder: 0
   m_Time: 0.5
   m_Parameters:
     serializedVersion: 3
@@ -5286,7 +5286,7 @@ TrailRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: cc8311ec55b15a74aa091876d0c8ad50, type: 2}
+  - {fileID: 2100000, guid: 07e29e603c26b6b4199c7becb6297de7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5306,7 +5306,7 @@ TrailRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1000
+  m_SortingOrder: 0
   m_Time: 100
   m_Parameters:
     serializedVersion: 3
@@ -5555,7 +5555,7 @@ TrailRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: cc8311ec55b15a74aa091876d0c8ad50, type: 2}
+  - {fileID: 2100000, guid: 07e29e603c26b6b4199c7becb6297de7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5575,7 +5575,7 @@ TrailRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1000
+  m_SortingOrder: 0
   m_Time: 100
   m_Parameters:
     serializedVersion: 3
@@ -10489,7 +10489,7 @@ MonoBehaviour:
   creationInterval: 0.2
   traversedPoints: []
   usingJoystick: 0
-  joystickLocked: 0
+  joystickLocked: 1
   canFlySprite: {fileID: 21300000, guid: d4a1fa09412bf45ed9b9dab37265c167, type: 3}
   canMoveSprite: {fileID: 21300000, guid: 2cd704e4327a14b7c89df3d386509d34, type: 3}
   canConnectSprite: {fileID: 21300000, guid: 005c9cb277a86e24183d09bab2f962d9, type: 3}

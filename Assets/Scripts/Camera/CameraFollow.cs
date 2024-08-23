@@ -160,7 +160,7 @@ public class CameraFollow : MonoBehaviour {
 		float yPos;
 		float xPos;
 
-		float zoom = Services.PlayerBehaviour.state == PlayerState.Flying ? 1 : 0;
+		float zoom = Services.PlayerBehaviour.state == PlayerState.Flying ? 0 : 0;
 
 		Vector3 shake = Services.PlayerBehaviour.state == 
 		

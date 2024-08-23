@@ -31,7 +31,7 @@ Shader "Custom/SimpleAlpha" {
         void surf (Input IN, inout SurfaceOutput o) {
             half4 c = tex2D (_MainTex, IN.uv_MainTex);
             o.Albedo = IN.color * _Color;
-            o.Alpha = c.a;
+            o.Alpha = c.a * _Color.a;
         }
         
         fixed4 LightingNoLighting(SurfaceOutput s, fixed3 lightDir, fixed atten)
