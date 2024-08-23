@@ -813,7 +813,7 @@ public class Point : MonoBehaviour
 
 		//if you used HSB this would be the brightness param
 
-		brightness = glow + proximity + (state == PointState.on ? (Mathf.Sin(-Time.time * 2 + timeOffset)/4f + 0.25f) : 0f) + 0.05f; // + timesHit/5f;
+		brightness = glow + proximity + (state == PointState.on ? (Mathf.Sin(-Time.time * 2 + timeOffset)/4f + 0.25f) : 0f) + 0.1f; // + timesHit/5f;
 		
 		// accretion
 		
