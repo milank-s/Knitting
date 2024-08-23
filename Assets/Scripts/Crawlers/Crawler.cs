@@ -22,6 +22,7 @@ Crawler : MonoBehaviour
     protected float speed;
     public bool running;
     public bool moving;
+    public bool faceForward = false;
     protected float progress;
     protected float distance;
     protected bool startDir;
@@ -88,9 +89,9 @@ Crawler : MonoBehaviour
                 delta = (transform.position - lastPos);
                 lastPos = transform.position;
                 
-                // if(delta.sqrMagnitude > 0){
-                //     transform.forward = delta.normalized;
-            // }
+                if(faceForward && delta.sqrMagnitude > 0){
+                    transform.forward = delta.normalized;
+                }
             }else{
                 Switching();
             }

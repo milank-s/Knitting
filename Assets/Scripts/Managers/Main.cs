@@ -151,7 +151,7 @@
 			OnReset.Invoke();
 		}
 	
-		GlitchEffect.Fizzle(0.2f);
+		// GlitchEffect.Fizzle(0.2f);
 
 		//this is currently game breaking?
 		//I would prefer not to do this.... but the OnLoadLevel func is worth calling	

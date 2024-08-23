@@ -101,6 +101,7 @@ public class Bird : Crawler
         if(!flying){
             
             base.Step();
+            
 
             bool onPlayerSpline = spline.isPlayerOn && spline.selectedIndex == curIndex; 
             //this might be broken for loops and reverse dirs
@@ -112,10 +113,9 @@ public class Bird : Crawler
                 bool sameDir = Services.PlayerBehaviour.goingForward == forward;
                 bool inFront = (progress > playerProgress && Services.PlayerBehaviour.goingForward) || (progress < playerProgress && !Services.PlayerBehaviour.goingForward);
                 bool evade = inFront;
-                bool brake = !evade;
 
                 float distanceToPlayer = Mathf.Abs(progress - Services.PlayerBehaviour.progress);
-                float desiredSpeed = (playerSpeed + 1) * (sameDir ? 1 : -1);
+                float desiredSpeed = Mathf.Clamp(playerSpeed + 1, 0, Services.main.activeStellation.maxSpeed) * (sameDir ? 1 : -1);
                 
                 if(evade){ 
                     speed = Mathf.Lerp(desiredSpeed, baseSpeed, distanceToPlayer);
