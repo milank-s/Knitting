@@ -210,27 +210,11 @@ public class Point : MonoBehaviour
 		}
 		initPos = transform.position;
 		state = PointState.off;
-		//Pos = transform.position;
-
-		if (MapEditor.editing)
-		{
-			mat.color = Color.white;
-		}
-		else
-		{
-			mat.color = Color.black;
-		}
-
+		mat.color = Color.clear;
 		timeOffset = Point.pointCount;
 
 		_neighbours = new List<Point> ();
 		_connectedSplines = new List<Spline> ();
-
-		// textMesh = GetComponentInChildren<TextMesh>();
-		
-		// if(textMesh != null){
-		// 	textMesh.GetComponent<FadeTextOnPoint>().p = this;
-		// }
 		
 		Points.Add(this);
 		Point.pointCount++;
@@ -274,17 +258,14 @@ public class Point : MonoBehaviour
 		initTension = tension;
 		initBias = bias;
 	
-		brightness = 0;
 		cooldown = 0;
 		timesHit = 0;
 		
 		SetPointType(pointType);
 		
-		if (MapEditor.editing)
-		{
-			color = Color.white;
-			brightness = 1;
-		}
+
+		
+		color = Color.clear;
 
 		if (text != "" && textMesh != null)
 		{
@@ -430,8 +411,8 @@ public class Point : MonoBehaviour
 		tension = initTension;
 		continuity = initContinuity;
 		timesHit = 0;
-		brightness = 0;
 		cooldown = 0;
+		color = Color.clear;
 		
 	}
 
@@ -446,6 +427,8 @@ public class Point : MonoBehaviour
 
 	IEnumerator LightUp()
 	{
+		
+
 		float f = 0;
 		Color startColor = color;
 		Color endColor = new Color(0.2f, 0.2f, 0.2f);
@@ -830,7 +813,7 @@ public class Point : MonoBehaviour
 
 		//if you used HSB this would be the brightness param
 
-		brightness = glow + proximity + (state == PointState.on ? (Mathf.Sin(-Time.time * 2 + timeOffset)/4f + 0.25f) : 0f); // + timesHit/5f;
+		brightness = glow + proximity + (state == PointState.on ? (Mathf.Sin(-Time.time * 2 + timeOffset)/4f + 0.25f) : 0f) + 0.05f; // + timesHit/5f;
 		
 		// accretion
 		
