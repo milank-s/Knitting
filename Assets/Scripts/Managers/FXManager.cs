@@ -97,28 +97,22 @@ public class FXManager : MonoBehaviour
       
   }
 
-    public IEnumerator ShowTitle(){
-        
-        overlay.color = Color.black;
+    public IEnumerator ShowTitle(string s){
 
-		Services.fx.title.text = Services.main.activeStellation.text;
-		Services.fx.overlay.color = Color.black;
+		Services.fx.title.text = s;
 
 		yield return new WaitForSeconds(1f);
 
-		Services.fx.overlay.color = Color.clear;
 		Services.fx.title.text = "";
 	}
 
-    public IEnumerator ShowDescription(){
+    public IEnumerator ShowDescription(string s){
 
-        overlay.color = Color.black;
-        subtitle.text = Services.main.activeStellation.text;
+        subtitle.text = s;
         yield return new WaitForSeconds(1f);
 
         subtitle.text = "";
         
-        overlay.color = Color.clear;
 
     }
     public IEnumerator FlashWord(bool fadeIn = false)

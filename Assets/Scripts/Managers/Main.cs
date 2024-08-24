@@ -400,6 +400,7 @@
 		Services.fx.Fade(true , 1f);
 		SceneController.curLevel = 0;
 		
+		StartCoroutine(Services.fx.ShowTitle(SceneController.instance.curLevelSet.description));
 		// EnterPlayMode();
 
 		Services.menu.Show(false);
@@ -425,7 +426,7 @@
 
 		
         // StartCoroutine(Services.fx.ShowTitle());
-        StartCoroutine(Services.fx.ShowDescription());
+        StartCoroutine(Services.fx.ShowDescription(Services.main.activeStellation.text));
 
 		
 		//once again, this is the wrong place for this shit
