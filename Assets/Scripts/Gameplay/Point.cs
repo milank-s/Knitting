@@ -636,6 +636,10 @@ public class Point : MonoBehaviour
 
 		Services.fx.SpawnCircle(transform);
 
+	 	if(OnExit != null){
+			OnExit.Invoke();
+		}
+		
 		switch(pointType){
 			case PointTypes.normal:
 				SetForward(Services.PlayerBehaviour.curDirection);

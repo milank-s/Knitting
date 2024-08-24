@@ -9,7 +9,7 @@ public class CrawlerManager : MonoBehaviour
     public float speed = 3;
     public float spawnFrequency = 0.5f;
     public CrawlerType crawlerType = CrawlerType.spark;
-    private List<Crawler> crawlers;
+    public List<Crawler> crawlers;
     public bool emitting;
     float spawnTimer;
     int count = 0;

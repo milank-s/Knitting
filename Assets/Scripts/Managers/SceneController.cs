@@ -233,9 +233,11 @@ public class SceneController : MonoBehaviour
 
                 //mark complete and return to world map
                 //return to world map
-                //
-                SaveGame.Save();
-                LoadScene("World");
+                
+                // SaveGame.Save();
+                // LoadScene("World");
+                
+                FinishLevelSet();
 
             }else{
                 curLevel++;

@@ -236,7 +236,6 @@
 		Services.Sounds = GetComponent<SoundBank> ();
 		Services.main = this;
 		PauseMenu.SetActive(false);
-		Services.Prefabs.InitCrawlers();
 	
 	}
 

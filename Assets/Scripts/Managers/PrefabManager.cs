@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-[ExecuteInEditMode]
+
 public class PrefabManager : MonoBehaviour {
 
 
@@ -24,7 +24,14 @@ public class PrefabManager : MonoBehaviour {
 	public Material[] fontMaterials;
 	public Font[] fonts;
 
+	public void Awake(){
+		
+		InitCrawlers();
+	}
+
 	public void InitCrawlers(){
+		crawlerPools = new List<CrawlerManager>();
+		
 		foreach(CrawlerType c in Enum.GetValues(typeof(CrawlerType))){
 			if(c != CrawlerType.none){
 				GameObject g = new GameObject();
