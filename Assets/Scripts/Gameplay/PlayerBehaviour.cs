@@ -243,7 +243,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		ResetFX();
 	}
 
-	void Lose(){
+	public void Lose(){
 		//some fx;
 		SwitchState(PlayerState.Animating);
 		StartCoroutine(DieRoutine());

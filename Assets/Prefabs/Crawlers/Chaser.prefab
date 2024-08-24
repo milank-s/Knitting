@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3325775991570096958}
-  - component: {fileID: 2648790643426249618}
   - component: {fileID: 8882360327788847341}
   m_Layer: 11
   m_Name: NPC
@@ -27,28 +26,12 @@ Transform:
   m_GameObject: {fileID: 395377797856264685}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5170252073360023536}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2648790643426249618
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 395377797856264685}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2dce6ed40b317444c87aa10553ac6a11, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  framerate: 12
-  frames:
-  - {fileID: 21300000, guid: 6f8c18b9628fa4a33bbf03f13734ecb4, type: 3}
-  r: {fileID: 8882360327788847341}
 --- !u!212 &8882360327788847341
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -90,7 +73,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 6f8c18b9628fa4a33bbf03f13734ecb4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: eda5f0b3e86d0460581f740e159d45c0, type: 3}
   m_Color: {r: 0.8018868, g: 0.8018868, b: 0.8018868, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -112,7 +95,6 @@ GameObject:
   - component: {fileID: 5170252073360023536}
   - component: {fileID: 5375200690954820563}
   - component: {fileID: 3046710827450709890}
-  - component: {fileID: 5683494604672022183}
   m_Layer: 11
   m_Name: Chaser
   m_TagString: Untagged
@@ -155,6 +137,7 @@ MonoBehaviour:
   baseSpeed: 1
   running: 0
   moving: 0
+  faceForward: 0
 --- !u!135 &3046710827450709890
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -168,22 +151,3 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.01
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5683494604672022183
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5170252073360023551}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91f7d027ac62f4ee380719071afa40b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wordObject: {fileID: 1000013632052358, guid: fbe35ba5444034367a3169e0044d0568, type: 3}
-  text: There is nothing impossible to him who will try
-  fade: 0
-  noRotation: 0
-  delete: 1
-  allAtOnce: 0
-  speed: 0.5

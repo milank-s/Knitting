@@ -9,7 +9,7 @@ public class DemoScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.R)){
+        if(!MapEditor.typing && Input.GetKeyDown(KeyCode.R)){
             
             if(SceneManager.sceneCount > 1){
                 

@@ -18,6 +18,8 @@ Crawler : MonoBehaviour
     protected Point curPoint;
     public int curIndex;
     public float baseSpeed = 1;
+    public float spawnDelay = 0;
+    protected float spawnTimer = 0;
     protected float boost;
     protected float speed;
     public bool running;
@@ -51,6 +53,8 @@ Crawler : MonoBehaviour
     }
 
     public virtual void Restart(){   
+        
+        spawnTimer = 0;
         moving = true;
         curIndex = startIndex;
         spline = startSpline;
@@ -66,6 +70,11 @@ Crawler : MonoBehaviour
 
     public virtual void Step()
     {
+        if(spawnDelay > 0 && spawnTimer < spawnDelay){
+            spawnTimer += Time.deltaTime;
+            return;
+        }
+
         if (running)
         {
             if(moving){

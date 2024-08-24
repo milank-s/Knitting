@@ -24,23 +24,30 @@ public class Blocker : Crawler
     
     //lets just make them only collide with the player so we dont need to waste time sorting tags
     //
+    
     base.OnTriggerEnter(col);
+    
+    if(spawnTimer < spawnDelay) return;
 
     float p = Services.PlayerBehaviour.progress;
-    if(Services.PlayerBehaviour.state != PlayerState.Traversing) return;
+    
+    //if(Services.PlayerBehaviour.state != PlayerState.Traversing) return;
 
-    if(forward == Services.PlayerBehaviour.goingForward){
-        if((forward && progress > p) || (!forward && progress < p)){
-            //destroyed by player from behind
-            DamageMe();
-        }else{
+    //this is very naive DOES NOT WORK ACROSS POINTS
+
+    // if(forward == Services.PlayerBehaviour.goingForward){
+    //     if((forward && progress > p) || (!forward && progress < p)){
+    //         //destroyed by player from behind
+    //         DamageMe();
+    //     }else{
             
-            DamagePlayer();
-        }
-    }else{
-        DamagePlayer();
-    }
+    //         DamagePlayer();
+    //     }
+    // }else{
+    //     DamagePlayer();
+    // }
 
+    DamagePlayer();
    }
 
     void DamageMe(){
@@ -51,9 +58,10 @@ public class Blocker : Crawler
    void DamagePlayer(){
     
         Services.fx.EmitRadialBurst(10, 1, transform);
-        Services.PlayerBehaviour.AddFlow(-speedLoss);
-        base.spline.distortion += 0.2f;
-        Stop();
+        // Services.PlayerBehaviour.AddFlow(-speedLoss);
+        Services.PlayerBehaviour.Lose();
+        // base.spline.distortion += 0.2f;
+        // Stop();
    }
 
    public override void Stop(){

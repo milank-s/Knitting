@@ -59,7 +59,9 @@ public class SceneController : MonoBehaviour
             
 		}
 
-        if (Application.isEditor && !MapEditor.editing && Services.main.state == GameState.playing && Input.GetKeyDown(KeyCode.Period))
+        //Application.isEditor
+        
+        if (!MapEditor.editing && Services.main.state == GameState.playing && Input.GetKeyDown(KeyCode.Period))
         {
             FinishStellation();
         }
