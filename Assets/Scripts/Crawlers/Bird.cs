@@ -94,6 +94,7 @@ public class Bird : Crawler
         }
     }
 
+    
     public override void Step(){
 
         transform.localScale = Vector3.Lerp(scale, new Vector3(scale.x, scale.y, scale.z * 2), speed/baseSpeed);

@@ -14,9 +14,9 @@ public class Blocker : Crawler
         //we need to figure out what these boys are getting up to
 
         if(p.pointType == PointTypes.stop){
-            p.AddForce(Random.onUnitSphere * speed * force);
-            p.distortion += 0.2f;
-            Stop();
+          //   p.AddForce(Random.onUnitSphere * speed * force);
+            p.distortion += 0.05f;
+          //   Stop();
         }
    }
 

@@ -109,7 +109,7 @@ public class FXManager : MonoBehaviour
     public IEnumerator ShowDescription(string s){
 
         subtitle.text = s;
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.33f);
 
         subtitle.text = "";
         

@@ -220,6 +220,8 @@
 	public void Awake ()
 	{
 
+		Debug.Log("noise speed = " + Spline.noiseSpeed);
+		Debug.Log("freq = " + Spline.frequency);
 		Point.Points = new List<Point>();
 		Spline.Splines = new List<Spline>();
 		Services.GameUI = canvas;
