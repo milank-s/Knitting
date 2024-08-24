@@ -6,7 +6,9 @@ public class Yapper : MonoBehaviour {
 	public GameObject wordObject;
 	public string 	text;
 	public bool fade, noRotation, delete, allAtOnce;
-	public float speed; 
+	public float fadeSpeed; 
+	public float frequency = 0.33f;
+	public float scale = 1;
 
 	string[]		words;
 	int 			wordCount;
@@ -20,7 +22,7 @@ public class Yapper : MonoBehaviour {
 
 	void Update(){
 		if(timer - Time.time < 0){
-			timer = Time.time + Random.Range(0.2f, 0.33f);
+			timer = Time.time + Random.Range(frequency, frequency + 0.2f);
 			CreateWord(transform.position);
 		}
 	}
@@ -32,12 +34,13 @@ public class Yapper : MonoBehaviour {
 		wordCount++;
 		GameObject newWord = (GameObject)Instantiate (wordObject, pos, Quaternion.identity);
 		newWord.GetComponent<TextFormatting> ().setText (GetText());
+		newWord.transform.localScale = newWord.transform.localScale * scale;
 		if(allAtOnce) newWord.GetComponent<TextFormatting> ().setText (text);
 		newWord.GetComponent<TextFormatting>().fade = fade;
 		newWord.GetComponent<TextFormatting>().rotFixed = noRotation;
 		newWord.GetComponent<TextFormatting> ().delete = delete;
 		newWord.GetComponent<TextFormatting> ().fadeIn = fade;
-		newWord.GetComponent<TextFormatting> ().speed = speed;
+		newWord.GetComponent<TextFormatting> ().speed = fadeSpeed;
 		return newWord;
 	}
 }

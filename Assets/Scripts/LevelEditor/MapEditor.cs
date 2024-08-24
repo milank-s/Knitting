@@ -1631,6 +1631,7 @@ public class MapEditor : MonoBehaviour
             newSpline.crawlerIndex =  json["spline" + i]["crawlerIndex"];
             newSpline.crawlerDir =  json["spline" + i]["crawlerDir"];
             newSpline.ChangeMaterial(newSpline.lineMaterial);
+            newSpline.speed =  json["spline" + i]["speed"];
             newSplines.Add(newSpline);
         }
 

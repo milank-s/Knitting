@@ -22,7 +22,7 @@ public class Spline : MonoBehaviour
 {
 	public SplineType type = SplineType.normal;
 
-	public enum SplineType{normal, moving, locked}
+	public enum SplineType{normal, locked}
 
 	public enum SplineState{off, on}
 
@@ -286,6 +286,9 @@ public class Spline : MonoBehaviour
 			i %= Services.Prefabs.lines.Length;
 		}
 		lineMaterial = i;
+		
+		// bidirectional = lineMaterial != 3;
+
 		Material newMat;
 		newMat = Services.Prefabs.lines[i % Services.Prefabs.lines.Length];
 		Texture tex = newMat.mainTexture;

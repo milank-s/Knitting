@@ -78,4 +78,15 @@ public class Chaser : Crawler
             EnterPoint(point);
         }
     }
+
+    public override void OnTriggerEnter(Collider col){
+    
+    base.OnTriggerEnter(col);
+    
+    
+    if(spawnTimer < spawnDelay) return;
+
+     Services.PlayerBehaviour.Lose();
+   }
+
 }

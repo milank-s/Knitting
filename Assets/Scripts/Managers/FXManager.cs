@@ -104,7 +104,7 @@ public class FXManager : MonoBehaviour
 		Services.fx.title.text = Services.main.activeStellation.text;
 		Services.fx.overlay.color = Color.black;
 
-		yield return new WaitForSeconds(0.8f);
+		yield return new WaitForSeconds(1f);
 
 		Services.fx.overlay.color = Color.clear;
 		Services.fx.title.text = "";
@@ -114,7 +114,7 @@ public class FXManager : MonoBehaviour
 
         overlay.color = Color.black;
         subtitle.text = Services.main.activeStellation.text;
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1f);
 
         subtitle.text = "";
         

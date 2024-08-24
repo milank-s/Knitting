@@ -995,8 +995,6 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if(p != curPoint && p.pointType != PointTypes.ghost && p.state != Point.PointState.locked){
 
-			//check that its not at the end of a bidirectional spline
-
 			if(p._connectedSplines.Count > 0){
 				foreach(Spline s in p._connectedSplines){
 					if(!s.bidirectional && p == s.EndPoint && !s.closed){
