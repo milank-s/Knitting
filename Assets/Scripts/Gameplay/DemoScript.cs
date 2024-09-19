@@ -5,8 +5,15 @@ using UnityEngine.SceneManagement;
 public class DemoScript : MonoBehaviour
 {
     
+    public GameObject[] menuButtonToggles;
 
     // Update is called once per frame
+
+    void Start(){
+        foreach(GameObject g in menuButtonToggles){
+            g.SetActive(false);
+        }
+    }
     void Update()
     {
         if(!MapEditor.typing && Input.GetKeyDown(KeyCode.R)){

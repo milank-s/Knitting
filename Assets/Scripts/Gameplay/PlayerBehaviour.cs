@@ -455,7 +455,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 
 		if(state == PlayerState.Traversing){
-			glitching = signedAccuracy < 0 || joystickLocked;
+			glitching = speedGain <= 0 || joystickLocked;
 		}else if(state == PlayerState.Switching){
 			glitching = !canTraverse;
 		}else{
@@ -1536,7 +1536,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			//inputVector = new Vector2(Input.GetAxis ("Mouse X"), Input.GetAxis ("Mouse Y"));
 			
-			cursorDir2 = cursorDir2 + inputVector;
+			cursorDir2 = cursorDir2 + inputVector * cursorMoveSpeed;
 
 		}
 
@@ -1559,9 +1559,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			{
 				if (inputVector.magnitude > 1)
 				{
-					inputVector.Normalize();
+					inputVector = inputVector.normalized;
 				}
-				cursorPos += (Vector3)inputVector;
+				cursorPos += (Vector3)inputVector * cursorMoveSpeed;
 			}
 
 			Vector3 screenPos = Services.mainCam.WorldToViewportPoint(visualRoot.position);
