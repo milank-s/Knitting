@@ -24,6 +24,7 @@ Crawler : MonoBehaviour
     protected float speed;
     public bool running;
     public bool moving;
+    public bool pathfind;
     public bool faceForward = false;
     protected float progress;
     protected float distance;

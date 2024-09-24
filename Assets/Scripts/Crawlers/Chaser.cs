@@ -16,6 +16,7 @@ public class Chaser : Crawler
         transform.position = point.Pos;
         SetNextPoint();
     }
+    
     public override void SetNextPoint(){
 
         //if you have reached the end going forward, update your current point
@@ -33,7 +34,6 @@ public class Chaser : Crawler
         }
 
         point = spline.SplinePoints[next];
-        // List<Point> path = Pathfinding.GetLongestPath(point, Pathfinding.furthestPoint);
         List<Point> path = Pathfinding.FindPlayer(point);
         
         //what if the player is on the same point that we are?

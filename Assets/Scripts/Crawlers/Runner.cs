@@ -19,7 +19,7 @@ public class Runner : Crawler
 
         collectible.SetTarget(transform);
         collectible.transform.position = transform.position;
-        speed *= (float)(index + 1)/(float)controller.crawlerCount;
+        //speed *= (float)(index + 1)/(float)controller.crawlerCount;
         collectible.flocking = false;
         Services.main.activeStellation.collectibles.Add(collectible);
     }
@@ -31,6 +31,11 @@ public class Runner : Crawler
         collectible.Reset();
 
         base.Stop();
+    }
+    public override void Switching()
+    {
+        transform.position = point.Pos;
+        SetNextPoint();
     }
 
     public override void Step()
@@ -45,6 +50,70 @@ public class Runner : Crawler
             //transform.position = Services.PlayerBehaviour.visualRoot.position;
         }
     }
+
+    public override void SetNextPoint(){
+
+        //if you have reached the end going forward, update your current point
+        //if you have reached the end going backward, you are already there
+        
+        int next = curIndex;
+        if(forward){
+            if(curIndex < spline.SplinePoints.Count - 1){
+                next ++;
+            }else{
+                if(spline.closed){
+                    next = 0;
+                }
+            }
+        }
+
+        point = spline.SplinePoints[next];
+        List<Point> path = Pathfinding.GetLongestPath(point, Pathfinding.furthestPoint);
+        
+        
+        //what if the player is on the same point that we are?
+        //what do we do?
+        if(path != null){
+        
+            moving = true;
+            //we need to get to the player
+            if(path.Count > 1){
+
+            Point p = path[1];
+            spline = point.GetConnectingSpline(p);
+            curIndex = spline.GetPointIndex(point);
+            bool newDir = SplineUtil.GetDirection(point, p, spline);
+            forward = newDir;
+
+            if(!forward){
+                if(curIndex == 0){
+                    if(spline.closed){
+                        curIndex = spline.numPoints - 1;
+                    }
+                }else{
+                    curIndex --;
+                }
+            }
+
+            dir = forward ? 1 : -1;
+            progress = forward ? 0 : 1;
+            
+            }else{
+                moving = false;
+            }
+
+        }else{
+            //we cant get to the player, just idle
+
+            GetNextPoint();
+        }
+
+        if(moving){
+            distance = spline.GetSegmentDistance(curIndex);
+            EnterPoint(point);
+        }
+    }
+
 
     public void Caught(){
 

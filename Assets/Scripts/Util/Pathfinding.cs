@@ -16,6 +16,7 @@ public class Pathfinding : MonoBehaviour
     //return next point
     public static Dictionary<Point, int> distToPlayer;
     public static Point furthestPoint;
+    
     public static List<Point> FindPlayer(Point p){
         Point target;
         switch(Services.PlayerBehaviour.state){
@@ -138,16 +139,24 @@ public class Pathfinding : MonoBehaviour
 
     }
     
+    //Like get critical path but it uses weight for point's distance from player
+
     public static List<Point> GetLongestPath(Point start, Point goal){
-        List<Point> openSet = new List<Point>();
-        openSet.Add(start);
+        List<Point> openSet = new List<Point>
+        {
+            start
+        };
         
-        HashSet<Point> visited = new HashSet<Point>();
-        visited.Add(start);
+        HashSet<Point> visited = new HashSet<Point>
+        {
+            start
+        };
 
         Dictionary<Point, Point> cameFrom = new Dictionary<Point, Point>();
-        Dictionary<Point, float> toPoint = new Dictionary<Point, float>();
-        toPoint.Add(start, 0);
+        Dictionary<Point, float> toPoint = new Dictionary<Point, float>
+        {
+            { start, 0 }
+        };
 
         while (openSet.Count > 0) {
             Point cur = openSet[0];
