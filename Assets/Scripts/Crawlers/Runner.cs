@@ -35,7 +35,9 @@ public class Runner : Crawler
     public override void Switching()
     {
         transform.position = point.Pos;
-        SetNextPoint();
+        if(Pathfinding.furthestPoint != null && Pathfinding.furthestPoint != point){
+            SetNextPoint();
+        }
     }
 
     public override void Step()

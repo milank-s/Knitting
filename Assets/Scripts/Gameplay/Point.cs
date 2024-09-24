@@ -74,7 +74,7 @@ public class Point : MonoBehaviour
 	public bool setDirection = false;
 	[HideInInspector]
 	
-	public static float damping = 1000f;
+	public static float damping = 250f;
 	public static float stiffness = 500f;
 	public static float mass = 20f;
 	
