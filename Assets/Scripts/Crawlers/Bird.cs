@@ -122,6 +122,7 @@ public class Bird : Crawler
                     speed = Mathf.Lerp(desiredSpeed, baseSpeed, distanceToPlayer);
                 }else{
                     speed = Mathf.Lerp(0, baseSpeed, distanceToPlayer);
+                
                 }
             
                 //we reversed direction, act accordingly;

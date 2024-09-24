@@ -130,9 +130,11 @@ public class Runner : Crawler
     public override void OnTriggerEnter(Collider col){
         if(Services.PlayerBehaviour.state != PlayerState.Traversing) return;
 
-        if(Services.PlayerBehaviour.curSpeed > speed && Services.PlayerBehaviour.curPoint == point && forward == Services.PlayerBehaviour.goingForward){
+        //why?
+
+        // if(Services.PlayerBehaviour.curSpeed > speed && Services.PlayerBehaviour.curPoint == point && forward == Services.PlayerBehaviour.goingForward){
            Caught();
-        }
+        // }
     }
 
 }

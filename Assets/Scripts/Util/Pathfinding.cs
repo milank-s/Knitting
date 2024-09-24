@@ -88,7 +88,9 @@ public class Pathfinding : MonoBehaviour
                    
                     if(newDist > d){
                         d = newDist;
-                        furthestPoint = p;
+                        if(p.pointType != PointTypes.ghost){
+                            furthestPoint = p;
+                        }
                     }
                     
                    visited.Add(p);
@@ -138,6 +140,9 @@ public class Pathfinding : MonoBehaviour
     return totalPath;
 
     }
+
+    //I NEED A WAY TO MAKE SURE GHOST POINTS ARE EXCLUDED FROM THIS
+
     
     //Like get critical path but it uses weight for point's distance from player
 
