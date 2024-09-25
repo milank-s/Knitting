@@ -49,6 +49,9 @@ public class PlayerBehaviour: MonoBehaviour {
 	public float flyingSpeed;
 	public bool hasCollectible;
 
+	float distanceToFlyPoint;
+	float flyZ;
+
 	public List<Collectible> collectibles;
 	public bool glitching;
 	bool canTraverse;
@@ -1050,6 +1053,15 @@ public class PlayerBehaviour: MonoBehaviour {
 			Services.fx.ShowNextPoint(raycastPoint);
 
 			pointDest = raycastPoint;
+			if(!stopFlying){
+				
+				Vector3 toPoint = pointDest.transform.position -pos; 
+				toPoint.z = 0;
+				distanceToFlyPoint = toPoint.magnitude;
+				flyZ = transform.position.z;
+				//cache distance to point
+
+			}
 			stopFlying = true;
 		}
 		
@@ -1059,12 +1071,17 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		if (stopFlying && pointDest != null)
 		{
+
 			pointDest.controller.AdjustCamera();
 
 			flyingSpeed += Time.deltaTime;
-			Vector3 toPoint = pointDest.transform.position -pos;
+			Vector3 toPoint = pointDest.Pos -pos;
+			Vector3 toPointNoZ = toPoint;
+			toPointNoZ.z = 0;
+			float newZ = Mathf.Lerp(flyZ, pointDest.Pos.z, distanceToFlyPoint/toPointNoZ.magnitude);
 			Vector3 flyToPoint = toPoint.normalized * Time.deltaTime * (flyingSpeed);
 			transform.position += Vector3.ClampMagnitude(flyToPoint, toPoint.magnitude);
+			transform.position = new Vector3(transform.position.x, transform.position.y, newZ);
 			curDirection = toPoint.normalized;
 			pointDest.proximity = 1;
 

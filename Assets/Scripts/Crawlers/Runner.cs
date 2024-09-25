@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -124,7 +124,6 @@ public class Runner : Crawler
         running = false;
         collider.enabled = false;
         caught = true;
-
     }
     
     public override void OnTriggerEnter(Collider col){
