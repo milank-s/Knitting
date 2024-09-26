@@ -10,7 +10,7 @@ public class GameSettings : MonoBehaviour
 {
 
     public AudioSource changeSettingFX;
-    public enum Setting{volume, vibration, gamepad, resolution }
+    public enum Setting{volume, vibration, gamepad, resolution, sensitivity}
 
     private int newWidth;
     private int newHeight;
@@ -44,6 +44,10 @@ public class GameSettings : MonoBehaviour
             case Setting.resolution:
                 toReturn = SetResolution(i);
                 break;
+
+             case Setting.sensitivity:
+                toReturn = SetSensitivity(i);
+                break;
             
         }
         
@@ -69,6 +73,26 @@ public class GameSettings : MonoBehaviour
                 break;
             }
         }   
+    }
+
+    public string SetSensitivity(int f){
+        float curSense = 0.5f;
+
+        if (PlayerPrefs.HasKey("Sensitivity")){
+            curSense = PlayerPrefs.GetFloat("Sensitivity");
+        }
+
+        float senseDiff = ((float)f)/10f;
+
+        curSense = Mathf.Clamp(curSense + senseDiff, 0.1f, 1f);
+        String displayedSensitivity = ((int)(curSense * 10)).ToString();
+
+        PlayerPrefs.SetFloat("Sensitivity", curSense);
+
+        Services.PlayerBehaviour.cursorMoveSpeed = curSense;
+
+        return displayedSensitivity;
+
     }
 
     public void SubmitSettingChanges()
@@ -100,11 +124,21 @@ public class GameSettings : MonoBehaviour
         if (PlayerPrefs.HasKey("UseGamepad"))
         {
             Services.main.useGamepad = PlayerPrefs.GetInt("UseGamepad") > 0;
-            
         }
         else
         {
             PlayerPrefs.SetFloat("UseGameped", 1);
+        }
+
+         if (PlayerPrefs.HasKey("Sensitivity"))
+        {
+            float sense = PlayerPrefs.GetFloat("Sensitivity");
+            Services.PlayerBehaviour.cursorMoveSpeed = sense;
+            SetSettingText(((int)(sense * 10)).ToString(), Setting.sensitivity);
+            
+        }else{
+            
+            SetSettingText(5.ToString(), Setting.sensitivity);
         }
         
         string t = Services.main.useGamepad ? "yes" : "no";
