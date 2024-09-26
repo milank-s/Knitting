@@ -248,6 +248,7 @@
 
 		Cursor.lockState = CursorLockMode.None;
 		
+		devMode = Application.isEditor;
 		state = GameState.menu;
 		// MapEditor.editing = true;
 		// ToggleEditMode();
@@ -285,7 +286,7 @@
 	
 	void Update()
 	{
-		Debug.Log("selected = " + EventSystem.current.currentSelectedGameObject);
+		
 		CameraFollow.instance.uiCam.fieldOfView = CameraFollow.instance.cam.fieldOfView;
 	
 		// if we started with a scene open, allow me to go in and edit it

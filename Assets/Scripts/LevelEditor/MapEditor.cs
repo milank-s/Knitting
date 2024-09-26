@@ -260,7 +260,7 @@ public class MapEditor : MonoBehaviour
 
         instance = this;
 
-        userLevelPath = Application.streamingAssetsPath + "/UserLevels";
+        userLevelPath = Application.persistentDataPath;
         devLevelPath = Application.streamingAssetsPath + "/Stellations";
 
         text = new List<GameObject>();
@@ -374,6 +374,7 @@ public class MapEditor : MonoBehaviour
 
     IEnumerator Start()
     {
+        
         cam = Services.mainCam;
         l.enabled = false;
         mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane);
@@ -1500,12 +1501,9 @@ public class MapEditor : MonoBehaviour
         GameObject parent;
         GameObject pointParent;
 
-        userLevelPath = Application.streamingAssetsPath + "/UserLevels";
-        devLevelPath = Application.streamingAssetsPath + "/Stellations";
-
         //if we're in the application OR if a level set is asking, use streamingassets
-        bool isDev = Application.isEditor;
-        string filePath = isDev ? devLevelPath : userLevelPath;
+
+        string filePath = Services.main.devMode ? devLevelPath : userLevelPath;
 
         // loading a level for the main game, not for editor use, use game files
         filePath = isGameLevel ? devLevelPath : filePath; 

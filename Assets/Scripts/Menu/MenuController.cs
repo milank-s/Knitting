@@ -192,7 +192,7 @@ public class MenuController : MonoBehaviour
 		else
 		{
 			PushButton(escapeButton);
-			EventSystem.current.SetSelectedGameObject(settingsButton);
+			EventSystem.current.SetSelectedGameObject(SceneController.instance.levelButton.gameObject);
 		}
     }
 
