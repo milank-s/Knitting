@@ -219,9 +219,10 @@
 	
 	public void Awake ()
 	{
+		devMode = Application.isEditor;
 
-		Debug.Log("noise speed = " + Spline.noiseSpeed);
-		Debug.Log("freq = " + Spline.frequency);
+		// Debug.Log("noise speed = " + Spline.noiseSpeed);
+		// Debug.Log("freq = " + Spline.frequency);
 		Point.Points = new List<Point>();
 		Spline.Splines = new List<Spline>();
 		Services.GameUI = canvas;
@@ -248,7 +249,6 @@
 
 		Cursor.lockState = CursorLockMode.None;
 		
-		devMode = Application.isEditor;
 		state = GameState.menu;
 		// MapEditor.editing = true;
 		// ToggleEditMode();

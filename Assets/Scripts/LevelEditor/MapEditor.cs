@@ -1453,7 +1453,7 @@ public class MapEditor : MonoBehaviour
             Services.main.FullReset();
         }
 
-        Load(fileName, null, false);
+        Load(fileName, null);
         
         EnterEditMode();
     }
@@ -1496,7 +1496,7 @@ public class MapEditor : MonoBehaviour
 
         return c;
     }
-    public StellationController Load(string fileName, StellationController stellationController = null, bool isGameLevel = true)
+    public StellationController Load(string fileName, StellationController stellationController = null)
     {
         GameObject parent;
         GameObject pointParent;
@@ -1506,7 +1506,7 @@ public class MapEditor : MonoBehaviour
         string filePath = Services.main.devMode ? devLevelPath : userLevelPath;
 
         // loading a level for the main game, not for editor use, use game files
-        filePath = isGameLevel ? devLevelPath : filePath; 
+        filePath = SceneController.instance.curSetIndex != -1 ? devLevelPath : filePath; 
 
         JSONNode json = ReadJSONFromFile(filePath, fileName + ".json");
    
