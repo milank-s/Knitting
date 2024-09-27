@@ -51,7 +51,7 @@ public class Point : MonoBehaviour
 
 	public static float hitColorLerp;
 	public static int pointCount = 0;
-	public static float boostAmount = 1f;
+	public static float boostAmount = 0.5f;
 	public float distortion;
 	public float distanceFromPlayer;
 	float glow;

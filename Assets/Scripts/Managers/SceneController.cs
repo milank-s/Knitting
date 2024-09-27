@@ -1,4 +1,4 @@
-﻿
+
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
@@ -280,6 +280,9 @@ public class SceneController : MonoBehaviour
         }
 
         //we need to make sure that bounds and center are set before we offset
+
+        //this is fucking up when you die in the level editor because it uses the streaming assets directory
+        
 		Services.main.activeStellation = MapEditor.instance.Load(fileName);
         
         Services.main.activeStellation.OffsetPosition(offset, newStellation);

@@ -367,8 +367,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			buttonDown = false;
 			charging = false;
 			
-			boostTimer = 0;
-			
 			buttonDownTimer = buttonDownBuffer;
 		}
 
@@ -486,17 +484,17 @@ public class PlayerBehaviour: MonoBehaviour {
 		//UI boost visuals and button input
 		if (buttonDown)
 		{
-			boostIndicator.enabled = true;
+			// boostIndicator.enabled = true;
 			
 			// boostIndicator.transform.position =pos + (Vector3) cursorDir2 * ((Vector3)transform.position - cursorPos).magnitude;
 			// boostIndicator.transform.rotation = Quaternion.LookRotation(CameraFollow.forward, cursorDir2);
 
-			if(charging && state != PlayerState.Switching){
-				boostTimer += Time.deltaTime;
-				boostTimer = Mathf.Clamp01(boostTimer);
-			}
+			// if(charging && state != PlayerState.Switching){
+			// 	boostTimer += Time.deltaTime;
+			// 	boostTimer = Mathf.Clamp01(boostTimer);
+			// }
 
-			charging = true;
+			// charging = true;
 			buttonDownTimer = buttonDownBuffer;
 		}
 		else
@@ -1713,9 +1711,9 @@ public class PlayerBehaviour: MonoBehaviour {
 					
 					if (buttonWasPressed)
 					{
-						if(boost < Point.boostAmount) {
-							boost = (Point.boostAmount + boostTimer)/2f;
-						}
+						float boostToAdd = Mathf.Max(boostTimer, Point.boostAmount);
+						Debug.Log(boostToAdd);
+						boost = Mathf.Max(boost, boostToAdd);
 
 						buttonDownTimer = 0;
 						
@@ -1726,6 +1724,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 					charging = false;
 					boostIndicator.enabled = false;
+
+					
 
 					Services.fx.EmitLinearBurst((int)(boostTimer * 5), boostTimer * 2,transform, cursorDir2);
 					boostTimer = 0;
