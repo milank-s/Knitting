@@ -1712,7 +1712,6 @@ public class PlayerBehaviour: MonoBehaviour {
 					if (buttonWasPressed)
 					{
 						float boostToAdd = Mathf.Max(boostTimer, Point.boostAmount);
-						Debug.Log(boostToAdd);
 						boost = Mathf.Max(boost, boostToAdd);
 
 						buttonDownTimer = 0;

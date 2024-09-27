@@ -431,6 +431,7 @@
         // StartCoroutine(Services.fx.ShowTitle());
         StartCoroutine(Services.fx.ShowDescription(Services.main.activeStellation.text));
 
+		Services.fx.overlay.color = Color.clear;
 		
 		//once again, this is the wrong place for this shit
 		//is this for sound? fx? crawlers? player?

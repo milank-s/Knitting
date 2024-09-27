@@ -7,6 +7,7 @@ public class DemoScript : MonoBehaviour
     
     public GameObject[] menuButtonToggles;
 
+    float resetTimer = 0;
     // Update is called once per frame
 
     void Start(){
@@ -16,6 +17,17 @@ public class DemoScript : MonoBehaviour
     }
     void Update()
     {
+        if(Services.main.state ==GameState.playing){
+            
+            resetTimer += Time.deltaTime;
+
+            if(resetTimer > 45){
+
+                SceneController.instance.FinishLevelSet();
+                resetTimer = 0;
+            }
+        }
+
         if(!MapEditor.typing && Input.GetKeyDown(KeyCode.R)){
             
             if(SceneManager.sceneCount > 1){
