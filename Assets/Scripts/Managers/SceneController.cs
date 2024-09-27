@@ -58,14 +58,6 @@ public class SceneController : MonoBehaviour
             Services.main.ToggleEditMode();
             
 		}
-
-        //Application.isEditor
-        
-        if (!MapEditor.editing && Services.main.state == GameState.playing && Input.GetKeyDown(KeyCode.Period))
-        {
-            FinishStellation();
-        }
-        
     }
 
     public void OnNavigate(InputAction.CallbackContext context)

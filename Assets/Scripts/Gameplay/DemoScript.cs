@@ -8,6 +8,7 @@ public class DemoScript : MonoBehaviour
 {
     
     public GameObject[] menuButtonToggles;
+    public InputAction movement;
 
     float resetTimer = 0;
     // Update is called once per frame
@@ -21,10 +22,20 @@ public class DemoScript : MonoBehaviour
 
     void Update()
     {
-        
+        if (!MapEditor.editing && Services.main.state == GameState.playing && Input.GetKeyDown(KeyCode.Period))
+        {
+            SceneController.instance.FinishStellation();
+        }
+
         InputSystem.onAnyButtonPress.Call(CurrentAction => {resetTimer = 0;});
 
-        if(Services.main.state ==GameState.playing){
+        InputSystem.onActionChange +=
+        (obj, change) =>
+        {
+           resetTimer = 0;
+        };
+        
+        if(Services.main.state == GameState.playing){
             
             if(Input.anyKey){
                 resetTimer = 0;    
@@ -32,9 +43,12 @@ public class DemoScript : MonoBehaviour
 
             resetTimer += Time.deltaTime;
 
-            if(resetTimer > 30){
+            if(resetTimer > 5){
 
                 SceneController.instance.FinishLevelSet();
+                SceneController.instance.curSetIndex = -1;
+                //it would be nice if it also selected the first level set
+
                 resetTimer = 0;
             }
         }
