@@ -27,7 +27,7 @@ public class DemoScript : MonoBehaviour
             SceneController.instance.FinishStellation();
         }
 
-        InputSystem.onAnyButtonPress.Call(CurrentAction => {resetTimer = 0;});
+        //InputSystem.onAnyButtonPress.Call(CurrentAction => {resetTimer = 0;});
 
         InputSystem.onActionChange +=
         (obj, change) =>
@@ -43,7 +43,7 @@ public class DemoScript : MonoBehaviour
 
             resetTimer += Time.deltaTime;
 
-            if(resetTimer > 5){
+            if(resetTimer > 30){
 
                 SceneController.instance.FinishLevelSet();
                 SceneController.instance.curSetIndex = -1;

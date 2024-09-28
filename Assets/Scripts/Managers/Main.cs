@@ -132,6 +132,7 @@
 		}
 
 		Services.menu.Show(true);
+		Services.fx.overlay.color = Color.clear;
 	}
 
 	public void Quit()
