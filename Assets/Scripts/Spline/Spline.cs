@@ -534,7 +534,7 @@ public class Spline : MonoBehaviour
 					DrawSplineSegment(i, index, step);
 				}else{
 					//this only happens on setup
-					if(k == 0 && curPoint.setDirection){
+					if(k == 0){
 						curPoint.SetForward(pointVelocities[index]);
 					} 
 				}
@@ -688,6 +688,12 @@ public class Spline : MonoBehaviour
 	{
 		
 		rollingDistance = 0;
+
+		if(SplinePoints.Count <= 0) {
+			Debug.Log("you destroyed the points but not the splines");
+			return;
+		}
+
 		prevPos = SplinePoints[0].Pos;
 		
 		//should this match player speed?

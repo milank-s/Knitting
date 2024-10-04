@@ -225,6 +225,8 @@ public class MapEditor : MonoBehaviour
                 splineOrder.text = "spline " + controller._splines[splineindex].order;
                 splineTypeReadout.text = controller._splines[splineindex].type.ToString();
                 splineDirectionReadout.text = controller._splines[splineindex].bidirectional ? "<—>" : "—>";
+                Debug.Log("trying to select spline " + splineindex);
+                Debug.Log("with point count " + controller._splines[splineindex].SplinePoints.Count);
                 splineOrder.transform.position = cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.15f);
                 splineTypeReadout.transform.position =  cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.05f);
                 splineDirectionReadout.transform.position =  cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.1f + Vector3.right * 0.5f);
@@ -485,7 +487,11 @@ public class MapEditor : MonoBehaviour
         Services.main.activeStellation = controller;
         Services.main.activeStellation.Initialize();
         controller.isPlayerOn = true;
-        
+
+        Debug.Log("reset turtle");
+
+        splineTurtle.Reset();
+
         if (pointSelected)
         {
             Services.StartPoint = activePoint;
@@ -707,6 +713,8 @@ public class MapEditor : MonoBehaviour
 
     void ChangeSelectedSpline()
     {
+        Debug.Log("trying to change selected spline");
+
         if ((Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)) &&
             controller._splines.Count > 0)
         {
@@ -1147,7 +1155,9 @@ public class MapEditor : MonoBehaviour
                 Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, activePoint.transform);
                 SynthController.instance.keys[0].PlayNote(40, 0.5f, 0.5f);
                 
-                DeletePoint(activePoint);
+                Point p = activePoint;
+                RemoveSelectedPoint(activePoint);
+                DeletePoint(p);
             }
         }
         else
@@ -1158,17 +1168,12 @@ public class MapEditor : MonoBehaviour
     }
 
     public void DeletePoint(Point pointToDelete){
-        
-                RemoveSelectedPoint(activePoint);
                 
                 foreach (Spline s in controller._splines)
                 {
                     if (s.SplinePoints.Contains(pointToDelete))
                     {
                         s.SplinePoints.Remove(pointToDelete);
-                        if(splineindex != -1){
-                            selectedSpline.ResetLineLength();
-                        }
                     }
 
                     if (s.SplinePoints.Count < 2)
@@ -1183,6 +1188,12 @@ public class MapEditor : MonoBehaviour
                         Destroy(s);
                         
                         ReassignSplineOrder();
+                    }else{
+                        if(splineindex != -1){
+                            if(selectedSpline == s){
+                                s.ResetLineLength();
+                            }
+                        }
                     }
                 }
 
@@ -1867,7 +1878,8 @@ void DragCamera()
     }
     void AddSelectedSpline(Spline s, bool add = false)
     {
-
+        Debug.Log("add selected spline");
+        
         if (Input.GetKey(KeyCode.LeftShift))
         {
             add = true;

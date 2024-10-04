@@ -842,9 +842,7 @@ public class Point : MonoBehaviour
 	public void PlayerOnPoint(Vector3 direction, float force)
 	{
 		timeOnPoint += Time.deltaTime;
-		if(setDirection){
-			SetForward(direction);
-		}
+		SetForward(direction);
 		
 		bool buttonPressed = Services.PlayerBehaviour.buttonWasPressed;
 

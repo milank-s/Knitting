@@ -102,15 +102,18 @@ public class SplineTurtle : MonoBehaviour {
 
 
 	public void Clear(){
-		for(int i = points.Count-1;i >= 0; i--){
-			editor.DeletePoint(points[i]);
+		if(points.Count > 0){
+			for(int i = points.Count-1; i >= 0; i--){
+				editor.DeletePoint(points[i]);
+			}
 		}
 
+		Reset();
 	}
 
+	//for toggling between play modes
 	public void Reset()
 	{
-		
 		points.Clear();
 		splines.Clear();
 		pointCount = 0;
@@ -128,7 +131,6 @@ public class SplineTurtle : MonoBehaviour {
 	public void Generate()
 	{
 		Clear();
-		Reset();
 		StartCoroutine(WaitOneFrameThenGenerate());
 		
 		if (Randomize) {
@@ -169,7 +171,8 @@ public class SplineTurtle : MonoBehaviour {
 		if (redraw)
 		{
 			timeSinceRedraw += Time.deltaTime;
-			
+			Debug.Log("redrawing");
+
 			Generate();
 			redraw = false;
 		}
@@ -182,6 +185,8 @@ public class SplineTurtle : MonoBehaviour {
 
 	public void RedrawTurtle()
 	{
+		return;
+		
 		redraw = true;
 		timeSinceRedraw = 0;
 	}
@@ -227,14 +232,16 @@ public class SplineTurtle : MonoBehaviour {
 			SplinePointPair spp;
 
 			spp = SplineUtil.ConnectPoints (curSpline, curSpline.SplinePoints[curSpline.SplinePoints.Count-1], curSpline.SplinePoints[0]);
+
+			AddSpline(spp.s);
+			
+
 			curSpline = spp.s;
 			curPoint = spp.p;
 			curPoint.transform.parent = editor.pointsParent.transform;
 			curSpline.transform.parent = editor.splinesParent;
 
-			if(!splines.Contains(spp.s)){
-				splines.Add(spp.s);
-			}
+		
 		}
 
 		if (maxCrawlers < 100) {
@@ -248,20 +255,23 @@ public class SplineTurtle : MonoBehaviour {
 	}
 
 	public void Complete(){
-		//add to the controller
 		Reset();
-
-		foreach (Spline s in splines)
-		{
-			editor.AddSpline(s);
-		}
-
-		
-        foreach (Point p in points){
-			editor.controller.AddPoint(p);
-		}
 	}
 
+	void AddSpline(Spline s){
+		if(!splines.Contains(s)){
+			splines.Add(s);
+			editor.AddSpline(s);
+		}
+	}
+	Point CreatePoint(){
+		Point p = SplineUtil.CreatePoint (turtle.position);
+		p.transform.parent = editor.pointsParent.transform;
+		editor.controller.AddPoint(p);
+		points.Add(p);
+		pointCount ++;
+		return p;
+	}
 	void InitializeSpline(){
 		
 		//parent.name = name;
@@ -278,11 +288,7 @@ public class SplineTurtle : MonoBehaviour {
 //				
 //			}
 
-			pointCount = 1;
-
-			curPoint =  SplineUtil.CreatePoint (turtle.position);
-			curPoint.transform.parent = editor.pointsParent.transform;
-			points.Add(curPoint);
+			curPoint = CreatePoint();
 
 			Step ();
 			NewPoint();
@@ -334,6 +340,7 @@ public class SplineTurtle : MonoBehaviour {
 			curSpline.closed = closed;
 		}
 	}
+
 	public void ChangePointAmount(){
 		if(!running){
 			if(pointCount < maxPoints){
@@ -387,26 +394,26 @@ public class SplineTurtle : MonoBehaviour {
 
 		Point newPoint = null;
 
-		if (Raycast) {
-			newPoint = SplineUtil.RaycastDownToPoint (turtle.position, Mathf.Infinity, 100f);
-			if (newPoint == null) {
-				newPoint =  SplineUtil.CreatePoint(turtle.position);
-			}
-		} else {
-			newPoint = SplineUtil.CreatePoint (turtle.position);
-		}
+		// if (Raycast) {
+		// 	newPoint = SplineUtil.RaycastDownToPoint (turtle.position, Mathf.Infinity, 100f);
+		// 	if (newPoint == null) {
+		// 		newPoint = CreatePoint();
+		// 	}
+		// } else {
 
-		if(newPoint != curPoint){
-			pointCount ++;
-			points.Add(newPoint);
-		}
+		newPoint = CreatePoint ();
+		
 
 		if (createSplines) {
 			spp = SplineUtil.ConnectPoints (curSpline, curPoint, newPoint);
+			
+			AddSpline(spp.s);
+
 			curSpline = spp.s;
 			curPoint = spp.p;
 			curPoint.transform.parent = editor.pointsParent.transform;
 			curSpline.transform.parent = editor.splinesParent;
+
 		} else {
 			newPoint.transform.parent = editor.pointsParent.transform;
 		}
