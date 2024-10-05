@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using SimpleJSON;
 using System.IO;
 using UnityEditor;
+using Sanford.Multimedia.Midi;
 
 //###################################################
 //###################################################
@@ -713,11 +714,12 @@ public class MapEditor : MonoBehaviour
 
     void ChangeSelectedSpline()
     {
-        Debug.Log("trying to change selected spline");
 
         if ((Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)) &&
             controller._splines.Count > 0)
         {
+            
+            Debug.Log("trying to change selected spline");
 
             int i = 0;
             if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -1155,9 +1157,14 @@ public class MapEditor : MonoBehaviour
                 Services.fx.PlayAnimationAtPosition(FXManager.FXType.burst, activePoint.transform);
                 SynthController.instance.keys[0].PlayNote(40, 0.5f, 0.5f);
                 
-                Point p = activePoint;
-                RemoveSelectedPoint(activePoint);
-                DeletePoint(p);
+
+                if(Input.GetKeyDown(KeyCode.LeftShift)){
+                    for(int i = selectedPoints.Count -1; i >= 0; i--){
+                        DeletePoint(selectedPoints[i]);
+                    }
+                }else{
+                    DeletePoint(activePoint);
+                }
             }
         }
         else
@@ -1167,39 +1174,38 @@ public class MapEditor : MonoBehaviour
         }
     }
 
-    public void DeletePoint(Point pointToDelete){
-                
-                foreach (Spline s in controller._splines)
-                {
-                    if (s.SplinePoints.Contains(pointToDelete))
-                    {
-                        s.SplinePoints.Remove(pointToDelete);
-                    }
 
-                    if (s.SplinePoints.Count < 2)
-                    {
-                         if(splineindex != -1){
-                            if (selectedSplines.Contains(s))
-                            {
-                                selectedSplines.Remove(s);
-                            }
-                         }
-                        
-                        Destroy(s);
-                        
-                        ReassignSplineOrder();
-                    }else{
-                        if(splineindex != -1){
-                            if(selectedSpline == s){
-                                s.ResetLineLength();
-                            }
-                        }
+    public void DeletePoint(Point pointToDelete){
+
+        RemoveSelectedPoint(pointToDelete);
+
+        foreach (Spline s in controller._splines)
+        {
+            if (s.SplinePoints.Contains(pointToDelete))
+            {
+                s.SplinePoints.Remove(pointToDelete);
+            }
+
+            if (s.SplinePoints.Count < 2)
+            {
+                if(splineindex != -1){
+                    RemoveSelectedSpline(s);
+                }
+                
+                Destroy(s);
+                
+                ReassignSplineOrder();
+            }else{
+                if(splineindex != -1){
+                    if(selectedSpline == s){
+                        s.ResetLineLength();
                     }
                 }
+            }
+        }
 
-                controller.RemovePoint(pointToDelete);
-
-                Destroy(pointToDelete.gameObject);
+        controller.RemovePoint(pointToDelete);
+        Destroy(pointToDelete.gameObject);
     }
 
     void ReassignSplineOrder()
@@ -1868,18 +1874,21 @@ void DragCamera()
     
     void RemoveSelectedSpline(Spline s)
     {
-        s.ChangeMaterial(s.lineMaterial);
-        selectedSplines.Remove(s);
-        if (selectedSplines.Count == 0)
-        {
-            splineSelectedTip.SetActive(false);
-            splineOrder.text = "";
+        if(selectedSplines.Contains(s)){
+            s.ChangeMaterial(s.lineMaterial);
+            selectedSplines.Remove(s);
+            if (selectedSplines.Count == 0)
+            {
+                splineSelectedTip.SetActive(false);
+                splineOrder.text = "";
+                splineindex = -1;
+            }
         }
     }
     void AddSelectedSpline(Spline s, bool add = false)
     {
         Debug.Log("add selected spline");
-        
+
         if (Input.GetKey(KeyCode.LeftShift))
         {
             add = true;
@@ -2406,7 +2415,6 @@ void DragCamera()
             selectedPoints.Remove(p);
         }
 
-        
         selectedPointIndicator.SetActive(pointSelected);
         pointSelectedTip.SetActive(pointSelected);
     }
@@ -2573,6 +2581,8 @@ void DragCamera()
         if(crawlerOptions.activeSelf){
             ToggleCrawlerOptions();
         }
+        
+        splineindex = -1;
     }
     
     public void ToggleCrawlerOptions(){

@@ -186,7 +186,7 @@ public class SplineTurtle : MonoBehaviour {
 	public void RedrawTurtle()
 	{
 		return;
-		
+
 		redraw = true;
 		timeSinceRedraw = 0;
 	}
@@ -235,7 +235,6 @@ public class SplineTurtle : MonoBehaviour {
 
 			AddSpline(spp.s);
 			
-
 			curSpline = spp.s;
 			curPoint = spp.p;
 			curPoint.transform.parent = editor.pointsParent.transform;
