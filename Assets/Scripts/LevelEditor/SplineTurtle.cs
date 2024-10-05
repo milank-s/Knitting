@@ -123,15 +123,9 @@ public class SplineTurtle : MonoBehaviour {
 
 	}
 
-	IEnumerator WaitOneFrameThenGenerate()
-	{
-		yield return null;
-		InitializeSpline();
-	}
 	public void Generate()
 	{
 		Clear();
-		StartCoroutine(WaitOneFrameThenGenerate());
 		
 		if (Randomize) {
 
@@ -158,10 +152,10 @@ public class SplineTurtle : MonoBehaviour {
 
 			
 			alternateAngle = Random.Range (0f, 100f) > 50 ? true : false;
-
 			PivotSpeed = Random.Range (0f, 2f);
-
 		}
+		
+		InitializeSpline();
 	}
 
 	public void UpdateTurtle()
@@ -185,8 +179,7 @@ public class SplineTurtle : MonoBehaviour {
 
 	public void RedrawTurtle()
 	{
-		return;
-
+		
 		redraw = true;
 		timeSinceRedraw = 0;
 	}

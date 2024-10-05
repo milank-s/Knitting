@@ -1158,7 +1158,7 @@ public class MapEditor : MonoBehaviour
                 SynthController.instance.keys[0].PlayNote(40, 0.5f, 0.5f);
                 
 
-                if(Input.GetKeyDown(KeyCode.LeftShift)){
+                if(Input.GetKey(KeyCode.LeftShift)){
                     for(int i = selectedPoints.Count -1; i >= 0; i--){
                         DeletePoint(selectedPoints[i]);
                     }
@@ -1477,6 +1477,9 @@ public class MapEditor : MonoBehaviour
 
     public void Reset()
     {
+        
+        splineTurtle.Reset();
+
         DeselectAll();
 		
         string levelName = controller.title;
