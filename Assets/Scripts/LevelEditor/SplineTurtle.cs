@@ -210,7 +210,7 @@ public class SplineTurtle : MonoBehaviour {
 
 	public void RedrawTurtle()
 	{
-		
+		Debug.Log("redrawing turtle");
 		redraw = true;
 		timeSinceRedraw = 0;
 	}
@@ -286,6 +286,7 @@ public class SplineTurtle : MonoBehaviour {
 		foreach(Spline s in splines){
 			editor.AddSelectedSpline(s, true);
 		}
+
 		Reset();
 	}
 

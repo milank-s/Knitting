@@ -2402,10 +2402,14 @@ void DragCamera()
                 if (Input.GetMouseButton(0))
                 {
                     //set cursor position
-                    splineTurtle.SetPosition(cursor.transform.position);
+                    splineTurtle.SetPosition(worldPos);
                     splineTurtle.Generate();
                 }else{
                     splineTurtle.UpdateTurtle();
+                }
+                
+                if(Input.GetMouseButton(1)){
+                    splineTurtle.Complete();
                 }
                 
                 break;
