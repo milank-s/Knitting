@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-public enum Shapes{polygon, spiral, wave}
+public enum Shapes{BOX, CIRCLE, POLYGON, SPIRAL, WAVE}
 public class SplineTurtle : MonoBehaviour {
 
 	public MapEditor editor;
@@ -109,6 +109,31 @@ public class SplineTurtle : MonoBehaviour {
 		}
 
 		Reset();
+	}
+
+	public void SetShapePreset(Shapes s){
+		
+		//defaults
+
+		switch(s){
+			case Shapes.BOX:
+				angleeUI.ChangeValue(90);
+				numPointsUI.ChangeValue(4);
+				closeToggle.SetValue(true);
+				tensionUI.ChangeValue(1);
+
+			break;
+
+			case Shapes.CIRCLE:
+				
+				angleeUI.ChangeValue(90);
+				numPointsUI.ChangeValue(4);
+				closeToggle.SetValue(true);
+				tensionUI.ChangeValue(-0.5f);
+
+			break;
+
+		}
 	}
 
 	//for toggling between play modes

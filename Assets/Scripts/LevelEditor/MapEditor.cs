@@ -226,8 +226,6 @@ public class MapEditor : MonoBehaviour
                 splineOrder.text = "spline " + controller._splines[splineindex].order;
                 splineTypeReadout.text = controller._splines[splineindex].type.ToString();
                 splineDirectionReadout.text = controller._splines[splineindex].bidirectional ? "<—>" : "—>";
-                Debug.Log("trying to select spline " + splineindex);
-                Debug.Log("with point count " + controller._splines[splineindex].SplinePoints.Count);
                 splineOrder.transform.position = cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.15f);
                 splineTypeReadout.transform.position =  cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.05f);
                 splineDirectionReadout.transform.position =  cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.1f + Vector3.right * 0.5f);
