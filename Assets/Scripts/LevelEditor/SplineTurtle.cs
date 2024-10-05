@@ -23,7 +23,7 @@ public class SplineTurtle : MonoBehaviour {
 	
 	[SerializeField] private ReadSliderValue pivotAngleUI;
 	[SerializeField] private ReadSliderValue pivotDistanceUI;
-	[SerializeField] private ReadSliderValue stepSpeedUI;
+	[SerializeField] private ReadSliderValue startDirUI;
 
 	[SerializeField] private InputField xOffsetUI;
 	[SerializeField] private InputField yOffsetUI;
@@ -47,6 +47,8 @@ public class SplineTurtle : MonoBehaviour {
 	public bool createSplines;
 	public bool Randomize;
 
+	public float startDir;
+	public Vector3 startPos;
 	public int initialAmount;
 	public float initialAngleMax;
 	public float initialAngleMin;
@@ -142,10 +144,14 @@ public class SplineTurtle : MonoBehaviour {
 		points.Clear();
 		splines.Clear();
 		pointCount = 0;
-		turtle.position = Vector3.zero;
-		turtle.rotation = Quaternion.identity;
+		turtle.position = startPos;
+		turtle.rotation = Quaternion.Euler(0, 0,startDir);
 		pivot.position = turtle.position + Vector3.up * pivotDistanceUI.val;
 
+	}
+
+	public void SetPosition(Vector3 pos){
+		startPos = pos;
 	}
 
 	public void Generate()
@@ -211,6 +217,7 @@ public class SplineTurtle : MonoBehaviour {
 
 	void UpdateValues()
 	{
+		startDir = startDirUI.val;
 		closed = closeToggle.val;
 		alternateAngle = zigzagUI.val;
 		randomlyZag = randomlyZagUI.val;
@@ -228,7 +235,6 @@ public class SplineTurtle : MonoBehaviour {
 		continuity = continuityUI.val;
 		tension = tensionUI.val;
 
-		stepSpeed = stepSpeedUI.val;
 		pivot.position = editor.splinesParent.position + Vector3.up * pivotDistanceUI.val;
 		PivotSpeed = pivotAngleUI.val;
 		
@@ -272,6 +278,14 @@ public class SplineTurtle : MonoBehaviour {
 	}
 
 	public void Complete(){
+		//add it to selection
+		foreach(Point p in points){
+			editor.AddSelectedPoint(p);
+		}
+		
+		foreach(Spline s in splines){
+			editor.AddSelectedSpline(s, true);
+		}
 		Reset();
 	}
 

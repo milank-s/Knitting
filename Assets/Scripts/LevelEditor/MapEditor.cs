@@ -201,7 +201,8 @@ public class MapEditor : MonoBehaviour
         clone, 
         rotate,
         text,
-        scale
+        scale,
+        shape
     }
 
 
@@ -860,6 +861,9 @@ public class MapEditor : MonoBehaviour
         }  else if (Input.GetKey(KeyCode.R))
         {
             _curTool = Tool.scale;
+        } else if (Input.GetKey(KeyCode.A))
+        {
+            _curTool = Tool.shape;
         }
     }
 
@@ -1009,12 +1013,7 @@ public class MapEditor : MonoBehaviour
                     // controller.name = "Untitled";
                     // sceneTitle.text = controller.name;
                 }
-                
-                if (turtleUI.activeSelf)
-                {
-                    splineTurtle.UpdateTurtle();
-                }
-                   
+     
             }
         
         
@@ -1844,7 +1843,7 @@ void DragCamera()
             }
         }
     }
-    void AddSelectedPoint(Point p)
+    public void AddSelectedPoint(Point p)
     {
         if (!selectedPoints.Contains(p))
         {
@@ -1854,6 +1853,7 @@ void DragCamera()
         }
         else
         {
+            //UHHHHHHHHHHHHHHHHHHHH
             selectedPoints.Remove(p);
             selectedPoints.Add(p);
         }
@@ -1886,7 +1886,7 @@ void DragCamera()
             }
         }
     }
-    void AddSelectedSpline(Spline s, bool add = false)
+    public void AddSelectedSpline(Spline s, bool add = false)
     {
         Debug.Log("add selected spline");
 
@@ -2396,6 +2396,20 @@ void DragCamera()
 
                 break;
 
+                case Tool.shape:
+                
+                
+                if (Input.GetMouseButton(0))
+                {
+                    //set cursor position
+                    splineTurtle.SetPosition(cursor.transform.position);
+                    splineTurtle.Generate();
+                }else{
+                    splineTurtle.UpdateTurtle();
+                }
+                
+                break;
+
         }
     }
     void ClearSelection()
@@ -2562,7 +2576,12 @@ void DragCamera()
                     textCursor.enabled = false;
                 }
                 
-                
+                if(curTool != Tool.shape){
+                    //turn off the turtle
+                    turtleUI.SetActive(false);
+                }else{
+                    turtleUI.SetActive(true);
+                }
                 
                 tools[i].color = Color.gray;
                 tooltips[i].SetActive(false);
