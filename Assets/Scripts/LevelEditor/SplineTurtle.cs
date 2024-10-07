@@ -10,6 +10,7 @@ public class SplineTurtle : MonoBehaviour {
 
 	[Header("UI")] 
 	
+	
 	[SerializeField] private ReadSliderValue numPointsUI;
 	[SerializeField] private ReadSliderValue minDistUI;
 	[SerializeField] private ReadSliderValue maxDistUI;
@@ -35,6 +36,9 @@ public class SplineTurtle : MonoBehaviour {
 	[SerializeField] private ReadToggleValue connectUI;
 	[SerializeField] private ReadToggleValue ghostToggle;
 	
+	
+    public Dropdown shapeTypes;
+
 	public static float maxTotalPoints = 1000;
 	public static float maxCrawlers = 1;
 
@@ -102,6 +106,12 @@ public class SplineTurtle : MonoBehaviour {
 	Spline curSpline;
 	public Point curPoint;
 
+	public void Start(){
+		foreach(Shapes c in Enum.GetValues(typeof(Shapes))){
+            string crawlername = Enum.GetName(typeof(CrawlerType), (int)c);
+            shapeTypes.options.Add(new Dropdown.OptionData(crawlername));
+        }
+	}
 
 	public void Clear(){
 		if(points.Count > 0){

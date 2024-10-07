@@ -402,8 +402,6 @@ public class MapEditor : MonoBehaviour
             }
         }
 
-        int val = 0;
-
         foreach(CrawlerType c in Enum.GetValues(typeof(CrawlerType))){
             string crawlername = Enum.GetName(typeof(CrawlerType), (int)c);
             crawlerType.options.Add(new Dropdown.OptionData(crawlername));
