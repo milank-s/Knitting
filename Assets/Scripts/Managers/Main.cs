@@ -132,7 +132,6 @@
 		}
 
 		Services.menu.Show(true);
-		Services.fx.overlay.color = Color.clear;
 	}
 
 	public void Quit()
@@ -216,6 +215,7 @@
 		Pause(false);
 		FullReset();
 		OpenMenu();
+		Services.fx.overlay.color = Color.clear;
 	}
 	
 	public void Awake ()
@@ -245,7 +245,6 @@
 
 	void Start()
 	{
-		
 		GameSettings.i.InitializeSettings();
 
 		Cursor.lockState = CursorLockMode.None;
@@ -254,6 +253,7 @@
 		// MapEditor.editing = true;
 		// ToggleEditMode();
 		SceneController.instance.OnStart();
+		Services.fx.Fade(true, 0.5f);
 		
 	}
 
