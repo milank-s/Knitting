@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum Shapes{BOX, CIRCLE, POLYGON, SPIRAL, WAVE}
+public enum Shapes{BOX, CIRCLE, POLYGON, SPIRAL, WAVE, BRAID, KNOT}
 public class SplineTurtle : MonoBehaviour {
 
 	public MapEditor editor;
@@ -11,8 +11,8 @@ public class SplineTurtle : MonoBehaviour {
 	
 	
 	[SerializeField] private ReadSliderValue numPointsUI;
-	[SerializeField] private ReadSliderValue minDistUI;
-	[SerializeField] private ReadSliderValue maxDistUI;
+	[SerializeField] private ReadSliderValue distUI;
+	[SerializeField] private ReadSliderValue distDeltaUI;
 	[SerializeField] private ReadSliderValue distScaleUI;
 	[SerializeField] private ReadSliderValue angleeUI;
 	[SerializeField] private ReadSliderValue angleDeltaUI;
@@ -65,8 +65,8 @@ public class SplineTurtle : MonoBehaviour {
 	public float angleVariance = 10;
 	public float angle = 30;
 	public float scaleChange = 0;
-	public float maxDist = 2;
-	public float minDist = 1;
+	public float distDelta = 2;
+	public float dist = 1;
 	public float branchFactor = 0;
 	public int maxPoints = 50;
 	public float continuity = 0;
@@ -110,6 +110,7 @@ public class SplineTurtle : MonoBehaviour {
             string label = System.Enum.GetName(typeof(Shapes), (int)c);
             shapeTypes.options.Add(new Dropdown.OptionData(label));
         }
+		ChangeShapePreset(Shapes.BOX);
 	}
 
 	public void Clear(){
@@ -124,13 +125,15 @@ public class SplineTurtle : MonoBehaviour {
 
 	public void ChangeShapePreset(int i){
 		ChangeShapePreset((Shapes)i);
+		UpdateValues();
+		Generate();
 	}
 
 	public void ChangeShapePreset(Shapes s){
 		
 		//defaults
-		minDistUI.ChangeValue(1);
-		maxDistUI.ChangeValue(1);
+		distUI.ChangeValue(1);
+		distDeltaUI.ChangeValue(0);
 	 	distScaleUI.ChangeValue(1);
 		angleDeltaUI.ChangeValue(0);
 		angleScaleUI.ChangeValue(1);
@@ -162,13 +165,56 @@ public class SplineTurtle : MonoBehaviour {
 				angleeUI.ChangeValue(90);
 				numPointsUI.ChangeValue(4);
 				closeToggle.SetValue(true);
+				tensionUI.ChangeValue(-0.66f);
+
+			break;
+
+			case Shapes.SPIRAL:
+				
+				angleeUI.ChangeValue(90);
+				numPointsUI.ChangeValue(20);
+				closeToggle.SetValue(false);
 				tensionUI.ChangeValue(-0.5f);
+	 			distScaleUI.ChangeValue(0.95f);
+
+			break;
+
+			case Shapes.WAVE:
+				
+				angleeUI.ChangeValue(120);
+				numPointsUI.ChangeValue(10);
+				closeToggle.SetValue(false);
+				tensionUI.ChangeValue(-0.66f);
+				zigzagUI.SetValue(true);
+				distUI.ChangeValue(0.25f);
+
+			break;
+
+			case Shapes.BRAID:
+				
+				xOffsetUI.SetTextWithoutNotify("0.066");
+				angleeUI.ChangeValue(90);
+				numPointsUI.ChangeValue(20);
+				closeToggle.SetValue(false);
+				tensionUI.ChangeValue(-0.5f);
+				distUI.ChangeValue(0.25f);
+
+			break;
+
+			case Shapes.KNOT:
+				
+				xOffsetUI.SetTextWithoutNotify("0.066");
+				angleeUI.ChangeValue(90);
+				numPointsUI.ChangeValue(28);
+				closeToggle.SetValue(true);
+				tensionUI.ChangeValue(-0.5f);
+				distUI.ChangeValue(0.25f);
+				pivotAngleUI.ChangeValue(-13);
+				
 
 			break;
 
 		}
-
-		Generate();
 	}
 
 	//for toggling between play modes
@@ -201,13 +247,13 @@ public class SplineTurtle : MonoBehaviour {
 			angle = Random.Range (angleVariance, 90);
 			scaleChange = Random.Range (0.98f, 1.02f);
 			if (Random.Range (0, 100) < 90) {
-				maxDist = Random.Range (1f, 2f);
-				minDist = Random.Range (1, maxDist);
+				distDelta = Random.Range (1f, 2f);
+				dist = Random.Range (1, distDelta);
 				maxPoints = Random.Range (5, 10);
 				initialAmount = 1;
 			} else {
-				maxDist = Random.Range (3f, 5f);
-				minDist = Random.Range (2, maxDist);
+				distDelta = Random.Range (3f, 5f);
+				dist = Random.Range (2, distDelta);
 				initialAmount = Random.Range (20,25);
 				maxPoints = Random.Range (8, 10);
 			}
@@ -255,8 +301,8 @@ public class SplineTurtle : MonoBehaviour {
 		randomlyZag = randomlyZagUI.val;
 		Raycast = connectUI.val;
 		maxPoints = (int)numPointsUI.val;
-		minDist = minDistUI.val;
-		maxDist = maxDistUI.val;
+		dist = distUI.val;
+		distDelta = distDeltaUI.val;
 		scaleChange = distScaleUI.val;
 		
 		angle = angleeUI.val;
@@ -339,8 +385,8 @@ public class SplineTurtle : MonoBehaviour {
 		
 		ang = angle;
 		angleRandom = angleVariance;
-		mxDist = maxDist;
-		mDist = minDist;
+		mxDist = distDelta;
+		mDist = dist;
 
 //		if(Raycast){
 //			curPoint = SplineUtil.RaycastDownToPoint (turtle.position, Mathf.Infinity, 1000f);
@@ -375,8 +421,8 @@ public class SplineTurtle : MonoBehaviour {
 		if (!childrenInherit) {
 			newTurtleScript.angle = angle;
 			newTurtleScript.angleVariance = angleVariance;
-			newTurtleScript.maxDist = maxDist;
-			newTurtleScript.minDist = minDist;
+			newTurtleScript.distDelta = distDelta;
+			newTurtleScript.dist = dist;
 		}
 		maxCrawlers++;
 		// newTurtleScript.Generate();
@@ -530,7 +576,7 @@ public class SplineTurtle : MonoBehaviour {
 
 		turtle.RotateAround (pivot.position, Vector3.forward, PivotSpeed);
 		
-		float moveDistance = Random.Range (mDist, mxDist);
+		float moveDistance = mDist + Random.Range (-mxDist, mxDist);
 		mDist *= scaleChange;
 		mxDist *= scaleChange;
 		turtle.localPosition += turtle.up * moveDistance + offsetDirection;

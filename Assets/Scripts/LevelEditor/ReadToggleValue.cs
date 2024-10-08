@@ -43,6 +43,7 @@ public class ReadToggleValue : MonoBehaviour
     public void SetValue(bool b){
 
         toggle.SetIsOnWithoutNotify(b);
+        val = b;
     }
 
     
