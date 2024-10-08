@@ -1378,7 +1378,7 @@ public class PlayerBehaviour: MonoBehaviour {
 
 				float curAngle = Mathf.Infinity;
 
-				if(s.state == Spline.SplineState.off){
+				if(s.state == Spline.SplineState.off || s.type == SplineType.ghost){
 					continue;
 				}else{
 				
@@ -1401,13 +1401,16 @@ public class PlayerBehaviour: MonoBehaviour {
 					}
 
 					forward = i == 1;
+					
+					if(!forward && s.type == SplineType.unidirectional) continue;
 
 					Point p = s.SplinePoints[nextIndex];
+					 
 
 					int indexDifference = nextIndex - curIndex;
 					bool diffSpline = s != curSpline;
 					bool reversing = goingForward != forward && !diffSpline;
-					bool canReverse = (endPoint && !s.closed && !intersection); //only double back if its a leaf
+					bool canReverse = endPoint && !s.closed && !intersection; //only double back if its a leaf
 					
 					//if we're not reversing, go on
 					//if we're going in a diff direction on a diff spline, fine
