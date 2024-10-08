@@ -111,7 +111,7 @@ public class SplineTurtle : MonoBehaviour {
             string label = System.Enum.GetName(typeof(Shapes), (int)c);
             shapeTypes.options.Add(new Dropdown.OptionData(label));
         }
-		ChangeShapePreset(Shapes.BOX);
+		ChangeShapePreset(Shapes.CIRCLE);
 	}
 
 	public void Clear(){
