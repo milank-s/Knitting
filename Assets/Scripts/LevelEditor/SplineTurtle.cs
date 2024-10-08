@@ -214,7 +214,6 @@ public class SplineTurtle : MonoBehaviour {
 			branchFactor = Random.Range(0,0);
 			continuity = Random.Range(0,2);
 
-			
 			alternateAngle = Random.Range (0f, 100f) > 50 ? true : false;
 			PivotSpeed = Random.Range (0f, 2f);
 		}
@@ -277,7 +276,6 @@ public class SplineTurtle : MonoBehaviour {
 	}
 	
 	public void Draw(){
-		
 		
 		for(int i = pointCount; i < maxPoints; i++) {
 			Step ();
@@ -351,20 +349,12 @@ public class SplineTurtle : MonoBehaviour {
 //				
 //			}
 
-			curPoint = CreatePoint();
-
-			Step();
-			NewPoint();
-			
-//			Point secondPoint = SpawnPointPrefab.CreatePoint (turtle.position);
-//
-//			if (createSplines) {
-//				curSpline = SplineUtil.CreateSpline (curPoint, secondPoint);
-//			}
-			
-			//curPoint = secondPoint;
-			//curPoint.transform.parent = editor.pointsParent.transform;
+		curPoint = NewPoint(false);
 		
+
+		Step();
+		NewPoint();
+
 
 		if (ghostPoints)
 		{
@@ -444,8 +434,7 @@ public class SplineTurtle : MonoBehaviour {
 		}
 	}
 
-	public void NewPoint(){
-
+	public Point NewPoint(bool makeSpline = true){
 
 		if (Random.Range (0f, 100f) < branchFactor) {
 			if (maxTotalPoints < 100) {
@@ -468,7 +457,7 @@ public class SplineTurtle : MonoBehaviour {
 		newPoint.continuity = continuity;
 		newPoint.tension = tension;
 
-		if (createSplines) {
+		if (createSplines && makeSpline) {
 			spp = SplineUtil.ConnectPoints (curSpline, curPoint, newPoint);
 			
 			AddSpline(spp.s);
@@ -486,6 +475,8 @@ public class SplineTurtle : MonoBehaviour {
 		{
 			newPoint.SetPointType(PointTypes.ghost);
 		}
+
+		return newPoint;
 
 	}
 

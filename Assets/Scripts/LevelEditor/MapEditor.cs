@@ -2424,6 +2424,7 @@ void DragCamera()
                 {
                     //set cursor position
                     splineTurtle.SetPosition(worldPos);
+                    DeselectAll();
                     splineTurtle.Generate();
                 }else{
                     splineTurtle.UpdateTurtle();
@@ -2433,6 +2434,10 @@ void DragCamera()
                     splineTurtle.Complete();
                 }
                 
+                if(Input.GetKeyDown(KeyCode.Backspace)){
+                    splineTurtle.Clear();
+                }
+
                 break;
 
         }
