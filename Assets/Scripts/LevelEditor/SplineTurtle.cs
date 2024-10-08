@@ -1,7 +1,6 @@
-﻿using System.Collections;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
 
 public enum Shapes{BOX, CIRCLE, POLYGON, SPIRAL, WAVE}
 public class SplineTurtle : MonoBehaviour {
@@ -107,8 +106,8 @@ public class SplineTurtle : MonoBehaviour {
 	public Point curPoint;
 
 	public void Start(){
-		foreach(Shapes c in Enum.GetValues(typeof(Shapes))){
-            string crawlername = Enum.GetName(typeof(CrawlerType), (int)c);
+		foreach(Shapes c in System.Enum.GetValues(typeof(Shapes))){
+            string crawlername = System.Enum.GetName(typeof(CrawlerType), (int)c);
             shapeTypes.options.Add(new Dropdown.OptionData(crawlername));
         }
 	}
@@ -123,9 +122,31 @@ public class SplineTurtle : MonoBehaviour {
 		Reset();
 	}
 
-	public void SetShapePreset(Shapes s){
+	public void ChangeShapePreset(int i){
+		ChangeShapePreset((Shapes)i);
+	}
+
+	public void ChangeShapePreset(Shapes s){
 		
 		//defaults
+		minDistUI.ChangeValue(1);
+		maxDistUI.ChangeValue(1);
+	 	distScaleUI.ChangeValue(1);
+		angleDeltaUI.ChangeValue(0);
+		angleScaleUI.ChangeValue(1);
+	
+		pivotAngleUI.ChangeValue(0);
+		pivotDistanceUI.ChangeValue(0);
+		startDirUI.ChangeValue(0);
+
+		xOffsetUI.SetTextWithoutNotify("0");
+		yOffsetUI.SetTextWithoutNotify("0");
+		zOffsetUI.SetTextWithoutNotify("0");
+
+		zigzagUI.SetValue(false);
+		connectUI.SetValue(false);
+		randomlyZagUI.SetValue(false);
+		continuityUI.ChangeValue(0);
 
 		switch(s){
 			case Shapes.BOX:
