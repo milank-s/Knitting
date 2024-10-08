@@ -854,7 +854,11 @@ public class PlayerBehaviour: MonoBehaviour {
 		//we have to find a way to flatten the cursor dir to screen space as well
 		float alignment = Vector2.Angle (cursorDir, screenSpaceDir);
 		if(curSpline.type == SplineType.conveyor){
-			alignment = 1;
+			alignment = 0;
+		}
+
+		if(curSpline.type == SplineType.slow || (curSpline.type == SplineType.accelerate && upstream)){
+			alignment = 90;
 		}
 
 		return (90 - alignment) / 90;
@@ -1129,13 +1133,14 @@ public class PlayerBehaviour: MonoBehaviour {
 		float signedAcc = easedAccuracy * 2 - 1;
 		
 		//is the player fighting a spline
-		upstream = curSpline.speed != 0 && ((goingForward && splineSpeed < 0) || (!goingForward && splineSpeed > 0));
+		upstream = curSpline.type == SplineType.slow || (curSpline.type == SplineType.accelerate &&
+					curSpline.speed != 0 && ((goingForward && splineSpeed < 0) || (!goingForward && splineSpeed > 0)));
 		
 		//give direction info to player acceleration
 		float speedDir = goingForward ? 1 : -1;
 
 		//if we're going against the flow
-		if (curSpline.type == SplineType.slow || upstream){
+		if (upstream){
 			
 			//disable speed gain
 			signedAcc = Mathf.Clamp(signedAcc, -1, 0);
@@ -1147,7 +1152,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			if(curSpline.type == SplineType.accelerate){
 				curSpline.speed += speedDir * (splineSpeedLost + playerSpeedLost);
 			}
-
+			
 			if(flow == 0){
 				boost -= playerSpeedLost + splineSpeedLost;
 			}else{
