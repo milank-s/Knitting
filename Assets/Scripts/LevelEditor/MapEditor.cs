@@ -7,6 +7,7 @@ using SimpleJSON;
 using System.IO;
 using UnityEditor;
 using Sanford.Multimedia.Midi;
+using UnityEngine.EventSystems;
 
 //###################################################
 //###################################################
@@ -758,9 +759,23 @@ public class MapEditor : MonoBehaviour
         }
     }
 
+    bool ProcessClick(int mouseButton){
+        if(Input.GetMouseButton(mouseButton)){
+            bool mouseOverUI = EventSystem.current.IsPointerOverGameObject();
+         
+            if(Input.touchCount > 0){
+                mouseOverUI = EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId);
+            }
+
+            return !mouseOverUI;
+        }
+
+        return false;
+    }
+
     void SetCursorPosition()
     {
-        if (Input.GetMouseButton(0))
+        if (ProcessClick(0))
         {
             PanCamera();
         }
@@ -887,7 +902,7 @@ public class MapEditor : MonoBehaviour
                 {
                     cam.fieldOfView = Mathf.Clamp(cam.fieldOfView - Input.mouseScrollDelta.y * Time.deltaTime * 100f, 10, 160);
                 }
-                else if(!Input.GetMouseButton(0))
+                else if(!ProcessClick(0))
                 {
                     //never move camera on the z, its annoying af
 
@@ -1295,7 +1310,7 @@ public class MapEditor : MonoBehaviour
                 }
                 else
                 {
-                    if (Input.GetMouseButton(0))
+                    if (ProcessClick(0))
                     {
                         selectedPointIndicator.transform.position = cam.WorldToScreenPoint(p.Pos);
                     }
@@ -1931,7 +1946,7 @@ void DragCamera()
                         dragging = true;
                     }
 
-                    if (dragging || (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftShift)))
+                    if (dragging || (ProcessClick(0) && Input.GetKey(KeyCode.LeftShift)))
                     {
 
                         MoveSelectedPoints();
@@ -1958,7 +1973,7 @@ void DragCamera()
                    // zCam.gameObject.SetActive(false);
                 }
 
-                if (!dragging && hitPoint == null && Input.GetMouseButton(0) &&
+                if (!dragging && hitPoint == null && ProcessClick(0) &&
                     !Input.GetKey(KeyCode.LeftShift))
                 {
                     DragCamera();
@@ -1971,11 +1986,11 @@ void DragCamera()
                 Vector3 viewPortPos = cam.ScreenToViewportPoint(mousePos);
 
                 
-                if (Input.GetMouseButton(0) && hitPoint == null && !pointSelected &&  !dragging)
+                if (ProcessClick(0) && hitPoint == null && !pointSelected && !dragging)
                 {
                     DragCamera();
                 }
-                else if(Input.GetMouseButton(0) && pointSelected && hitPoint == null  && !dragging)
+                else if(ProcessClick(0) && pointSelected && hitPoint == null  && !dragging)
                 {
                     if (pointSelected)
                     {
@@ -2093,7 +2108,7 @@ void DragCamera()
                     }
                 }
 
-                if (Input.GetMouseButton(0))
+                if (ProcessClick(0))
                 {
                     cursor.transform.position = cam.WorldToScreenPoint(rotationPivot);
                     float xAngle = Mathf.Sign(deltaScreen.x) * deltaScreen.magnitude * 100f;
@@ -2377,7 +2392,7 @@ void DragCamera()
                     }
                 }
 
-                if (Input.GetMouseButton(0))
+                if (ProcessClick(0))
                 {
                     //if(recenterScalePivot) scalePivot = center;  //this leads to an infinite loop
 
@@ -2397,7 +2412,7 @@ void DragCamera()
                 case Tool.shape:
                 
                 
-                if (Input.GetMouseButton(0))
+                if (ProcessClick(0))
                 {
                     //set cursor position
                     splineTurtle.SetPosition(worldPos);

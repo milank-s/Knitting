@@ -107,8 +107,8 @@ public class SplineTurtle : MonoBehaviour {
 
 	public void Start(){
 		foreach(Shapes c in System.Enum.GetValues(typeof(Shapes))){
-            string crawlername = System.Enum.GetName(typeof(CrawlerType), (int)c);
-            shapeTypes.options.Add(new Dropdown.OptionData(crawlername));
+            string label = System.Enum.GetName(typeof(Shapes), (int)c);
+            shapeTypes.options.Add(new Dropdown.OptionData(label));
         }
 	}
 
