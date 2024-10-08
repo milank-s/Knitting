@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum Shapes{BOX, CIRCLE, POLYGON, SPIRAL, WAVE, BRAID, KNOT}
+public enum Shapes{CIRCLE, POLYGON, SPIRAL, WAVE, BRAID, KNOT}
 public class SplineTurtle : MonoBehaviour {
 
 	public MapEditor editor;
