@@ -29,6 +29,7 @@ public class SplineTurtle : MonoBehaviour {
 	[SerializeField] private InputField yOffsetUI;
 	[SerializeField] private InputField zOffsetUI;
 
+	[SerializeField] private ReadToggleValue angleCalc;
 	[SerializeField] private ReadToggleValue zigzagUI;
 	[SerializeField] private ReadToggleValue randomlyZagUI;
 	[SerializeField] private ReadToggleValue closeToggle;
@@ -49,7 +50,7 @@ public class SplineTurtle : MonoBehaviour {
 
 	public bool createSplines;
 	public bool Randomize;
-
+	bool calculateAngle = false;
 	public float startDir;
 	public Vector3 startPos;
 	public int initialAmount;
@@ -136,6 +137,13 @@ public class SplineTurtle : MonoBehaviour {
 			splines[0].closed = closed;
 		}
 	}
+
+	public void CalculateAngle(){
+		angle = 360/(float)maxPoints;
+		angle = Mathf.Round(angle * 10.0f) * 0.1f;
+		angleeUI.ChangeValue(angle); 
+	}
+
 	public void ChangeShapePreset(Shapes s){
 		
 		//defaults
@@ -157,15 +165,9 @@ public class SplineTurtle : MonoBehaviour {
 		connectUI.SetValue(false);
 		randomlyZagUI.SetValue(false);
 		continuityUI.ChangeValue(0);
+		angleCalc.SetValue(false);
 
 		switch(s){
-			case Shapes.BOX:
-				angleeUI.ChangeValue(90);
-				numPointsUI.ChangeValue(4);
-				closeToggle.SetValue(true);
-				tensionUI.ChangeValue(1);
-
-			break;
 
 			case Shapes.CIRCLE:
 				
@@ -173,6 +175,7 @@ public class SplineTurtle : MonoBehaviour {
 				numPointsUI.ChangeValue(4);
 				closeToggle.SetValue(true);
 				tensionUI.ChangeValue(-0.66f);
+				angleCalc.SetValue(true);
 
 			break;
 
@@ -189,10 +192,10 @@ public class SplineTurtle : MonoBehaviour {
 			case Shapes.POLYGON:
 				
 				angleeUI.ChangeValue(90);
-				numPointsUI.ChangeValue(20);
-				closeToggle.SetValue(false);
-				tensionUI.ChangeValue(-0.5f);
-	 			distScaleUI.ChangeValue(0.95f);
+				numPointsUI.ChangeValue(4);
+				closeToggle.SetValue(true);
+				tensionUI.ChangeValue(1f);
+				angleCalc.SetValue(true);
 
 			break;
 
@@ -333,10 +336,15 @@ public class SplineTurtle : MonoBehaviour {
 
 		pivot.position = editor.splinesParent.position + Vector3.up * pivotDistanceUI.val;
 		PivotSpeed = pivotAngleUI.val;
-		
+		calculateAngle = angleCalc.val;
+
 		float.TryParse(xOffsetUI.text, out offsetDirection.x);
 		float.TryParse(yOffsetUI.text, out offsetDirection.y);
 		float.TryParse(zOffsetUI.text, out offsetDirection.z);
+
+		if(calculateAngle){
+			CalculateAngle();
+		}
 	}
 	
 	public void Draw(){
