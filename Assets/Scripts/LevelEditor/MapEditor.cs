@@ -533,14 +533,16 @@ public class MapEditor : MonoBehaviour
         if (splineindex >= 0 && splineindex < controller._splines.Count)
         {
 
+            //this is outdated
+            
             if (Input.GetKeyDown(KeyCode.L))
             {
                
-                bool locked = selectedSpline.type == Spline.SplineType.locked;
+                bool locked = selectedSpline.locked;
 
                 if (locked)
                 {
-                    selectedSpline.SetSplineType(Spline.SplineType.normal);
+                    selectedSpline.locked = false;
 
                     if (controller._escapeSplines.Contains(selectedSpline))
                     {
@@ -549,7 +551,8 @@ public class MapEditor : MonoBehaviour
                 }
                 else
                 {
-                    selectedSpline.SetSplineType(Spline.SplineType.locked);
+                    selectedSpline.locked = true;
+
                     if (!controller._escapeSplines.Contains(selectedSpline))
                     {
                         controller._escapeSplines.Add(selectedSpline);
@@ -561,7 +564,12 @@ public class MapEditor : MonoBehaviour
             
             if (Input.GetKeyDown(KeyCode.Alpha0))
             {
-                selectedSpline.ChangeMaterial(selectedSpline.lineMaterial + 1);
+                int curType = (int)selectedSpline.type;
+                curType ++;
+                if(curType >= Enum.GetValues(typeof(Spline.SplineType)).Length){
+                    curType = 0;
+                }
+                selectedSpline.SetSplineType((Spline.SplineType)curType);
             }
 
             for (int i = 0; i < pointOrder.Length; i++)
@@ -1403,6 +1411,8 @@ public class MapEditor : MonoBehaviour
             splineData["crawlerIndex"].AsInt = s.crawlerIndex;
             splineData["crawlerDir"].AsBool = s.crawlerDir;
             splineData["crawlerSpeed"].AsFloat = s.crawlerSpeed;
+            splineData["locked"].AsBool = s.locked;
+            
             JSONObject pointIndices = new JSONObject();
 
             int pi = 0;
@@ -1656,6 +1666,7 @@ public class MapEditor : MonoBehaviour
 
             int splineType = json["spline" + i]["type"];
             newSpline.type = (Spline.SplineType) splineType;
+            newSpline.locked = json["spline" + i]["locked"];
             newSpline.lineWidth = Mathf.Clamp(json["spline" + i]["lineWidth"], 1, 10);
             newSpline.lineMaterial = json["spline" + i]["lineTexture"];
             newSpline.closed = json["spline" + i]["closed"];

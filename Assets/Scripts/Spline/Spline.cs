@@ -22,7 +22,8 @@ public class Spline : MonoBehaviour
 {
 	public SplineType type = SplineType.normal;
 
-	public enum SplineType{normal, locked}
+	//normal, only crawlers, moves in direction of player, one way, slows player, no accuracy
+	public enum SplineType{normal, ghost, accelerate, unidirectional, slow, conveyor}
 
 	public enum SplineState{off, on}
 
@@ -71,6 +72,7 @@ public class Spline : MonoBehaviour
 
 	[HideInInspector]
 
+	public bool locked;
 	public float hue;
 	public float saturation;
 	Color color;
@@ -359,17 +361,16 @@ public class Spline : MonoBehaviour
 	public void SetSplineType(SplineType t)
 	{
 
-		if (t == SplineType.locked)
+		if (locked)
 		{
 			state = SplineState.off;
-		}
-
-		if (t == SplineType.normal)
-		{
+		}else{
 			state = SplineState.on;
 		}
 
 		type = t;
+		ChangeMaterial((int)t);
+		
 	}
 	
 	public void SwitchState(SplineState t)

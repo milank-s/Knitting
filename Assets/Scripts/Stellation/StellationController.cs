@@ -477,7 +477,7 @@ public class StellationController : MonoBehaviour {
 		//why arent we resetting splines?
 		
 		foreach(Spline s in _splines){
-			if (s.type == Spline.SplineType.locked)
+			if (s.locked)
 				{
 					_escapeSplines.Add(s);
 				}
