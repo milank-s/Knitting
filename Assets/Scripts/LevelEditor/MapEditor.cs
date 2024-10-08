@@ -604,6 +604,8 @@ public class MapEditor : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.C))
             {
+                
+				splineTurtle.ToggleClosed();
                 selectedSpline.closed = !selectedSpline.closed;
                 selectedSpline.ResetLineLength();
             }
@@ -2444,6 +2446,7 @@ void DragCamera()
                 if(Input.GetMouseButton(1)){
                     splineTurtle.Complete();
                 }
+                
                 
                 if(Input.GetKeyDown(KeyCode.Backspace)){
                     splineTurtle.Clear();

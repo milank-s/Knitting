@@ -129,6 +129,13 @@ public class SplineTurtle : MonoBehaviour {
 		Generate();
 	}
 
+	public void ToggleClosed(){
+		closed = !closed;
+		closeToggle.SetValue(closed);
+		if(splines.Count > 0 && splines[0] != null){
+			splines[0].closed = closed;
+		}
+	}
 	public void ChangeShapePreset(Shapes s){
 		
 		//defaults
