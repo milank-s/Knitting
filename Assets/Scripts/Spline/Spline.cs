@@ -18,12 +18,12 @@ using System.Collections.Generic;
 //###################################################
 //###################################################
 
+	public enum SplineType{normal, ghost, accelerate, unidirectional, slow, conveyor}
 public class Spline : MonoBehaviour
 {
 	public SplineType type = SplineType.normal;
 
 	//normal, only crawlers, moves in direction of player, one way, slows player, no accuracy
-	public enum SplineType{normal, ghost, accelerate, unidirectional, slow, conveyor}
 
 	public enum SplineState{off, on}
 
@@ -154,7 +154,6 @@ public class Spline : MonoBehaviour
 	[Header("Visuals")]
 
 	//{0 = normal, 1 = dotted, 2 = zags, 3 = dashed, 4 = charcoal, 5 = pencil}
-	public int lineMaterial = 0;
 	public int lineWidth = 3;
 	private float textureWidth = 1;
 	private float playerProgress{
@@ -287,7 +286,6 @@ public class Spline : MonoBehaviour
 		{
 			i %= Services.Prefabs.lines.Length;
 		}
-		lineMaterial = i;
 		
 		// bidirectional = lineMaterial != 3;
 
@@ -425,7 +423,7 @@ public class Spline : MonoBehaviour
 		line.smoothWidth = true;
 		line.smoothColor = true;
 		
-		ChangeMaterial(lineMaterial);
+		ChangeMaterial((int) type);
 	}
 
 	public void Reset()

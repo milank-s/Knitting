@@ -186,6 +186,17 @@ public class SplineTurtle : MonoBehaviour {
 
 			break;
 
+			case Shapes.POLYGON:
+				
+				angleeUI.ChangeValue(90);
+				numPointsUI.ChangeValue(20);
+				closeToggle.SetValue(false);
+				tensionUI.ChangeValue(-0.5f);
+	 			distScaleUI.ChangeValue(0.95f);
+
+			break;
+
+
 			case Shapes.WAVE:
 				
 				angleeUI.ChangeValue(120);
@@ -352,7 +363,6 @@ public class SplineTurtle : MonoBehaviour {
 		if (maxCrawlers < 100) {
 			for (int i = 0; i < initialAmount; i++) {
 				SpawnTurtle ().transform.Rotate (0, 0, turtle.eulerAngles.z + Random.Range (initialAngleMin, initialAngleMax) * i);
-
 			}
 		}
 		
@@ -395,16 +405,8 @@ public class SplineTurtle : MonoBehaviour {
 		mxDist = distDelta;
 		mDist = dist;
 
-//		if(Raycast){
-//			curPoint = SplineUtil.RaycastDownToPoint (turtle.position, Mathf.Infinity, 1000f);
-//			if (curPoint == null)
-//			{
-//				
-//			}
-
 		curPoint = NewPoint(false);
 		
-
 		Step();
 		NewPoint();
 
@@ -434,11 +436,6 @@ public class SplineTurtle : MonoBehaviour {
 		maxCrawlers++;
 		// newTurtleScript.Generate();
 		return newTurtle;
-	}
-
-	public void TryConnectPoints(){
-		//iterate through all points, raycast down, create new splines
-		
 	}
 
 	public void ChangeClosed(){
@@ -499,16 +496,20 @@ public class SplineTurtle : MonoBehaviour {
 
 		Point newPoint = null;
 
-		// if (Raycast) {
-		// 	newPoint = SplineUtil.RaycastDownToPoint (turtle.position, Mathf.Infinity, 100f);
-		// 	if (newPoint == null) {
-		// 		newPoint = CreatePoint();
-		// 	}
-		// } else {
+		if (Raycast) {
+			newPoint = SplineUtil.RaycastDownToPoint (turtle.position, Mathf.Infinity, 100f);
+			//ignore points directly before us
+			if(curPoint != null && newPoint == curPoint){
+				newPoint = null;
+			}
+		}
 
-		newPoint = CreatePoint ();
-		newPoint.continuity = continuity;
-		newPoint.tension = tension;
+		if(newPoint == null) {
+
+			newPoint = CreatePoint ();
+			newPoint.continuity = continuity;
+			newPoint.tension = tension;
+		}
 
 		if (createSplines && makeSpline) {
 			spp = SplineUtil.ConnectPoints (curSpline, curPoint, newPoint);

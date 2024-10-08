@@ -186,7 +186,7 @@ public class SynthController : MonoBehaviour
 		//do we want to add another voice per x steps between notes?
 		//to create triads quads etc
 
-		int m = Services.PlayerBehaviour.curSpline.lineMaterial;
+		int m = (int)Services.PlayerBehaviour.curSpline.type;
 
 		switch(m){
 			//normal line

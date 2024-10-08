@@ -853,6 +853,9 @@ public class PlayerBehaviour: MonoBehaviour {
 
 		//we have to find a way to flatten the cursor dir to screen space as well
 		float alignment = Vector2.Angle (cursorDir, screenSpaceDir);
+		if(curSpline.type == SplineType.conveyor){
+			alignment = 1;
+		}
 
 		return (90 - alignment) / 90;
 		//StopAngleDiff = Mathf.Lerp (20, 50, Mathf.Abs(flow));
@@ -1126,13 +1129,13 @@ public class PlayerBehaviour: MonoBehaviour {
 		float signedAcc = easedAccuracy * 2 - 1;
 		
 		//is the player fighting a spline
-		upstream = curSpline.speed != 0 && (goingForward && splineSpeed < 0) || (!goingForward && splineSpeed > 0);
+		upstream = curSpline.speed != 0 && ((goingForward && splineSpeed < 0) || (!goingForward && splineSpeed > 0));
 		
 		//give direction info to player acceleration
 		float speedDir = goingForward ? 1 : -1;
 
 		//if we're going against the flow
-		if (upstream){
+		if (curSpline.type == SplineType.slow || upstream){
 			
 			//disable speed gain
 			signedAcc = Mathf.Clamp(signedAcc, -1, 0);
@@ -1141,7 +1144,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			float splineSpeedLost = absSpeed * Time.deltaTime;
 			float playerSpeedLost = curSpeed * Time.deltaTime;
 
-			if(curSpline.lineMaterial == 3){
+			if(curSpline.type == SplineType.accelerate){
 				curSpline.speed += speedDir * (splineSpeedLost + playerSpeedLost);
 			}
 
@@ -1173,7 +1176,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				boost = absSpeed - curSpeed;
 			}
 
-			if(curSpline.lineMaterial == 3){
+			if(curSpline.type == SplineType.accelerate){
 
 				float splineMomentum = Mathf.Clamp01(speedGain);
 				//do we want to make it impossible to slow down splines when you're in line with them?

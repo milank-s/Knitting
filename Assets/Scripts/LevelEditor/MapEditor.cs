@@ -566,10 +566,10 @@ public class MapEditor : MonoBehaviour
             {
                 int curType = (int)selectedSpline.type;
                 curType ++;
-                if(curType >= Enum.GetValues(typeof(Spline.SplineType)).Length){
+                if(curType >= Enum.GetValues(typeof(SplineType)).Length){
                     curType = 0;
                 }
-                selectedSpline.SetSplineType((Spline.SplineType)curType);
+                selectedSpline.SetSplineType((SplineType)curType);
             }
 
             for (int i = 0; i < pointOrder.Length; i++)
@@ -1188,10 +1188,10 @@ public class MapEditor : MonoBehaviour
                     for(int i = selectedPoints.Count -1; i >= 0; i--){
                         DeletePoint(selectedPoints[i]);
                     }
-                    DeselectPoints();
 
                 }else{
                     DeletePoint(activePoint);
+                    
                 }
             }
         }
@@ -1234,6 +1234,10 @@ public class MapEditor : MonoBehaviour
 
         controller.RemovePoint(pointToDelete);
         Destroy(pointToDelete.gameObject);
+
+        if(selectedPoints.Count <= 0){
+            DeselectPoints();
+        }
     }
 
     void ReassignSplineOrder()
@@ -1405,7 +1409,7 @@ public class MapEditor : MonoBehaviour
             splineData["closed"].AsBool = s.closed;
             splineData["numPoints"] = s.SplinePoints.Count;
             splineData["type"].AsInt = (int)s.type;
-            splineData["lineTexture"] = s.lineMaterial;
+            
             splineData["lineWidth"] = s.lineWidth;
             splineData["bidirectional"].AsBool = s.bidirectional;
             splineData["speed"].AsFloat = s.speed;
@@ -1667,10 +1671,9 @@ public class MapEditor : MonoBehaviour
             }
 
             int splineType = json["spline" + i]["type"];
-            newSpline.type = (Spline.SplineType) splineType;
+            newSpline.type = (SplineType) splineType;
             newSpline.locked = json["spline" + i]["locked"];
             newSpline.lineWidth = Mathf.Clamp(json["spline" + i]["lineWidth"], 1, 10);
-            newSpline.lineMaterial = json["spline" + i]["lineTexture"];
             newSpline.closed = json["spline" + i]["closed"];
             newSpline.transform.parent = parent.transform;
             newSpline.order =  json["spline" + i]["order"];
@@ -1679,7 +1682,6 @@ public class MapEditor : MonoBehaviour
             newSpline.crawlerSpeed = json["spline" + i]["crawlerSpeed"];
             newSpline.crawlerIndex =  json["spline" + i]["crawlerIndex"];
             newSpline.crawlerDir =  json["spline" + i]["crawlerDir"];
-            newSpline.ChangeMaterial(newSpline.lineMaterial);
             newSpline.speed =  json["spline" + i]["speed"];
             newSplines.Add(newSpline);
         }
@@ -1910,7 +1912,7 @@ void DragCamera()
     void RemoveSelectedSpline(Spline s)
     {
         if(selectedSplines.Contains(s)){
-            s.ChangeMaterial(s.lineMaterial);
+            s.ChangeMaterial((int)s.type);
             selectedSplines.Remove(s);
             if (selectedSplines.Count == 0)
             {
@@ -2073,7 +2075,7 @@ void DragCamera()
                         newSpline.bidirectional = s.bidirectional;
                         newSpline.speed = s.speed;
                         newSpline.lineWidth = s.lineWidth;
-                        newSpline.lineMaterial = s.lineMaterial;
+                        newSpline.type = s.type;
                         newSpline.transform.parent = splinesParent;
                         newSplines.Add(newSpline);
                         
@@ -2637,7 +2639,7 @@ void DragCamera()
     {   
         foreach (Spline s in selectedSplines)
         {
-            if(s != null) s.ChangeMaterial(s.lineMaterial);
+            if(s != null) s.ChangeMaterial((int)s.type);
         }
         selectedSplines.Clear();
         splineSelectedTip.SetActive(false);
