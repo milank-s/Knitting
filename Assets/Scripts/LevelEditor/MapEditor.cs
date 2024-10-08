@@ -428,6 +428,12 @@ public class MapEditor : MonoBehaviour
             newSelector.transform.SetParent(container, false);
             yield return null;
         }
+
+        splineSelectedTip.SetActive(false);
+        pointSelectedTip.SetActive(false);
+        splinePointTip.SetActive(false);
+        crawlerOptions.SetActive(false);
+        
     }
 
     
@@ -1172,6 +1178,8 @@ public class MapEditor : MonoBehaviour
                     for(int i = selectedPoints.Count -1; i >= 0; i--){
                         DeletePoint(selectedPoints[i]);
                     }
+                    DeselectPoints();
+
                 }else{
                     DeletePoint(activePoint);
                 }
@@ -2576,7 +2584,7 @@ void DragCamera()
                 }
 
 
-                if (curTool == Tool.draw || curTool == Tool.select)
+                if (curTool == Tool.draw || curTool == Tool.select || curTool == Tool.shape)
                 {
 //                  pointCoords.gameObject.SetActive(false);
                     cursor.rectTransform.pivot = new Vector3(0f, 0f);

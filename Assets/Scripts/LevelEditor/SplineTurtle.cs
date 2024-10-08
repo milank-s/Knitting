@@ -167,6 +167,8 @@ public class SplineTurtle : MonoBehaviour {
 			break;
 
 		}
+
+		Generate();
 	}
 
 	//for toggling between play modes
@@ -293,9 +295,7 @@ public class SplineTurtle : MonoBehaviour {
 			curSpline = spp.s;
 			curPoint = spp.p;
 			curPoint.transform.parent = editor.pointsParent.transform;
-			curSpline.transform.parent = editor.splinesParent;
-
-		
+			curSpline.transform.parent = editor.splinesParent;		
 		}
 
 		if (maxCrawlers < 100) {
@@ -353,7 +353,7 @@ public class SplineTurtle : MonoBehaviour {
 
 			curPoint = CreatePoint();
 
-			Step ();
+			Step();
 			NewPoint();
 			
 //			Point secondPoint = SpawnPointPrefab.CreatePoint (turtle.position);
@@ -465,7 +465,8 @@ public class SplineTurtle : MonoBehaviour {
 		// } else {
 
 		newPoint = CreatePoint ();
-		
+		newPoint.continuity = continuity;
+		newPoint.tension = tension;
 
 		if (createSplines) {
 			spp = SplineUtil.ConnectPoints (curSpline, curPoint, newPoint);
@@ -486,8 +487,6 @@ public class SplineTurtle : MonoBehaviour {
 			newPoint.SetPointType(PointTypes.ghost);
 		}
 
-		
-		
 	}
 
 	public void Rotate(){
@@ -544,8 +543,6 @@ public class SplineTurtle : MonoBehaviour {
 		mDist *= scaleChange;
 		mxDist *= scaleChange;
 		turtle.localPosition += turtle.up * moveDistance + offsetDirection;
-		curPoint.continuity = continuity;
-		curPoint.tension = tension;
 		
 	}
 }
