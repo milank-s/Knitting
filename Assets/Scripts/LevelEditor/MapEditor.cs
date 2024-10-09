@@ -1162,7 +1162,7 @@ public class MapEditor : MonoBehaviour
 
             }else if (Input.GetKeyDown(KeyCode.Alpha7))
             {
-                 SetPointType(PointTypes.end);
+                 SetPointType(PointTypes.dropoff);
                 
             }else if (Input.GetKeyDown(KeyCode.Alpha5))
             {

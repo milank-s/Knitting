@@ -82,9 +82,7 @@ public class SceneController : MonoBehaviour
             }
             else
             {
-                
-                Services.menu.TryChangeSetting(context);
-                
+                Services.menu.TryChangeSetting(context);   
             }
         }
     }

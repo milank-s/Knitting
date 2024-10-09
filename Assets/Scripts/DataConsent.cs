@@ -6,7 +6,7 @@ using Unity.Services.Core;
 using Unity.Services.Core.Analytics;
 using UnityEngine.SceneManagement;
 
-public class UGS_Analytics : MonoBehaviour
+public class DataConsent : MonoBehaviour
 {
     public GameObject ui;
     public AudioSource sfx;

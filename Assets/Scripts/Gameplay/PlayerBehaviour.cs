@@ -1696,7 +1696,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				freeCursor = false;
 				foundConnection = false;
 
-				if (traversedPoints.Count >= 2 && (curPoint.pointType == PointTypes.start || curPoint.pointType == PointTypes.end || curPoint.pointType == PointTypes.fly))
+				if (traversedPoints.Count >= 2 && (curPoint.pointType == PointTypes.start || curPoint.pointType == PointTypes.fly))
 				{
 					List<Point> pointsToTraverse = new List<Point>();
 					foreach (Point p in traversedPoints)

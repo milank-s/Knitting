@@ -434,7 +434,7 @@ public class SynthController : MonoBehaviour
 
 		#if UNITY_EDITOR	
 		if(Services.main.state == GameState.menu){
-			TestNotes();
+			//TestNotes();
 		}
 		#endif
         //Sound of noise when player goes of accuracy

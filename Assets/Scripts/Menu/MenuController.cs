@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -26,6 +27,8 @@ public class MenuController : MonoBehaviour
     [SerializeField] TMPro.TextMeshProUGUI levelTitle;
     [SerializeField] TMPro.TextMeshProUGUI levelNumber;
 
+
+    [SerializeField] TMPro.TextMeshPro[] gameModes;
 	[SerializeField] GameObject settings;
 	[SerializeField] GameObject volumeSettings;
 	[SerializeField] GameObject settingsButton;
@@ -34,6 +37,7 @@ public class MenuController : MonoBehaviour
 	[Header("Oscilloscope")]
     public MenuKnob gameStateKnob;
     public MenuKnob levelSelectKnob;
+    public MenuKnob menuSelectKnob;
     public MenuKnob optionSelectKnob;
     public Transform submitButton;
     public Transform escapeButton;
@@ -54,7 +58,7 @@ public class MenuController : MonoBehaviour
 				changedSelection = true;
 				audio.PlayOneShot(selectSFX);
 				if(Mathf.Abs(navDir) > 0.1f){
-					optionSelectKnob.transform.Rotate(0, Mathf.Sign(navDir) * 23, 0);
+					menuSelectKnob.transform.Rotate(0, Mathf.Sign(navDir) * 23, 0);
 				}
 			}else{
 				changedSelection = false;
@@ -65,6 +69,13 @@ public class MenuController : MonoBehaviour
 
     public void GameModeSelect(int i){
 		MenuSelection newState = (MenuSelection)i;
+
+		foreach(TextMeshPro t in gameModes){
+			t.color = new Color(0.5f, 0.5f, 0.5f);
+		}
+
+		gameModes[i].color = Color.white;
+
         switch(newState){
 			
 			case MenuSelection.game:
@@ -105,7 +116,6 @@ public class MenuController : MonoBehaviour
 
 		GlitchEffect.Fizzle(0.2f);
 
-
         CameraFollow.instance.Reset();    
 
         RenderSettings.fog = false;
@@ -133,7 +143,6 @@ public class MenuController : MonoBehaviour
 			Cursor.visible = false;
 			Cursor.lockState = CursorLockMode.Locked;
 			RenderSettings.fog = true;
-		
 		}
 		
 		if (settingsOpen)
@@ -226,6 +235,8 @@ public class MenuController : MonoBehaviour
 					{
 						s.ChangeValue(-1);
 					}
+
+					optionSelectKnob.transform.Rotate(0, Mathf.Sign(input.x ) * 15, 0);
 				}
 			}
 		}

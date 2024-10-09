@@ -4,16 +4,18 @@ using UnityEngine;
 using Vectrosity;
 using UnityEngine.UI;
 using System.Linq;
+using UnityEngine.Rendering.PostProcessing;
 
- public enum ParticleType{start, lose}
+public enum ParticleType{start, lose}
 
 public class FXManager : MonoBehaviour
 {
     public enum FXType{fizzle, burst, rotate, pulse, cross, glitch}
 
+    public PostProcessVolume postProcessing;
     public MeshRenderer background;
     Material backgroundMat;
-     public GameObject circleEffect;
+    public GameObject circleEffect;
     public SpriteRenderer nextPointSprite;
     public TrailRenderer cursorTrail;
     public LineRenderer nextSpline;

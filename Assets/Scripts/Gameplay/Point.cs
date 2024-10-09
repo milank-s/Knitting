@@ -21,7 +21,7 @@ using UnityEngine.Events;
 //###################################################
 //###################################################
 
-public enum PointTypes{normal, fly, ghost, stop, connect, reset, start, end, pickup}
+public enum PointTypes{normal, fly, ghost, stop, connect, reset, start, dropoff, pickup, end}
 public class Point : MonoBehaviour
 {
 
@@ -284,7 +284,7 @@ public class Point : MonoBehaviour
 
 		recieveCollectible = false;
 		
-		if(pointType == PointTypes.stop || pointType == PointTypes.end || pointType == PointTypes.start){
+		if(pointType == PointTypes.dropoff){
 			recieveCollectible = true;
 		}
 
@@ -575,7 +575,7 @@ public class Point : MonoBehaviour
 			}
 		
 			if(recieveCollectible && !hasCollectible){	
-				if(pointType == PointTypes.start || pointType == PointTypes.end){
+				if(pointType == PointTypes.start){
 					controller.DepositPlayer();
 				}else{
 					controller.DepositCollectible(this);

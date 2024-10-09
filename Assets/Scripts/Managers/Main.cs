@@ -16,7 +16,7 @@
 	[Header("Editor info")]
 	[SerializeField] public string loadFileName;
 
-
+	public GameStart gameStart;
 	public bool devMode = true;
 	public GameState state;
 
@@ -99,7 +99,7 @@
 			}
 			else
 			{
-
+				gameStart.Escape();
 				//ask to quit the game?
 			}
 		}
@@ -133,12 +133,6 @@
 
 		Services.menu.Show(true);
 	}
-
-	public void Quit()
-	{
-		Application.Quit();
-	}
-	
 	public void ResetLevel()
 	{	
 		if(state != GameState.playing || MapEditor.editing) return;
@@ -477,7 +471,9 @@
 			Player.SetActive(!enter);
 			
 			Services.mainCam.GetComponent<CameraFollow>().enabled = !enter;
-			RenderSettings.fog = !enter;
+			RenderSettings.fog = enter;
+			Services.fx.postProcessing.enabled = !enter;
+			
 			editor.l.enabled = enter;
 			
 			if (enter)
