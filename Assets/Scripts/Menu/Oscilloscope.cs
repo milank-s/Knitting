@@ -22,6 +22,9 @@ public class Oscilloscope : MonoBehaviour
     public float noiseScale;
     public float noiseFreqX, noiseFreqY;
 
+    float time;
+    float noiseTimer;
+    float stepAmount;
     float[] offsets;
 
     InputAction joystickMovement;
@@ -41,27 +44,30 @@ public class Oscilloscope : MonoBehaviour
 
     
     public void Update(){
+        time += Time.deltaTime * timeScale;
         CheckInput();
-        AttractMode();
         AnimateCurve();
         line.Draw3D();
     }
 
-
+    public void Gauss(){
+        noiseScale = 1;
+        noiseFreqX = Random.Range(1f, 10f);
+        noiseFreqY = Random.Range(1f, 10f);
+    }
     public void CheckInput()
     {
         Vector2 input = joystickMovement.ReadValue<Vector2>() * Time.deltaTime;
 
-        xSpeed += input.x;
-        ySpeed += input.y;
-    }
+        SetXSpeed(input.x/10f);
+        SetYSpeed(input.y/10f);
+        ClampSteps(input.y * 1000);
 
+        SetFreq(input.x/10f);
+        
+        timeScale = 1000f/steps;
+        noiseScale = Mathf.Lerp(noiseScale, 0, Time.deltaTime * 5);
 
-    public void AttractMode(){
-        //perlinNoise animate values;
-        scale = 1 + Mathf.PerlinNoise(offsets[0] + Time.time, offsets[1] -Time.time);
-        frequency = 1 + Mathf.PerlinNoise(offsets[2]Time.time, offsets[3]-Time.time);
-        amplitude = 1 + Mathf.PerlinNoise(offsets[5]Time.time, offsets[4]-Time.time);
     }
 
     public void OnEnable(){
@@ -83,6 +89,10 @@ public class Oscilloscope : MonoBehaviour
         ySpeed += f;
     }
 
+    public void ClampSteps(float f){
+        
+        steps = (int)Mathf.Clamp(steps + f, 20, maxSteps);
+    }
     public void SetAmplitude(float f){
         
         amplitude = Mathf.Clamp(f + amplitude, minAmplitude, maxAmplitude);
@@ -101,7 +111,7 @@ public class Oscilloscope : MonoBehaviour
     }
 
     public void SetNoiseScale(float f){
-        scale = f;
+        noiseScale = f;
     }
 
     public void SetNoiseFreqY(float f){
@@ -140,7 +150,7 @@ public class Oscilloscope : MonoBehaviour
             //shits too small, doesnt matter anymore
             if(scaleCoefficient < 0.01f) break;
 
-            float time = Time.time * timeScale;
+        
             float step = time + (float) (i+1) * frequency;
             float x = step * xSpeed; 
             float y = step * ySpeed; 

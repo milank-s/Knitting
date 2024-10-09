@@ -169,6 +169,9 @@ public class MenuController : MonoBehaviour
 		// audio.PlayOneShot(submitSFX);
 		if(context.performed){
 			PushButton(submitButton);
+			if(gameStart){
+				oscilloscope.Gauss();
+			}
 		}
 	}
     public void Show(bool b){
