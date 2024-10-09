@@ -23,7 +23,6 @@ public class MenuController : MonoBehaviour
     [SerializeField] GameObject oscilloscopeModel;
     [SerializeField] GameObject levelDisplay;
     [SerializeField] GameObject oscilloscopeDisplay;
-    [SerializeField] GameObject editorDisplay;
     [SerializeField] Image levelImage;
     [SerializeField] TMPro.TextMeshProUGUI levelTitle;
     [SerializeField] TMPro.TextMeshProUGUI levelNumber;
@@ -34,6 +33,7 @@ public class MenuController : MonoBehaviour
 	[SerializeField] GameObject gameStartButton;
 	[SerializeField] GameObject volumeSettings;
 	[SerializeField] GameObject settingsButton;
+	[SerializeField] GameObject levelButton;
 
 	
 	[Header("Oscilloscope")]
@@ -53,6 +53,7 @@ public class MenuController : MonoBehaviour
 	GameObject selection;
 	public void Start(){
 		selection = EventSystem.current.currentSelectedGameObject;
+		EventSystem.current.SetSelectedGameObject(gameStartButton);
 	}
 
 	void Update(){
@@ -70,8 +71,38 @@ public class MenuController : MonoBehaviour
 		}	
 	}
 
+	 public void OnNavigate(InputAction.CallbackContext context)
+    {
+        if (context.phase == InputActionPhase.Started && Services.main.state == GameState.menu)
+        {
+            
+            RotateYKnob(context.ReadValue<Vector2>());
+
+            if (levelButton.gameObject == EventSystem.current.currentSelectedGameObject)
+            {
+                Vector2 input = context.ReadValue<Vector2>();
+                if (input.x > 0 && Mathf.Approximately(input.y, 0))
+                {
+                    SceneController.instance.SelectNextLevel(true);
+                }
+                else if (input.x < 0 && Mathf.Approximately(input.y, 0))
+                {
+
+                    SceneController.instance.SelectNextLevel(false);
+                }
+            }
+            else
+            {
+                TryChangeSetting(context);   
+            }
+        }
+    }
+
 
     public void GameModeSelect(int i){
+
+		if(!gameStart) return;
+
 		MenuSelection newState = (MenuSelection)i;
 
 		foreach(TextMeshPro t in gameModes){
@@ -102,8 +133,12 @@ public class MenuController : MonoBehaviour
     public void Enter(){
 		
         if(!gameStart){
+			Debug.Log("entering");
+
 			gameStart = true;
 			oscilloscopeDisplay.SetActive(false);
+			levelButton.SetActive(true);
+			
             Show(true);
         }
     }
@@ -111,13 +146,17 @@ public class MenuController : MonoBehaviour
     public void Escape(){
 		PushButton(escapeButton);
 		
-
         if(gameStart){
             //turn off screen
+			
+			levelDisplay.SetActive(false);
+			levelButton.SetActive(false);
+
 			EventSystem.current.SetSelectedGameObject(gameStartButton);
 			CloseMenu();
 			gameStart = false;
 			oscilloscopeDisplay.SetActive(true);
+
         }else{
             Application.Quit();
         }
@@ -133,14 +172,14 @@ public class MenuController : MonoBehaviour
 
         menuRoot.SetActive(b);
         oscilloscopeModel.SetActive(b);
-		oscilloscopeDisplay.SetActive(b);
 		levelDisplay.SetActive(b);
  		
 		if(b){
 			if(!gameStart){
-				
-				EventSystem.current.SetSelectedGameObject(gameStartButton);
-				levelDisplay.SetActive(false);
+				//stupidity reaching outer limits
+
+				gameStart = true;
+				Escape();
 				
 			}else{
             	OpenMenu();
@@ -168,7 +207,7 @@ public class MenuController : MonoBehaviour
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
 		
-		EventSystem.current.SetSelectedGameObject(SceneController.instance.levelButton.gameObject);
+		EventSystem.current.SetSelectedGameObject(levelButton.gameObject);
 
 		SelectLevelSet(SceneController.instance.curLevelSet, true);
     }
@@ -192,7 +231,7 @@ public class MenuController : MonoBehaviour
     }
 
 	public void PushButton(Transform t){
-		Debug.Log("Pushing button");
+		
 		StartCoroutine(PushButtonRoutine(t));
 	}
 
@@ -238,7 +277,7 @@ public class MenuController : MonoBehaviour
 		else
 		{
 			PushButton(escapeButton);
-			EventSystem.current.SetSelectedGameObject(SceneController.instance.levelButton.gameObject);
+			EventSystem.current.SetSelectedGameObject(levelButton.gameObject);
 		}
     }
 

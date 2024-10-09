@@ -23,8 +23,6 @@ public class SceneController : MonoBehaviour
     {
         get { return levelSets[curSetIndex]; }
     }
-    public EventSystem UISystem;
-    public Button levelButton;
     
     public List<LevelSet> levelSets;
     public static int curLevel;
@@ -58,33 +56,6 @@ public class SceneController : MonoBehaviour
             Services.main.ToggleEditMode();
             
 		}
-    }
-
-    public void OnNavigate(InputAction.CallbackContext context)
-    {
-        if (context.phase == InputActionPhase.Started && Services.main.state == GameState.menu)
-        {
-            
-            Services.menu.RotateYKnob(context.ReadValue<Vector2>());
-
-            if (levelButton.gameObject == UISystem.currentSelectedGameObject)
-            {
-                Vector2 input = context.ReadValue<Vector2>();
-                if (input.x > 0 && Mathf.Approximately(input.y, 0))
-                {
-                    SelectNextLevel(true);
-                }
-                else if (input.x < 0 && Mathf.Approximately(input.y, 0))
-                {
-
-                    SelectNextLevel(false);
-                }
-            }
-            else
-            {
-                Services.menu.TryChangeSetting(context);   
-            }
-        }
     }
     
     //go back to menu after level set

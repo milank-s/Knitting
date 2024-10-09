@@ -394,18 +394,17 @@
 	//this happens when levels are entered from the menu
 	public void EnterLevelSet()
 	{
-		if(!Services.menu.gameStart){
-			Services.menu.Enter();
-		}else{
-			Services.fx.Fade(true , 1f);
-			SceneController.curLevel = 0;
-			
-			StartCoroutine(Services.fx.ShowTitle(SceneController.instance.curLevelSet.description));
-			// EnterPlayMode();
+		if(!Services.menu.gameStart) return;
 
-			Services.menu.Show(false);
-			SceneController.instance.LoadDirect(SceneController.instance.GetCurLevel());
-		}
+		Services.fx.Fade(true , 1f);
+		SceneController.curLevel = 0;
+		
+		StartCoroutine(Services.fx.ShowTitle(SceneController.instance.curLevelSet.description));
+		// EnterPlayMode();
+
+		Services.menu.Show(false);
+		SceneController.instance.LoadDirect(SceneController.instance.GetCurLevel());
+
 	}
 
 

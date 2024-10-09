@@ -7,8 +7,8 @@ public class Oscilloscope : MonoBehaviour
     
     
     [Header("Screensize")]
-    public float xBounds = 5;
-    public float yBounds = 5;
+    public float xScale = 1.25f;
+    public float yScale = 1;
 
     [Header("Start Values")]
     public float frequency = 1;
@@ -27,9 +27,18 @@ public class Oscilloscope : MonoBehaviour
     Vectrosity.VectorLine line;
     Vector3 center;
     void Start(){
+        
+    }
+
+    public void OnEnable(){
         center = transform.position;
-        line = new VectorLine("Oscillator", new List<Vector3>(), 1, LineType.Continuous);
+        line = new VectorLine("Oscillator", new List<Vector3>(), 2, LineType.Continuous);
         line.layer = LayerMask.NameToLayer("Oscilloscope");
+    }
+
+    public void OnDisable(){
+        if(line == null) return;
+        Destroy(line.rectTransform.gameObject);
     }
 
     public void Update(){
@@ -110,7 +119,7 @@ public class Oscilloscope : MonoBehaviour
             //if outside bounds continue
             oldPos = pos;
 
-            pos = new Vector3(Mathf.Sin(x), Mathf.Cos(y),0) * amplitude * scaleCoefficient;
+            pos = new Vector3(Mathf.Sin(x)* xScale, Mathf.Cos(y)* yScale,0) * amplitude * scaleCoefficient;
             pos.x += Mathf.Sin(pos.y * noiseFreqX + time) * noiseScale;
             pos.y += Mathf.Sin(pos.x * noiseFreqY + time) * noiseScale;
             
