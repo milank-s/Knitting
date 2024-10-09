@@ -23,6 +23,7 @@ public class MenuController : MonoBehaviour
     [SerializeField] GameObject oscilloscopeModel;
     [SerializeField] GameObject levelDisplay;
     [SerializeField] GameObject oscilloscopeDisplay;
+    [SerializeField] Oscilloscope oscilloscope;
     [SerializeField] Image levelImage;
     [SerializeField] TMPro.TextMeshProUGUI levelTitle;
     [SerializeField] TMPro.TextMeshProUGUI levelNumber;
@@ -73,28 +74,32 @@ public class MenuController : MonoBehaviour
 
 	 public void OnNavigate(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Started && Services.main.state == GameState.menu)
+
+        if (Services.main.state == GameState.menu && context.phase == InputActionPhase.Started)
         {
-            
-            RotateYKnob(context.ReadValue<Vector2>());
+			
+			RotateYKnob(context.ReadValue<Vector2>());
 
-            if (levelButton == EventSystem.current.currentSelectedGameObject)
-            {
-                Vector2 input = context.ReadValue<Vector2>();
-                if (input.x > 0 && Mathf.Approximately(input.y, 0))
-                {
-                    SceneController.instance.SelectNextLevel(true);
-                }
-                else if (input.x < 0 && Mathf.Approximately(input.y, 0))
-                {
+			if(gameStart){
+			
+				if (levelButton == EventSystem.current.currentSelectedGameObject)
+				{
+					Vector2 input = context.ReadValue<Vector2>();
+					if (input.x > 0 && Mathf.Approximately(input.y, 0))
+					{
+						SceneController.instance.SelectNextLevel(true);
+					}
+					else if (input.x < 0 && Mathf.Approximately(input.y, 0))
+					{
 
-                    SceneController.instance.SelectNextLevel(false);
-                }
-            }
-            else
-            {
-                TryChangeSetting(context);   
-            }
+						SceneController.instance.SelectNextLevel(false);
+					}
+				}
+				else
+				{
+					TryChangeSetting(context);   
+				}
+			}
         }
     }
 
@@ -133,8 +138,7 @@ public class MenuController : MonoBehaviour
     public void Enter(){
 		
         if(!gameStart){
-			Debug.Log("entering");
-
+			
 			gameStart = true;
 			oscilloscopeDisplay.SetActive(false);
 			levelButton.SetActive(true);
@@ -147,8 +151,7 @@ public class MenuController : MonoBehaviour
 		PushButton(escapeButton);
 		
         if(gameStart){
-            //turn off screen
-			
+
 			levelDisplay.SetActive(false);
 			levelButton.SetActive(false);
 

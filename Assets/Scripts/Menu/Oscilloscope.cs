@@ -21,6 +21,10 @@ public class Oscilloscope : MonoBehaviour
     public float ySpeed = 1;
     public float noiseScale;
     public float noiseFreqX, noiseFreqY;
+
+    float[] offsets;
+
+    InputAction joystickMovement;
     
     [Header("Constraints")]
 
@@ -28,19 +32,36 @@ public class Oscilloscope : MonoBehaviour
     Vectrosity.VectorLine line;
     Vector3 center;
     void Start(){
-        
+        offsets = new float[10];
+        for(int i = 0; i < offsets.Length; i++){
+            offsets[i] = Random.Range(-100f, 100f);
+        }
+        joystickMovement = Services.main.playerInput.currentActionMap.FindAction("Navigate");
     }
 
-     public void OnNavigate(InputAction.CallbackContext context)
+    
+    public void Update(){
+        CheckInput();
+        AttractMode();
+        AnimateCurve();
+        line.Draw3D();
+    }
+
+
+    public void CheckInput()
     {
-        Vector2 input = context.ReadValue<Vector2>();
+        Vector2 input = joystickMovement.ReadValue<Vector2>() * Time.deltaTime;
 
-   
+        xSpeed += input.x;
+        ySpeed += input.y;
     }
+
+
     public void AttractMode(){
         //perlinNoise animate values;
-
-
+        scale = 1 + Mathf.PerlinNoise(offsets[0] + Time.time, offsets[1] -Time.time);
+        frequency = 1 + Mathf.PerlinNoise(offsets[2]Time.time, offsets[3]-Time.time);
+        amplitude = 1 + Mathf.PerlinNoise(offsets[5]Time.time, offsets[4]-Time.time);
     }
 
     public void OnEnable(){
@@ -50,16 +71,10 @@ public class Oscilloscope : MonoBehaviour
     }
 
     public void OnDisable(){
-        if(line == null) return;
-        Destroy(line.rectTransform.gameObject);
-        line = null;
+        if(line != null){
+            VectorLine.Destroy(ref line);
+        }
     }
-
-    public void Update(){
-        AnimateCurve();
-        line.Draw3D();
-    }
-
     public void SetXSpeed(float f){
         xSpeed += f;
     }
