@@ -15,8 +15,6 @@
 
 	[Header("Editor info")]
 	[SerializeField] public string loadFileName;
-
-	public GameStart gameStart;
 	public bool devMode = true;
 	public GameState state;
 
@@ -89,36 +87,38 @@
 				Pause(true);
 			}
 	}
-	public void CancelInput()
+	public void CancelInput(InputAction.CallbackContext  callbackContext)
 	{
-		if (state == GameState.menu)
-		{
-			if (Services.menu.settingsOpen)
+		if(callbackContext.performed){
+			if (state == GameState.menu)
 			{
-				Services.menu.OpenSettings();
+				if (Services.menu.settingsOpen)
+				{
+					Services.menu.OpenSettings();
+				}
+				else
+				{
+					Services.menu.Escape();
+				}
 			}
 			else
 			{
-				gameStart.Escape();
-				//ask to quit the game?
-			}
-		}
-		else
-		{
-			if (!MapEditor.typing)
-			{
-				Pause(!PauseMenu.activeSelf);	
-			}
-			else
-			{
+				if (!MapEditor.typing)
+				{
+					Pause(!PauseMenu.activeSelf);	
+				}
+				else
+				{
 
-				MapEditor.typing = false;
+					MapEditor.typing = false;
+				}
 			}
 		}
 	}
 
 	public void OpenMenu(){
 	
+
 		if(OnReset != null){
 			OnReset.Invoke();
 		}
@@ -244,8 +244,7 @@
 		Cursor.lockState = CursorLockMode.None;
 		
 		state = GameState.menu;
-		// MapEditor.editing = true;
-		// ToggleEditMode();
+		
 		SceneController.instance.OnStart();
 		Services.fx.Fade(true, 0.5f);
 		
@@ -395,14 +394,18 @@
 	//this happens when levels are entered from the menu
 	public void EnterLevelSet()
 	{
-		Services.fx.Fade(true , 1f);
-		SceneController.curLevel = 0;
-		
-		StartCoroutine(Services.fx.ShowTitle(SceneController.instance.curLevelSet.description));
-		// EnterPlayMode();
+		if(!Services.menu.gameStart){
+			Services.menu.Enter();
+		}else{
+			Services.fx.Fade(true , 1f);
+			SceneController.curLevel = 0;
+			
+			StartCoroutine(Services.fx.ShowTitle(SceneController.instance.curLevelSet.description));
+			// EnterPlayMode();
 
-		Services.menu.Show(false);
-		SceneController.instance.LoadDirect(SceneController.instance.GetCurLevel());
+			Services.menu.Show(false);
+			SceneController.instance.LoadDirect(SceneController.instance.GetCurLevel());
+		}
 	}
 
 

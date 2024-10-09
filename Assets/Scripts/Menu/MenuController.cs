@@ -12,6 +12,7 @@ public class MenuController : MonoBehaviour
 
 	[Header("SFX")]
 
+	
 	[SerializeField] AudioSource audio;
 	[SerializeField] AudioClip selectSFX;
 	[SerializeField] AudioClip submitSFX;
@@ -30,11 +31,13 @@ public class MenuController : MonoBehaviour
 
     [SerializeField] TMPro.TextMeshPro[] gameModes;
 	[SerializeField] GameObject settings;
+	[SerializeField] GameObject gameStartButton;
 	[SerializeField] GameObject volumeSettings;
 	[SerializeField] GameObject settingsButton;
 
 	
 	[Header("Oscilloscope")]
+	
     public MenuKnob gameStateKnob;
     public MenuKnob levelSelectKnob;
     public MenuKnob menuSelectKnob;
@@ -42,6 +45,7 @@ public class MenuController : MonoBehaviour
     public Transform submitButton;
     public Transform escapeButton;
 
+	public bool gameStart = false;
     public bool settingsOpen;
 	bool changedSelection;
 
@@ -94,22 +98,56 @@ public class MenuController : MonoBehaviour
         }
     }
 
-    public void OnSubmit(){
+	
+    public void Enter(){
+		
+        if(!gameStart){
+			gameStart = true;
+			oscilloscopeDisplay.SetActive(false);
+            Show(true);
+        }
+    }
+    
+    public void Escape(){
+		PushButton(escapeButton);
+		
+
+        if(gameStart){
+            //turn off screen
+			EventSystem.current.SetSelectedGameObject(gameStartButton);
+			CloseMenu();
+			gameStart = false;
+			oscilloscopeDisplay.SetActive(true);
+        }else{
+            Application.Quit();
+        }
+    }
+	
+    public void OnSubmit(InputAction.CallbackContext context){
 		// audio.PlayOneShot(submitSFX);
-		PushButton(submitButton);
+		if(context.performed){
+			PushButton(submitButton);
+		}
 	}
     public void Show(bool b){
 
-        if(b){
-            OpenMenu();
+        menuRoot.SetActive(b);
+        oscilloscopeModel.SetActive(b);
+		oscilloscopeDisplay.SetActive(b);
+		levelDisplay.SetActive(b);
+ 		
+		if(b){
+			if(!gameStart){
+				
+				EventSystem.current.SetSelectedGameObject(gameStartButton);
+				levelDisplay.SetActive(false);
+				
+			}else{
+            	OpenMenu();
+			}
         }else{
             CloseMenu();
         }
-
-        menuRoot.SetActive(b);
-		levelDisplay.SetActive(b);
-        oscilloscopeModel.SetActive(b);
-		oscilloscopeDisplay.SetActive(b);
     }
 
     void OpenMenu(){
@@ -117,9 +155,8 @@ public class MenuController : MonoBehaviour
 		GlitchEffect.Fizzle(0.2f);
 
         CameraFollow.instance.Reset();    
-
         RenderSettings.fog = false;
-
+	
 		if (SceneController.instance.curSetIndex < 0)
 		{
 			
@@ -127,7 +164,6 @@ public class MenuController : MonoBehaviour
 		}
 		
 		Services.Player.SetActive(false);
-	
 		
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
@@ -156,6 +192,7 @@ public class MenuController : MonoBehaviour
     }
 
 	public void PushButton(Transform t){
+		Debug.Log("Pushing button");
 		StartCoroutine(PushButtonRoutine(t));
 	}
 
