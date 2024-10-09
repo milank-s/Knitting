@@ -78,7 +78,7 @@ public class MenuController : MonoBehaviour
             
             RotateYKnob(context.ReadValue<Vector2>());
 
-            if (levelButton.gameObject == EventSystem.current.currentSelectedGameObject)
+            if (levelButton == EventSystem.current.currentSelectedGameObject)
             {
                 Vector2 input = context.ReadValue<Vector2>();
                 if (input.x > 0 && Mathf.Approximately(input.y, 0))
@@ -206,10 +206,9 @@ public class MenuController : MonoBehaviour
 		
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
-		
-		EventSystem.current.SetSelectedGameObject(levelButton.gameObject);
 
 		SelectLevelSet(SceneController.instance.curLevelSet, true);
+		EventSystem.current.SetSelectedGameObject(levelButton);
     }
     void CloseMenu(){
 
@@ -225,9 +224,9 @@ public class MenuController : MonoBehaviour
 			OpenSettings();
 		}
 		
-		ShowWord("", false);
-		ShowImage(null, false);
-        levelNumber.text = "";
+		//ShowWord("", false);
+		//ShowImage(null, false);
+        //levelNumber.text = "";
     }
 
 	public void PushButton(Transform t){
@@ -277,7 +276,7 @@ public class MenuController : MonoBehaviour
 		else
 		{
 			PushButton(escapeButton);
-			EventSystem.current.SetSelectedGameObject(levelButton.gameObject);
+			EventSystem.current.SetSelectedGameObject(levelButton);
 		}
     }
 

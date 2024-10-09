@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Vectrosity;
+using UnityEngine.InputSystem;
 public class Oscilloscope : MonoBehaviour
 {
     
@@ -30,6 +31,18 @@ public class Oscilloscope : MonoBehaviour
         
     }
 
+     public void OnNavigate(InputAction.CallbackContext context)
+    {
+        Vector2 input = context.ReadValue<Vector2>();
+
+   
+    }
+    public void AttractMode(){
+        //perlinNoise animate values;
+
+
+    }
+
     public void OnEnable(){
         center = transform.position;
         line = new VectorLine("Oscillator", new List<Vector3>(), 2, LineType.Continuous);
@@ -39,6 +52,7 @@ public class Oscilloscope : MonoBehaviour
     public void OnDisable(){
         if(line == null) return;
         Destroy(line.rectTransform.gameObject);
+        line = null;
     }
 
     public void Update(){
