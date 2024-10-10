@@ -23,10 +23,14 @@ public class MenuController : MonoBehaviour
     [SerializeField] GameObject oscilloscopeModel;
     [SerializeField] GameObject levelDisplay;
     [SerializeField] GameObject oscilloscopeDisplay;
+    [SerializeField] GameObject oscilloscopeOverlay;
     [SerializeField] Oscilloscope oscilloscope;
     [SerializeField] Image levelImage;
     [SerializeField] TMPro.TextMeshProUGUI levelTitle;
     [SerializeField] TMPro.TextMeshProUGUI levelNumber;
+
+	public Sprite editorSprite;
+	public Sprite settingsSprite;
 
 
     [SerializeField] TMPro.TextMeshPro[] gameModes;
@@ -120,15 +124,22 @@ public class MenuController : MonoBehaviour
 			
 			case MenuSelection.game:
 				gameStateKnob.transform.localEulerAngles = new Vector3(0, 90, -90);
+				levelDisplay.SetActive(true);
+				levelImage.sprite = SceneController.instance.curLevelSet.image;
+				oscilloscopeOverlay.SetActive(true);
+				
 			break;
 
 			case MenuSelection.editor:
-				
+			
+				levelDisplay.SetActive(false);
+				oscilloscopeOverlay.SetActive(true);
 				gameStateKnob.transform.localEulerAngles = new Vector3(45, 90, -90);
 			break;
 
 			case MenuSelection.oscilloscope:
-				
+				levelDisplay.SetActive(false);
+				oscilloscopeOverlay.SetActive(false);
 				gameStateKnob.transform.localEulerAngles = new Vector3(90, 90, -90);
 			break;
         }

@@ -44,11 +44,8 @@ public class Oscilloscope : MonoBehaviour
 
     
     public void OnNavigate(InputAction.CallbackContext context){
-        Debug.Log("gauss");
 
-        if(context.performed){
-            Gauss();
-        }
+        Gauss();
     }
 
     public void Update(){

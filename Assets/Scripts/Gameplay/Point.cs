@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using AudioHelm;
 using SimpleJSON;
 using UnityEngine.Events;
+using UnityEngine.AI;
 
 //###################################################
 //###################################################
@@ -93,15 +94,15 @@ public class Point : MonoBehaviour
 	[Header("Interaction")]
 	public bool spawnCollectible;
 	public bool recieveCollectible;
-	public bool hasCollectible;
 	public Collectible collectible;
+	public List<Collectible> collectibles;
 	private float cooldown;
 	[HideInInspector]
 	public float timeOffset;
 	[HideInInspector]
 	public float proximity = 0;
 	public int note = 32;
-	
+	public int numCollectibles;
 
 	public Color color;
 
@@ -125,7 +126,6 @@ public class Point : MonoBehaviour
 	}
 	[HideInInspector]
 	public Vector3 velocity;
-
 
 	public Vector3 Pos => transform.position;
 
@@ -341,7 +341,6 @@ public class Point : MonoBehaviour
 
 		//Pos = transform.position;
 		
-
 		if (!MapEditor.editing)
 		{
 			SetColor();
@@ -402,7 +401,8 @@ public class Point : MonoBehaviour
 
 	public void Reset()
 	{
-		hasCollectible = false;
+		
+		numCollectibles = 0;
 		usedToFly = false;
 		anchorPos = initPos;
 		transform.position = initPos;
@@ -574,11 +574,13 @@ public class Point : MonoBehaviour
 				}
 			}
 		
-			if(recieveCollectible && !hasCollectible){	
+			if(recieveCollectible){	
 				if(pointType == PointTypes.start){
 					controller.DepositPlayer();
 				}else{
-					controller.DepositCollectible(this);
+					if(Services.PlayerBehaviour.hasCollectible){
+						Deposit();
+					}
 				}
 			}
 		
@@ -630,6 +632,38 @@ public class Point : MonoBehaviour
 		
 		}
 		
+	}
+
+	void Deposit(){
+		for(int i = Services.PlayerBehaviour.collectibles.Count-1; i>= 0; i++){
+			if(recieveCollectible){
+				DropCollectible(Services.PlayerBehaviour.collectibles[i]);
+			}
+		}
+	}
+
+	public void DropCollectible(Collectible c){
+
+		collectibles.Add(c);	//adds to list
+		controller.Deposit();	//calls events
+		c.Deposit(this);		//sets up references on Collectible
+		
+		if(collectibles.Count >= numCollectibles){
+			recieveCollectible = false;
+			Unlock();
+		}
+
+	}
+
+
+	public void Unlock(){
+		//get all the splines that are locked?
+		//does this need to be a start or end point?
+		foreach(Spline s in _connectedSplines){
+			if(s.locked){
+				s.SwitchState(Spline.SplineState.on);
+			}
+		}
 	}
 
 	public void OnPlayerExitPoint(){

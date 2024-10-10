@@ -100,7 +100,6 @@ public class Collectible : MonoBehaviour
 
     public void Deposit(Point p){
         p.collectible = this;
-        p.hasCollectible = true;
         flocking = false;
         boidBehaviour.target = p.transform;
         speed = boidBehaviour.speed;

@@ -500,25 +500,16 @@ public class StellationController : MonoBehaviour {
 		
 		hasStarted = true;
 		StartCrawlers();
-
-	}
-
-	public void DepositCollectible(Point p){
-		//use a collectible if we have it
-		if(Services.PlayerBehaviour.hasCollectible){
-			if(OnDeposit != null){
-				OnDeposit.Invoke();
-			}
-			
-			Collectible c = Services.PlayerBehaviour.collectibles[0];
-			c.Deposit(p);
-		}
 	}
 
 	public void DepositPlayer(){
 		if(collected){
 			isComplete = true;
 		}
+	}
+
+	public void Deposit(){
+		OnDeposit?.Invoke();
 	}
 
 	public void Cleanup(){
