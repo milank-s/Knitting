@@ -97,6 +97,7 @@ public class MapEditor : MonoBehaviour
     public Text zPos;
 
     public ReadSliderValue lineWidthSlider;
+    public ReadSliderValue pickupSlider;
     public ReadSliderValue biasSliderVal;
     public ReadSliderValue continuitySliderVal;
     public ReadSliderValue tensionSliderVal;
@@ -1628,7 +1629,7 @@ public class MapEditor : MonoBehaviour
                 
             }
 
-            //newPoint.spawnCollectible = json["p" + i]["collect"];
+            newPoint.numCollectibles =  json["p" + i]["numPickups"];
             newPoint.tension = json["p" + i]["tension"];
             newPoint.bias = json["p" + i]["bias"];
             newPoint.continuity = json["p" + i]["continuity"];
@@ -1896,6 +1897,7 @@ void DragCamera()
             
         biasSlider.SetValueWithoutNotify(activePoint.bias);
         tensionSlider.SetValueWithoutNotify(activePoint.tension);
+        pickupSlider.ChangeValue(activePoint.numCollectibles);
         biasSliderVal.ChangeValue(activePoint.bias);
         continuitySliderVal.ChangeValue(activePoint.continuity);
         tensionSliderVal.ChangeValue(activePoint.tension);
@@ -2482,6 +2484,13 @@ void DragCamera()
     public void SetTensionWithSlider(){
         foreach(Point p in selectedPoints){
             p.tension = tensionSliderVal.val;
+        }
+    }
+
+    public void SetPickupsWithSlider(){
+        
+        foreach(Point p in selectedPoints){
+            p.numCollectibles = (int)pickupSlider.val;
         }
     }
 

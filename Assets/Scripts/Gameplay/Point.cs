@@ -102,7 +102,7 @@ public class Point : MonoBehaviour
 	[HideInInspector]
 	public float proximity = 0;
 	public int note = 32;
-	public int numCollectibles;
+	public int numCollectibles = 10;
 
 	public Color color;
 
@@ -149,6 +149,7 @@ public class Point : MonoBehaviour
 		data["bias"].AsFloat = bias;
 		data["continuity"].AsFloat = continuity;
 		data["index"].AsInt = i;
+		data["numPickups"].AsInt = numCollectibles;
 		data["pointType"].AsInt = (int) pointType;
 		data["word"] = text;
 		data["collect"].AsBool = false;
@@ -220,7 +221,7 @@ public class Point : MonoBehaviour
 		Point.pointCount++;
 	}
 
-	public void AddCollectible(bool b){
+	public void SpawnCollectible(bool b){
 		if(!b){
 			if(collectible != null){
 				Destroy(collectible.gameObject);
@@ -276,10 +277,10 @@ public class Point : MonoBehaviour
 			spawnCollectible = true;
 			renderer.enabled = false;
 
-			AddCollectible(true);
+			SpawnCollectible(true);
 		}else{
 			spawnCollectible = false;
-			AddCollectible(false);
+			SpawnCollectible(false);
 		}
 
 		recieveCollectible = false;
@@ -401,8 +402,7 @@ public class Point : MonoBehaviour
 
 	public void Reset()
 	{
-		
-		numCollectibles = 0;
+		collectibles.Clear();
 		usedToFly = false;
 		anchorPos = initPos;
 		transform.position = initPos;
@@ -635,7 +635,7 @@ public class Point : MonoBehaviour
 	}
 
 	void Deposit(){
-		for(int i = Services.PlayerBehaviour.collectibles.Count-1; i>= 0; i++){
+		for(int i = Services.PlayerBehaviour.collectibles.Count-1; i>= 0; i--){
 			if(recieveCollectible){
 				DropCollectible(Services.PlayerBehaviour.collectibles[i]);
 			}
@@ -649,6 +649,7 @@ public class Point : MonoBehaviour
 		c.Deposit(this);		//sets up references on Collectible
 		
 		if(collectibles.Count >= numCollectibles){
+			Debug.Log("I'm full");
 			recieveCollectible = false;
 			Unlock();
 		}
