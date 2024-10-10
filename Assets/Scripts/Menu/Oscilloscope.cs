@@ -43,18 +43,30 @@ public class Oscilloscope : MonoBehaviour
     }
 
     
+    public void OnNavigate(InputAction.CallbackContext context){
+        Debug.Log("gauss");
+
+        if(context.performed){
+            Gauss();
+        }
+    }
+
     public void Update(){
+
         time += Time.deltaTime * timeScale;
+        
         CheckInput();
-        AnimateCurve();
+        Lissajous();
         line.Draw3D();
+
     }
 
     public void Gauss(){
-        noiseScale = 1;
-        noiseFreqX = Random.Range(1f, 10f);
-        noiseFreqY = Random.Range(1f, 10f);
+        noiseScale = Random.Range(0.33f, 2f);
+        noiseFreqX = Random.Range(1f, 6f);
+        noiseFreqY = Random.Range(1f, 6f);
     }
+
     public void CheckInput()
     {
         Vector2 input = joystickMovement.ReadValue<Vector2>() * Time.deltaTime;
@@ -65,7 +77,7 @@ public class Oscilloscope : MonoBehaviour
 
         SetFreq(input.x/10f);
         
-        timeScale = 1000f/steps;
+        timeScale = 1500f/steps;
         noiseScale = Mathf.Lerp(noiseScale, 0, Time.deltaTime * 5);
 
     }
@@ -139,7 +151,7 @@ public class Oscilloscope : MonoBehaviour
         frequency = 0.1f;
     }
 
-    public void AnimateCurve(){
+    public void Lissajous(){
         List<Vector3> positions = new List<Vector3>();
         float scaleCoefficient = 1;
         Vector3 pos = Vector3.zero;
@@ -159,8 +171,8 @@ public class Oscilloscope : MonoBehaviour
             oldPos = pos;
 
             pos = new Vector3(Mathf.Sin(x)* xScale, Mathf.Cos(y)* yScale,0) * amplitude * scaleCoefficient;
-            pos.x += Mathf.Sin(pos.y * noiseFreqX + time) * noiseScale;
-            pos.y += Mathf.Sin(pos.x * noiseFreqY + time) * noiseScale;
+            pos.x += Mathf.Sin(pos.y * noiseFreqX + Time.time) * noiseScale;
+            pos.y += Mathf.Sin(pos.x * noiseFreqY + Time.time) * noiseScale;
             
             //if(Mathf.Abs(pos.x) > xBounds || Mathf.Abs(pos.y) > yBounds) continue;
             
@@ -169,5 +181,9 @@ public class Oscilloscope : MonoBehaviour
         }
 
         line.points3 = positions;
+    }
+
+    public void Spirograph(){
+
     }
 }
