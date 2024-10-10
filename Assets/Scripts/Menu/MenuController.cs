@@ -56,9 +56,12 @@ public class MenuController : MonoBehaviour
 
 	float navDir;
 	GameObject selection;
+
+	public void Awake(){
+		gameStart = Application.isEditor;
+	}
 	public void Start(){
 		selection = EventSystem.current.currentSelectedGameObject;
-		EventSystem.current.SetSelectedGameObject(gameStartButton);
 	}
 
 	void Update(){
