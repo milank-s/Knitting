@@ -34,6 +34,7 @@ public class Spline : MonoBehaviour
 	public bool drawing = false;
 	public bool drawn = false;
 	public bool hitEnd, hitStart;
+	public bool selected;
 	public static float shake;
 	public static float amplitude = 0.25f;
 	public static float noiseSpeed = 100;
@@ -410,7 +411,9 @@ public class Spline : MonoBehaviour
 
 		if (MapEditor.editing)
 		{
+			
 			line.color = Color.white;
+			
 		}
 		else
 		{
@@ -863,7 +866,11 @@ public class Spline : MonoBehaviour
 				line.SetColor(c, segmentIndex);
 				
 			}else{
-				line.SetColor(color, segmentIndex);
+				if(selected){
+					line.SetColor(Color.red, segmentIndex);
+				}else{
+					line.SetColor(color, segmentIndex);
+				}
 			}
 	}
 

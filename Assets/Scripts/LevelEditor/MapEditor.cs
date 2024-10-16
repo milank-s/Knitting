@@ -1913,7 +1913,7 @@ void DragCamera()
     void RemoveSelectedSpline(Spline s)
     {
         if(selectedSplines.Contains(s)){
-            s.ChangeMaterial((int)s.type);
+            s.selected = false;
             selectedSplines.Remove(s);
             if (selectedSplines.Count == 0)
             {
@@ -1945,7 +1945,7 @@ void DragCamera()
             selectedSplines.Add(selectedSpline);
             
             //draw locked stuff diff ? if(selectedSpline.)
-            selectedSpline.SwitchMaterial(2);
+            selectedSpline.selected = true;
             lineWidthSlider.ChangeValue(selectedSpline.lineWidth);
             splineSpeedVal.SetValueWithoutNotify(selectedSpline.speed);
             splineSpeedReadout.text = selectedSpline.speed.ToString("F1");
@@ -2647,7 +2647,8 @@ void DragCamera()
     {   
         foreach (Spline s in selectedSplines)
         {
-            if(s != null) s.ChangeMaterial((int)s.type);
+            s.selected = false;
+
         }
         selectedSplines.Clear();
         splineSelectedTip.SetActive(false);
