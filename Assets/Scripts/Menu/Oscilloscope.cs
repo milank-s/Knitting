@@ -41,6 +41,7 @@ public class Oscilloscope : MonoBehaviour
     public float normalX;
     public float normalY;
 
+    bool hit;
     bool overX = false;
     bool overY = false;
     InputAction joystickMovement;
@@ -66,7 +67,7 @@ public class Oscilloscope : MonoBehaviour
     
     public void OnNavigate(InputAction.CallbackContext context){
 
-        Gauss();
+        microNoiseScale += 0.1f;
     }
 
     public void Update(){
@@ -80,10 +81,9 @@ public class Oscilloscope : MonoBehaviour
     }
 
     public void Gauss(){
-        microNoiseScale = 0.2f;
-        noiseScale = Random.Range(0.5f, 2f);
-        noiseFreqX = Random.Range(5f, 10f);
-        noiseFreqY = Random.Range(5f, 10f);
+        microNoiseScale = 0.1f;
+        noiseScale = Random.Range(0.1f, 0.25f);
+        hit = true;
     }
 
     public void OnEnable(){
@@ -122,26 +122,28 @@ public class Oscilloscope : MonoBehaviour
         normalX = 0.5f + (xSpeed/2f);
         normalY = 0.5f + (ySpeed/2f);
 
-        steps = (int)Mathf.Lerp(maxSteps/10, maxSteps, Mathf.Pow(normalY, 3));
+        steps = (int)Mathf.Lerp(maxSteps/20, maxSteps, Mathf.Pow(normalY, 3));
         
-        // xOverflow = Mathf.Clamp01(Mathf.Abs(xSpeed + input.x) - xMax) * Mathf.Sign(xSpeed);
-        // yOverflow = Mathf.Clamp01(Mathf.Abs(ySpeed + input.y) - yMax) * Mathf.Sign(ySpeed);
+        xOverflow = Mathf.Clamp01(Mathf.Abs(xSpeed + input.x) - xMax) * Mathf.Sign(xSpeed);
+        yOverflow = Mathf.Clamp01(Mathf.Abs(ySpeed + input.y) - yMax) * Mathf.Sign(ySpeed);
 
-        // noiseScale += Mathf.Abs(xOverflow) + Mathf.Abs(yOverflow);
-        
-        // microNoiseScale += Mathf.Abs(input.x/3f) + Mathf.Abs(input.y/3f);
         
         overY = yOverflow != 0;
         overX = xOverflow != 0;
 
         amplitude = 0.4f + Mathf.Abs(xOverflow) + Mathf.Abs(yOverflow);
-        
-        frequency = normalX/1.25f;
+
+        if(input.magnitude == 0){
+            hit = false;
+        }
+
+        frequency = 0.05f + normalX/1.25f;
+
+        noiseFreqY = 3 + normalY * 80;
+        noiseFreqX = 3 + (1 - normalX) * 80;
 
         if(overY || overX){
 
-            noiseFreqX = 15;
-            noiseFreqY = 12;
             SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kNoiseVolume, 1f);
         }else{
             SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kNoiseVolume, 0f);
@@ -176,7 +178,9 @@ public class Oscilloscope : MonoBehaviour
         xSpeed += f;
 
         float overflow = Mathf.Clamp01(Mathf.Abs(xSpeed + f) - xMax) * Mathf.Sign(xSpeed);
-        noiseScale += overflow/2f;
+        if(!hit && overflow != 0){
+            Gauss();
+        }
         microNoiseScale += Mathf.Abs(f)/2f;
 
         xSpeed = Mathf.Clamp(xSpeed, -xMax, xMax);
@@ -186,7 +190,10 @@ public class Oscilloscope : MonoBehaviour
         ySpeed += f;
         
         float overflow = Mathf.Clamp01(Mathf.Abs(ySpeed + f) - yMax) * Mathf.Sign(ySpeed);
-        noiseScale += overflow/2f;
+        if(!hit && overflow != 0){
+            Gauss();
+            hit = true;
+        }
         microNoiseScale += Mathf.Abs(f)/2f;
 
         ySpeed = Mathf.Clamp(ySpeed, -yMax, yMax);
@@ -261,15 +268,17 @@ public class Oscilloscope : MonoBehaviour
 
             pos = new Vector3(Mathf.Sin(x)* xScale, Mathf.Cos(y)* yScale,0) * amplitude * scaleCoefficient;
 
-            Vector2 noise = Vector2.zero;
-            noise.x = Mathf.Sin(pos.y * noiseFreqX + Time.time * 3.45f) * noiseScale;
-            noise.y =  Mathf.Sin(pos.x * noiseFreqY + Time.time * -2.8f) * noiseScale;
-
             Vector2 microNoise = Vector2.zero;
             
             microNoise.x = Mathf.PerlinNoise(pos.y * 25 + Time.time * -20, pos.x * 25 + Time.time * 20) * microNoiseScale;
             microNoise.y = Mathf.PerlinNoise(pos.x * 56 - Time.time * 5, pos.y * 33+ Time.time * 13 ) * microNoiseScale;
             
+            
+            Vector2 noise = Vector2.zero;
+            noise.x = Mathf.Sin(pos.y * noiseFreqX + Time.time * 30.45f) * noiseScale;
+            noise.y =  Mathf.Sin(pos.x * noiseFreqY + Time.time * -20.8f) * noiseScale;
+
+
             pos += (Vector3)microNoise + (Vector3)noise;
             
             pos += center;
@@ -277,10 +286,6 @@ public class Oscilloscope : MonoBehaviour
         }
 
         line.points3 = positions;
-
-    }
-
-    public void Spirograph(){
 
     }
 }
