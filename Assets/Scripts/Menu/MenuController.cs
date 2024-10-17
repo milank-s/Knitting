@@ -40,6 +40,9 @@ public class MenuController : MonoBehaviour
 	[SerializeField] GameObject settingsButton;
 	[SerializeField] GameObject levelButton;
 
+	[SerializeField] Transform gainMeter;
+	[SerializeField] Transform leftMeter;
+	[SerializeField] Transform rightMeter;
 	
 	[Header("Oscilloscope")]
 	
@@ -67,6 +70,10 @@ public class MenuController : MonoBehaviour
 	void Update(){
 		if((Services.main.state == GameState.menu || Services.main.state == GameState.paused)){
 			//this shouldnt play when we press enter or escape?
+
+			gainMeter.localScale = Vector3.Lerp(gainMeter.localScale, new Vector3(1, AudioManager.loudness, 1), Time.deltaTime * 10);
+			leftMeter.localScale = Vector3.Lerp(leftMeter.localScale, new Vector3(1, oscilloscope.normalX/2f + AudioManager.loudness + oscilloscope.noise.x, 1), Time.deltaTime * 10);
+			rightMeter.localScale = Vector3.Lerp(rightMeter.localScale, new Vector3(1, oscilloscope.normalY/2f+ AudioManager.loudness + + oscilloscope.noise.y, 1), Time.deltaTime * 10);
 
 			if(EventSystem.current.currentSelectedGameObject != selection){
 				selection = EventSystem.current.currentSelectedGameObject;
@@ -133,7 +140,6 @@ public class MenuController : MonoBehaviour
         switch(newState){
 			
 			case MenuSelection.game:
-				gameStateKnob.transform.localEulerAngles = new Vector3(0, 90, -90);
 				levelDisplay.SetActive(true);
 				levelImage.sprite = SceneController.instance.curLevelSet.image;
 				oscilloscopeOverlay.SetActive(true);
@@ -144,13 +150,11 @@ public class MenuController : MonoBehaviour
 			
 				levelDisplay.SetActive(false);
 				oscilloscopeOverlay.SetActive(true);
-				gameStateKnob.transform.localEulerAngles = new Vector3(45, 90, -90);
 			break;
 
 			case MenuSelection.oscilloscope:
 				levelDisplay.SetActive(false);
 				oscilloscopeOverlay.SetActive(false);
-				gameStateKnob.transform.localEulerAngles = new Vector3(90, 90, -90);
 			break;
         }
     }

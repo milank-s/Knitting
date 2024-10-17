@@ -19,11 +19,16 @@ public class MenuKnob : MonoBehaviour
 
     bool clicked;
     Vector2 mousePos;
+    Vector3 axis;
     public float sensitivity = 1000;
 
     float timeLastClicked;
 
     float rotation;
+
+    void Start(){
+        axis = transform.forward;
+    }
 
     public void OnMouseDown(){
         
@@ -52,13 +57,15 @@ public class MenuKnob : MonoBehaviour
     public void Rotate(float angle){
         rotation += angle;
     }
-    
+
     void Update(){
         if(clicked){
             TrackInput();
         }else{
-            Quaternion targetRot = Quaternion.AngleAxis(rotation, Vector3.forward);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, Time.deltaTime);
+            // Quaternion targetRot = Quaternion.AngleAxis(rotation, -Vector3.forward);
+            // transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, Time.deltaTime * 5);
+            
+            transform.localEulerAngles = new Vector3(Mathf.Lerp(transform.localEulerAngles.x, rotation, Time.deltaTime), 90, -90);
         }
     }
     

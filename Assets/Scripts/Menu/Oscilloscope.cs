@@ -22,7 +22,7 @@ public class Oscilloscope : MonoBehaviour
     public float ySpeed = 1;
     public float xMax = 0.99f;
     public float yMax = 0.98f;
-
+    public Vector2 noise;
     public float noiseScale;
 
     int note = 40;
@@ -36,6 +36,9 @@ public class Oscilloscope : MonoBehaviour
     float yOverflow = 0;
     int synth = 5;
     float pitch = 1;
+
+    public float normalX;
+    public float normalY;
 
     bool overX = false;
     bool overY = false;
@@ -82,9 +85,7 @@ public class Oscilloscope : MonoBehaviour
 
         SetXSpeed(input.x/2f);
         SetYSpeed(input.y/2f);
-        
-        float normalX = xSpeed;
-        float normalY = ySpeed;
+
 
         normalX = 0.5f + (xSpeed/2f);
         normalY = 0.5f + (ySpeed/2f);
@@ -136,6 +137,10 @@ public class Oscilloscope : MonoBehaviour
         center = transform.position;
         line = new VectorLine("Oscillator", new List<Vector3>(), 1, LineType.Continuous);
         line.layer = LayerMask.NameToLayer("UI");
+        
+        normalX = 0.5f;
+        normalY = 0.5f;
+
         Gauss();
         //play synth noise
         SynthController.instance.pads[synth].patch.NoteOn(note);
@@ -146,7 +151,9 @@ public class Oscilloscope : MonoBehaviour
         if(line != null){
             VectorLine.Destroy(ref line);
         }
-
+        noise = Vector2.zero;
+        normalX = 0;
+        normalY = 0;
         SynthController.instance.pads[synth].Stop();
         
         //disable synth noise
@@ -229,9 +236,9 @@ public class Oscilloscope : MonoBehaviour
             oldPos = pos;
 
             pos = new Vector3(Mathf.Sin(x)* xScale, Mathf.Cos(y)* yScale,0) * amplitude * scaleCoefficient;
-            pos.x += Mathf.Sin(pos.y * noiseFreqX + Time.time) * noiseScale;
-            pos.y += Mathf.Sin(pos.x * noiseFreqY + Time.time) * noiseScale;
-            
+            noise.x = Mathf.Sin(pos.x * noiseFreqX + Time.time) * noiseScale;
+            noise.y = Mathf.Sin(pos.y * noiseFreqY + Time.time) * noiseScale;
+            pos += (Vector3)noise;
             //if(Mathf.Abs(pos.x) > xBounds || Mathf.Abs(pos.y) > yBounds) continue;
             
             pos += center;

@@ -7,10 +7,12 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
         
+    public static float loudness;
     public SynthController helmAudio;
     public AudioSource audioRecordings;
     public AudioHelmClock clock;
     public AudioMixer SynthMaster;
+    public AudioListener listener;
 
     public Sampler celloAttack;
     public Sampler celloSustain;
@@ -23,6 +25,9 @@ public class AudioManager : MonoBehaviour
     void Start()
     {
         Reset();
+        
+        audioSamples = new float[sampleDataLength];
+        updateTime = 0f;
         clock.pause = true;
         
         // Services.main.OnPointEnter += EnterPoint;
@@ -38,8 +43,38 @@ public class AudioManager : MonoBehaviour
         Services.PlayerBehaviour.OnFlying += OnFlying;
         Services.main.OnReset += Reset;
     }
-    
+    public int sampleDataLength = 1024; // Number of audio samples to analyze
+    public float updateStep = 0.1f;     // Time in seconds between loudness updates
 
+    private float[] audioSamples;
+    private float currentLoudness;
+    private float updateTime;
+
+
+    // Method to calculate the loudness from AudioListener
+    float GetLoudnessFromAudioListener()
+    {
+        AudioListener.GetOutputData(audioSamples, 0); // Get the raw audio data from the listener (0 for left channel)
+        float sum = 0f;
+
+        // Calculate RMS (Root Mean Square) for the audio samples
+        foreach (var sample in audioSamples)
+        {
+            sum += sample * sample;
+        }
+
+        float rmsValue = Mathf.Sqrt(sum / sampleDataLength);
+        return rmsValue; // The loudness in a 0 to 1 range
+    }
+
+    void Update(){
+        updateTime += Time.deltaTime;
+        if (updateTime >= updateStep)
+        {
+            updateTime = 0f;
+            loudness = GetLoudnessFromAudioListener();
+        }
+    }
     public void PlayerDeath(){
         helmAudio.ResetSynths();
         helmAudio.keys[4].PlayNote(40);
