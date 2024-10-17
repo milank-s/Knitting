@@ -70,10 +70,11 @@ public class MenuController : MonoBehaviour
 	void Update(){
 		if((Services.main.state == GameState.menu || Services.main.state == GameState.paused)){
 			//this shouldnt play when we press enter or escape?
-
+			float leftGain =  Mathf.Clamp01(oscilloscope.normalX/2f + AudioManager.loudness + Mathf.Abs(oscilloscope.noise.x));
+			float rightGain = Mathf.Clamp01(oscilloscope.normalY/2f+ AudioManager.loudness + Mathf.Abs(oscilloscope.noise.y));
 			gainMeter.localScale = Vector3.Lerp(gainMeter.localScale, new Vector3(1, AudioManager.loudness, 1), Time.deltaTime * 10);
-			leftMeter.localScale = Vector3.Lerp(leftMeter.localScale, new Vector3(1, oscilloscope.normalX/2f + AudioManager.loudness + oscilloscope.noise.x, 1), Time.deltaTime * 10);
-			rightMeter.localScale = Vector3.Lerp(rightMeter.localScale, new Vector3(1, oscilloscope.normalY/2f+ AudioManager.loudness + + oscilloscope.noise.y, 1), Time.deltaTime * 10);
+			leftMeter.localScale = Vector3.Lerp(leftMeter.localScale, new Vector3(1, leftGain, 1), Time.deltaTime * 10);
+			rightMeter.localScale = Vector3.Lerp(rightMeter.localScale, new Vector3(1, rightGain, 1), Time.deltaTime * 10);
 
 			if(EventSystem.current.currentSelectedGameObject != selection){
 				selection = EventSystem.current.currentSelectedGameObject;

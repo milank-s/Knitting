@@ -75,8 +75,8 @@ public class Oscilloscope : MonoBehaviour
 
     public void Gauss(){
         noiseScale = Random.Range(0.33f, 2f);
-        noiseFreqX = Random.Range(1f, 6f);
-        noiseFreqY = Random.Range(1f, 6f);
+        noiseFreqX = Random.Range(5f, 10f);
+        noiseFreqY = Random.Range(5f, 10f);
     }
 
     public void CheckInput()
@@ -96,15 +96,15 @@ public class Oscilloscope : MonoBehaviour
         xOverflow = Mathf.Clamp01(Mathf.Abs(xSpeed + input.x) - xMax) * Mathf.Sign(xSpeed);
         yOverflow = Mathf.Clamp01(Mathf.Abs(ySpeed + input.y) - yMax) * Mathf.Sign(ySpeed);
 
-        noiseScale += xOverflow + yOverflow;
+        noiseScale += Mathf.Abs(xOverflow) + Mathf.Abs(yOverflow);
         
         overY = yOverflow != 0;
         overX = xOverflow != 0;
 
         if(overY || overX){
 
-            noiseFreqX = 10;
-            noiseFreqY = 8;
+            noiseFreqX = 15;
+            noiseFreqY = 12;
             SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kNoiseVolume, 1f);
         }else{
             
@@ -120,6 +120,7 @@ public class Oscilloscope : MonoBehaviour
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kSubVolume, (1-normalX));
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kCrossMod, normalX);
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc1Transpose, normalX);
+        SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc1Tune, Mathf.Abs(xOverflow));
 
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOscFeedbackAmount, normalX/2f);
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc1Volume, normalX + 0.5f);
@@ -127,6 +128,7 @@ public class Oscilloscope : MonoBehaviour
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc2Volume, normalY + 0.5f);
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc2Transpose, normalY);
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc2UnisonVoices, steps/maxSteps);
+        SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc2Tune, Mathf.Abs(yOverflow));
 
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kDistortionDrive, noiseScale);
         
@@ -236,8 +238,8 @@ public class Oscilloscope : MonoBehaviour
             oldPos = pos;
 
             pos = new Vector3(Mathf.Sin(x)* xScale, Mathf.Cos(y)* yScale,0) * amplitude * scaleCoefficient;
-            noise.x = Mathf.Sin(pos.x * noiseFreqX + Time.time) * noiseScale;
-            noise.y = Mathf.Sin(pos.y * noiseFreqY + Time.time) * noiseScale;
+            noise.x = Mathf.Sin(pos.y * noiseFreqX + Time.time) * noiseScale;
+            noise.y = Mathf.Sin(pos.x * noiseFreqY + Time.time) * noiseScale;
             pos += (Vector3)noise;
             //if(Mathf.Abs(pos.x) > xBounds || Mathf.Abs(pos.y) > yBounds) continue;
             
