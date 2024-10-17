@@ -114,10 +114,8 @@ public class GameSettings : MonoBehaviour
             AudioManager.instance.SetVolume(curVolume);
         }
         else
-        {
-            mainAudio.GetFloat("Volume", out curVolume);
-            curVolume = 1-Mathf.Abs(curVolume / 80f);
-            PlayerPrefs.SetFloat("GameVolume", curVolume);
+        {   
+            PlayerPrefs.SetFloat("GameVolume", AudioManager.volume);
         }
 
         SetSettingText((PlayerPrefs.GetFloat("GameVolume") * 10f).ToString("F0") , Setting.volume);
@@ -209,13 +207,10 @@ public class GameSettings : MonoBehaviour
     
     public float SetVolume(Single s)
     {
-        float curVolume;
+        float curVolume = AudioManager.volume;
         float diff = s / 10f;
-        mainAudio.GetFloat("Volume", out curVolume);
-        curVolume = 1-Mathf.Abs(curVolume / 80f);
         float newVolume = Mathf.Clamp01(curVolume + diff);
-        
-        Debug.Log("setting volume from " + curVolume + " to " + newVolume);
+
         AudioManager.instance.SetVolume(newVolume);
 
         if (PlayerPrefs.HasKey("GameVolume"))

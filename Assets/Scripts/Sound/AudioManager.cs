@@ -7,6 +7,7 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
         
+    public static float volume = 1;
     public static float loudness;
     public SynthController helmAudio;
     public AudioSource audioRecordings;
@@ -76,13 +77,14 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void SetVolume(float v){
-        float volume = Mathf.Log10(Mathf.Clamp(v, 0.0001f, 1f)) * 20f;
+    public void SetVolume(float newVolume){
+        volume = newVolume;
+        volume = Mathf.Clamp(volume, 0.0001f, 1f);
+        float logVolume = Mathf.Log10(volume) * 20f;
         
-        master.SetFloat("Volume", volume);   
-        
-        Debug.Log("volume set to " + volume);
+        master.SetFloat("Volume", logVolume);   
     }
+    
     public void PlayerDeath(){
         helmAudio.ResetSynths();
         helmAudio.keys[4].PlayNote(40);

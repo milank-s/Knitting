@@ -80,7 +80,8 @@ public class Oscilloscope : MonoBehaviour
     }
 
     public void Gauss(){
-        noiseScale = Random.Range(0.33f, 2f);
+        microNoiseScale = 0.2f;
+        noiseScale = Random.Range(0.5f, 2f);
         noiseFreqX = Random.Range(5f, 10f);
         noiseFreqY = Random.Range(5f, 10f);
     }
@@ -123,19 +124,19 @@ public class Oscilloscope : MonoBehaviour
 
         steps = (int)Mathf.Lerp(maxSteps/10, maxSteps, Mathf.Pow(normalY, 3));
         
-        xOverflow = Mathf.Clamp01(Mathf.Abs(xSpeed + input.x) - xMax) * Mathf.Sign(xSpeed);
-        yOverflow = Mathf.Clamp01(Mathf.Abs(ySpeed + input.y) - yMax) * Mathf.Sign(ySpeed);
+        // xOverflow = Mathf.Clamp01(Mathf.Abs(xSpeed + input.x) - xMax) * Mathf.Sign(xSpeed);
+        // yOverflow = Mathf.Clamp01(Mathf.Abs(ySpeed + input.y) - yMax) * Mathf.Sign(ySpeed);
 
-        noiseScale += Mathf.Abs(xOverflow) + Mathf.Abs(yOverflow);
+        // noiseScale += Mathf.Abs(xOverflow) + Mathf.Abs(yOverflow);
         
-        microNoiseScale += Mathf.Abs(input.x/3f) + Mathf.Abs(input.y/3f);
+        // microNoiseScale += Mathf.Abs(input.x/3f) + Mathf.Abs(input.y/3f);
         
         overY = yOverflow != 0;
         overX = xOverflow != 0;
 
-        amplitude = 0.5f + Mathf.Abs(xOverflow) + Mathf.Abs(yOverflow);
+        amplitude = 0.4f + Mathf.Abs(xOverflow) + Mathf.Abs(yOverflow);
         
-        frequency = normalX;
+        frequency = normalX/1.25f;
 
         if(overY || overX){
 
@@ -143,7 +144,6 @@ public class Oscilloscope : MonoBehaviour
             noiseFreqY = 12;
             SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kNoiseVolume, 1f);
         }else{
-            
             SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kNoiseVolume, 0f);
         }
 
@@ -174,11 +174,21 @@ public class Oscilloscope : MonoBehaviour
 
     public void SetXSpeed(float f){
         xSpeed += f;
+
+        float overflow = Mathf.Clamp01(Mathf.Abs(xSpeed + f) - xMax) * Mathf.Sign(xSpeed);
+        noiseScale += overflow/2f;
+        microNoiseScale += Mathf.Abs(f)/2f;
+
         xSpeed = Mathf.Clamp(xSpeed, -xMax, xMax);
     }
     
     public void SetYSpeed(float f){
         ySpeed += f;
+        
+        float overflow = Mathf.Clamp01(Mathf.Abs(ySpeed + f) - yMax) * Mathf.Sign(ySpeed);
+        noiseScale += overflow/2f;
+        microNoiseScale += Mathf.Abs(f)/2f;
+
         ySpeed = Mathf.Clamp(ySpeed, -yMax, yMax);
     }
 

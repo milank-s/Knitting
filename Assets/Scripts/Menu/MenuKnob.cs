@@ -83,6 +83,9 @@ public class MenuKnob : MonoBehaviour
         delta *= sensitivity;
         rotation += -delta;
 
+        delta /= 1000;
+
+
         if(ChangeValue != null){
             ChangeValue.Invoke(delta);
         }

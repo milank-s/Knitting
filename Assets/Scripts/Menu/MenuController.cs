@@ -69,7 +69,7 @@ public class MenuController : MonoBehaviour
 
 	void Update(){
 		if(Services.main.state == GameState.menu || Services.main.state == GameState.paused){
-			
+		
 			//this shouldnt play when we press enter or escape?
 			float leftGain =  Mathf.Clamp01(oscilloscope.normalX/2f + AudioManager.loudness + Mathf.Abs(oscilloscope.noise.x));
 			float rightGain = Mathf.Clamp01(oscilloscope.normalY/2f+ AudioManager.loudness + Mathf.Abs(oscilloscope.noise.y));
@@ -100,7 +100,7 @@ public class MenuController : MonoBehaviour
 
         if (Services.main.state == GameState.menu && context.phase == InputActionPhase.Started)
         {
-
+		
 			if(gameStart){
 				
 				//Horizontal knob for levels
@@ -123,6 +123,7 @@ public class MenuController : MonoBehaviour
 				else
 				{
 					
+					RotateYKnob(input.y);
 					TryChangeSetting(context);   
 				}
 			}
@@ -186,6 +187,7 @@ public class MenuController : MonoBehaviour
 		PushButton(escapeButton);
 		
         if(gameStart){
+			
 
 			levelDisplay.SetActive(false);
 			levelButton.SetActive(false);
@@ -194,6 +196,8 @@ public class MenuController : MonoBehaviour
 			CloseMenu();
 			gameStart = false;
 			oscilloscopeDisplay.SetActive(true);
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = true;
 
         }else{
             Application.Quit();
@@ -353,8 +357,6 @@ public class MenuController : MonoBehaviour
 					}
 				}
 			}
-
-			RotateYKnob(input.y);
 		}
 	}
     public void ShowImage(Sprite s, bool show = true){
