@@ -67,7 +67,7 @@ public class GameSettings : MonoBehaviour
                 if (v._text.text != t)
                 {
                     changeSettingFX.Play();
-                    Services.menu.RotateXKnob(i);
+                    Services.menu.RotateXKnob(-i);
                 }
                 v._text.text = t;
                 break;
@@ -107,18 +107,19 @@ public class GameSettings : MonoBehaviour
     
     public void InitializeSettings()
     {
+        float curVolume;
         if (PlayerPrefs.HasKey("GameVolume"))
         {
-            mainAudio.SetFloat("Volume", Mathf.Lerp(-80, 0, PlayerPrefs.GetFloat("GameVolume")));   
+            curVolume = PlayerPrefs.GetFloat("GameVolume");
+            AudioManager.instance.SetVolume(curVolume);
         }
         else
         {
-            float curVolume = 0;
             mainAudio.GetFloat("Volume", out curVolume);
             curVolume = 1-Mathf.Abs(curVolume / 80f);
             PlayerPrefs.SetFloat("GameVolume", curVolume);
         }
-        
+
         SetSettingText((PlayerPrefs.GetFloat("GameVolume") * 10f).ToString("F0") , Setting.volume);
 
         if (PlayerPrefs.HasKey("UseGamepad"))
@@ -213,7 +214,9 @@ public class GameSettings : MonoBehaviour
         mainAudio.GetFloat("Volume", out curVolume);
         curVolume = 1-Mathf.Abs(curVolume / 80f);
         float newVolume = Mathf.Clamp01(curVolume + diff);
-        mainAudio.SetFloat("Volume", Mathf.Lerp(-80, 0, newVolume));
+        
+        Debug.Log("setting volume from " + curVolume + " to " + newVolume);
+        AudioManager.instance.SetVolume(newVolume);
 
         if (PlayerPrefs.HasKey("GameVolume"))
         {

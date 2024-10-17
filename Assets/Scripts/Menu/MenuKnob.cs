@@ -36,7 +36,6 @@ public class MenuKnob : MonoBehaviour
         if((Time.time - timeLastClicked) < 1){
             //Reset value
             ResetValue();
-            rotation = 0;
         }
         
         if(OnClicked != null){
@@ -60,12 +59,11 @@ public class MenuKnob : MonoBehaviour
     void Update(){
         if(clicked){
             TrackInput();
-        }else{
-            // Quaternion targetRot = Quaternion.AngleAxis(rotation, -Vector3.forward);
-            // transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, Time.deltaTime * 5);
-            
-            transform.localEulerAngles = new Vector3(Mathf.Lerp(transform.localEulerAngles.x, rotation, Time.deltaTime), -90, -90);
         }
+
+        Quaternion targetRot = Quaternion.Euler(rotation, -90, -90);
+        transform.localRotation = Quaternion.Lerp(transform.localRotation, targetRot, Time.deltaTime * 5);
+        
     }
     
 
@@ -82,8 +80,8 @@ public class MenuKnob : MonoBehaviour
         delta = m.x - mousePos.x;
         mousePos = m;
         
-        transform.Rotate(0,-delta,0);
         delta *= sensitivity;
+        rotation += -delta;
 
         if(ChangeValue != null){
             ChangeValue.Invoke(delta);

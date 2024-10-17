@@ -143,7 +143,6 @@ public class SceneController : MonoBehaviour
     }
     public void SelectNextLevel(bool increment)
     {
-
         int index = curSetIndex;
         if (increment)
         {

@@ -28,6 +28,9 @@ public class HelmSynth : MonoBehaviour
 
        float val = b ? 0 : 1;
        patch.SetParameterValue(Param.kVolume, val);
+    //    if(b){
+    //         Stop();
+    //    }
    }
 
    public void Stop(){

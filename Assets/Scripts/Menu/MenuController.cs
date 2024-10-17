@@ -32,7 +32,7 @@ public class MenuController : MonoBehaviour
 	public Sprite editorSprite;
 	public Sprite settingsSprite;
 
-
+	MenuSelection modeSelection;
     [SerializeField] TMPro.TextMeshPro[] gameModes;
 	[SerializeField] GameObject settings;
 	[SerializeField] GameObject gameStartButton;
@@ -57,7 +57,7 @@ public class MenuController : MonoBehaviour
     public bool settingsOpen;
 	bool changedSelection;
 
-	float navDir;
+	Vector2 navDir;
 	GameObject selection;
 
 	public void Awake(){
@@ -68,7 +68,8 @@ public class MenuController : MonoBehaviour
 	}
 
 	void Update(){
-		if((Services.main.state == GameState.menu || Services.main.state == GameState.paused)){
+		if(Services.main.state == GameState.menu || Services.main.state == GameState.paused){
+			
 			//this shouldnt play when we press enter or escape?
 			float leftGain =  Mathf.Clamp01(oscilloscope.normalX/2f + AudioManager.loudness + Mathf.Abs(oscilloscope.noise.x));
 			float rightGain = Mathf.Clamp01(oscilloscope.normalY/2f+ AudioManager.loudness + Mathf.Abs(oscilloscope.noise.y));
@@ -81,9 +82,9 @@ public class MenuController : MonoBehaviour
 				changedSelection = true;
 				// audio.PlayOneShot(selectSFX);
 
-				if(Mathf.Abs(navDir) > 0.1f){
-					SynthController.instance.keys[0].PlayNote(35 + (int)navDir * 5, 0.1f, 0.5f);
-					menuSelectKnob.transform.Rotate(0, Mathf.Sign(navDir) * 23, 0);
+				if(Mathf.Abs(navDir.x) > 0.1f){
+					SynthController.instance.keys[0].PlayNote(35 + (int)navDir.x * 5, 0.1f, 0.5f);
+					menuSelectKnob.Rotate(Mathf.Sign(navDir.x) * 23);
 				}else{
 					SynthController.instance.keys[3].PlayNote(40, 1f, 0.5f);
 				}
@@ -99,14 +100,16 @@ public class MenuController : MonoBehaviour
 
         if (Services.main.state == GameState.menu && context.phase == InputActionPhase.Started)
         {
-			
-			RotateYKnob(context.ReadValue<Vector2>());
 
 			if(gameStart){
-			
+				
+				//Horizontal knob for levels
+
+				Vector2 input = context.ReadValue<Vector2>();
+				RotateYKnob(input.y);
+
 				if (levelButton == EventSystem.current.currentSelectedGameObject)
 				{
-					Vector2 input = context.ReadValue<Vector2>();
 					if (input.x > 0 && Mathf.Approximately(input.y, 0))
 					{
 						SceneController.instance.SelectNextLevel(true);
@@ -119,6 +122,7 @@ public class MenuController : MonoBehaviour
 				}
 				else
 				{
+					
 					TryChangeSetting(context);   
 				}
 			}
@@ -137,6 +141,11 @@ public class MenuController : MonoBehaviour
 		}
 
 		gameModes[i].color = Color.white;
+		
+
+		gameStateKnob.Rotate((i - (int)modeSelection) * 23);
+
+		modeSelection = (MenuSelection)i;
 
         switch(newState){
 			
@@ -238,6 +247,7 @@ public class MenuController : MonoBehaviour
 
 		SelectLevelSet(SceneController.instance.curLevelSet, true);
 		EventSystem.current.SetSelectedGameObject(levelButton);
+		modeSelection = 0;
     }
     void CloseMenu(){
 
@@ -283,9 +293,10 @@ public class MenuController : MonoBehaviour
 			
 			if(increment){
 				
-				levelSelectKnob.transform.Rotate(new Vector3(0, -23,0 ));
+				levelSelectKnob.Rotate(-23);
 			}else{
-				levelSelectKnob.transform.Rotate(new Vector3(0, 23,0 ));
+				
+				levelSelectKnob.Rotate(23);
 			}
 		}
 
@@ -310,14 +321,14 @@ public class MenuController : MonoBehaviour
 		}
     }
 
-	public void RotateYKnob(Vector2 v){
+	public void RotateYKnob(float y){
 
-		navDir = v.y;
+		optionSelectKnob.Rotate(y * 23f);
 	}
 
 	public void RotateXKnob(float x){
 
-		levelSelectKnob.transform.Rotate(new Vector3(0, x * -23, 0));
+		levelSelectKnob.Rotate(x * 23f);
 	}
 	
     public void TryChangeSetting(InputAction.CallbackContext context)
@@ -340,10 +351,10 @@ public class MenuController : MonoBehaviour
 					{
 						s.ChangeValue(-1);
 					}
-
-					optionSelectKnob.transform.Rotate(0, Mathf.Sign(input.x ) * 15, 0);
 				}
 			}
+
+			RotateYKnob(input.y);
 		}
 	}
     public void ShowImage(Sprite s, bool show = true){

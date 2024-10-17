@@ -11,8 +11,8 @@ public class AudioManager : MonoBehaviour
     public SynthController helmAudio;
     public AudioSource audioRecordings;
     public AudioHelmClock clock;
-    public AudioMixer SynthMaster;
-    public AudioListener listener;
+    public AudioMixer synthMaster;
+    public AudioMixer master;
 
     public Sampler celloAttack;
     public Sampler celloSustain;
@@ -74,6 +74,14 @@ public class AudioManager : MonoBehaviour
             updateTime = 0f;
             loudness = GetLoudnessFromAudioListener();
         }
+    }
+
+    public void SetVolume(float v){
+        float volume = Mathf.Log10(Mathf.Clamp(v, 0.0001f, 1f)) * 20f;
+        
+        master.SetFloat("Volume", volume);   
+        
+        Debug.Log("volume set to " + volume);
     }
     public void PlayerDeath(){
         helmAudio.ResetSynths();
@@ -140,7 +148,7 @@ public class AudioManager : MonoBehaviour
 
     public void Reset(){
         SynthController.instance.ResetSynths();   
-        SynthMaster.SetFloat("Volume", 0f);
+        // synthMaster.SetFloat("Volume", 0f);
         audioRecordings.Stop();
         clock.pause = true;
     }
@@ -153,9 +161,9 @@ public class AudioManager : MonoBehaviour
         clock.pause = pause;
 
         if(pause){
-            SynthMaster.SetFloat("Volume", -80f);
+            synthMaster.SetFloat("Volume", -80f);
         }else{
-            SynthMaster.SetFloat("Volume", 0f);
+            synthMaster.SetFloat("Volume", 0f);
         }
     }
     public void FlyingSound(){

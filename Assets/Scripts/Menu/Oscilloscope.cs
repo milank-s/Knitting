@@ -101,7 +101,9 @@ public class Oscilloscope : MonoBehaviour
     }
 
     public void OnDisable(){
-        line.rectTransform.gameObject.SetActive(false);
+        if(line != null){
+            line.rectTransform.gameObject.SetActive(false);
+        }
 
         noise = Vector2.zero;
         normalX = 0;
@@ -255,10 +257,9 @@ public class Oscilloscope : MonoBehaviour
 
             Vector2 microNoise = Vector2.zero;
             
-            microNoise.x = Mathf.Sin(pos.y * 25 + Time.time) * microNoiseScale;
-            microNoise.y =  Mathf.Sin(pos.x * 25 + Time.time) * microNoiseScale;
+            microNoise.x = Mathf.PerlinNoise(pos.y * 25 + Time.time * -20, pos.x * 25 + Time.time * 20) * microNoiseScale;
+            microNoise.y = Mathf.PerlinNoise(pos.x * 56 - Time.time * 5, pos.y * 33+ Time.time * 13 ) * microNoiseScale;
             
-
             pos += (Vector3)microNoise + (Vector3)noise;
             
             pos += center;
