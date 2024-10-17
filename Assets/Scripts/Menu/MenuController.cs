@@ -106,7 +106,6 @@ public class MenuController : MonoBehaviour
 				//Horizontal knob for levels
 
 				Vector2 input = context.ReadValue<Vector2>();
-				RotateYKnob(input.y);
 
 				if (levelButton == EventSystem.current.currentSelectedGameObject)
 				{
@@ -122,8 +121,6 @@ public class MenuController : MonoBehaviour
 				}
 				else
 				{
-					
-					RotateYKnob(input.y);
 					TryChangeSetting(context);   
 				}
 			}
@@ -327,7 +324,7 @@ public class MenuController : MonoBehaviour
 
 	public void RotateYKnob(float y){
 
-		optionSelectKnob.Rotate(y * 23f);
+		menuSelectKnob.Rotate(y * 23f);
 	}
 
 	public void RotateXKnob(float x){
@@ -342,6 +339,7 @@ public class MenuController : MonoBehaviour
 		if (settingsOpen)
 		{
 
+			RotateYKnob(-input.y);
 			foreach (SettingValue s in GameSettings.i.settings)
 			{
 				if (s.gameObject == EventSystem.current.currentSelectedGameObject)

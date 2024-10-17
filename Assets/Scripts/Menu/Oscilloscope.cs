@@ -262,8 +262,8 @@ public class Oscilloscope : MonoBehaviour
             pos = new Vector3(Mathf.Sin(x)* xScale, Mathf.Cos(y)* yScale,0) * amplitude * scaleCoefficient;
 
             Vector2 noise = Vector2.zero;
-            noise.x = Mathf.Sin(pos.y * noiseFreqX + Time.time) * noiseScale;
-            noise.y =  Mathf.Sin(pos.x * noiseFreqY + Time.time) * noiseScale;
+            noise.x = Mathf.Sin(pos.y * noiseFreqX + Time.time * 3.45f) * noiseScale;
+            noise.y =  Mathf.Sin(pos.x * noiseFreqY + Time.time * -2.8f) * noiseScale;
 
             Vector2 microNoise = Vector2.zero;
             
