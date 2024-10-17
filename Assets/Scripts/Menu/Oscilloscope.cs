@@ -24,6 +24,7 @@ public class Oscilloscope : MonoBehaviour
     public float yMax = 0.98f;
     public Vector2 noise;
     public float noiseScale;
+    public float microNoiseScale;
 
     int note = 40;
     public float noiseFreqX, noiseFreqY;
@@ -57,7 +58,7 @@ public class Oscilloscope : MonoBehaviour
         }
         joystickMovement = Services.main.playerInput.currentActionMap.FindAction("Navigate");
         
-        line = new VectorLine("Oscillator", new List<Vector3>(), 1, LineType.Continuous);
+        line = new VectorLine("Oscillator", new List<Vector3>(), 2, LineType.Continuous);
         line.layer = LayerMask.NameToLayer("UI");
         
     }
@@ -118,12 +119,14 @@ public class Oscilloscope : MonoBehaviour
         normalX = 0.5f + (xSpeed/2f);
         normalY = 0.5f + (ySpeed/2f);
 
-        steps = (int)Mathf.Lerp(20, maxSteps, Mathf.Pow(normalY, 5));
+        steps = (int)Mathf.Lerp(maxSteps/10, maxSteps, Mathf.Pow(normalY, 3));
         
         xOverflow = Mathf.Clamp01(Mathf.Abs(xSpeed + input.x) - xMax) * Mathf.Sign(xSpeed);
         yOverflow = Mathf.Clamp01(Mathf.Abs(ySpeed + input.y) - yMax) * Mathf.Sign(ySpeed);
 
         noiseScale += Mathf.Abs(xOverflow) + Mathf.Abs(yOverflow);
+        
+        microNoiseScale += Mathf.Abs(input.x/3f) + Mathf.Abs(input.y/3f);
         
         overY = yOverflow != 0;
         overX = xOverflow != 0;
@@ -142,8 +145,9 @@ public class Oscilloscope : MonoBehaviour
             SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kNoiseVolume, 0f);
         }
 
-        timeScale = (maxSteps*2)/steps;
+        timeScale = (maxSteps*5)/steps;
         noiseScale = Mathf.Lerp(noiseScale, 0, Time.deltaTime * 5);
+        microNoiseScale = Mathf.Lerp(microNoiseScale, 0, Time.deltaTime * 5);
 
         pitch += input.x;
         pitch = Mathf.Clamp01(pitch);
@@ -177,7 +181,7 @@ public class Oscilloscope : MonoBehaviour
     }
 
     public void ClampSteps(float f){
-        steps = (int)Mathf.Clamp(steps + f, 20, maxSteps);
+        steps = (int)Mathf.Clamp(steps + f, 50, maxSteps);
     }
     public void SetAmplitude(float f){
         
@@ -244,9 +248,18 @@ public class Oscilloscope : MonoBehaviour
             oldPos = pos;
 
             pos = new Vector3(Mathf.Sin(x)* xScale, Mathf.Cos(y)* yScale,0) * amplitude * scaleCoefficient;
+
+            Vector2 noise = Vector2.zero;
             noise.x = Mathf.Sin(pos.y * noiseFreqX + Time.time) * noiseScale;
-            noise.y = Mathf.Sin(pos.x * noiseFreqY + Time.time) * noiseScale;
-            pos += (Vector3)noise;
+            noise.y =  Mathf.Sin(pos.x * noiseFreqY + Time.time) * noiseScale;
+
+            Vector2 microNoise = Vector2.zero;
+            
+            microNoise.x = Mathf.Sin(pos.y * 25 + Time.time) * microNoiseScale;
+            microNoise.y =  Mathf.Sin(pos.x * 25 + Time.time) * microNoiseScale;
+            
+
+            pos += (Vector3)microNoise + (Vector3)noise;
             
             pos += center;
             positions.Add(pos);
