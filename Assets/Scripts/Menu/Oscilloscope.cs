@@ -158,14 +158,14 @@ public class Oscilloscope : MonoBehaviour
 
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kSubVolume, (1-normalX));
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kCrossMod, normalX);
-        SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc1Transpose, normalX);
+        SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc1Transpose, normalX/1.5f+ 0.25f);
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc1Tune, Mathf.Abs(xOverflow));
 
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOscFeedbackAmount, normalX/2f);
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc1Volume, normalX + 0.5f);
 
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc2Volume, normalY + 0.5f);
-        SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc2Transpose, normalY);
+        SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc2Transpose, normalY/1.5f + 0.25f);
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc2UnisonVoices, steps/maxSteps);
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc2Tune, Mathf.Abs(yOverflow));
 

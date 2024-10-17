@@ -185,7 +185,6 @@ public class MenuController : MonoBehaviour
 		
         if(gameStart){
 			
-
 			levelDisplay.SetActive(false);
 			levelButton.SetActive(false);
 
@@ -263,10 +262,6 @@ public class MenuController : MonoBehaviour
 		{
 			OpenSettings();
 		}
-		
-		//ShowWord("", false);
-		//ShowImage(null, false);
-        //levelNumber.text = "";
     }
 
 	public void PushButton(Transform t){
