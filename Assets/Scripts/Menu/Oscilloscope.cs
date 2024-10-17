@@ -48,6 +48,7 @@ public class Oscilloscope : MonoBehaviour
 
     public float minFreq, maxFreq, minSteps, maxSteps, maxTimescale, minTimescale, minAmplitude, maxAmplitude, minScale, maxScale;
     Vectrosity.VectorLine line;
+    Vectrosity.VectorLine shadow;
     Vector3 center;
     void Start(){
         offsets = new float[10];
@@ -55,6 +56,10 @@ public class Oscilloscope : MonoBehaviour
             offsets[i] = Random.Range(-100f, 100f);
         }
         joystickMovement = Services.main.playerInput.currentActionMap.FindAction("Navigate");
+        
+        line = new VectorLine("Oscillator", new List<Vector3>(), 1, LineType.Continuous);
+        line.layer = LayerMask.NameToLayer("UI");
+        
     }
 
     
@@ -79,6 +84,30 @@ public class Oscilloscope : MonoBehaviour
         noiseFreqY = Random.Range(5f, 10f);
     }
 
+    public void OnEnable(){
+        center = transform.position;
+
+        normalX = 0.5f;
+        normalY = 0.5f;
+
+        Gauss();
+        //play synth noise
+        SynthController.instance.pads[synth].patch.NoteOn(note);
+
+        if(line != null){
+            line.rectTransform.gameObject.SetActive(true);
+        }   
+    }
+
+    public void OnDisable(){
+        line.rectTransform.gameObject.SetActive(false);
+
+        noise = Vector2.zero;
+        normalX = 0;
+        normalY = 0;
+        SynthController.instance.pads[synth].Stop();
+    }
+    
     public void CheckInput()
     {
         Vector2 input = joystickMovement.ReadValue<Vector2>() * Time.deltaTime;
@@ -86,12 +115,10 @@ public class Oscilloscope : MonoBehaviour
         SetXSpeed(input.x/2f);
         SetYSpeed(input.y/2f);
 
-
         normalX = 0.5f + (xSpeed/2f);
         normalY = 0.5f + (ySpeed/2f);
 
-        steps = (int)Mathf.Lerp(20, maxSteps, Mathf.Pow(normalY, 3));
-        SetFreq(input.x/10f);
+        steps = (int)Mathf.Lerp(20, maxSteps, Mathf.Pow(normalY, 5));
         
         xOverflow = Mathf.Clamp01(Mathf.Abs(xSpeed + input.x) - xMax) * Mathf.Sign(xSpeed);
         yOverflow = Mathf.Clamp01(Mathf.Abs(ySpeed + input.y) - yMax) * Mathf.Sign(ySpeed);
@@ -100,6 +127,10 @@ public class Oscilloscope : MonoBehaviour
         
         overY = yOverflow != 0;
         overX = xOverflow != 0;
+
+        amplitude = 0.5f + Mathf.Abs(xOverflow) + Mathf.Abs(yOverflow);
+        
+        frequency = normalX;
 
         if(overY || overX){
 
@@ -111,7 +142,7 @@ public class Oscilloscope : MonoBehaviour
             SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kNoiseVolume, 0f);
         }
 
-        timeScale = 1500f/steps;
+        timeScale = (maxSteps*2)/steps;
         noiseScale = Mathf.Lerp(noiseScale, 0, Time.deltaTime * 5);
 
         pitch += input.x;
@@ -135,31 +166,6 @@ public class Oscilloscope : MonoBehaviour
         SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kStutterFrequency, 1 - normalY);
     }
 
-    public void OnEnable(){
-        center = transform.position;
-        line = new VectorLine("Oscillator", new List<Vector3>(), 1, LineType.Continuous);
-        line.layer = LayerMask.NameToLayer("UI");
-        
-        normalX = 0.5f;
-        normalY = 0.5f;
-
-        Gauss();
-        //play synth noise
-        SynthController.instance.pads[synth].patch.NoteOn(note);
-        
-    }
-
-    public void OnDisable(){
-        if(line != null){
-            VectorLine.Destroy(ref line);
-        }
-        noise = Vector2.zero;
-        normalX = 0;
-        normalY = 0;
-        SynthController.instance.pads[synth].Stop();
-        
-        //disable synth noise
-    }
     public void SetXSpeed(float f){
         xSpeed += f;
         xSpeed = Mathf.Clamp(xSpeed, -xMax, xMax);
@@ -241,13 +247,13 @@ public class Oscilloscope : MonoBehaviour
             noise.x = Mathf.Sin(pos.y * noiseFreqX + Time.time) * noiseScale;
             noise.y = Mathf.Sin(pos.x * noiseFreqY + Time.time) * noiseScale;
             pos += (Vector3)noise;
-            //if(Mathf.Abs(pos.x) > xBounds || Mathf.Abs(pos.y) > yBounds) continue;
             
             pos += center;
             positions.Add(pos);
         }
 
         line.points3 = positions;
+
     }
 
     public void Spirograph(){
