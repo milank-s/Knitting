@@ -66,13 +66,20 @@ public class MenuController : MonoBehaviour
 
 	void Update(){
 		if((Services.main.state == GameState.menu || Services.main.state == GameState.paused)){
+			//this shouldnt play when we press enter or escape?
+
 			if(EventSystem.current.currentSelectedGameObject != selection){
 				selection = EventSystem.current.currentSelectedGameObject;
 				changedSelection = true;
-				audio.PlayOneShot(selectSFX);
+				// audio.PlayOneShot(selectSFX);
+
 				if(Mathf.Abs(navDir) > 0.1f){
+					SynthController.instance.keys[0].PlayNote(35 + (int)navDir * 5, 0.1f, 0.5f);
 					menuSelectKnob.transform.Rotate(0, Mathf.Sign(navDir) * 23, 0);
+				}else{
+					SynthController.instance.keys[3].PlayNote(40, 1f, 0.5f);
 				}
+
 			}else{
 				changedSelection = false;
 			}
@@ -183,9 +190,6 @@ public class MenuController : MonoBehaviour
 		// audio.PlayOneShot(submitSFX);
 		if(context.performed){
 			PushButton(submitButton);
-			if(gameStart){
-				oscilloscope.Gauss();
-			}
 		}
 	}
     public void Show(bool b){
@@ -269,7 +273,8 @@ public class MenuController : MonoBehaviour
     public void SelectLevelSet(LevelSet l, bool increment, bool playSound = false)
     {
 		if(playSound){
-			audio.PlayOneShot(changeLevelSFX);
+			
+			SynthController.instance.keys[1].PlayNote(30 + (increment ? 2 : -2), 0.25f, 0.5f);
 			
 			if(increment){
 				

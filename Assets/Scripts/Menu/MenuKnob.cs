@@ -13,6 +13,8 @@ public class MyFloatEvent : UnityEvent<float>
 public class MenuKnob : MonoBehaviour
 {
     public MyFloatEvent ChangeValue;
+    
+    public UnityEvent OnClicked;
     public UnityEvent Reset;
 
     bool clicked;
@@ -21,7 +23,10 @@ public class MenuKnob : MonoBehaviour
 
     float timeLastClicked;
 
+    float rotation;
+
     public void OnMouseDown(){
+        
         
         if((Time.time - timeLastClicked) < 1){
             //Reset value
@@ -30,10 +35,11 @@ public class MenuKnob : MonoBehaviour
             transform.localEulerAngles = new Vector3(-90, 0, 0);
         }
         
+        if(OnClicked != null){
+            OnClicked.Invoke();
+        }
 
         timeLastClicked = Time.time;
-
-        
 
         clicked = true;
         mousePos = Input.mousePosition;
@@ -43,11 +49,19 @@ public class MenuKnob : MonoBehaviour
         clicked = false;
     }
 
+    public void Rotate(float angle){
+        rotation += angle;
+    }
+    
     void Update(){
         if(clicked){
             TrackInput();
+        }else{
+            Quaternion targetRot = Quaternion.AngleAxis(rotation, Vector3.forward);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, Time.deltaTime);
         }
     }
+    
 
     void ResetValue(){
         if(Reset != null){

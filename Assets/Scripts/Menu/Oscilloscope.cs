@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Vectrosity;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 public class Oscilloscope : MonoBehaviour
 {
     
@@ -19,14 +20,25 @@ public class Oscilloscope : MonoBehaviour
     public int steps = 100;
     public float xSpeed = 1;
     public float ySpeed = 1;
+    public float xMax = 0.99f;
+    public float yMax = 0.98f;
+
     public float noiseScale;
+
+    int note = 40;
     public float noiseFreqX, noiseFreqY;
 
     float time;
     float noiseTimer;
     float stepAmount;
     float[] offsets;
+    float xOverflow = 0;
+    float yOverflow = 0;
+    int synth = 5;
+    float pitch = 1;
 
+    bool overX = false;
+    bool overY = false;
     InputAction joystickMovement;
     
     [Header("Constraints")]
@@ -68,38 +80,88 @@ public class Oscilloscope : MonoBehaviour
     {
         Vector2 input = joystickMovement.ReadValue<Vector2>() * Time.deltaTime;
 
-        SetXSpeed(input.x/10f);
-        SetYSpeed(input.y/10f);
-        ClampSteps(input.y * 1000);
+        SetXSpeed(input.x/2f);
+        SetYSpeed(input.y/2f);
+        
+        float normalX = xSpeed;
+        float normalY = ySpeed;
 
+        normalX = 0.5f + (xSpeed/2f);
+        normalY = 0.5f + (ySpeed/2f);
+
+        steps = (int)Mathf.Lerp(20, maxSteps, Mathf.Pow(normalY, 3));
         SetFreq(input.x/10f);
         
+        xOverflow = Mathf.Clamp01(Mathf.Abs(xSpeed + input.x) - xMax) * Mathf.Sign(xSpeed);
+        yOverflow = Mathf.Clamp01(Mathf.Abs(ySpeed + input.y) - yMax) * Mathf.Sign(ySpeed);
+
+        noiseScale += xOverflow + yOverflow;
+        
+        overY = yOverflow != 0;
+        overX = xOverflow != 0;
+
+        if(overY || overX){
+
+            noiseFreqX = 10;
+            noiseFreqY = 8;
+            SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kNoiseVolume, 1f);
+        }else{
+            
+            SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kNoiseVolume, 0f);
+        }
+
         timeScale = 1500f/steps;
         noiseScale = Mathf.Lerp(noiseScale, 0, Time.deltaTime * 5);
 
+        pitch += input.x;
+        pitch = Mathf.Clamp01(pitch);
+
+        SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kSubVolume, (1-normalX));
+        SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kCrossMod, normalX);
+        SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc1Transpose, normalX);
+
+        SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOscFeedbackAmount, normalX/2f);
+        SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc1Volume, normalX + 0.5f);
+
+        SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc2Volume, normalY + 0.5f);
+        SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc2Transpose, normalY);
+        SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kOsc2UnisonVoices, steps/maxSteps);
+
+        SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kDistortionDrive, noiseScale);
+        
+        SynthController.instance.pads[synth].patch.SetParameterPercent(AudioHelm.Param.kStutterFrequency, 1 - normalY);
     }
 
     public void OnEnable(){
         center = transform.position;
-        line = new VectorLine("Oscillator", new List<Vector3>(), 2, LineType.Continuous);
-        line.layer = LayerMask.NameToLayer("Oscilloscope");
+        line = new VectorLine("Oscillator", new List<Vector3>(), 1, LineType.Continuous);
+        line.layer = LayerMask.NameToLayer("UI");
+        Gauss();
+        //play synth noise
+        SynthController.instance.pads[synth].patch.NoteOn(note);
+        
     }
 
     public void OnDisable(){
         if(line != null){
             VectorLine.Destroy(ref line);
         }
+
+        SynthController.instance.pads[synth].Stop();
+        
+        //disable synth noise
     }
     public void SetXSpeed(float f){
         xSpeed += f;
+        xSpeed = Mathf.Clamp(xSpeed, -xMax, xMax);
     }
     
     public void SetYSpeed(float f){
         ySpeed += f;
+        ySpeed = Mathf.Clamp(ySpeed, -yMax, yMax);
     }
 
     public void ClampSteps(float f){
-        
         steps = (int)Mathf.Clamp(steps + f, 20, maxSteps);
     }
     public void SetAmplitude(float f){
@@ -158,7 +220,6 @@ public class Oscilloscope : MonoBehaviour
             scaleCoefficient *= scale;
             //shits too small, doesnt matter anymore
             if(scaleCoefficient < 0.01f) break;
-
         
             float step = time + (float) (i+1) * frequency;
             float x = step * xSpeed; 

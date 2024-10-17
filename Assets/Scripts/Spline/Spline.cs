@@ -857,10 +857,6 @@ public class Spline : MonoBehaviour
 
 				Color c;
 				float brightness = Mathf.Lerp(curPoint.brightness, nextPoint.brightness, step);
-				// c = Color.Lerp(curPoint._color, nextPoint._color, step);
-				
-
-				//c += (Color.white * Mathf.Clamp01(_completion - 1));
 				c = Color.HSVToRGB(hue, saturation, brightness);
 				c.a = alpha;
 				line.SetColor(c, segmentIndex);
