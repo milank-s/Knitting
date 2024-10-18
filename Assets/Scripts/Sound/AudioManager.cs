@@ -84,7 +84,7 @@ public class AudioManager : MonoBehaviour
         
         master.SetFloat("Volume", logVolume);   
     }
-    
+
     public void PlayerDeath(){
         helmAudio.ResetSynths();
         helmAudio.keys[4].PlayNote(40);
@@ -166,6 +166,7 @@ public class AudioManager : MonoBehaviour
             synthMaster.SetFloat("Volume", -80f);
         }else{
             synthMaster.SetFloat("Volume", 0f);
+        
         }
     }
     public void FlyingSound(){

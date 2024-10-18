@@ -10,6 +10,7 @@ public class HelmSynth : MonoBehaviour
     public bool hasTremelo = false;
     public bool hasDistortion = false;
     public HelmController patch;
+    public HelmPatch patchData;
 
     public void Start(){
         patch.SetParameterPercent(Param.kVolume, volume);
@@ -22,6 +23,14 @@ public class HelmSynth : MonoBehaviour
         }else{
             patch.NoteOn(note, velocity, duration);
         }
+   }
+
+   public void Reset(){
+    
+    //we need to reload these synths when their values are being changed
+        patch.LoadPatch(patchData);
+        Stop();
+        Mute(false);
    }
 
    public void Mute(bool b){

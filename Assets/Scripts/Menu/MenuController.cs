@@ -173,7 +173,7 @@ public class MenuController : MonoBehaviour
         if(!gameStart){
 			
 			gameStart = true;
-			oscilloscopeDisplay.SetActive(false);
+			oscilloscope.Disable();
 			levelButton.SetActive(true);
 			
             Show(true);
@@ -191,7 +191,7 @@ public class MenuController : MonoBehaviour
 			EventSystem.current.SetSelectedGameObject(gameStartButton);
 			CloseMenu();
 			gameStart = false;
-			oscilloscopeDisplay.SetActive(true);
+			oscilloscope.Initialize();
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;
 

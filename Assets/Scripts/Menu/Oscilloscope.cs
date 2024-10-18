@@ -59,7 +59,7 @@ public class Oscilloscope : MonoBehaviour
         }
         joystickMovement = Services.main.playerInput.currentActionMap.FindAction("Navigate");
         
-        line = new VectorLine("Oscillator", new List<Vector3>(), 2, LineType.Continuous);
+        line = new VectorLine("Oscillator", new List<Vector3>(), 1, LineType.Continuous);
         line.layer = LayerMask.NameToLayer("UI");
         
     }
@@ -86,7 +86,7 @@ public class Oscilloscope : MonoBehaviour
         hit = true;
     }
 
-    public void OnEnable(){
+    public void Initialize(){
         center = transform.position;
 
         normalX = 0.5f;
@@ -101,7 +101,7 @@ public class Oscilloscope : MonoBehaviour
         }   
     }
 
-    public void OnDisable(){
+    public void Disable(){
         if(line != null){
             line.rectTransform.gameObject.SetActive(false);
         }

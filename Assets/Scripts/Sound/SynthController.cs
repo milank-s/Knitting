@@ -325,18 +325,15 @@ public class SynthController : MonoBehaviour
 		flyingSynth.Mute(false);
 
 	    foreach(HelmSynth s in pads){
-			s.Stop();
-			s.Mute(false);
+			s.Reset();
 		}
 
 		foreach(HelmSynth s in keys){
-			s.Stop();
-			s.Mute(false);
+			s.Reset();
 		}
 
 		foreach(HelmSynth s in flutters){
-			s.Stop();
-			s.Mute(false);
+			s.Reset();
 		}
 		
 		noisePad.Stop();
