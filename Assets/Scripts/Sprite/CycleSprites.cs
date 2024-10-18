@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CycleSprites: MonoBehaviour {
 
+	public float maxScale = 1;
+	public float minScale = 0.3f;
 	public float delay;
 	public float fadeSpeed;
   private float timer;
@@ -61,11 +63,12 @@ public class CycleSprites: MonoBehaviour {
 		newObject.transform.rotation = Quaternion.Euler (rotation);
 		newObject.transform.Rotate(0, 0, Random.Range(0, 361));
 		newObject.transform.parent = transform;
-		newObject.transform.localScale *= Random.Range(1f, 3f);
+		newObject.transform.localScale *= Random.Range(minScale, maxScale);
 		if (newObject.GetComponent<SpriteRenderer> () == null) {
 			newObject.AddComponent<SpriteRenderer>();
 		}
 		newObject.AddComponent <FadeImage>().time = fadeSpeed;
+		newObject.layer = LayerMask.NameToLayer("UI");
 
 		SpriteRenderer r = newObject.GetComponent<SpriteRenderer> ();
 		if (sprites.Count == 0) {

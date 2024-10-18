@@ -40,6 +40,7 @@ public class MenuController : MonoBehaviour
 	[SerializeField] GameObject volumeSettings;
 	[SerializeField] GameObject settingsButton;
 	[SerializeField] GameObject levelButton;
+	[SerializeField] GameObject mandala;
 
 	[SerializeField] Transform gainMeter;
 	[SerializeField] Transform leftMeter;
@@ -160,33 +161,33 @@ public class MenuController : MonoBehaviour
 		}
 
 		gameModes[i].color = Color.white;
-		
 
 		SynthController.instance.keys[0].PlayNote(40 - i * 3, 0.25f, 0.5f);
 
 		gameStateKnob.Rotate((i - (int)modeSelection) * 23);
-
 		modeSelection = (MenuSelection)i;
+
+		mandala.SetActive(false);
 
         switch(newState){
 			
 			case MenuSelection.game:
 				levelDisplay.SetActive(true);
+				levelTitle.gameObject.SetActive(true);
 				levelImage.sprite = SceneController.instance.curLevelSet.image;
-				oscilloscopeOverlay.SetActive(true);
 				
 			break;
 
 			case MenuSelection.editor:
-			
-				levelDisplay.SetActive(false);
-				oscilloscopeOverlay.SetActive(true);
+				mandala.SetActive(true);
+				levelImage.sprite = editorSprite;
+				levelTitle.gameObject.SetActive(false);
+				levelDisplay.SetActive(true);
 			break;
 
 			case MenuSelection.oscilloscope:
-
+				OpenSettings();
 				levelDisplay.SetActive(false);
-				oscilloscopeOverlay.SetActive(false);
 
 			break;
         }
@@ -380,10 +381,12 @@ public class MenuController : MonoBehaviour
 		
 		if (settingsOpen)
 		{
+			oscilloscopeOverlay.SetActive(false);
 			EventSystem.current.SetSelectedGameObject(volumeSettings);
 		}
 		else
 		{
+			oscilloscopeOverlay.SetActive(true);
 			PushButton(escapeButton);
 			EventSystem.current.SetSelectedGameObject(levelButton);
 		}

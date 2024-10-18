@@ -279,7 +279,6 @@
 		}
 
 		pressedPause = true;
-		
 		Time.timeScale = pause ? 0 : 1;
 	}
 	
