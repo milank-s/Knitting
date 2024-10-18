@@ -93,7 +93,9 @@ public class SceneController : MonoBehaviour
 		
 		if(!openFileOnStart){
 			if(curLevelName == ""){
-				Services.main.OpenMenu();
+                
+			    Services.menu.StartSequence();
+
 			}else{
                 //this is for something to do with leveleditor I think
 

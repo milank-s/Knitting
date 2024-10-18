@@ -98,7 +98,7 @@
 				}
 				else
 				{
-					Services.menu.Escape();
+					Services.menu.ShowOscilloscope();
 				}
 			}
 			else
@@ -117,7 +117,6 @@
 	}
 
 	public void OpenMenu(){
-	
 
 		if(OnReset != null){
 			OnReset.Invoke();
@@ -245,8 +244,14 @@
 		
 		state = GameState.menu;
 		
-		SceneController.instance.OnStart();
-		Services.fx.Fade(true, 0.5f);
+		Debug.Log("main game start function");
+		
+		if(SceneController.instance.openFileOnStart || SceneManager.sceneCount > 1){
+			SceneController.instance.OnStart();
+		}else{
+			
+			Services.menu.StartSequence();
+		}
 		
 	}
 

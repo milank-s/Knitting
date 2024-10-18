@@ -15,8 +15,9 @@ public class MenuController : MonoBehaviour
 	
 	[SerializeField] AudioSource audio;
 	[SerializeField] AudioClip selectSFX;
-	[SerializeField] AudioClip submitSFX;
-	[SerializeField] AudioClip changeLevelSFX;
+	[SerializeField] AudioClip changeSettingSFX;
+	[SerializeField] AudioClip oscilloscopeSwitchSFX;
+	[SerializeField] AudioClip oscilloscopeSwitchOffSFX;
 
 	[Header("UI")]
     [SerializeField] GameObject menuRoot;
@@ -46,6 +47,7 @@ public class MenuController : MonoBehaviour
 	
 	[Header("Oscilloscope")]
 	
+	public GameObject powerLight;
     public MenuKnob gameStateKnob;
     public MenuKnob levelSelectKnob;
     public MenuKnob menuSelectKnob;
@@ -53,6 +55,8 @@ public class MenuController : MonoBehaviour
     public Transform submitButton;
     public Transform escapeButton;
 
+	bool oscilloscopeDrawing;
+	bool oscilloscopeOn;
 	public bool gameStart = false;
     public bool settingsOpen;
 	bool changedSelection;
@@ -61,10 +65,27 @@ public class MenuController : MonoBehaviour
 	GameObject selection;
 
 	public void Awake(){
-		gameStart = Application.isEditor;
+		if(!Application.isEditor) gameStart = false;
 	}
 	public void Start(){
+		
+		levelDisplay.SetActive(false);
 		selection = EventSystem.current.currentSelectedGameObject;
+	}
+
+	public void StartSequence(){
+		
+		StartCoroutine(StartRoutine());
+	}
+
+	public IEnumerator StartRoutine(){
+		
+		Services.fx.Fade(true, 1f);
+
+		yield return new WaitForSeconds(1f);
+
+		StartCoroutine(TurnOn());
+		
 	}
 
 	void Update(){
@@ -77,17 +98,17 @@ public class MenuController : MonoBehaviour
 			leftMeter.localScale = Vector3.Lerp(leftMeter.localScale, new Vector3(1, leftGain, 1), Time.deltaTime * 10);
 			rightMeter.localScale = Vector3.Lerp(rightMeter.localScale, new Vector3(1, rightGain, 1), Time.deltaTime * 10);
 
+
 			if(EventSystem.current.currentSelectedGameObject != selection){
 				selection = EventSystem.current.currentSelectedGameObject;
 				changedSelection = true;
-				// audio.PlayOneShot(selectSFX);
 
-				if(Mathf.Abs(navDir.x) > 0.1f){
-					SynthController.instance.keys[0].PlayNote(35 + (int)navDir.x * 5, 0.1f, 0.5f);
-					menuSelectKnob.Rotate(Mathf.Sign(navDir.x) * 23);
-				}else{
-					SynthController.instance.keys[3].PlayNote(40, 1f, 0.5f);
-				}
+				// if(Mathf.Abs(navDir.x) > 0.1f){
+				// 	menuSelectKnob.Rotate(Mathf.Sign(navDir.x) * 23);
+				// }else{
+				// 	SynthController.instance.keys[3].PlayNote(40, 1f, 0.5f);
+				// }
+				
 
 			}else{
 				changedSelection = false;
@@ -141,6 +162,8 @@ public class MenuController : MonoBehaviour
 		gameModes[i].color = Color.white;
 		
 
+		SynthController.instance.keys[0].PlayNote(40 - i * 3, 0.25f, 0.5f);
+
 		gameStateKnob.Rotate((i - (int)modeSelection) * 23);
 
 		modeSelection = (MenuSelection)i;
@@ -161,47 +184,96 @@ public class MenuController : MonoBehaviour
 			break;
 
 			case MenuSelection.oscilloscope:
+
 				levelDisplay.SetActive(false);
 				oscilloscopeOverlay.SetActive(false);
+
 			break;
         }
+
+		
     }
 
+	public IEnumerator TurnOn(){
+		oscilloscopeOn = true;
+		audio.PlayOneShot(oscilloscopeSwitchSFX);
+		yield return new WaitForSeconds(0.3f);
+		powerLight.SetActive(true);
+
+		if(gameStart){
+			Show(true);
+		}
+
+	}
+	public IEnumerator TurnOff(){
+
+		StopDrawing();
+
+		yield return new WaitForSeconds(0.3f);
+		powerLight.SetActive(false);
+		oscilloscopeOn = false;
+	}
+
+	void StopDrawing(){
+		audio.PlayOneShot(oscilloscopeSwitchOffSFX);
+		oscilloscopeDrawing = false;
+		oscilloscope.Disable();
+	}
 	
-    public void Enter(){
+    public void HideOscilloscope(){
 		
-        if(!gameStart){
+        if(!oscilloscopeOn){
+			StartCoroutine(TurnOn());
+
+		}else{
+			if(!oscilloscopeDrawing){
+				
+				ShowOscilloscope();
+			}else{
+				gameStart = true;
+				levelButton.SetActive(true);
+				StopDrawing();
+				Show(true);
+			}
 			
-			gameStart = true;
-			oscilloscope.Disable();
-			levelButton.SetActive(true);
-			
-            Show(true);
-        }
+		}
+        
     }
     
-    public void Escape(){
+    public void ShowOscilloscope(){
 		PushButton(escapeButton);
-		
-        if(gameStart){
+
+		if(oscilloscopeOn){
+			if(!oscilloscopeDrawing){
 			
-			levelDisplay.SetActive(false);
-			levelButton.SetActive(false);
+				oscilloscopeDrawing = true;
+				audio.PlayOneShot(oscilloscopeSwitchSFX);
 
-			EventSystem.current.SetSelectedGameObject(gameStartButton);
-			CloseMenu();
-			gameStart = false;
-			oscilloscope.Initialize();
-			Cursor.lockState = CursorLockMode.None;
-			Cursor.visible = true;
+				levelDisplay.SetActive(false);
+				levelButton.SetActive(false);
 
-        }else{
-            Application.Quit();
-        }
+				EventSystem.current.SetSelectedGameObject(gameStartButton);
+				CloseMenu();
+				gameStart = false;
+				oscilloscope.Initialize();
+
+				Cursor.lockState = CursorLockMode.None;
+				Cursor.visible = true;
+
+			}else{
+				StartCoroutine(TurnOff());
+			}
+
+		}else{
+			Debug.Log("quitting");
+
+			Application.Quit();
+		}
+        
     }
 	
     public void OnSubmit(InputAction.CallbackContext context){
-		// audio.PlayOneShot(submitSFX);
+		
 		if(context.performed){
 			PushButton(submitButton);
 		}
@@ -214,10 +286,8 @@ public class MenuController : MonoBehaviour
  		
 		if(b){
 			if(!gameStart){
-				//stupidity reaching outer limits
-
 				gameStart = true;
-				Escape();
+				ShowOscilloscope();
 				
 			}else{
             	OpenMenu();
@@ -303,6 +373,8 @@ public class MenuController : MonoBehaviour
     }
 
     public void OpenSettings(){
+		Debug.Log("opening settings");
+
         settingsOpen = !settingsOpen;
 		settings.SetActive(settingsOpen);
 		
@@ -334,7 +406,11 @@ public class MenuController : MonoBehaviour
 		if (settingsOpen)
 		{
 
-			RotateYKnob(-input.y);
+			if(input.y != 0){
+				RotateYKnob(-input.y);
+				audio.PlayOneShot(changeSettingSFX);
+			}
+
 			foreach (SettingValue s in GameSettings.i.settings)
 			{
 				if (s.gameObject == EventSystem.current.currentSelectedGameObject)

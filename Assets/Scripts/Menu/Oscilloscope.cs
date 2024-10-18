@@ -41,6 +41,7 @@ public class Oscilloscope : MonoBehaviour
     public float normalX;
     public float normalY;
 
+    bool drawing;
     bool hit;
     bool overX = false;
     bool overY = false;
@@ -53,6 +54,8 @@ public class Oscilloscope : MonoBehaviour
     Vectrosity.VectorLine shadow;
     Vector3 center;
     void Start(){
+        drawing =  false;
+
         offsets = new float[10];
         for(int i = 0; i < offsets.Length; i++){
             offsets[i] = Random.Range(-100f, 100f);
@@ -67,11 +70,16 @@ public class Oscilloscope : MonoBehaviour
     
     public void OnNavigate(InputAction.CallbackContext context){
 
-        microNoiseScale += 0.1f;
+        if(context.performed){
+
+         microNoiseScale += 0.1f;
+        }
     }
 
     public void Update(){
 
+        if(!drawing) return;
+        
         time += Time.deltaTime * timeScale;
         
         CheckInput();
@@ -87,10 +95,11 @@ public class Oscilloscope : MonoBehaviour
     }
 
     public void Initialize(){
+        drawing = true;
         center = transform.position;
 
-        normalX = 0.5f;
-        normalY = 0.5f;
+        xSpeed = 0.25f;
+        ySpeed = 0.25f;
 
         Gauss();
         //play synth noise
@@ -106,9 +115,12 @@ public class Oscilloscope : MonoBehaviour
             line.rectTransform.gameObject.SetActive(false);
         }
 
+        drawing = false;
         noise = Vector2.zero;
         normalX = 0;
         normalY = 0;
+        xSpeed = 0.1f;
+        ySpeed = 0.1f;
         SynthController.instance.pads[synth].Stop();
     }
     
@@ -126,10 +138,12 @@ public class Oscilloscope : MonoBehaviour
         
         xOverflow = Mathf.Clamp01(Mathf.Abs(xSpeed + input.x) - xMax) * Mathf.Sign(xSpeed);
         yOverflow = Mathf.Clamp01(Mathf.Abs(ySpeed + input.y) - yMax) * Mathf.Sign(ySpeed);
-
         
         overY = yOverflow != 0;
         overX = xOverflow != 0;
+
+        Services.menu.levelSelectKnob.Rotate(-input.x * 100f);
+        Services.menu.menuSelectKnob.Rotate(-input.y * 100f);
 
         amplitude = 0.4f + Mathf.Abs(xOverflow) + Mathf.Abs(yOverflow);
 
@@ -270,8 +284,8 @@ public class Oscilloscope : MonoBehaviour
 
             Vector2 microNoise = Vector2.zero;
             
-            microNoise.x = Mathf.PerlinNoise(pos.y * 25 + Time.time * -20, pos.x * 25 + Time.time * 20) * microNoiseScale;
-            microNoise.y = Mathf.PerlinNoise(pos.x * 56 - Time.time * 5, pos.y * 33+ Time.time * 13 ) * microNoiseScale;
+            microNoise.x = Mathf.PerlinNoise(pos.y * 60 + Time.time * -20, pos.x * 25 + Time.time * 20) * microNoiseScale;
+            microNoise.y = Mathf.PerlinNoise(pos.x * 56 - Time.time * 15, pos.y * 33 + Time.time * 22) * microNoiseScale;
             
             
             Vector2 noise = Vector2.zero;
