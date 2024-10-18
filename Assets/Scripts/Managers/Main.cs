@@ -92,9 +92,11 @@
 		if(callbackContext.performed){
 			if (state == GameState.menu)
 			{
+				Debug.Log("cancelling input");
+
 				if (Services.menu.settingsOpen)
 				{
-					Services.menu.OpenSettings();
+					Services.menu.OpenSettingsWithFrameDelay();
 				}
 				else
 				{

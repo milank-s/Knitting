@@ -186,7 +186,7 @@ public class MenuController : MonoBehaviour
 			break;
 
 			case MenuSelection.oscilloscope:
-				OpenSettings();
+				OpenSettingsWithFrameDelay();
 				levelDisplay.SetActive(false);
 
 			break;
@@ -373,8 +373,16 @@ public class MenuController : MonoBehaviour
         levelNumber.text = SceneController.instance.curSetIndex + ".";
     }
 
+	public void OpenSettingsWithFrameDelay(){
+		StartCoroutine(WaitBeforeSettings());
+	}
+
+	IEnumerator WaitBeforeSettings(){
+		yield return null;
+		OpenSettings();
+	}
+
     public void OpenSettings(){
-		Debug.Log("opening settings");
 
         settingsOpen = !settingsOpen;
 		settings.SetActive(settingsOpen);
