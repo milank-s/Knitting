@@ -1662,6 +1662,8 @@ public class PlayerBehaviour: MonoBehaviour {
 
 			case PlayerState.Flying:
 
+				Services.fx.backgroundAlpha = 1;
+
 				hasFlown = true;
 				Services.fx.BakeTrail(Services.fx.flyingTrail, Services.fx.flyingTrailMesh);
 
@@ -1819,6 +1821,8 @@ public class PlayerBehaviour: MonoBehaviour {
 				if(OnStartFlying != null){
 					OnStartFlying.Invoke();
 				}
+
+				Services.fx.backgroundAlpha = 0;
 
 				stopFlying = false;
 				Services.fx.BakeTrail(Services.fx.playerTrail, Services.fx.playerTrailMesh);

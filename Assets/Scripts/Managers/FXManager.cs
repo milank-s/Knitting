@@ -56,6 +56,7 @@ public class FXManager : MonoBehaviour
   Coroutine showPointsRoutine;
   Coroutine graffitiRoutine;
     float backgroundLerp = 0;
+   public float backgroundAlpha = 1;
   void Start()
   {
      backgroundMat = background.material;
@@ -139,11 +140,11 @@ public class FXManager : MonoBehaviour
 	}
 
 void Update(){
-    
-    backgroundMat.color = Color.Lerp(new Color(0,0,0,0.5f), new Color(0,0,0, 0.0f), Mathf.Pow(backgroundLerp, 0.5f));
+    backgroundLerp = Mathf.Lerp(backgroundLerp, backgroundAlpha, Time.deltaTime * 3);
+    backgroundMat.color = new Color(0,0,0, backgroundLerp);
 }
 public void Step(){
-    backgroundLerp = Mathf.Lerp(backgroundLerp, SynthController.flow, Time.deltaTime * 5);
+    //backgroundLerp = Mathf.Lerp(backgroundLerp, SynthController.flow, Time.deltaTime * 5);
     DrawGraffiti();
     DrawCollectibleConnections();
 }

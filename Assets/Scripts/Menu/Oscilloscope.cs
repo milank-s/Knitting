@@ -297,7 +297,9 @@ public class Oscilloscope : MonoBehaviour
             noise.x = Mathf.Sin(pos.y * noiseFreqX + Time.time * 30.45f) * noiseScale;
             noise.y =  Mathf.Sin(pos.x * noiseFreqY + Time.time * -20.8f) * noiseScale;
 
-            Services.main.gamepad.SetMotorSpeeds(noise.x, microNoise.y * 100);
+            if(Services.main.hasGamepad){
+                Services.main.gamepad.SetMotorSpeeds(noise.x, microNoise.y * 100);
+            }
 
             pos += (Vector3)microNoise + (Vector3)noise;
             
