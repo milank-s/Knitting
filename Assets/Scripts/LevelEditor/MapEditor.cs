@@ -48,7 +48,6 @@ public class MapEditor : MonoBehaviour
     {
         set
         {
-            
             int dummy = (int) curTool;
             curTool = value;
             if (dummy != (int) value)
@@ -77,6 +76,7 @@ public class MapEditor : MonoBehaviour
     public Transform canvas;
     public GameObject selectedPointIndicator;
     public GameObject pointOptions;
+    public GameObject pointTypes;
     private List<Image> selectors;
     [SerializeField] private Text[] pointOrder;
     public Transform container;
@@ -274,7 +274,6 @@ public class MapEditor : MonoBehaviour
         }
 
         selectedPointIndicator.SetActive(false);
-        selectedPointIndicator.SetActive(false);
         pointOptions.SetActive(false);
         selectors = new List<Image>();
         
@@ -433,6 +432,7 @@ public class MapEditor : MonoBehaviour
         pointSelectedTip.SetActive(false);
         splinePointTip.SetActive(false);
         crawlerOptions.SetActive(false);
+        pointTypes.SetActive(false);
         
     }
 
@@ -530,6 +530,16 @@ public class MapEditor : MonoBehaviour
         selectedSpline.SetLineWidth((int) lineWidthSlider.val);
     }
 
+    public void CycleSplineType(){
+        int curType = (int)selectedSpline.type;
+        curType ++;
+        if(curType >= Enum.GetValues(typeof(SplineType)).Length){
+            curType = 0;
+        }
+
+        selectedSpline.SetSplineType((SplineType)curType);
+    }
+
     void EditSelectedSpline()
     {
         if (splineindex >= 0 && splineindex < controller._splines.Count)
@@ -566,12 +576,7 @@ public class MapEditor : MonoBehaviour
             
             if (Input.GetKeyDown(KeyCode.Alpha0))
             {
-                int curType = (int)selectedSpline.type;
-                curType ++;
-                if(curType >= Enum.GetValues(typeof(SplineType)).Length){
-                    curType = 0;
-                }
-                selectedSpline.SetSplineType((SplineType)curType);
+                CycleSplineType();
             }
 
             for (int i = 0; i < pointOrder.Length; i++)
@@ -851,16 +856,17 @@ public class MapEditor : MonoBehaviour
 
     }
 
+    public void ChangeToolWithButton(int i){
+        _curTool = (Tool)i;
+
+    }
+
     void TryChangeTool()
     {
         if (Input.GetKey(KeyCode.Q))
         {
 
             _curTool = Tool.select;
-            if (pointSelected)
-            {
-                pointOptions.SetActive(true);
-            }
         }
         else if (Input.GetKey(KeyCode.W))
         {
@@ -870,7 +876,6 @@ public class MapEditor : MonoBehaviour
         else if (Input.GetKey(KeyCode.D))
         {
             _curTool = Tool.draw;
-            l.enabled = true;
         }
         else if (Input.GetKey(KeyCode.M))
         {
@@ -965,25 +970,24 @@ public class MapEditor : MonoBehaviour
                 }
 
                     
-                    HideUI();
+                HideUI();
 
-                    if (curTool != Tool.text)
-                    {
-                        EditSelectedSpline();
-                    }
-                    
-                    ChangeSelectedSpline();
-                    
-                    
-                    tooltips[(int)curTool].SetActive(true);
-                    
-                    TryChangeTool();
-                    
-                    if (Input.GetKeyDown(KeyCode.S))
-                    {
-                        PlaySavedEffect();
-                        Save(controller);
-                    }
+                if (curTool != Tool.text)
+                {
+                    EditSelectedSpline();
+                }
+                
+                ChangeSelectedSpline();
+                
+            
+                
+                TryChangeTool();
+                
+                if (Input.GetKeyDown(KeyCode.S))
+                {
+                    PlaySavedEffect();
+                    Save(controller);
+                }
                     
                 }
 
@@ -1022,7 +1026,7 @@ public class MapEditor : MonoBehaviour
                 {
                     if (!pointSelected && curTool != Tool.marquee)
                     {
-                        if (Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftShift))
+                        if (ProcessClick(0) && Input.GetKey(KeyCode.LeftShift))
                         {
                             StartCoroutine(MarqueeSelect(worldPos));
                         }
@@ -1050,7 +1054,13 @@ public class MapEditor : MonoBehaviour
         
         }
 
-     void SetPointType(PointTypes t)
+    public void SetPointTypeWithButton(int i){
+        PointTypes p = (PointTypes) i;
+        curPointType = p;
+        SetPointType(p);
+    }
+
+    public void SetPointType(PointTypes t)
      {
          activePoint.SetPointType(t);
          
@@ -1114,6 +1124,7 @@ public class MapEditor : MonoBehaviour
             marqueeTip.SetActive(false);
             deselectTip.SetActive(true);
             pointSelectedTip.SetActive(true);
+            pointTypes.SetActive(true);
             selectedPointIndicator.SetActive(true);
             pointCoords.gameObject.SetActive(true);
 
@@ -1829,7 +1840,7 @@ void DragCamera()
     }
     void SelectPoint(Point p)
     {
-        if (p != null && Input.GetMouseButtonDown(0))
+        if (p != null && ProcessClick(0))
         {
             if ((!Input.GetKey(KeyCode.LeftShift) && pointSelected) && activePoint != p)
             {
@@ -1967,7 +1978,7 @@ void DragCamera()
 
                 if (pointSelected)
                 {
-                    if (hitPoint != null && Input.GetMouseButtonDown(0))
+                    if (hitPoint != null && ProcessClick(0))
                     {
                         dragging = true;
                     }
@@ -2029,7 +2040,7 @@ void DragCamera()
 
             case Tool.clone:
 
-                if (Input.GetMouseButtonDown(0))
+                if (ProcessClick(0))
                 {
                     dragging = true;
                     
@@ -2121,7 +2132,7 @@ void DragCamera()
 
             case Tool.rotate:
 
-                if (Input.GetMouseButtonDown(0))
+                if (ProcessClick(0))
                 {
                     if (Input.GetKey(KeyCode.LeftShift))
                     {
@@ -2166,7 +2177,7 @@ void DragCamera()
 
             case Tool.marquee:
 
-                if (Input.GetMouseButtonDown(0))
+                if (ProcessClick(0))
                 {
                     StartCoroutine(MarqueeSelect(worldPos));
                 }
@@ -2197,7 +2208,7 @@ void DragCamera()
                     if (pointSelected)
                     {
                         l.SetPosition(1, hitPoint.Pos);
-                        if (Input.GetMouseButtonDown(0) && hitPoint != activePoint)
+                        if (ProcessClick(0) && hitPoint != activePoint)
                         {
                             SplinePointPair spp = SplineUtil.ConnectPoints(selectedSpline,
                                 activePoint, hitPoint);
@@ -2227,7 +2238,7 @@ void DragCamera()
                     }
                     else
                     {
-                        if (Input.GetMouseButtonDown(0))
+                        if (ProcessClick(0))
                         {
                             
                             AudioManager.instance.helmAudio.PlayNoteOnPoint(hitPoint);
@@ -2238,7 +2249,7 @@ void DragCamera()
                 else if (raycastNull || Input.GetKey(KeyCode.LeftAlt))
                 {
                         
-                    if (Input.GetMouseButtonDown(0)){
+                    if (ProcessClick(0)){
 
                         pointCreated = true;
                         newPoint = SplineUtil.CreatePoint(worldPos);
@@ -2300,12 +2311,12 @@ void DragCamera()
                     
                     pointText = activePoint.text;
 
-                    if (!typing && Input.GetMouseButtonDown(0) && hitPoint != null)
+                    if (!typing && ProcessClick(0) && hitPoint != null)
                     {
                         typing = true;
                     }else 
 
-                    if (Input.GetMouseButtonDown(0) && hitPoint == null)
+                    if (ProcessClick(0) && hitPoint == null)
                     {
                         dragging = true;
                         typing = false;
@@ -2397,7 +2408,7 @@ void DragCamera()
 
                 case Tool.scale:
 
-                if (Input.GetMouseButtonDown(0))
+                if (ProcessClick(0))
                 {
                     scaleDelta = Vector3.zero;
                     if (Input.GetKey(KeyCode.LeftShift))
@@ -2481,6 +2492,7 @@ void DragCamera()
 
         selectedPointIndicator.SetActive(pointSelected);
         pointSelectedTip.SetActive(pointSelected);
+        pointTypes.SetActive(pointSelected);
     }
     
     public void SetTensionWithSlider(){
@@ -2594,25 +2606,23 @@ void DragCamera()
         {
             if (i == (int) curTool)
             {
+                tooltips[i].SetActive(true);
                 tools[i].color = Color.white;
                 cursor.sprite = cursors[i];
             }
             else
             {
-                if (curTool != Tool.draw)
-                {
-                    l.enabled = false;
-                }
+                l.enabled = curTool == Tool.draw;
 
                 if (curTool != Tool.rotate)
                 {
                     cursor.transform.rotation = Quaternion.identity;
                     
                 }
-                if (curTool != Tool.select)
-                {
-                    pointOptions.SetActive(false);  
-                }
+                
+
+                pointOptions.SetActive(curTool == Tool.select && pointSelected);  
+                
 
 
                 if (curTool == Tool.draw || curTool == Tool.select || curTool == Tool.shape)
@@ -2625,7 +2635,6 @@ void DragCamera()
                     cursor.rectTransform.pivot = new Vector3(0.5f, 0.5f);
                 }
                 
-               
 
                 if (curTool != Tool.text)
                 {
@@ -2674,6 +2683,7 @@ void DragCamera()
         }
         selectedPointIndicator.SetActive(false);
         pointSelectedTip.SetActive(false);
+        pointTypes.SetActive(false);
         pointOptions.SetActive(false);
         pointCoords.gameObject.SetActive(false);
     }
