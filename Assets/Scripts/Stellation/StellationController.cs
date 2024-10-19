@@ -294,6 +294,7 @@ public class StellationController : MonoBehaviour {
 		_startPoints = new List<Point>();
 
 		Spline[] splines = GetComponentsInChildren<Spline>();
+
 		if(splines.Length > 0){
 			Array.Sort(splines, delegate(Spline x, Spline y) { return x.order.CompareTo(y.order); });
 
@@ -373,8 +374,6 @@ public class StellationController : MonoBehaviour {
 		}
 
 		//stopgap to test chasing crawler;
-	
-
 		collectibles = GetComponentsInChildren<Collectible>().ToList();
 
 		Setup();
@@ -553,7 +552,9 @@ public class StellationController : MonoBehaviour {
 
 
 	public void LeftStartPoint(){
-
+		
+		Debug.Log("leaving start point");
+		
 		if(!hasStarted){
 			StartStellation();
 		}
@@ -568,6 +569,7 @@ public class StellationController : MonoBehaviour {
 				OnLeaveStart.Invoke();
 			}
 		}		
+
 		startIndex ++;
 	}
 	
@@ -648,8 +650,10 @@ public class StellationController : MonoBehaviour {
 	}
 
 	public bool CheckLapCount(){
+		
 		return lapCount >= laps;
 	}
+
 	public void UpdateLapCount()
 	{
 
@@ -657,9 +661,10 @@ public class StellationController : MonoBehaviour {
 
 		//this was to save time but now its causing problems
 
-		if (curSplineIndex < (_splines.Count - _escapeSplines.Count) - 1 && laps > 0)
+		if (curSplineIndex < _splines.Count - _escapeSplines.Count - 1 && laps > 0)
 		{
-			return;
+			// Debug.Log("what is going on here");
+			//return;
 		}
 		
 		foreach (Point p in _points)
