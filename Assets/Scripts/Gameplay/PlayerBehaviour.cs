@@ -454,6 +454,7 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		//set all your important floats bruh
 
+		SetGamepadRumble();
 
 		if(state == PlayerState.Traversing){
 			glitching = speedGain <= 0 || joystickLocked;
@@ -1206,13 +1207,11 @@ public class PlayerBehaviour: MonoBehaviour {
 	void SetGamepadRumble(){
 		if (Services.main.hasGamepad && state == PlayerState.Traversing)
 		{
-			float hi = Mathf.Pow(Mathf.Clamp01(-signedAccuracy + 1), 3) * curSpeed;
-			float low = Mathf.Clamp01(-signedAccuracy) * flow + Mathf.Clamp01(hi - 1);
+			float hi = Mathf.Pow(easedDistortion, 2) * curSpeed;
+			float low = Mathf.Pow(easedDistortion, 2) * curSpeed;
 
 			if (Services.main.useVibration)
 			{
-				Debug.Log("low=" + low);
-				Debug.Log("high= " + hi);
 				Services.main.gamepad.SetMotorSpeeds(low, hi);
 			}
 

@@ -115,6 +115,9 @@ public class Oscilloscope : MonoBehaviour
             line.rectTransform.gameObject.SetActive(false);
         }
 
+        
+        Services.main.gamepad.ResetHaptics();
+        
         drawing = false;
         noise = Vector2.zero;
         normalX = 0;
@@ -138,7 +141,8 @@ public class Oscilloscope : MonoBehaviour
         
         xOverflow = Mathf.Clamp01(Mathf.Abs(xSpeed + input.x) - xMax) * Mathf.Sign(xSpeed);
         yOverflow = Mathf.Clamp01(Mathf.Abs(ySpeed + input.y) - yMax) * Mathf.Sign(ySpeed);
-        
+    
+
         overY = yOverflow != 0;
         overX = xOverflow != 0;
 
@@ -288,10 +292,12 @@ public class Oscilloscope : MonoBehaviour
             microNoise.y = Mathf.PerlinNoise(pos.x * 56 - Time.time * 15, pos.y * 33 + Time.time * 22) * microNoiseScale;
             
             
+            
             Vector2 noise = Vector2.zero;
             noise.x = Mathf.Sin(pos.y * noiseFreqX + Time.time * 30.45f) * noiseScale;
             noise.y =  Mathf.Sin(pos.x * noiseFreqY + Time.time * -20.8f) * noiseScale;
 
+            Services.main.gamepad.SetMotorSpeeds(noise.x, microNoise.y * 100);
 
             pos += (Vector3)microNoise + (Vector3)noise;
             
