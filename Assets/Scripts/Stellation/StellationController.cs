@@ -361,7 +361,6 @@ public class StellationController : MonoBehaviour {
 		foreach (ActivatedBehaviour a in GetComponentsInChildren<ActivatedBehaviour>())
 		{
 			activateOnCompletion.Add(a);
-
 		}
 		
 		wordIndex = 0;
@@ -456,6 +455,7 @@ public class StellationController : MonoBehaviour {
 		won = false;
 		isPlayerOn = false;
 
+		_pointshit = new List<Point>();
 		_escapeSplines = new List<Spline>();
 
 		//do we need to go through all our points?

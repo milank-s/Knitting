@@ -11,7 +11,13 @@ public class DemoScript : MonoBehaviour
     public InputAction movement;
 
     float resetTimer = 0;
+
+    public static bool demoMode = false;
     // Update is called once per frame
+
+    void Awake(){
+        demoMode = true;
+    }
 
     void Start(){
 

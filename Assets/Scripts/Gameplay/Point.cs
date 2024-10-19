@@ -413,7 +413,6 @@ public class Point : MonoBehaviour
 		timesHit = 0;
 		cooldown = 0;
 		color = Color.clear;
-		
 	}
 
 	public void CleanText()
@@ -721,6 +720,18 @@ public class Point : MonoBehaviour
 		
 		switch (pointType)
 		{
+			case PointTypes.dropoff:
+			
+			if (buttonPressed)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+
+			
 			case PointTypes.start:
 				if (timesHit > 1)
 				{

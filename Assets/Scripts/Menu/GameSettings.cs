@@ -147,12 +147,10 @@ public class GameSettings : MonoBehaviour
         if (PlayerPrefs.HasKey("UseVibration"))
         {
             Services.main.useVibration = PlayerPrefs.GetInt("UseVibration") == 1;
-            Debug.Log("vibration = " + PlayerPrefs.GetInt("UseVibration"));
         }
         else
         {
             Services.main.useVibration = true;
-            Debug.Log("vibration = " + Services.main.useVibration);
             PlayerPrefs.SetInt("UseVibration", 1);
         }
         

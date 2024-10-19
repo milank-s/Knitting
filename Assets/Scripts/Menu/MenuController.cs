@@ -267,9 +267,11 @@ public class MenuController : MonoBehaviour
 			}
 
 		}else{
-			Debug.Log("quitting");
+			
+			if(!DemoScript.demoMode){
 
-			Application.Quit();
+				Application.Quit();
+			}
 		}
         
     }
