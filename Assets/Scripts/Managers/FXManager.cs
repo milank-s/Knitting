@@ -13,8 +13,6 @@ public class FXManager : MonoBehaviour
     public enum FXType{fizzle, burst, rotate, pulse, cross, glitch}
 
     public PostProcessVolume postProcessing;
-    public MeshRenderer background;
-    Material backgroundMat;
     public GameObject circleEffect;
     public SpriteRenderer nextPointSprite;
     public TrailRenderer cursorTrail;
@@ -58,7 +56,6 @@ public class FXManager : MonoBehaviour
     float backgroundLerp = 0;
   void Start()
   {
-     backgroundMat = background.material;
       splineDir = new List<VectorLine>();
       for (int i = 0; i < 12; i++)
       {
@@ -138,12 +135,7 @@ public class FXManager : MonoBehaviour
         if(fadeIn) title.color = !fadeIn ? Color.clear : Color.white;
 	}
 
-void Update(){
-    
-    backgroundMat.color = Color.Lerp(new Color(0,0,0,1f), new Color(0,0,0, 0.01f), Mathf.Pow(backgroundLerp, 0.5f));
-}
 public void Step(){
-    backgroundLerp = Mathf.Lerp(backgroundLerp, SynthController.flow, Time.deltaTime * 5);
     DrawGraffiti();
     DrawCollectibleConnections();
 }

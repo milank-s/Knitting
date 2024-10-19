@@ -92,7 +92,6 @@ public class MenuController : MonoBehaviour
 
 	void Update(){
 		if(Services.main.state == GameState.menu || Services.main.state == GameState.paused){
-		
 			//this shouldnt play when we press enter or escape?
 			float leftGain =  Mathf.Clamp01(oscilloscope.normalX/2f + AudioManager.loudness + Mathf.Abs(oscilloscope.noise.x));
 			float rightGain = Mathf.Clamp01(oscilloscope.normalY/2f+ AudioManager.loudness + Mathf.Abs(oscilloscope.noise.y));

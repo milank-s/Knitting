@@ -2187,7 +2187,7 @@ void DragCamera()
             case Tool.draw:
 
                 bool pointCreated = false;
-                
+                bool pointHit = false;
                 if (pointSelected)
                 {
                     l.SetPosition(0, selectedPoints[selectedPoints.Count - 1].transform.position);
@@ -2231,7 +2231,7 @@ void DragCamera()
                                 AddSelectedSpline(spp.s);
                                 AddSelectedPoint(hitPoint);
                                 
-                                pointCreated = true;
+                                pointHit = true;
                                 
                             }
                         }
@@ -2300,6 +2300,10 @@ void DragCamera()
                         newPoint.SetPointType(PointTypes.start);
                     }
                     AudioManager.instance.helmAudio.PlayNoteOnPoint(newPoint);
+                }
+
+                if(pointHit){
+                    AudioManager.instance.helmAudio.PlayNoteOnPoint(hitPoint);
                 }
 
                 break;
