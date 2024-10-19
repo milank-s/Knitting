@@ -783,6 +783,20 @@ public class MapEditor : MonoBehaviour
     }
 
     bool ProcessClick(int mouseButton){
+        if(Input.GetMouseButtonDown(mouseButton)){
+            bool mouseOverUI = EventSystem.current.IsPointerOverGameObject();
+         
+            if(Input.touchCount > 0){
+                mouseOverUI = EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId);
+            }
+
+            return !mouseOverUI;
+        }
+
+        return false;
+    }
+
+    bool ProcessDrag(int mouseButton){
         if(Input.GetMouseButton(mouseButton)){
             bool mouseOverUI = EventSystem.current.IsPointerOverGameObject();
          
@@ -1983,10 +1997,11 @@ void DragCamera()
                         dragging = true;
                     }
 
-                    if (dragging || (ProcessClick(0) && Input.GetKey(KeyCode.LeftShift)))
+                    if (dragging || (ProcessDrag(0) && Input.GetKey(KeyCode.LeftShift)))
                     {
 
                         MoveSelectedPoints();
+
                         if (Input.mouseScrollDelta.y != 0)
                         {
 
@@ -2010,7 +2025,7 @@ void DragCamera()
                    // zCam.gameObject.SetActive(false);
                 }
 
-                if (!dragging && hitPoint == null && ProcessClick(0) &&
+                if (!dragging && hitPoint == null && ProcessDrag(0) &&
                     !Input.GetKey(KeyCode.LeftShift))
                 {
                     DragCamera();
@@ -2023,11 +2038,11 @@ void DragCamera()
                 Vector3 viewPortPos = cam.ScreenToViewportPoint(mousePos);
 
                 
-                if (ProcessClick(0) && hitPoint == null && !pointSelected && !dragging)
+                if (ProcessDrag(0) && hitPoint == null && !pointSelected && !dragging)
                 {
                     DragCamera();
                 }
-                else if(ProcessClick(0) && pointSelected && hitPoint == null  && !dragging)
+                else if(ProcessDrag(0) && pointSelected && hitPoint == null  && !dragging)
                 {
                     if (pointSelected)
                     {
@@ -2145,7 +2160,7 @@ void DragCamera()
                     }
                 }
 
-                if (ProcessClick(0))
+                if (ProcessDrag(0))
                 {
                     cursor.transform.position = cam.WorldToScreenPoint(rotationPivot);
                     float xAngle = Mathf.Sign(deltaScreen.x) * deltaScreen.magnitude * 100f;
@@ -2177,7 +2192,7 @@ void DragCamera()
 
             case Tool.marquee:
 
-                if (ProcessClick(0))
+                if (ProcessDrag(0))
                 {
                     StartCoroutine(MarqueeSelect(worldPos));
                 }
@@ -2320,7 +2335,7 @@ void DragCamera()
                         typing = true;
                     }else 
 
-                    if (ProcessClick(0) && hitPoint == null)
+                    if (ProcessDrag(0) && hitPoint == null)
                     {
                         dragging = true;
                         typing = false;
@@ -2433,7 +2448,7 @@ void DragCamera()
                     }
                 }
 
-                if (ProcessClick(0))
+                if (ProcessDrag(0))
                 {
                     //if(recenterScalePivot) scalePivot = center;  //this leads to an infinite loop
 
