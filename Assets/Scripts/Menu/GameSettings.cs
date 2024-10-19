@@ -146,11 +146,13 @@ public class GameSettings : MonoBehaviour
         
         if (PlayerPrefs.HasKey("UseVibration"))
         {
-            Services.main.useVibration = PlayerPrefs.GetInt("UseVibration") > 0;
-            
+            Services.main.useVibration = PlayerPrefs.GetInt("UseVibration") == 1;
+            Debug.Log("vibration = " + PlayerPrefs.GetInt("UseVibration"));
         }
         else
         {
+            Services.main.useVibration = true;
+            Debug.Log("vibration = " + Services.main.useVibration);
             PlayerPrefs.SetInt("UseVibration", 1);
         }
         
@@ -227,16 +229,14 @@ public class GameSettings : MonoBehaviour
 
         Services.main.useVibration = !Services.main.useVibration;
             
-      
-            if (Services.main.hasGamepad)
-            {
-                Services.main.gamepad.ResetHaptics();
-            }
+        if (Services.main.hasGamepad)
+        {
+            Services.main.gamepad.ResetHaptics();
+        }
 
-            PlayerPrefs.SetInt("UseVibration", Services.main.useVibration ? 1 : 0);
-            
-
-            return Services.main.useVibration ? "yes" : "no";
+        PlayerPrefs.SetInt("UseVibration", Services.main.useVibration ? 1 : 0);
+        
+        return Services.main.useVibration ? "yes" : "no";
     }
 
     string SetGamepad(Single s)
