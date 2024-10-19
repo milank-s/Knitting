@@ -30,6 +30,7 @@
 	[Header("Singletons")]
 	public MapEditor editor;
 	public Camera mainCam;
+	public Camera menuCam;
 	public MenuController menuController;
 	public PrefabManager prefabs;
 	public FXManager fx;
@@ -92,7 +93,6 @@
 		if(callbackContext.performed){
 			if (state == GameState.menu)
 			{
-				Debug.Log("cancelling input");
 
 				if (Services.menu.settingsOpen)
 				{
@@ -131,7 +131,7 @@
 		{
 			ToggleEditMode();
 		}
-
+		
 		Services.menu.Show(true);
 	}
 	public void ResetLevel()
@@ -408,7 +408,9 @@
 		StartCoroutine(Services.fx.ShowTitle(SceneController.instance.curLevelSet.description));
 		// EnterPlayMode();
 
+		Services.main.menuCam.enabled = false;
 		Services.menu.Show(false);
+		
 		SceneController.instance.LoadDirect(SceneController.instance.GetCurLevel());
 
 	}
@@ -480,6 +482,8 @@
 			
 			Services.mainCam.GetComponent<CameraFollow>().enabled = !enter;
 			RenderSettings.fog = enter;
+			
+			Services.main.menuCam.enabled = !enter;
 			Services.fx.postProcessing.enabled = !enter;
 			
 			editor.l.enabled = enter;

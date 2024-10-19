@@ -12,7 +12,8 @@ public class MenuController : MonoBehaviour
 
 	[Header("SFX")]
 
-	
+	public Camera camera;
+
 	[SerializeField] AudioSource audio;
 	[SerializeField] AudioClip selectSFX;
 	[SerializeField] AudioClip changeSettingSFX;
@@ -304,6 +305,7 @@ public class MenuController : MonoBehaviour
 
         CameraFollow.instance.Reset();    
         RenderSettings.fog = false;
+		camera.enabled = true;
 	
 		if (SceneController.instance.curSetIndex < 0)
 		{
@@ -327,6 +329,7 @@ public class MenuController : MonoBehaviour
 			Cursor.visible = false;
 			Cursor.lockState = CursorLockMode.Locked;
 			RenderSettings.fog = true;
+
 		}
 		
 		if (settingsOpen)
