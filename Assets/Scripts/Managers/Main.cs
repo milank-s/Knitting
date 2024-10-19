@@ -544,6 +544,7 @@
 				{
 					editor.Save(editor.controller);
 					//do we force save before playing?
+					
 					editor.TogglePlayMode();
 				}
 			}		

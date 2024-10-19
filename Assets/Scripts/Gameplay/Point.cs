@@ -285,7 +285,7 @@ public class Point : MonoBehaviour
 
 		recieveCollectible = false;
 		
-		if(pointType == PointTypes.dropoff){
+		if(pointType == PointTypes.dropoff || pointType == PointTypes.start){
 			recieveCollectible = true;
 		}
 

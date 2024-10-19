@@ -488,6 +488,8 @@ public class MapEditor : MonoBehaviour
     
     public void TogglePlayMode()
     {
+        
+		Services.main.menuCam.enabled = false;
         Services.main.OnReset.Invoke();
         Services.main.activeStellation = controller;
         Services.main.activeStellation.Initialize();
