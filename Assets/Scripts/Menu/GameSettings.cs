@@ -151,7 +151,7 @@ public class GameSettings : MonoBehaviour
         }
         else
         {
-            PlayerPrefs.SetFloat("UseVibration", 1);
+            PlayerPrefs.SetInt("UseVibration", 1);
         }
         
         t = Services.main.useVibration ? "yes" : "no";
@@ -202,6 +202,9 @@ public class GameSettings : MonoBehaviour
         newWidth = resolutions[newIndex].width;
         newHeight = resolutions[newIndex].height;
         
+        PlayerPrefs.SetInt("ResolutionWidth", newWidth);
+        PlayerPrefs.SetInt("ResolutionHeight", newHeight);
+
         return resolutions[newIndex].width + " " + resolutions[newIndex].height;
     }
     
@@ -213,10 +216,8 @@ public class GameSettings : MonoBehaviour
 
         AudioManager.instance.SetVolume(newVolume);
 
-        if (PlayerPrefs.HasKey("GameVolume"))
-        {
-            PlayerPrefs.SetFloat("GameVolume", newVolume);
-        }
+        PlayerPrefs.SetFloat("GameVolume", newVolume);
+        
 
         return newVolume * 10f;
     }
@@ -231,6 +232,9 @@ public class GameSettings : MonoBehaviour
             {
                 Services.main.gamepad.ResetHaptics();
             }
+
+            PlayerPrefs.SetInt("UseVibration", Services.main.useVibration ? 1 : 0);
+            
 
             return Services.main.useVibration ? "yes" : "no";
     }
