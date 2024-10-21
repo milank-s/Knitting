@@ -14,7 +14,7 @@ public class StellationController : MonoBehaviour {
 
 	[Header("Progression")]
 	
-	public UnlockType unlockMethod = UnlockType.laps;
+	public UnlockType unlockMethod = UnlockType.none;
 	public StellationController unlock;
 	public bool isPlayerOn;
 	public bool lockSplines;

@@ -796,6 +796,9 @@ public class PlayerBehaviour: MonoBehaviour {
 					{
 						
 						SwitchState(PlayerState.Flying);
+						l.positionCount = 0;
+						cursorRenderer.sprite = null;
+
 						return;
 					}else{
 						// ???
