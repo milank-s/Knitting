@@ -1952,7 +1952,7 @@ void DragCamera()
     }
     public void AddSelectedSpline(Spline s, bool add = false)
     {
-        Debug.Log("add selected spline");
+        // Debug.Log("add selected spline");
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
