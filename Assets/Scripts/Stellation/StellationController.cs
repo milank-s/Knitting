@@ -643,7 +643,8 @@ public class StellationController : MonoBehaviour {
 					s.SwitchState(Spline.SplineState.off);
 				}
 			}else{
-				s.SwitchState(b ? Spline.SplineState.on : Spline.SplineState.off);
+				Spline.SplineState on = (b && !s.locked) ? Spline.SplineState.on : Spline.SplineState.off;
+				s.SwitchState(on);
 			}
 
 			i++;

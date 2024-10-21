@@ -659,8 +659,11 @@ public class Point : MonoBehaviour
 	public void Unlock(){
 		//get all the splines that are locked?
 		//does this need to be a start or end point?
+		Debug.Log("unlock neighbours");
+
 		foreach(Spline s in _connectedSplines){
 			if(s.locked){
+				Debug.Log("turning spline on");
 				s.SwitchState(Spline.SplineState.on);
 			}
 		}

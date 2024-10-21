@@ -71,8 +71,6 @@ public class Spline : MonoBehaviour
 	[HideInInspector]
 	public VectorLine line;
 
-	[HideInInspector]
-
 	public bool locked;
 	public float hue;
 	public float saturation;
@@ -385,6 +383,10 @@ public class Spline : MonoBehaviour
 
 		if (t == SplineState.on)
 		{	
+			if(locked){
+				Unlock();
+			}
+			
 			DrawEntireSpline();
 		}
 
@@ -450,6 +452,18 @@ public class Spline : MonoBehaviour
 			VectorLine.Destroy(ref line);
 		}
 	}
+
+	public void Unlock(){
+		locked = false;
+		foreach (Point p in SplinePoints)
+		{
+
+			if (p.state == Point.PointState.locked)
+			{
+				p.SwitchState(Point.PointState.off);
+			}
+		}
+	}
 	
 	private void Lock()
 	{	
@@ -474,7 +488,6 @@ public class Spline : MonoBehaviour
 				}
 			}
 		}
-
 	}
 
 	void SetLinePoint(Vector3 v, int index){
