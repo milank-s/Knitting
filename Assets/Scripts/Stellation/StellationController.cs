@@ -244,7 +244,9 @@ public class StellationController : MonoBehaviour {
 		Show(true);
 
 		foreach(Spline s in start._connectedSplines){
-			s.StartDrawRoutine(start);
+			if(!s.locked){
+				s.StartDrawRoutine(start);
+			}
 		}
 	}
 
@@ -593,14 +595,15 @@ public class StellationController : MonoBehaviour {
 	public void DrawStellation(){
 		if(!lockSplines){
 			foreach(Spline s in _splines){
-				if(!_escapeSplines.Contains(s)){
+				if(!s.locked && !_escapeSplines.Contains(s)){
 					s.DrawEntireSpline();
 				}
 			}
 		}
 	}
 
-	public void Lock(){
+	
+	public void LockStellation(){
 		foreach (Point p in _points)
 		{
 			p.SwitchState(Point.PointState.locked);
@@ -709,7 +712,6 @@ public class StellationController : MonoBehaviour {
 		curSplineIndex ++;
 		if(curSplineIndex < _splines.Count && lockSplines){
 			_splines[curSplineIndex].SwitchState(Spline.SplineState.on);
-			_splines[curSplineIndex].DrawEntireSpline();
 		}
 	}
 	

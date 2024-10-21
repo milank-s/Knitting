@@ -384,8 +384,8 @@ public class Spline : MonoBehaviour
 		}
 
 		if (t == SplineState.on)
-		{
-			//draw spline in or no?
+		{	
+			DrawEntireSpline();
 		}
 
 	}
