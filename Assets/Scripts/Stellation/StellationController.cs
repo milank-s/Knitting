@@ -315,7 +315,6 @@ public class StellationController : MonoBehaviour {
 				
 				_splines.Add(s);
 				s.SetSplineType(s.type);
-				
 				s.controller = this;
 
 				index++;

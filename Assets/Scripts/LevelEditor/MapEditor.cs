@@ -225,12 +225,12 @@ public class MapEditor : MonoBehaviour
                     splineindex = controller._splines.Count - 1;
                 }
 
-                splineOrder.text = "spline " + controller._splines[splineindex].order;
+                splineOrder.text = "Wire " + controller._splines[splineindex].order + ":";
                 splineTypeReadout.text = controller._splines[splineindex].type.ToString();
                 splineLockedReadout.text = controller._splines[splineindex].locked ? "LOCKED" : "UNLOCKED";
                 splineOrder.transform.position = cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.15f);
-                splineTypeReadout.transform.position =  cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.05f);
-                splineLockedReadout.transform.position =  cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.1f + Vector3.right * 0.5f);
+                splineTypeReadout.transform.position =  cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.15f + Vector3.right * 0.33f);
+                splineLockedReadout.transform.position =  cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.05f);
                 return controller._splines[splineindex];
             }
             else

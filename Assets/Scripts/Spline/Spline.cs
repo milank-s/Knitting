@@ -346,6 +346,13 @@ public class Spline : MonoBehaviour
 
 		populatedPointPositions = false;
 		Selected = StartPoint;
+		
+		if (locked)
+		{
+			state = SplineState.off;
+		}else{
+			state = SplineState.on;
+		}
 	}
 
 	public void SetSelectedPoint(Point p){
@@ -357,13 +364,6 @@ public class Spline : MonoBehaviour
 
 	public void SetSplineType(SplineType t)
 	{
-
-		if (locked)
-		{
-			state = SplineState.off;
-		}else{
-			state = SplineState.on;
-		}
 
 		type = t;
 		ChangeMaterial((int)t);
