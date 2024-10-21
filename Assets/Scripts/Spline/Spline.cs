@@ -537,7 +537,7 @@ public class Spline : MonoBehaviour
 				}else{
 					//this only happens on setup
 					if(k == 0){
-						curPoint.SetForward(pointVelocities[index]);
+						curPoint.SetForward(-pointVelocities[index]);
 					} 
 				}
 			}

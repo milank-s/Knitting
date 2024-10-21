@@ -34,7 +34,7 @@ public class PlayerBehaviour: MonoBehaviour {
 	[Space(10)] [Header("Cursor Control")]
 	public float cursorMoveSpeed = 1;
 	public float minCursorDistance = 25;
-	public float maxCursorDistance = 2;
+	public float maxCursorDistance = 25;
 	public float cursorDistance;
 	public float cursorRotateSpeed = 1;
 	public float AutoLeaveDiff = 30;
@@ -697,9 +697,12 @@ public class PlayerBehaviour: MonoBehaviour {
 		bool hasPath = false;
 		Point prevPointDest = pointDest;
 		Spline prevSplineDest = splineDest;
+		
+		cursorDistance = minCursorDistance;
 
 		if (TryLeavePoint()) // && !foundConnection)
 		{
+
 			cursorRenderer.sprite = traverseSprite;
 			hasPath = true;
 
@@ -787,17 +790,19 @@ public class PlayerBehaviour: MonoBehaviour {
 			else if (TryToFly())
 				{
 					cursorRenderer.sprite = canFlySprite;
-
-					//force flight off neighbourless points
+					cursorDistance = maxCursorDistance;
 					
 					if (curPoint.CanLeave())
 					{
+						
 						SwitchState(PlayerState.Flying);
-
 						return;
+					}else{
+						// ???
 					}
 				}
 				else{
+					
 					l.positionCount = 0;
 				 }
 			}
@@ -816,7 +821,6 @@ public class PlayerBehaviour: MonoBehaviour {
 			SwitchState(PlayerState.Traversing);
 
 			Services.fx.nextPointSprite.enabled = false;
-			cursorDistance = minCursorDistance;
 		}
 		else{
 			
