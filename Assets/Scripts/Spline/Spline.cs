@@ -287,8 +287,6 @@ public class Spline : MonoBehaviour
 		{
 			i %= Services.Prefabs.lines.Length;
 		}
-		
-		// bidirectional = lineMaterial != 3;
 
 		Material newMat;
 		newMat = Services.Prefabs.lines[i % Services.Prefabs.lines.Length];

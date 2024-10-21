@@ -120,7 +120,7 @@ public class MapEditor : MonoBehaviour
     public Toggle lockZToggle;
     public Text splineOrder;
     public Text splineTypeReadout;
-    public Text splineDirectionReadout;
+    public Text splineLockedReadout;
     public InputField sceneTitle;
     public InputField controllerText;
     public InputField controllerTitle;
@@ -227,10 +227,10 @@ public class MapEditor : MonoBehaviour
 
                 splineOrder.text = "spline " + controller._splines[splineindex].order;
                 splineTypeReadout.text = controller._splines[splineindex].type.ToString();
-                splineDirectionReadout.text = controller._splines[splineindex].bidirectional ? "<—>" : "—>";
+                splineLockedReadout.text = controller._splines[splineindex].locked ? "LOCKED" : "UNLOCKED";
                 splineOrder.transform.position = cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.15f);
                 splineTypeReadout.transform.position =  cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.05f);
-                splineDirectionReadout.transform.position =  cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.1f + Vector3.right * 0.5f);
+                splineLockedReadout.transform.position =  cam.WorldToScreenPoint(controller._splines[splineindex].SplinePoints[0].Pos + Vector3.up*0.1f + Vector3.right * 0.5f);
                 return controller._splines[splineindex];
             }
             else
