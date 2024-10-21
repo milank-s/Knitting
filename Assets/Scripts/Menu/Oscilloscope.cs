@@ -116,7 +116,9 @@ public class Oscilloscope : MonoBehaviour
         }
 
         
-        Services.main.gamepad.ResetHaptics();
+        if(Services.main.hasGamepad){
+            Services.main.gamepad.ResetHaptics();
+        }
         
         drawing = false;
         noise = Vector2.zero;

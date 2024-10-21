@@ -35,7 +35,9 @@ public class MenuController : MonoBehaviour
 	public Sprite settingsSprite;
 
 	MenuSelection modeSelection;
+	
     [SerializeField] TMPro.TextMeshPro[] gameModes;
+    [SerializeField] Button[] gameModeButtons;
 	[SerializeField] GameObject settings;
 	[SerializeField] GameObject gameStartButton;
 	[SerializeField] GameObject volumeSettings;
@@ -156,6 +158,11 @@ public class MenuController : MonoBehaviour
 
 		MenuSelection newState = (MenuSelection)i;
 
+		if(newState != MenuSelection.oscilloscope){
+			
+			settings.SetActive(false);
+		}
+
 		foreach(TextMeshPro t in gameModes){
 			t.color = new Color(0.5f, 0.5f, 0.5f);
 		}
@@ -164,6 +171,7 @@ public class MenuController : MonoBehaviour
 
 		SynthController.instance.keys[0].PlayNote(40 - i * 3, 0.25f, 0.5f);
 
+		oscilloscopeOverlay.SetActive(true);
 		gameStateKnob.Rotate((i - (int)modeSelection) * 23);
 		modeSelection = (MenuSelection)i;
 
@@ -186,8 +194,9 @@ public class MenuController : MonoBehaviour
 			break;
 
 			case MenuSelection.oscilloscope:
-				OpenSettingsWithFrameDelay();
+				ShowSettings();
 				levelDisplay.SetActive(false);
+				oscilloscopeOverlay.SetActive(false);
 
 			break;
         }
@@ -240,6 +249,20 @@ public class MenuController : MonoBehaviour
 		}
         
     }
+
+	void EnableButtons(bool x){
+		
+		levelDisplay.SetActive(x);
+		levelButton.SetActive(x);
+
+		foreach(Button b in gameModeButtons){
+			b.interactable = x;
+		}
+
+		foreach(TextMeshPro t in gameModes){
+			t.color = new Color(0.5f, 0.5f, 0.5f);
+		}
+	}
     
     public void ShowOscilloscope(){
 		PushButton(escapeButton);
@@ -250,13 +273,12 @@ public class MenuController : MonoBehaviour
 				oscilloscopeDrawing = true;
 				audio.PlayOneShot(oscilloscopeSwitchSFX);
 
-				levelDisplay.SetActive(false);
-				levelButton.SetActive(false);
-
 				EventSystem.current.SetSelectedGameObject(gameStartButton);
 				CloseMenu();
 				gameStart = false;
 				oscilloscope.Initialize();
+				
+				EnableButtons(false);
 
 				Cursor.lockState = CursorLockMode.None;
 				Cursor.visible = true;
@@ -285,7 +307,7 @@ public class MenuController : MonoBehaviour
 
         menuRoot.SetActive(b);
         oscilloscopeModel.SetActive(b);
-		levelDisplay.SetActive(b);
+		EnableButtons(b);
  		
 		if(b){
 			if(!gameStart){
@@ -336,6 +358,10 @@ public class MenuController : MonoBehaviour
 		if (settingsOpen)
 		{
 			OpenSettings();
+		}else{
+			if(settings.activeSelf){
+				settings.SetActive(false);
+			}
 		}
     }
 
@@ -379,6 +405,10 @@ public class MenuController : MonoBehaviour
 
 	public void OpenSettingsWithFrameDelay(){
 		StartCoroutine(WaitBeforeSettings());
+	}
+
+	public void ShowSettings(){
+		settings.SetActive(true);
 	}
 
 	IEnumerator WaitBeforeSettings(){
