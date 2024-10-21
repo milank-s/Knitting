@@ -663,7 +663,10 @@ public class Point : MonoBehaviour
 
 		foreach(Spline s in _connectedSplines){
 			if(s.locked){
-				Debug.Log("turning spline on");
+				//we want to cache which point unlocked it so we
+				//can use it to draw the spline in
+				
+				s.SetSelectedPoint(this);
 				s.SwitchState(Spline.SplineState.on);
 			}
 		}

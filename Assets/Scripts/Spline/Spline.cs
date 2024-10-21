@@ -386,8 +386,9 @@ public class Spline : MonoBehaviour
 			if(locked){
 				Unlock();
 			}
-			
-			DrawEntireSpline();
+
+			//get ready for null refs
+			StartDrawRoutine(Selected);
 		}
 
 	}
