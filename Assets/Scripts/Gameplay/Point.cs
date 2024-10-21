@@ -230,6 +230,8 @@ public class Point : MonoBehaviour
 			if(collectible == null){
 				collectible = Instantiate(Services.Prefabs.collectible, transform).GetComponent<Collectible>();
 				collectible.SetPoint(this);
+
+				
 			}else{
 				collectible.Reset();
 			}
@@ -469,6 +471,9 @@ public class Point : MonoBehaviour
 	public void Lock()
 	{
 		state = PointState.locked;
+		if(spawnCollectible){
+			collectible.Enable(false);
+		}
 		StartCoroutine(Fade());
 	}
 
@@ -508,6 +513,11 @@ public class Point : MonoBehaviour
 				break;
 
 			case PointState.on:
+			
+				if(spawnCollectible){
+					collectible.Enable(true);
+				}
+
 				if (prevState != PointState.on)
 				{
 					foreach(Spline sp in _connectedSplines){
@@ -558,7 +568,6 @@ public class Point : MonoBehaviour
 		
 		OnPointEnter();
 	
-		
 		SwitchState(PointState.on);
 
 		if(pointType != PointTypes.ghost)
@@ -659,8 +668,7 @@ public class Point : MonoBehaviour
 	public void Unlock(){
 		//get all the splines that are locked?
 		//does this need to be a start or end point?
-		Debug.Log("unlock neighbours");
-
+		
 		foreach(Spline s in _connectedSplines){
 			if(s.locked){
 				//we want to cache which point unlocked it so we

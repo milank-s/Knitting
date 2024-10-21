@@ -10,11 +10,11 @@ public class Collectible : MonoBehaviour
     public bool deposited = false;
     public bool done = false;
     public bool flocking;
-
     public bool hasSpawnpoint;
     public Point spawnPoint;
     Point depositPoint;
     public SphereCollider collider;
+    public MeshRenderer renderer;
     Vector3 startPos;
     float speed;
     
@@ -22,8 +22,17 @@ public class Collectible : MonoBehaviour
         startPos = transform.position;
     }
 
+    public void Enable(bool b){
+        if(MapEditor.editing){
+            b = true;
+        }
+        
+        renderer.enabled = b;
+    }
+
     public void Reset(){
         
+        renderer.enabled = true;
         gameObject.SetActive(true);
         collected = false;
         deposited = false;
@@ -47,6 +56,7 @@ public class Collectible : MonoBehaviour
         if(!collected){
             if(hasSpawnpoint){
                 transform.position = spawnPoint.Pos;
+
             }
         }else{
             

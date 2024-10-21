@@ -1035,9 +1035,8 @@ public class PlayerBehaviour: MonoBehaviour {
 		
 		if(state == PlayerState.Flying && c.tag == "Point"){
 			Point p = c.GetComponent<Point>();
-			if(p.pointType != PointTypes.ghost){
+			if(p.state != Point.PointState.locked && p.pointType != PointTypes.ghost){
 				
-
 				pointDest = p;
 				stopFlying = true;
 			}
