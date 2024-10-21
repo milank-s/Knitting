@@ -102,7 +102,7 @@ public class Point : MonoBehaviour
 	[HideInInspector]
 	public float proximity = 0;
 	public int note = 32;
-	public int numCollectibles = 10;
+	public int numCollectibles = 1;
 
 	public Color color;
 
