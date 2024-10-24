@@ -111,8 +111,9 @@ public class SplineTurtle : MonoBehaviour {
             string label = System.Enum.GetName(typeof(Shapes), (int)c);
             shapeTypes.options.Add(new Dropdown.OptionData(label));
         }
-		shapeTypes.value = (int) Shapes.SPIRAL;
-		// ChangeShapePreset(Shapes.SPIRAL);
+
+		shapeTypes.SetValueWithoutNotify((int) Shapes.SPIRAL);
+		ChangeShapePreset(Shapes.SPIRAL);
 	}
 
 	public void Clear(){
@@ -242,6 +243,8 @@ public class SplineTurtle : MonoBehaviour {
 	//for toggling between play modes
 	public void Reset()
 	{
+		curPoint = null;
+		curSpline = null;
 		points.Clear();
 		splines.Clear();
 		pointCount = 0;
