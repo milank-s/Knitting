@@ -1376,12 +1376,20 @@ public class MapEditor : MonoBehaviour
         
     void MoveSelectedPoints()
     {
-
         foreach (Point p in selectedPoints)
         {
 
-            p.transform.position += new Vector3(deltaWorld.x, deltaWorld.y,
-                deltaWorld.z);
+            p.transform.position += new Vector3(deltaWorld.x, deltaWorld.y, deltaWorld.z);
+            p.initPos = p.Pos;
+        }
+    }
+
+     void MoveOnZ()
+    {
+        foreach (Point p in selectedPoints)
+        {
+
+            p.transform.position += new Vector3(0,0, Input.mouseScrollDelta.y);
             p.initPos = p.Pos;
         }
     }
@@ -1990,39 +1998,24 @@ void DragCamera()
 
             case Tool.move:
 
-                if (pointSelected)
-                {
+                if (pointSelected){
                     if (hitPoint != null && ProcessClick(0))
                     {
                         dragging = true;
                     }
 
-                    if (dragging || (ProcessDrag(0) && Input.GetKey(KeyCode.LeftShift)))
-                    {
-
-                        MoveSelectedPoints();
-
-                        if (Input.mouseScrollDelta.y != 0)
-                        {
-
-                            //zCam.gameObject.SetActive(true);
+                    if(Input.GetKey(KeyCode.LeftShift)){
+                         if(Input.mouseScrollDelta.y != 0){
+                            MoveOnZ();
                         }
-//                                dragging = true;
-//                            if (hitPoint != activePoint)
-//                            {
-//                                selectedPoints.Remove(hitPoint);
-//                                selectedPoints.Add(hitPoint);
-//                            }
                     }
-                    else
+
+                    if (dragging)
                     {
-                       //zCam.gameObject.SetActive(false);
+                        if(ProcessDrag(0) && Input.GetKey(KeyCode.LeftShift)){
+                            MoveSelectedPoints();
+                        }
                     }
-}
-                else
-                {
-                    
-                   // zCam.gameObject.SetActive(false);
                 }
 
                 if (!dragging && hitPoint == null && ProcessDrag(0) &&
