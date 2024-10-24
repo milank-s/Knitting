@@ -1071,7 +1071,7 @@ public class PlayerBehaviour: MonoBehaviour {
 				Vector3 toPoint = pointDest.transform.position -pos; 
 				toPoint.z = 0;
 				distanceToFlyPoint = toPoint.magnitude;
-				flyZ = transform.position.z;
+				flyZ = pos.z;
 				//cache distance to point
 
 			}
