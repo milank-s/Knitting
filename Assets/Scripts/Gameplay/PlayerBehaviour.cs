@@ -1065,6 +1065,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			Services.fx.ShowNextPoint(raycastPoint);
 
 			pointDest = raycastPoint;
+
 			if(!stopFlying){
 				
 				Vector3 toPoint = pointDest.transform.position -pos; 
@@ -1090,7 +1091,7 @@ public class PlayerBehaviour: MonoBehaviour {
 			Vector3 toPoint = pointDest.Pos -pos;
 			Vector3 toPointNoZ = toPoint;
 			toPointNoZ.z = 0;
-			float newZ = Mathf.Lerp(flyZ, pointDest.Pos.z, distanceToFlyPoint/toPointNoZ.magnitude);
+			float newZ = Mathf.Lerp(flyZ, pointDest.Pos.z, Mathf.Clamp01(distanceToFlyPoint/toPointNoZ.magnitude));
 			Vector3 flyToPoint = toPoint.normalized * Time.deltaTime * (flyingSpeed);
 			transform.position += Vector3.ClampMagnitude(flyToPoint, toPoint.magnitude);
 			transform.position = new Vector3(transform.position.x, transform.position.y, newZ);
@@ -1109,9 +1110,9 @@ public class PlayerBehaviour: MonoBehaviour {
 			// {
 				flyingSpeed -= Time.deltaTime * flyingSpeedDecay;
 				flyingSpeed = Mathf.Clamp(flyingSpeed, 0, 1000);
-				Vector3 inertia = cursorDir * (flyingSpeed);
+				Vector3 inertia = cursorDir.normalized * (flyingSpeed);
 				transform.position += inertia * Time.deltaTime;
-				curDirection = cursorDir;
+				curDirection = cursorDir.normalized;
 				
 				if(flyingSpeed == 0){
 					Lose();

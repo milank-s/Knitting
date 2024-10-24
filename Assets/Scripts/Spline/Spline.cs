@@ -53,7 +53,7 @@ public class Spline : MonoBehaviour
 	float rollingDistance;
 	float magnitude;
 	public static List<Spline> Splines = new List<Spline> ();
-	public static float drawSpeed = 2f;
+	public static float drawSpeed = 3f;
 	
 	[HideInInspector]
 	public List<Point> SplinePoints;
