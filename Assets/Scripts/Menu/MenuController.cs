@@ -43,7 +43,7 @@ public class MenuController : MonoBehaviour
 	[SerializeField] GameObject volumeSettings;
 	[SerializeField] GameObject settingsButton;
 	[SerializeField] GameObject levelButton;
-	[SerializeField] GameObject mandala;
+	[SerializeField] CycleSprites mandala;
 
 	[SerializeField] Transform gainMeter;
 	[SerializeField] Transform leftMeter;
@@ -175,7 +175,7 @@ public class MenuController : MonoBehaviour
 		gameStateKnob.Rotate((i - (int)modeSelection) * 23);
 		modeSelection = (MenuSelection)i;
 
-		mandala.SetActive(false);
+		mandala.gameObject.SetActive(false);
 
         switch(newState){
 			
@@ -187,7 +187,8 @@ public class MenuController : MonoBehaviour
 			break;
 
 			case MenuSelection.editor:
-				mandala.SetActive(true);
+				mandala.running = true;
+				mandala.gameObject.SetActive(true);
 				levelImage.sprite = editorSprite;
 				levelTitle.gameObject.SetActive(false);
 				levelDisplay.SetActive(true);

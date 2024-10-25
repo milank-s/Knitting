@@ -18,6 +18,7 @@ public class CycleSprites: MonoBehaviour {
 	public Vector3 rotation;
 	public static GameObject[,] grid;
 
+	public bool running = false;
 	protected List<Sprite> sprites;
 	protected List<GameObject> children;
 	protected Sprite[] spriteArray;
@@ -37,6 +38,7 @@ public class CycleSprites: MonoBehaviour {
 
 	void Start () {
 		LoadSprites ();
+
 		if (createGrid) {
 			StartCoroutine(SpawnGrid ());
 		}
@@ -44,6 +46,8 @@ public class CycleSprites: MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+		if(!running) return;
+		
 		timer -= Time.deltaTime;
 		if(timer <= 0){
 			Spawn();
